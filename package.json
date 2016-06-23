@@ -1,0 +1,30 @@
+{
+  "name": "living-meta-analysis",
+  "version": "0.0.1",
+  "description": "Living Meta Analysis tool",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacekkopecky/living-meta-analysis.git"
+  },
+  "author": "Jacek Kopecky <jacek.kopecky@port.ac.uk>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jacekkopecky/living-meta-analysis/issues"
+  },
+  "homepage": "https://github.com/jacekkopecky/living-meta-analysis#readme",
+  "main": "./server/index.js",
+  "devDependencies": {
+    "eslint": "^2.13.1",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-react": "^5.0.1",
+    "eslint-plugin-import": "^1.7.0",
+    "eslint-plugin-jsx-a11y": "^1.2.0"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "simple-google-openid": "0.0.3"
+  }
+}
