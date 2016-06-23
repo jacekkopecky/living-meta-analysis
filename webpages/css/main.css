@@ -1,0 +1,236 @@
+body {
+  font-family: sans-serif;
+  background: white;
+  color: black;
+  line-height: 125%;
+  z-index: 0;
+}
+
+
+/*
+ *     #    #  ####  ###### #####  # #    # ######  ####
+ *     #    # #      #      #    # # ##   # #      #    #
+ *     #    #  ####  #####  #    # # # #  # #####  #    #
+ *     #    #      # #      #####  # #  # # #      #    #
+ *     #    # #    # #      #   #  # #   ## #      #    #
+ *      ####   ####  ###### #    # # #    # #       ####
+*/
+
+.userinfo {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  transition: border 1s;
+  min-width: 50px;
+  min-height: 50px;
+  z-index: 100;
+  background-color: white;
+}
+
+.userinfo .userphoto {
+  max-height: 48px;
+  max-width: 48px;
+  border-radius: 12px;
+  padding: 2px;
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  border: 1px solid rgba(0,0,0,0);
+  border-bottom: 0px;
+  transition: 0 .2s;
+}
+
+.userinfo .actions {
+  margin-top: 53px;
+  display: none;
+  opacity: 0;
+  transition: 0 .2s;
+  padding: 0 .5em;
+  border: 1px solid rgba(0,0,0,.5);
+}
+
+.userinfo .actions > * {
+  margin: .5em 0;
+  transition: .2s;
+  display: block;
+  width: 100%;
+  box-shadow: 0 0 0 0 rgba(66,133,244,.3);
+  text-align: center;
+}
+
+.userinfo.signedoff .signout,
+.userinfo.signedoff .name {
+  display: none;
+}
+
+.userinfo .signout,
+.userinfo .username {
+  text-decoration: none;
+  color: black;
+  line-height: 200%;
+}
+
+.userinfo .actions > .signout:hover {
+  box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
+}
+
+.userinfo:hover .actions {
+  display: block;
+  opacity: 1;
+}
+
+.userinfo:hover .userphoto {
+  border: 1px solid rgba(0,0,0,.5);
+  border-bottom: 0px;
+}
+
+
+
+
+/*
+ *          ####  ######  ####  ##### #  ####  #    #  ####
+ *         #      #      #    #   #   # #    # ##   # #
+ *          ####  #####  #        #   # #    # # #  #  ####
+ *              # #      #        #   # #    # #  # #      #
+ *         #    # #      #    #   #   # #    # #   ## #    #
+ *          ####  ######  ####    #   #  ####  #    #  ####
+ */
+section {
+  display: block;
+  margin-left: 20em;
+}
+
+section#personalinfo {
+  position: absolute;
+  top: 5em;
+  left: 1em;
+  margin-left: 0;
+  width: 18em;
+  text-align: center;
+}
+
+
+
+
+/*
+ *         #      #  ####  #####  ####
+ *         #      # #        #   #
+ *         #      #  ####    #    ####
+ *         #      #      #   #        #
+ *         #      # #    #   #   #    #
+ *         ###### #  ####    #    ####
+ */
+section.list {
+  display: block;
+  border: 1px solid black;
+  margin-bottom: 1em;
+  position: relative;
+  width: 30em;
+  z-index: 0;
+}
+
+section.list header {
+  display: block;
+  margin: 0;
+  padding: 0 0 0 .5em;
+  border-bottom: 1px solid black;
+  height: 2em;
+  background: #eee;
+}
+
+section.list header h2 {
+  font-size: 1.5em;
+  line-height: 130%;
+  margin: 0;
+}
+
+section.list header .filter {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: .2em;
+  border: 1px solid black;
+  margin: .1em;
+  background: white;
+  text-align: right;
+  z-index: 1;
+}
+
+section.list header .filter .options {
+  display: none;
+  text-align: left;
+  margin: .5em;
+  padding: 0;
+}
+
+section.list header .filter:hover .options {
+  display: block;
+}
+
+section.list header .filter .options li {
+  display: block;
+  padding: 0;
+  margin: .5em 0;
+}
+
+section.list footer {
+  display: block;
+  margin: 0;
+  padding: 0 0 0 .5em;
+  border-top: 1px solid black;
+  height: 2em;
+  background: #eee;
+}
+
+section.list footer .add {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 0;
+  border: 1px solid black;
+  background: white;
+  text-align: center;
+  width: 1em;
+  font-size: 1.65em;
+  line-height: 100%;
+  margin: .0606em;
+  cursor: default;
+}
+
+section.list > ul {
+  margin: 0;
+  padding: .25em;
+  display: block;
+}
+
+section.list > ul > li {
+  margin: 0;
+  padding: .25em;
+  display: block;
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+
+section.list > ul > li:last-of-type {
+  border-bottom: 0;
+}
+
+section.list > ul > li > .name {
+  display: inline-block;
+}
+
+section.list > ul > li > .date {
+  display: inline-block;
+  margin-left: 2em;
+  float: right;
+}
+
+section.list > ul > li > .description {
+  font-size: .8em;
+  white-space: pre;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
