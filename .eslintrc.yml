@@ -11,3 +11,4 @@ rules:
   strict: off
   func-names: off
   prefer-template: off
+  new-cap: off
