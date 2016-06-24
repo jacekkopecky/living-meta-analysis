@@ -40,7 +40,7 @@
     var user = JSON.parse(xhr.responseText);
     _.fillEls('#personalinfo .name', user.displayName);
     _.fillEls('#personalinfo .email', user.email);
-    _.fillEls('#personalinfo .joined .date', new Date(user.joined).toDateString());
+    _.fillEls('#personalinfo .joined .date', _.formatNiceDate(user.joined));
     if (user.photos && user.photos[0] && user.photos[0].value) {
       _.setProps('#personalinfo .photo', 'src', user.photos[0].value);
     }

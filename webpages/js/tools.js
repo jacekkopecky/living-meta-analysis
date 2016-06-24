@@ -73,4 +73,30 @@
     xhr.send();
   }
 
+  var months = ['Jan ', 'Feb ', 'Mar ', 'Apr ', 'May ', 'Jun ', 'Jul ', 'Aug ', 'Sep ', 'Oct ', 'Nov ', 'Dec '];
+
+  _.formatNiceDate = function formatNiceDate(d) {
+    if (typeof d !== "object") d = new Date(+d);
+    return months[d.getMonth()] + d.getDate() + ', ' + d.getFullYear();
+  }
+
+  _.formatDate = function formatDate(d) {
+    if (typeof d !== "object") d = new Date(+d);
+    return d.getFullYear() + "-" + twoDigits((d.getMonth()+1)) + "-" + twoDigits(d.getDate());
+  }
+
+  _.formatTime = function formatTime(d) {
+    if (typeof d !== "object") d = new Date(+d);
+    return twoDigits(d.getHours()) + ":" + twoDigits(d.getMinutes());
+  }
+
+  _.formatDateTime = function formatDateTime(d) {
+    return _.formatDate(d) + " " + _.formatTime(d);
+  }
+
+  function twoDigits(x) {
+    return x < 10 ? "0" + x : "" + x;
+  }
+
+
 })(document, window);
