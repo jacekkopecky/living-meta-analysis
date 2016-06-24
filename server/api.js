@@ -11,13 +11,8 @@ const api = module.exports = express.Router({
 
 api.get('/', (req, res) => res.redirect('/docs/api'));
 
-// todo only for testing
-api.get('/someinfo',
-  (req, res) =>
-    setTimeout(() => res.json(req.user || { error: 'no user', extra: req.userError }), 500)
-  );
-
-api.get(/\/profile\/([a-zA-Z.+-]+@[a-zA-Z.+-]+)/, GUARD, REGISTER_USER, returnUserProfile);
+api.post('/register', GUARD, REGISTER_USER, (req, res) => res.sendStatus(200));
+api.get(/\/profile\/([a-zA-Z.+-]+@[a-zA-Z.+-]+)/, REGISTER_USER, returnUserProfile);
 
 
 /*
@@ -28,15 +23,37 @@ api.get(/\/profile\/([a-zA-Z.+-]+@[a-zA-Z.+-]+)/, GUARD, REGISTER_USER, returnUs
  *         #    # #    # #      #   #  #    #
  *          ####   ####  ###### #    #  ####
  */
-const users = {};
+const users = { 'a@b': {
+  displayName: 'Example Exampleson',
+  name: {
+    familyName: 'Ex',
+    givenName: 'Ample',
+  },
+  emails: [
+    {
+      value: 'a@b',
+    },
+  ],
+  id: '112523269168211188731',
+  provider: 'accounts.google.com',
+  ctime: 0,
+} };
 
 function REGISTER_USER(req, res, next) {  // eslint-disable-line no-unused-vars
   if (req.user) {
     // todo this needs to be in a database
     // and if it's already there, don't remove any extra properties we know about the user
     // we could have last login?
-    users[req.user.emails[0].value] = req.user;
-    console.log('registered ' + req.user.emails[0].value);
+    const email = req.user.emails[0].value;
+    let user = users[email];
+    if (!user) {
+      user = users[email] = req.user;
+      // creation time - when the user was first registered
+      user.ctime = Date.now();
+      console.log('registered user ' + email);
+    }
+    // access time
+    user.atime = Date.now();
   }
 
   next();
@@ -52,6 +69,7 @@ function returnUserProfile(req, res) {
       name: user.name,
       email: user.emails[0].value,
       photos: user.photos,
+      joined: user.ctime,
     };
     res.json(retval);
   }

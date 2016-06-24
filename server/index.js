@@ -18,10 +18,12 @@ app.set('strict routing', true);
 
 app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
 
+app.use('/profile', (req, res) => res.sendFile('profile.html', { root: './webpages/' }));
 app.use('/', express.static('webpages', { extensions: ['html'] }));
 
-app.use([/\/[a-zA-Z.+-]+@[a-zA-Z.+-]+\//, '/profile/'], express.static('webpages/user'));
-app.use([/\/[a-zA-Z.+-]+@[a-zA-Z.+-]+/, '/profile'], (req, resp) => resp.redirect(req.path + '/'));
+app.use('/:email([a-zA-Z.+-]+@[a-zA-Z.+-]+)/',
+        api.checkUserExists,
+        express.static('webpages/profile', { extensions: ['html'] }));
 
 app.use('/api', api);
 
