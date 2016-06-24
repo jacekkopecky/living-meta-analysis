@@ -10,14 +10,15 @@ const express = require('express');
 const googleOpenID = require('simple-google-openid');
 
 
-const app = express();
+const app = express({ caseSensitive: true });
+app.set('case sensitive routing', true);
 
 app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
 
 app.use('/', express.static('webpages', { extensions: ['html'] }));
 
-app.use([/\/[a-z.+-]+@[a-z.+-]+\//, '/profile/'], express.static('webpages/user'));
-app.use([/\/[a-z.+-]+@[a-z.+-]+/, '/profile'], (req, resp) => resp.redirect(req.path + '/'));
+app.use([/\/[a-zA-Z.+-]+@[a-zA-Z.+-]+\//, '/profile/'], express.static('webpages/user'));
+app.use([/\/[a-zA-Z.+-]+@[a-zA-Z.+-]+/, '/profile'], (req, resp) => resp.redirect(req.path + '/'));
 
 app.use('/api', require('./api'));
 
