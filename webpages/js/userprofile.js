@@ -13,14 +13,8 @@
         return;
       }
 
-      // the path will be '/email/', so extract the 'email' portion here:
-      var email = window.location.pathname.substring(1, window.location.pathname.length - 1);
-
-      // if the above way of getting the email fails, redirect to homepage
-      if (email.indexOf('/') >= 0) {
-        window.location.href="/";
-        return;
-      }
+      // the path will be '/email/something', so extract the 'email' portion here:
+      var email = window.location.pathname.substring(1, window.location.pathname.indexOf('/', 1));
 
       var xhr = new XMLHttpRequest();
       xhr.open('GET', '/api/profile/' + email);
