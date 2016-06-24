@@ -33,6 +33,16 @@
     _.findEls(root, selector).forEach(function (el) { el.textContent = value; });
   }
 
+  _.setProps = function setProps(root, selector, attr, value) {
+    if (value == null) {
+      value = attr;
+      attr = selector;
+      selector = root;
+      root = document;
+    }
+    _.findEls(root, selector).forEach(function (el) { el[attr] = value; });
+  }
+
   _.addClass = function addClass(root, selector, value) {
     if (value == null) {
       value = selector;

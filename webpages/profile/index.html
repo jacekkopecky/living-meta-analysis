@@ -1,0 +1,77 @@
+<!doctype html>
+<title>User Profile | Living Meta Analysis</title>
+<script src="https://apis.google.com/js/platform.js"></script>
+<link rel="stylesheet" href="/css/main.css">
+
+<h1><a href="/">Living Meta Analysis</a> User Profile</h1>
+
+<!-- this puts a sign-in button, and a sign-out link, in the page -->
+<div class="userinfo signedoff">
+  <img src="/img/user.png" class="userphoto">
+  <div class="actions">
+    <div class="name signedon">Signed in as: <span class="username"></span></div>
+    <div class="g-signin2 signin"></div>
+    <a href="/profile" class="profile signedon">Profile</a>
+    <a href="#" class="signout signedon">Sign out</a>
+  </div>
+</div>
+
+<section id="personalinfo">
+  <h2>Personal Info</h2>
+  <img class="photo" src="/img/user.png" alt="photo of the person">
+  <div class="name">Email Emailson</div>
+  <div class="email">email.emailson@port.ac.uk</div>
+  <div class="joined">Joined on <span class="date">Feb 30, 1996</span></div>
+</section>
+
+<section class="metaanalysis list">
+  <header>
+    <h2><span name="fnOrYour">Your</span> meta-analyses</h2>
+    <div class="filter">Filter
+      <ul class="options">
+        <li><label><input type="checkbox" name="metaanalysis-filter" value="created" checked> ones <span name="fnOryou">you</span> created</label></li>
+        <li><label><input type="checkbox" name="metaanalysis-filter" value="contributed" checked> ones <span name="fnOryou">you</span> contributed to</label></li>
+      </ul>
+    </div>
+  </header>
+  <ul>
+    <li><span class="name">Memory Effects</span> <span class="date">May 1, 2000</span> <span class="description">lorem ipsum something or other lorem ipsum something or other lorem ipsum something or other</span></li>
+    <li><span class="name">Some Other</span> <span class="date">May 2, 2008</span> <span class="description">lorem ipsum something or other</span></li>
+  </ul>
+  <footer>
+    <!-- todo paging -->
+    <div class="add" name="metaanalysis-add" title="Create a new metaanalysis">+</div>
+  </footer>
+</section>
+
+<section class="article list">
+  <header>
+    <h2><span name="fnOrYour">Your</span> articles</h2>
+    <div class="filter">Filter
+      <ul class="options">
+        <li><label><input type="checkbox" name="article-filter" value="created" checked> ones <span name="fnOryou">you</span> created</label></li>
+        <li><label><input type="checkbox" name="article-filter" value="contributed" checked> ones <span name="fnOryou">you</span> contributed to</label></li>
+      </ul>
+    </div>
+  </header>
+  <ul>
+    <li><span class="name">Romeo96a</span> <span class="date">May 1, 2000</span> <span class="description">lorem ipsum something or other</span></li>
+    <li><span class="name">Juliet07b</span> <span class="date">May 2, 2008</span> <span class="description">lorem ipsum something or other</span></li>
+  </ul>
+  <footer>
+    <!-- todo paging -->
+    <div class="add" name="article-add" title="Input a new article">+</div>
+  </footer>
+</section>
+
+
+<script src="/js/tools.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/userprofile.js"></script>
+<script>
+window.initPage = function () {
+  // todo get papers and meta-analyses
+
+  window.requestAndFillUserProfile();
+}
+</script>

@@ -1,0 +1,21 @@
+<!doctype html>
+<title>Sign In... | Living Meta Analysis</title>
+<script src="https://apis.google.com/js/platform.js"></script>
+<link rel="stylesheet" href="/css/main.css">
+
+<h1><a href="/">Living Meta Analysis</a>: Please sign in below</h1>
+
+<div class="g-signin2"></div>
+
+
+<script src="/js/tools.js"></script>
+<script src="/js/auth.js"></script>
+<script>
+window.initPage = function () {
+  window.gapi.auth2.getAuthInstance().currentUser.listen(signedIn);
+}
+
+function signedIn() {
+  window.location.href = '/profile';
+}
+</script>

@@ -59,19 +59,20 @@ body {
   text-align: center;
 }
 
-.userinfo.signedoff .signout,
-.userinfo.signedoff .name {
+.userinfo.signedoff .signedon {
   display: none;
 }
 
 .userinfo .signout,
+.userinfo .profile,
 .userinfo .username {
   text-decoration: none;
   color: black;
   line-height: 200%;
 }
 
-.userinfo .actions > .signout:hover {
+.userinfo .actions > .signout:hover,
+.userinfo .actions > .profile:hover {
   box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
 }
 
@@ -108,6 +109,12 @@ section#personalinfo {
   margin-left: 0;
   width: 18em;
   text-align: center;
+}
+
+#personalinfo .photo {
+  border-radius: .5em;
+  border: 1px solid white;
+  box-shadow: 0 0 3px 3px rgba(0,0,0,.3);
 }
 
 

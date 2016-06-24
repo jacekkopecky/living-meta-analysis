@@ -1,0 +1,23 @@
+<!doctype html>
+<title>User Profile | Living Meta Analysis</title>
+<script src="https://apis.google.com/js/platform.js"></script>
+<link rel="stylesheet" href="/css/main.css">
+
+redirecting...
+
+<script src="/js/tools.js"></script>
+<script src="/js/auth.js"></script>
+
+<script>
+window.initPage = function initPage() {
+  // redirect to the user's profile
+
+  if (window.gapi.auth2.getAuthInstance().isSignedIn.get()) {
+    var userName = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail();
+    window.location.href = '/' + userName + '/';
+  } else {
+    window.location.href = '/signin';
+  }
+
+}
+</script>
