@@ -1,5 +1,9 @@
+'use strict';
+
 const express = require('express');
 const GUARD = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
+
+const NotFoundError = require('./errors/NotFoundError');
 
 const api = module.exports = express.Router({
   caseSensitive: true,
@@ -41,7 +45,7 @@ function REGISTER_USER(req, res, next) {  // eslint-disable-line no-unused-vars
 function returnUserProfile(req, res) {
   const user = users[req.params[0]];
   if (!user) {
-    res.sendStatus(404);
+    throw new NotFoundError();
   } else {
     const retval = {
       displayName: user.displayName,
@@ -52,3 +56,10 @@ function returnUserProfile(req, res) {
     res.json(retval);
   }
 }
+
+
+module.exports.checkUserExists = function (req, res, next) {
+  const email = req.params.email;
+  if (users[email]) next();
+  else throw new NotFoundError();
+};
