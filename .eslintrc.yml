@@ -12,3 +12,4 @@ rules:
   func-names: off
   prefer-template: off
   new-cap: off
+  no-use-before-define: off
