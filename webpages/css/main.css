@@ -59,7 +59,7 @@ body {
   text-align: center;
 }
 
-.userinfo.signedoff .signedon {
+.userinfo.signedoff .whensignedon {
   display: none;
 }
 
