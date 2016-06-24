@@ -51,4 +51,16 @@
     _.findEls(root, selector).forEach(function(el){el.classList.remove(value);});
   }
 
+  _.notFound = function notFound() {
+    document.body.innerHTML = '';
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/404');
+    xhr.onload = function () {
+      document.open();
+      document.write(xhr.responseText);
+      document.close();
+    };
+    xhr.send();
+  }
+
 })(document, window);
