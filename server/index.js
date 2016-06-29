@@ -9,6 +9,8 @@
 const express = require('express');
 const googleOpenID = require('simple-google-openid');
 
+const config = require('./config');
+
 const api = require('./api');
 const NotFoundError = require('./errors/NotFoundError');
 
@@ -24,6 +26,11 @@ app.use('/', express.static('webpages', { extensions: ['html'] }));
 app.use('/:email([a-zA-Z.+-]+@[a-zA-Z.+-]+)/',
         api.checkUserExists,
         express.static('webpages/profile', { extensions: ['html'] }));
+
+if (config.demoApiDelay) {
+  // this is a delay for demonstration purposes so the server seems slow
+  app.use((req, res, next) => setTimeout(next, config.demoApiDelay));
+}
 
 app.use('/api', api);
 
