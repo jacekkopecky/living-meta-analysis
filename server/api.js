@@ -9,10 +9,12 @@ const api = module.exports = express.Router({
   caseSensitive: true,
 });
 
+const EMAIL_ADDRESS_RE = module.exports.EMAIL_ADDRESS_RE = '[a-zA-Z.+-]+@[a-zA-Z.+-]+';
+
 api.get('/', (req, res) => res.redirect('/docs/api'));
 
 api.post('/register', GUARD, REGISTER_USER, (req, res) => res.sendStatus(200));
-api.get(/\/profile\/([a-zA-Z.+-]+@[a-zA-Z.+-]+)/, REGISTER_USER, returnUserProfile);
+api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile);
 
 
 /*
@@ -60,7 +62,7 @@ function REGISTER_USER(req, res, next) {  // eslint-disable-line no-unused-vars
 }
 
 function returnUserProfile(req, res) {
-  const user = users[req.params[0]];
+  const user = users[req.params.email];
   if (!user) {
     throw new NotFoundError();
   } else {

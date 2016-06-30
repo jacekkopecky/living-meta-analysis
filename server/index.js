@@ -23,7 +23,7 @@ app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
 app.use('/profile', (req, res) => res.sendFile('profile.html', { root: './webpages/' }));
 app.use('/', express.static('webpages', { extensions: ['html'] }));
 
-app.use('/:email([a-zA-Z.+-]+@[a-zA-Z.+-]+)/',
+app.use(`/:email(${api.EMAIL_ADDRESS_RE})/`,
         api.checkUserExists,
         express.static('webpages/profile', { extensions: ['html'] }));
 
