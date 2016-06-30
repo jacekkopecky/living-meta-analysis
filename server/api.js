@@ -4,6 +4,7 @@ const express = require('express');
 const GUARD = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
 
 const NotFoundError = require('./errors/NotFoundError');
+const storage = require('./storage');
 
 const api = module.exports = express.Router({
   caseSensitive: true,
@@ -18,54 +19,45 @@ api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile
 
 
 /*
+ *
+ *
  *         #    #  ####  ###### #####   ####
  *         #    # #      #      #    # #
  *         #    #  ####  #####  #    #  ####
  *         #    #      # #      #####       #
  *         #    # #    # #      #   #  #    #
  *          ####   ####  ###### #    #  ####
+ *
+ *
  */
-const users = { 'a@b': {
-  displayName: 'Example Exampleson',
-  name: {
-    familyName: 'Ex',
-    givenName: 'Ample',
-  },
-  emails: [
-    {
-      value: 'a@b',
-    },
-  ],
-  id: '112523269168211188731',
-  provider: 'accounts.google.com',
-  ctime: 0,
-} };
-
 function REGISTER_USER(req, res, next) {  // eslint-disable-line no-unused-vars
   if (req.user) {
-    // todo this needs to be in a database
-    // and if it's already there, don't remove any extra properties we know about the user
-    // we could have last login?
     const email = req.user.emails[0].value;
-    let user = users[email];
-    if (!user) {
-      user = users[email] = req.user;
-      // creation time - when the user was first registered
-      user.ctime = Date.now();
-      console.log('registered user ' + email);
-    }
-    // access time
-    user.atime = Date.now();
-  }
+    storage.getUser(email, (err, user) => {
+      if (!user) {
+        user = req.user;
+        // creation time - when the user was first registered
+        user.ctime = Date.now();
+        storage.addUser(email, user);
+        console.log('registered user ' + email);
+      }
+      // access time - not currently saved in the database
+      user.atime = Date.now();
 
-  next();
+      next();
+    });
+  } else {
+    next();
+  }
 }
 
-function returnUserProfile(req, res) {
-  const user = users[req.params.email];
-  if (!user) {
-    throw new NotFoundError();
-  } else {
+function returnUserProfile(req, res, next) {
+  storage.getUser(req.params.email, (err, user) => {
+    if (!user) {
+      next(new NotFoundError());
+      return;
+    }
+
     const retval = {
       displayName: user.displayName,
       name: user.name,
@@ -74,12 +66,13 @@ function returnUserProfile(req, res) {
       joined: user.ctime,
     };
     res.json(retval);
-  }
+  });
 }
 
 
 module.exports.checkUserExists = function (req, res, next) {
-  const email = req.params.email;
-  if (users[email]) next();
-  else throw new NotFoundError();
+  storage.getUser(req.params.email, (err, user) => {
+    if (user) next();
+    else next(new NotFoundError());
+  });
 };

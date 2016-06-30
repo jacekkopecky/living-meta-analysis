@@ -13,3 +13,4 @@ rules:
   prefer-template: off
   new-cap: off
   no-use-before-define: off
+  no-param-reassign: off
