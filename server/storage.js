@@ -44,7 +44,11 @@ module.exports.getUser = function getUser(email, cb) {
 
   console.log('getUser making a datastore request');
   datastore.get(key, (err, entity) => {
-    if (err) return cb(err);
+    if (err) {
+      console.error('error retrieving user');
+      console.error(err);
+      return cb(err);
+    }
 
     if (entity) userCache[email] = entity.data;
 
