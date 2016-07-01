@@ -19,7 +19,7 @@
 <section id="personalinfo">
   <h2>Personal Info</h2>
   <img class="photo" src="/img/user.png" alt="photo of the person">
-  <div class="name">loading&hellip;</div>
+  <div class="name loading">loading&hellip;</div>
   <div class="email"></div>
   <div class="joined">Joined on <span class="date">&hellip;</span></div>
 </section>
@@ -27,7 +27,12 @@
 <section class="metaanalysis list">
   <header>
     <h2><span name="fnOrYour">Your</span> meta-analyses</h2>
-    <div class="filter">Filter
+    <div class="filter">Sort/filter
+      <ul class="options">
+        <li><label><input type="radio" name="metaanalysis-sort" value="modified" checked> recently modified</label></li>
+        <li><label><input type="radio" name="metaanalysis-sort" value="created"> recently created</label></li>
+        <li><label><input type="radio" name="metaanalysis-sort" value="name"> by name</label></li>
+      </ul>
       <ul class="options">
         <li><label><input type="checkbox" name="metaanalysis-filter" value="created" checked> ones <span name="fnOryou">you</span> created</label></li>
         <li><label><input type="checkbox" name="metaanalysis-filter" value="contributed" checked> ones <span name="fnOryou">you</span> contributed to</label></li>
@@ -52,20 +57,29 @@
 <section class="article list">
   <header>
     <h2><span name="fnOrYour">Your</span> articles</h2>
-    <div class="filter">Filter
+    <div class="filter">Sort/filter
+      <ul class="options">
+        <li><label><input type="radio" name="article-sort" value="modified" checked> recently modified</label></li>
+        <li><label><input type="radio" name="article-sort" value="created"> recently created</label></li>
+        <li><label><input type="radio" name="article-sort" value="name"> by name</label></li>
+      </ul>
       <ul class="options">
         <li><label><input type="checkbox" name="article-filter" value="created" checked> ones <span name="fnOryou">you</span> created</label></li>
         <li><label><input type="checkbox" name="article-filter" value="contributed" checked> ones <span name="fnOryou">you</span> contributed to</label></li>
       </ul>
     </div>
   </header>
-  <ul>
-    <li><span class="name">Romeo96a</span> <span class="date">May 1, 2000</span> <span class="description">lorem ipsum something or other</span></li>
-    <li><span class="name">Juliet07b</span> <span class="date">May 2, 2008</span> <span class="description">lorem ipsum something or other</span>
+  <template id="article-list-template">
+    <li><span class="name">error</span> <span class="date">error</span> <span class="description">error</span>
       <ul class="tags">
-        <li>memory</li>
       </ul>
     </li>
+  </template>
+  <template id="tag-template">
+    <li class="tag">error</li>
+  </template>
+  <ul>
+    <li class="loading">loading&hellip;
   </ul>
   <footer>
     <!-- todo paging -->
@@ -77,10 +91,12 @@
 <script src="/js/tools.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/userprofile.js"></script>
+<script src="/js/articles.js"></script>
 <script>
 window.initPage = function () {
   // todo get papers and meta-analyses
 
   window.requestAndFillUserProfile();
+  window.requestAndFillArticleList();
 }
 </script>

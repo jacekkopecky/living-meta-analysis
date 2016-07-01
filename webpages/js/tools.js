@@ -1,7 +1,14 @@
 (function (document, window) {
   var _ = window._ = {};
 
+  /*
+   * param root is optional
+   */
   _.findEl = function findEl(root, selector) {
+    if (selector == null) {
+      selector = root;
+      root = document;
+    }
     return root.querySelector(selector);
   }
 

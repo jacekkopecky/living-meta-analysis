@@ -5,25 +5,30 @@
   window.apiFail = window.apiFail || function(){};
 
   window.requestAndFillUserProfile = function requestAndFillUserProfile() {
-    window.getGapiIDToken(function (err, id_token) {
+    window.getGapiIDToken(function (err, idToken) {
       if (err) {
-        console.err("no ID token to call the API");
+        console.err("problem getting ID token from GAPI");
         console.err(err);
         window.apiFail();
         return;
       }
 
-      // the path will be '/email/something', so extract the 'email' portion here:
-      var email = window.location.pathname.substring(1, window.location.pathname.indexOf('/', 1));
+      var email = window.extractUserProfileEmailFromUrl();
 
       var xhr = new XMLHttpRequest();
       xhr.open('GET', '/api/profile/' + email);
-      xhr.setRequestHeader("Authorization", "Bearer " + id_token);
+      if (idToken) xhr.setRequestHeader("Authorization", "Bearer " + idToken);
 
       xhr.onload = fillUserProfile;
       xhr.send();
 
     });
+  }
+
+  window.extractUserProfileEmailFromUrl = function extractUserProfileEmailFromUrl() {
+    // the path of a page attributed to a user will be '/email/something',
+    // so extract the 'email' portion here:
+    return window.location.pathname.substring(1, window.location.pathname.indexOf('/', 1));
   }
 
   function fillUserProfile() {
@@ -36,7 +41,6 @@
       window.apiFail();
       return;
     }
-    console.log(xhr.response);
     var user = JSON.parse(xhr.responseText);
     _.fillEls('#personalinfo .name', user.displayName);
     _.fillEls('#personalinfo .email', user.email);

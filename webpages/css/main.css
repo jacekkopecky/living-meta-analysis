@@ -172,6 +172,11 @@ section.list header .filter .options {
   padding: 0;
 }
 
+section.list header .filter .options + .options {
+  border-top: 1px solid #eee;
+}
+
+
 section.list header .filter:hover .options {
   display: block;
 }
@@ -236,7 +241,7 @@ section.list > ul > li > .date {
 
 section.list > ul > li > .description {
   font-size: .8em;
-  white-space: pre;
+  white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   display: block;
