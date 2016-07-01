@@ -35,7 +35,7 @@ const datastore = gcloud.datastore({ namespace: 'living-meta-analysis-v1' });
  *   "provider": "accounts.google.com",
  *   "emails": [
  *     {
- *       "value": "example@gmail.com",
+ *       "value": "example@example.com",
  *       "verified": true
  *     }
  *   ],
@@ -49,6 +49,7 @@ const datastore = gcloud.datastore({ namespace: 'living-meta-analysis-v1' });
  *       "value": "https://lh5.googleusercontent.com/EXAMPLE/photo.jpg"
  *     }
  *   ]
+ *   // todo favorites: [ "/id/a/4903", "/id/a/649803", ]
  * }
  */
 
@@ -134,4 +135,106 @@ module.exports.addUser = function addUser(email, user, cb) {
       if (cb) cb(err);
     }
   });
+};
+
+/*
+ *
+ *
+ *       ##   #####  ##### #  ####  #      ######  ####
+ *      #  #  #    #   #   # #    # #      #      #
+ *     #    # #    #   #   # #      #      #####   ####
+ *     ###### #####    #   # #      #      #           #
+ *     #    # #   #    #   # #    # #      #      #    #
+ *     #    # #    #   #   #  ####  ###### ######  ####
+ *
+ *
+ */
+
+/* an article record looks like this:
+{
+  id: "/id/a/4903",
+  title: "Smith96a",
+  enteredBy: "example@example.com",
+  ctime: 0,
+  mtime: 5,
+  published: "1996-08-00", // for simply august, precise date unspecified
+  description: "brief description lorem ipsum",
+  authors: "J. Smith, J. Doe",
+  link: "http:...",
+  doi: "3409/465",
+  tags: [
+    "memory",
+    "misinformation",
+  ],
+  // todo properties
+  // todo versioning of the above data?
+  //   one approach: keep a stream of timestamped and attributed updates that led to this state?
+  //      versions: [
+  //        { prop: "title", newValue: "Smith96a", ctime: 1},
+  //        { prop: "published", newValue: "1996-08-00", ctime: 2},
+  //        { prop: "tags", addedValue: "memory", ctime: 3},
+  //        { prop: "tags", removedValue: "testing", ctime: 4},
+  //        // both entries have an implied enteredBy: the same as in the parent object
+  //      ]
+  //   but what do we do with contributions/changes by others? what about
+  //      versions: [
+  //        { prop: "title", newValue: "SmithEtAl96a", ctime: 5,
+  //          enteredBy: 'someoneElse'},
+  //        { prop: "title", newValue: "SmithEtAl96a", ctime: 6,
+  //          approvesChangeWithCTime: 5},
+  //        { prop: "title", newValue: "vandalism", ctime: 7, enteredBy: 'troll',
+  //          declinedTime: 8},
+  //        { prop: "tags", addedValue: "mine", ctime: 9,
+  //          enteredBy: 'someoneElse'},
+  //      ]
+  //
+  // when displaying histories, group changes by the same author that happen in quick succession
+  // approved changes become a "PR merge"
+  //   an approval repeats the value so that the merge can still make little changes
+  // when computing "current state", for the orig. author it's simply the current state
+  //   and for anyone else it's the current state plus all their non-approved changes
+  //   but we need to highlight where the orig. author made a change after our non-approved change
+}
+ */
+
+const articles = [
+  {
+    id: '/id/a/4903',
+    title: 'Smith96a',
+    enteredBy: 'example@example.com',
+    ctime: 0,
+    mtime: 5,
+    published: '1996-08-00', // for simply august, precise date unspecified
+    description: 'brief description lorem ipsum',
+    authors: 'J. Smith, J. Doe',
+    link: 'http:...',
+    doi: '3409/465',
+    tags: [
+      'memory',
+      'misinformation',
+    ],
+  },
+  {
+    id: '/id/a/4904',
+    title: 'Juliet04',
+    enteredBy: 'example@example.com',
+    ctime: 0,
+    mtime: 5,
+    published: '2004-01-17', // for simply august, precise date unspecified
+    description: `brief description lorem ipsum brief
+                  description lorem ipsum brief description lorem ipsum
+                  brief description lorem ipsum`,
+    authors: 'J. Doe, J. Smith',
+    link: 'http:...',
+    doi: '3409/465',
+    tags: [
+      'misinformation',
+      'testing',
+    ],
+  },
+];
+
+
+module.exports.getArticlesEnteredBy = function getArticlesEnteredBy(email, cb) {
+  setImmediate(cb, null, articles);
 };
