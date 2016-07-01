@@ -241,3 +241,21 @@ section.list > ul > li > .description {
   overflow: hidden;
   display: block;
 }
+
+section.list > ul > li > ul.tags {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+section.list > ul > li > ul.tags > li {
+  font-size: .7em;
+  display: inline-block;
+  margin: .2em;
+  padding: .4em;
+  line-height: 100%;
+  border: 1px solid #008;
+  border-radius: .4em;
+  background: #33c;
+  color: white;
+}
