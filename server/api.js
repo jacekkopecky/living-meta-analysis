@@ -30,7 +30,7 @@ api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile
  *
  *
  */
-function REGISTER_USER(req, res, next) {  // eslint-disable-line no-unused-vars
+function REGISTER_USER(req, res, next) {
   if (req.user) {
     const email = req.user.emails[0].value;
     storage.getUser(email, (err, user) => {
