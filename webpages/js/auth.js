@@ -1,7 +1,8 @@
 (function (window, document) { // eslint-disable-line no-unused-vars
   'use strict';
   var gapi = window.gapi;
-  var _ = window._;
+  var limeta = window.limeta;
+  var _ = limeta._;
 
   var CLIENT_ID = "358237292980-kbme56c9ih4rpmob16sq8bjig5dms6pl.apps.googleusercontent.com";
 
@@ -29,7 +30,7 @@
     xhr.send();
 
     // this is for debugging only
-    window.guser = googleUser;
+    limeta.guser = googleUser;
   }
 
   function signOut() {
@@ -50,7 +51,7 @@
    * As usual, `cb` has two parameters: (err, token) - if an error should occur, `err` will have a value,
    * otherwise `token` will have a value.
    */
-  window.getGapiIDToken = function getGapiIDToken(cb) {
+  limeta.getGapiIDToken = function getGapiIDToken(cb) {
     var currUser = gapi.auth2.getAuthInstance().currentUser.get();
     var authResp = currUser.getAuthResponse();
     if (Date.now() > authResp.expires_at - 120000) {
@@ -80,7 +81,7 @@
         gauth.currentUser.listen(onSignIn);
         _.findEls('a.signout').forEach(function (el){el.addEventListener('click', signOut)});
         if (gauth.isSignedIn.get()) onSignIn(gauth.currentUser.get());
-        if (window.initPage) window.initPage();
+        if (limeta.initPage) limeta.initPage();
       },
       function (err){
         console.log('failed getting gapi auth instance');

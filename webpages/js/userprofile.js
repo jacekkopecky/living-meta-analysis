@@ -1,19 +1,20 @@
 (function (window, document) { // eslint-disable-line no-unused-vars
   'use strict';
-  var _ = window._;
+  var limeta = window.limeta;
+  var _ = limeta._;
 
-  window.apiFail = window.apiFail || function(){};
+  limeta.apiFail = limeta.apiFail || function(){};
 
-  window.requestAndFillUserProfile = function requestAndFillUserProfile() {
-    window.getGapiIDToken(function (err, idToken) {
+  limeta.requestAndFillUserProfile = function requestAndFillUserProfile() {
+    limeta.getGapiIDToken(function (err, idToken) {
       if (err) {
         console.err("problem getting ID token from GAPI");
         console.err(err);
-        window.apiFail();
+        limeta.apiFail();
         return;
       }
 
-      var email = window.extractUserProfileEmailFromUrl();
+      var email = limeta.extractUserProfileEmailFromUrl();
 
       var xhr = new XMLHttpRequest();
       xhr.open('GET', '/api/profile/' + email);
@@ -25,7 +26,7 @@
     });
   }
 
-  window.extractUserProfileEmailFromUrl = function extractUserProfileEmailFromUrl() {
+  limeta.extractUserProfileEmailFromUrl = function extractUserProfileEmailFromUrl() {
     // the path of a page attributed to a user will be '/email/something',
     // so extract the 'email' portion here:
     return window.location.pathname.substring(1, window.location.pathname.indexOf('/', 1));
@@ -38,7 +39,7 @@
       return;
     }
     if (xhr.status > 299) {
-      window.apiFail();
+      limeta.apiFail();
       return;
     }
     var user = JSON.parse(xhr.responseText);

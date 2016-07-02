@@ -1,5 +1,6 @@
 (function (document, window) {
-  var _ = window._ = {};
+  window.limeta = window.limeta || {};
+  var _ = window.limeta._ = {};
 
   /*
    * param root is optional
