@@ -82,10 +82,10 @@ function getAllUsers() {
     })
     .on('end', () => {
       console.log('getAllUsers: done');
+      userCacheReady = true;
       userCacheRequests.forEach((cb) => cb());
       userCacheRequests = [];
       userCacheRefreshing = false;
-      userCacheReady = true;
     });
 }
 
@@ -227,7 +227,6 @@ const articles = [
     doi: '3409/465',
     tags: [
       'memory',
-      'misinformation',
     ],
   },
   {
