@@ -107,6 +107,22 @@ module.exports.getUser = function getUser(email, cb) {
   setImmediate(cb, null, userCache[email]);
 };
 
+module.exports.listUsers = function listUsers(cb) {
+  if (!cb) {
+    setImmediate(cb, new Error('cb parameter required'));
+    return;
+  }
+  if (!userCacheReady) {
+    userCacheRequests.push((err) => {
+      if (err) cb(err);
+      else listUsers(cb);
+    });
+    getAllUsers();
+    return;
+  }
+  setImmediate(cb, null, userCache);
+};
+
 module.exports.addUser = function addUser(email, user, cb) {
   if (!email || !user) {
     setImmediate(cb, new Error('email/user parameters required'));

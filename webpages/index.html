@@ -20,11 +20,53 @@
 
 <a href="/profile">your profile</a>
 
+<p>top users:</p>
+<ol class="topusers"><li value="0">none</li></ol>
+
 
 <script src="/js/tools.js"></script>
 <script src="/js/auth.js"></script>
 <script>
 window.limeta.initPage = function () {
-  // todo
+  // todo this is provisional
+
+  var limeta = window.limeta;
+  var _ = limeta._;
+
+  limeta.getGapiIDToken(function (err, idToken) {
+    if (err) {
+      console.err('can\'t load top users');
+      console.err(err);
+      return;
+    }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/topusers');
+    if (idToken) xhr.setRequestHeader("Authorization", "Bearer " + idToken);
+
+    xhr.onload = showTopUsers;
+    xhr.send();
+  })
+
+  function showTopUsers() {
+    var xhr = this;
+    if (xhr.status > 299) {
+      limeta.apiFail();
+      return;
+    }
+    var users = JSON.parse(xhr.responseText);
+    var list = _.findEl('.topusers');
+    list.innerHTML = '';
+
+    users.forEach(function (user) {
+      var li = document.createElement('li');
+      var userlink = document.createElement('a');
+      userlink.href = '/' + user.email + '/';
+      userlink.textContent = user.displayName;
+      li.appendChild(userlink);
+      list.appendChild(li);
+    });
+  }
 }
+
 </script>

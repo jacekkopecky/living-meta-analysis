@@ -4,6 +4,7 @@ const express = require('express');
 const GUARD = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
 
 const NotFoundError = require('./errors/NotFoundError');
+const InternalError = require('./errors/InternalError');
 const storage = require('./storage');
 const tools = require('./tools');
 
@@ -29,6 +30,7 @@ const EMAIL_ADDRESS_RE = module.exports.EMAIL_ADDRESS_RE = '[a-zA-Z.+-]+@[a-zA-Z
 api.get('/', (req, res) => res.redirect('/docs/api'));
 
 api.post('/register', GUARD, REGISTER_USER, (req, res) => res.sendStatus(200));
+api.get('/topusers', REGISTER_USER, listTopUsers);
 api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile);
 
 api.get(`/articles/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listArticles);
@@ -81,6 +83,25 @@ function returnUserProfile(req, res, next) {
       photos: user.photos,
       joined: user.ctime,
     };
+    res.json(retval);
+  });
+}
+
+function listTopUsers(req, res, next) {
+  storage.listUsers((err, users) => {
+    if (err) {
+      next(new InternalError());
+      return;
+    }
+    const retval = [];
+    for (const key of Object.keys(users)) {
+      const user = users[key];
+      retval.push({
+        displayName: user.displayName,
+        name: user.name,
+        email: user.emails[0].value,
+      });
+    }
     res.json(retval);
   });
 }

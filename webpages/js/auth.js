@@ -71,16 +71,21 @@
   }
 
 
+// todo distinguish initPage and gapiReady somehow because we can have a token already cached (localStroage)
+// add param to getGapiIDToken to force immediate return of no token if none is available
+// add whenGapiAuth2IsReady(fn)?
+// because currently it takes a lot of time for the page to start touching the API and loading real stuff
+
   gapi.load('auth2', function() {
     gapi.auth2.init({client_id: CLIENT_ID });
     gapi.auth2.getAuthInstance().then(
-      function (gauth){
+      function (gauth) {
         gauth.currentUser.listen(onSignIn);
         _.findEls('a.signout').forEach(function (el){el.addEventListener('click', signOut)});
         if (gauth.isSignedIn.get()) onSignIn(gauth.currentUser.get());
         if (limeta.initPage) limeta.initPage();
       },
-      function (err){
+      function (err) {
         console.log('failed getting gapi auth instance');
         console.log(err);
       });
