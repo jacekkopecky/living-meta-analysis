@@ -225,6 +225,10 @@ section.list > ul > li {
   position: relative;
 }
 
+section.list > ul > li.empty {
+  font-style: italic;
+}
+
 section.list > ul > li:last-of-type {
   border-bottom: 0;
 }
