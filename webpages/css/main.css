@@ -6,6 +6,10 @@ body {
   z-index: 0;
 }
 
+body > h1 {
+  margin-bottom: 2em;
+}
+
 
 /*
  *     #    #  ####  ###### #####  # #    # ######  ####
