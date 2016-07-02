@@ -253,3 +253,69 @@ const articles = [
 module.exports.getArticlesEnteredBy = function getArticlesEnteredBy(email, cb) {
   setImmediate(cb, null, articles);
 };
+
+
+/*
+ *
+ *
+ *    #    # ###### #####   ##     ##   #    #   ##   #      #   #  ####  ######  ####
+ *    ##  ## #        #    #  #   #  #  ##   #  #  #  #       # #  #      #      #
+ *    # ## # #####    #   #    # #    # # #  # #    # #        #    ####  #####   ####
+ *    #    # #        #   ###### ###### #  # # ###### #        #        # #           #
+ *    #    # #        #   #    # #    # #   ## #    # #        #   #    # #      #    #
+ *    #    # ######   #   #    # #    # #    # #    # ######   #    ####  ######  ####
+ *
+ *
+ */
+
+/* a meta-analysis record looks like this:
+{
+  id: "/id/m/4904",
+  title: "misinformation08",
+  enteredBy: "example@example.com",
+  ctime: 0,
+  mtime: 5,
+  published: "2010-04-12",
+  description: "brief description lorem ipsum",
+  extraAuthors: "J. Smith, J. Doe",
+  tags: [
+    "memory",
+    "misinformation",
+  ],
+  // todo various extra things
+  // todo versioning of the above data can be like for articles
+}
+ */
+
+const metaanalyses = [
+  {
+    id: '/id/m/4904',
+    title: 'memory96',
+    enteredBy: 'example@example.com',
+    ctime: 0,
+    mtime: 5,
+    published: '1997-08-00', // for simply august, precise date unspecified
+    description: 'brief description lorem ipsum',
+    extraAuthors: 'J. Smith, J. Doe',
+    tags: [
+      'memory',
+    ],
+  },
+  {
+    id: '/id/m/4905',
+    title: 'misinformation04',
+    enteredBy: 'example@example.com',
+    ctime: 0,
+    mtime: 5,
+    published: '2005-01-17', // for simply august, precise date unspecified
+    description: `brief description lorem ipsum brief
+                  description lorem ipsum brief description lorem ipsum
+                  brief description lorem ipsum`,
+    extraAuthors: 'J. Doe, J. Smith',
+  },
+];
+
+
+module.exports.getMetaanalysesEnteredBy = function getMetaanalysesEnteredBy(email, cb) {
+  setImmediate(cb, null, metaanalyses);
+};

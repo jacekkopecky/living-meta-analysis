@@ -24,6 +24,13 @@
   <div class="joined">Joined on <span class="date">&hellip;</span></div>
 </section>
 
+<template id="empty-list-template">
+  <li class="empty">none yet</li>
+</template>
+<template id="tag-template">
+  <li class="tag">error</li>
+</template>
+
 <section class="metaanalysis list">
   <header>
     <h2><span class="fnOrYour">User's</span> meta-analyses</h2>
@@ -39,14 +46,14 @@
       </ul>
     </div>
   </header>
-  <ul>
-    <li><span class="name">Memory Effects</span> <span class="date">May 1, 2000</span> <span class="description">lorem ipsum something or other lorem ipsum something or other lorem ipsum something or other</span>
+  <template id="metaanalysis-list-item-template">
+    <li><span class="name">error</span> <span class="date">error</span> <span class="description">error</span>
       <ul class="tags">
-        <li>memory</li>
-        <li>misinformation</li>
       </ul>
     </li>
-    <li><span class="name">Some Other</span> <span class="date">May 2, 2008</span> <span class="description">lorem ipsum something or other</span></li>
+  </template>
+  <ul>
+    <li class="loading">loading&hellip;
   </ul>
   <footer>
     <!-- todo paging -->
@@ -75,12 +82,6 @@
       </ul>
     </li>
   </template>
-  <template id="empty-article-list-template">
-    <li class="empty">none yet</li>
-  </template>
-  <template id="tag-template">
-    <li class="tag">error</li>
-  </template>
   <ul>
     <li class="loading">loading&hellip;
   </ul>
@@ -95,11 +96,13 @@
 <script src="/js/auth.js"></script>
 <script src="/js/userprofile.js"></script>
 <script src="/js/articles.js"></script>
+<script src="/js/metaanalyses.js"></script>
 <script>
 window.limeta.initPage = function () {
   // todo get papers and meta-analyses
 
   window.limeta.requestAndFillUserProfile();
   window.limeta.requestAndFillArticleList();
+  window.limeta.requestAndFillMetaanalysisList();
 }
 </script>

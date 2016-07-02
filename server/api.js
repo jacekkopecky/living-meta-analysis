@@ -35,6 +35,8 @@ api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile
 
 api.get(`/articles/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listArticles);
 
+api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listMetaanalyses);
+
 
 /*
  *
@@ -150,6 +152,45 @@ function listArticles(req, res, next) {
         tags: a.tags,
       };
       retval.push(retArticle);
+    });
+    res.json(retval);
+  });
+}
+
+
+/*
+ *
+ *
+ *    #    # ###### #####   ##     ##   #    #   ##   #      #   #  ####  ######  ####
+ *    ##  ## #        #    #  #   #  #  ##   #  #  #  #       # #  #      #      #
+ *    # ## # #####    #   #    # #    # # #  # #    # #        #    ####  #####   ####
+ *    #    # #        #   ###### ###### #  # # ###### #        #        # #           #
+ *    #    # #        #   #    # #    # #   ## #    # #        #   #    # #      #    #
+ *    #    # ######   #   #    # #    # #    # #    # ######   #    ####  ######  ####
+ *
+ *
+ */
+function listMetaanalyses(req, res, next) {
+  storage.getMetaanalysesEnteredBy(req.params.email, (err, mas) => {
+    if (err || !mas || mas.length === 0) {
+      next(new NotFoundError());
+      return;
+    }
+
+    const retval = [];
+    mas.forEach((m) => {
+      const retMA = {
+        id: m.id,
+        title: m.title,
+        enteredBy: m.enteredBy,
+        ctime: m.ctime,
+        mtime: m.mtime,
+        published: m.published,
+        description: m.description,
+        extraAuthors: m.extraAuthors,
+        tags: m.tags,
+      };
+      retval.push(retMA);
     });
     res.json(retval);
   });
