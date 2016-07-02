@@ -61,7 +61,8 @@
     } else {
       list.appendChild(_.byId('empty-article-list-template').content.cloneNode(true));
     }
-  }
 
+    _.setNameOrYou();
+  }
 
 })(window, document);

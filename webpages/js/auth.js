@@ -28,9 +28,6 @@
     xhr.open('POST', '/api/register');
     xhr.setRequestHeader("Authorization", "Bearer " + id_token);
     xhr.send();
-
-    // this is for debugging only
-    limeta.guser = googleUser;
   }
 
   function signOut() {

@@ -6,6 +6,7 @@
   limeta.apiFail = limeta.apiFail || function(){};
 
   limeta.requestAndFillUserProfile = function requestAndFillUserProfile() {
+    limeta.whenUserPageIsAboutIsKnown = whenUserPageIsAboutIsKnown;
     limeta.getGapiIDToken(function (err, idToken) {
       if (err) {
         console.err("problem getting ID token from GAPI");
@@ -42,14 +43,28 @@
       limeta.apiFail();
       return;
     }
+
     var user = JSON.parse(xhr.responseText);
+
+    limeta.userEmailPageIsAbout = user.email;
+    limeta.userFnamePageIsAbout = user.name.givenName;
+    functionsWaiting.forEach(function (f) { f(); });
+    functionsWaiting = [];
+
     _.fillEls('#personalinfo .name', user.displayName);
     _.fillEls('#personalinfo .email', user.email);
     _.fillEls('#personalinfo .joined .date', _.formatNiceDate(user.joined));
     if (user.photos && user.photos[0] && user.photos[0].value) {
       _.setProps('#personalinfo .photo', 'src', user.photos[0].value);
     }
+
+    _.setNameOrYou();
   }
 
+  var functionsWaiting = [];
+
+  function whenUserPageIsAboutIsKnown(f) {
+    if (functionsWaiting.indexOf(f) === -1) functionsWaiting.push(f);
+  }
 
 })(window, document);
