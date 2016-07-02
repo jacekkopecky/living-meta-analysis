@@ -144,8 +144,6 @@
     var y = currentUser == userPageIsAbout;
     var n = limeta.userFnamePageIsAbout || 'User';
 
-    console.log('page is about current user: ' + y + ' ' + n);
-
     _.fillEls('.fnOrYour', y ? 'Your' : n + "'s");
     _.fillEls('.fnOryou',  y ? 'you'  : n       );
   }
