@@ -58,7 +58,7 @@
       _.setProps('#personalinfo .photo', 'src', user.photos[0].value);
     }
 
-    _.setNameOrYou();
+    _.setYouOrName();
   }
 
   var functionsWaiting = [];

@@ -116,10 +116,10 @@
    * The places to change are elements with the following classes (case is significant):
    * fnOrYour, fnOryou
    */
-  _.setNameOrYou = function setNameOrYou() {
+  _.setYouOrName = function setYouOrName() {
     if (!listeningForCurrentUser) {
-      window.gapi.auth2.getAuthInstance().currentUser.listen(setNameOrYou);
       listeningForCurrentUser = true;
+      window.gapi.auth2.getAuthInstance().currentUser.listen(setYouOrName);
     }
 
     var currentUser = null;
@@ -133,7 +133,7 @@
 
     if (!userPageIsAbout) {
       if (limeta.whenUserPageIsAboutIsKnown) {
-        limeta.whenUserPageIsAboutIsKnown(setNameOrYou);
+        limeta.whenUserPageIsAboutIsKnown(setYouOrName);
         return;
       } else {
         console.error('setNameOfYou can\'t be called on a page that\'s not about a user');
@@ -143,6 +143,8 @@
 
     var y = currentUser == userPageIsAbout;
     var n = limeta.userFnamePageIsAbout || 'User';
+
+    document.body.classList[y ? 'add' : 'remove']('page-about-you');
 
     _.fillEls('.fnOrYour', y ? 'Your' : n + "'s");
     _.fillEls('.fnOryou',  y ? 'you'  : n       );

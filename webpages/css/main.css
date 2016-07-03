@@ -10,6 +10,14 @@ body > h1 {
   margin-bottom: 2em;
 }
 
+body:not(.signed-on) .when-signed-on {
+  display: none !important;
+}
+
+body:not(.page-about-you) .only-yours {
+  display: none !important;
+}
+
 
 /*
  *     #    #  ####  ###### #####  # #    # ######  ####
@@ -61,10 +69,6 @@ body > h1 {
   width: 100%;
   box-shadow: 0 0 0 0 rgba(66,133,244,.3);
   text-align: center;
-}
-
-.userinfo.signedoff .whensignedon {
-  display: none;
 }
 
 .userinfo .signout,

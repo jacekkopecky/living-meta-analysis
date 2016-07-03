@@ -62,7 +62,7 @@
       list.appendChild(_.byId('empty-list-template').content.cloneNode(true));
     }
 
-    _.setNameOrYou();
+    _.setYouOrName();
   }
 
 })(window, document);

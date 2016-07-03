@@ -9,12 +9,12 @@
   function onSignIn(googleUser) {
     // do something with the user profile
     if (!googleUser.isSignedIn()) {
-      _.addClass('.userinfo', 'signedoff');
+      _.removeClass('body', 'signed-on');
       return;
     }
 
     var profile = googleUser.getBasicProfile();
-    _.removeClass('.userinfo', 'signedoff');
+    _.addClass('body', 'signed-on');
     _.fillEls('.userinfo .username', profile.getName());
     _.findEls('.userinfo .userphoto').forEach(function(el){
       if (!el.dataset.origsrc) el.dataset.origsrc = el.src;
