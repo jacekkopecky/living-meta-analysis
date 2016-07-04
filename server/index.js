@@ -20,12 +20,63 @@ app.set('strict routing', true);
 
 app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
 
-app.use('/profile', (req, res) => res.sendFile('profile.html', { root: './webpages/' }));
+/*
+ *
+ *
+ *        #####   ####  #    # ##### ######  ####
+ *        #    # #    # #    #   #   #      #
+ *        #    # #    # #    #   #   #####   ####
+ *        #####  #    # #    #   #   #           #
+ *        #   #  #    # #    #   #   #      #    #
+ *        #    #  ####   ####    #   ######  ####
+ *
+ *
+ */
+
+app.get('/profile/', (req, res) => res.sendFile('profile.html', { root: './webpages/' }));
 app.use('/', express.static('webpages', { extensions: ['html'] }));
 
-app.use(`/:email(${api.EMAIL_ADDRESS_RE})/`,
+app.use(`/:email(${api.EMAIL_ADDRESS_RE})/`, SLASH_URL);
+app.get(`/:email(${api.EMAIL_ADDRESS_RE})/`,
         api.checkUserExists,
-        express.static('webpages/profile', { extensions: ['html'] }));
+        (req, res) => res.sendFile('profile/index.html', { root: './webpages/' }));
+
+app.use(`/:email(${api.EMAIL_ADDRESS_RE})/:title/`, SLASH_URL);
+app.get(`/:email(${api.EMAIL_ADDRESS_RE})/:title/`,
+        api.checkUserExists,
+        (req, res, next) => {
+          api.getKindForTitle(req.params.email, req.params.title, (err, kind) => {
+            if (err || kind !== 'article' && kind !== 'metaanalysis') {
+              next(new NotFoundError());
+              return;
+            }
+
+            const file = `profile/${kind}.html`;
+            res.sendFile(file, { root: './webpages/' });
+          });
+        });
+
+function SLASH_URL(req, res, next) {
+  if (req.originalUrl[req.originalUrl.length - 1] === '/') {
+    next();
+  } else {
+    res.redirect(req.originalUrl + '/');
+  }
+}
+
+
+/*
+ *
+ *
+ *  ###### #####  #####   ####  #####     #    #   ##   #    # #####  #      # #    #  ####
+ *  #      #    # #    # #    # #    #    #    #  #  #  ##   # #    # #      # ##   # #    #
+ *  #####  #    # #    # #    # #    #    ###### #    # # #  # #    # #      # # #  # #
+ *  #      #####  #####  #    # #####     #    # ###### #  # # #    # #      # #  # # #  ###
+ *  #      #   #  #   #  #    # #   #     #    # #    # #   ## #    # #      # #   ## #    #
+ *  ###### #    # #    #  ####  #    #    #    # #    # #    # #####  ###### # #    #  ####
+ *
+ *
+ */
 
 if (config.demoApiDelay) {
   // this is a delay for demonstration purposes so the server seems slow

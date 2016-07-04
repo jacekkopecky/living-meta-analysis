@@ -129,6 +129,18 @@ module.exports.checkUserExists = function (req, res, next) {
  *
  *
  */
+module.exports.getKindForTitle = function getKindForTitle(email, title, cb) {
+  storage.getMetaanalysisByTitle(email, title, (err, metaanalysis) => {
+    if (metaanalysis) cb(null, 'metaanalysis');
+    else {
+      storage.getArticleByTitle(email, title, (er2, article) => {
+        if (article) cb(null, 'article');
+        else cb(err || er2, null);
+      });
+    }
+  });
+};
+
 function listArticles(req, res, next) {
   storage.getArticlesEnteredBy(req.params.email, (err, articles) => {
     if (err || !articles || articles.length === 0) {

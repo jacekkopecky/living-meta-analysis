@@ -254,6 +254,17 @@ module.exports.getArticlesEnteredBy = function getArticlesEnteredBy(email, cb) {
   setImmediate(cb, null, articles);
 };
 
+module.exports.getArticleByTitle = function getArticleByTitle(email, title, cb) {
+  // todo different users can use different titles for the same thing
+  for (const a of articles) {
+    if (a.title === title) {
+      setImmediate(cb, null, a);
+      return;
+    }
+  }
+  setImmediate(cb, null, null);
+};
+
 
 /*
  *
@@ -318,4 +329,16 @@ const metaanalyses = [
 
 module.exports.getMetaanalysesEnteredBy = function getMetaanalysesEnteredBy(email, cb) {
   setImmediate(cb, null, metaanalyses);
+};
+
+
+module.exports.getMetaanalysisByTitle = function getMetaanalysisByTitle(email, title, cb) {
+  // todo different users can use different titles for the same thing
+  for (const ma of metaanalyses) {
+    if (ma.title === title) {
+      setImmediate(cb, null, ma);
+      return;
+    }
+  }
+  setImmediate(cb, null, null);
 };

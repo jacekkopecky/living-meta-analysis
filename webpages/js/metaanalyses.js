@@ -47,6 +47,8 @@
         _.fillEls(li, '.name', metaanalysis.title);
         _.fillEls(li, '.date', metaanalysis.published);
         _.fillEls(li, '.description', metaanalysis.description);
+        _.setProps(li, '.description', 'title', metaanalysis.description);
+        _.setProps(li, 'a.mainlink', 'href', metaanalysis.title);
         if (metaanalysis.tags && metaanalysis.tags.length) {
           var tags = _.findEl(li, '.tags');
           var tagTemplate = _.byId('tag-template');

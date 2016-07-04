@@ -245,6 +245,11 @@ section.list > ul > li > .name {
   display: inline-block;
 }
 
+section.list > ul > li > .mainlink {
+  text-decoration: none;
+  color: inherit;
+}
+
 section.list > ul > li > .date {
   display: inline-block;
   margin-left: 2em;
