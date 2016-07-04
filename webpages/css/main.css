@@ -233,6 +233,10 @@ section.list > ul > li {
   position: relative;
 }
 
+section.list > ul > li:hover:not(.empty):not(.loading) {
+  background: #ddf;
+}
+
 section.list > ul > li.empty {
   font-style: italic;
 }
