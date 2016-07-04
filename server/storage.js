@@ -320,8 +320,8 @@ const metaanalyses = [
     mtime: 5,
     published: '2005-01-17', // for simply august, precise date unspecified
     description: `brief description lorem ipsum brief
-                  description lorem ipsum brief description lorem ipsum
-                  brief description lorem ipsum`,
+description lorem ipsum brief description lorem ipsum
+brief description lorem ipsum`,
     extraAuthors: 'J. Doe, J. Smith',
   },
 ];
