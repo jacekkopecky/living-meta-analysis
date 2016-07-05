@@ -71,14 +71,18 @@
 
   _.notFound = function notFound() {
     document.body.innerHTML = '';
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/404');
-    xhr.onload = function () {
+    fetch('/404')
+    .then(_.fetchText)
+    .catch(function (err) {
+      console.error('error getting 404');
+      console.error(err);
+      return '404 not found';
+    })
+    .then(function (text) {
       document.open();
-      document.write(xhr.responseText);
+      document.write(text);
       document.close();
-    };
-    xhr.send();
+    })
   }
 
   var months = ['Jan ', 'Feb ', 'Mar ', 'Apr ', 'May ', 'Jun ', 'Jul ', 'Aug ', 'Sep ', 'Oct ', 'Nov ', 'Dec '];
@@ -146,6 +150,31 @@
 
     _.fillEls('.fnOrYour', y ? 'Your' : n + "'s");
     _.fillEls('.fnOryou',  y ? 'you'  : n       );
+  }
+
+
+  /*
+   * with fetch API, get the response JSON, but if the HTTP code wasn't 2xx, make the response a rejected promise
+   */
+  _.fetchJson = function fetchJson(response) {
+    if (response.ok) return response.json();
+    else return Promise.reject(response);
+  }
+
+  /*
+   * with fetch API, get the response as text, but if the HTTP code wasn't 2xx, make the response a rejected promise
+   */
+  _.fetchText = function fetchText(response) {
+    if (response.ok) return response.text();
+    else return Promise.reject(response);
+  }
+
+  _.idTokenToFetchOptions = function idTokenToFetchOptions(idToken) {
+    return idToken ? { headers: _.idTokenToFetchHeaders(idToken) } : void 0;
+  }
+
+  _.idTokenToFetchHeaders = function idTokenToFetchHeaders(idToken) {
+    return idToken ? { "Authorization": "Bearer " + idToken } : {};
   }
 
 

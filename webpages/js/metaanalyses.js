@@ -6,35 +6,24 @@
   limeta.apiFail = limeta.apiFail || function(){};
 
   limeta.requestAndFillMetaanalysisList = function requestAndFillMetaanalysisList() {
-    limeta.getGapiIDToken().then(
-      function fulfilled(idToken) {
-        var email = limeta.extractUserProfileEmailFromUrl();
-
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/api/metaanalyses/' + email);
-        if (idToken) xhr.setRequestHeader("Authorization", "Bearer " + idToken);
-
-        xhr.onload = fillMetaanalysissList;
-        xhr.send();
-      },
-      function rejected(err) {
-        console.err("problem getting ID token from GAPI");
-        console.err(err);
-        limeta.apiFail();
-      }
-    );
+    limeta.getGapiIDToken()
+    .then(function (idToken) {
+      var email = limeta.extractUserProfileEmailFromUrl();
+      return fetch('/api/metaanalyses/' + email, _.idTokenToFetchOptions(idToken));
+    })
+    .then(function (response) {
+      if (response.status === 404) return [];
+      else return _.fetchJson(response);
+    })
+    .then(fillMetaanalysissList)
+    .catch(function (err) {
+      console.error("problem getting metaanalyses");
+      console.error(err);
+      limeta.apiFail();
+    });
   }
 
-  function fillMetaanalysissList() {
-    var xhr = this;
-    var metaanalyses;
-    if (xhr.status === 404) {
-      metaanalyses = [];
-    } else if (xhr.status > 299) {
-      limeta.apiFail();
-      return;
-    }
-    metaanalyses = metaanalyses || JSON.parse(xhr.responseText);
+  function fillMetaanalysissList(metaanalyses) {
     var list = _.findEl('.metaanalysis.list > ul');
     list.innerHTML = '';
 

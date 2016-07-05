@@ -7,23 +7,22 @@
 
   limeta.requestAndFillUserProfile = function requestAndFillUserProfile() {
     limeta.whenUserPageIsAboutIsKnown = whenUserPageIsAboutIsKnown;
-    limeta.getGapiIDToken().then(
-      function fulfilled(idToken) {
-        var email = limeta.extractUserProfileEmailFromUrl();
-
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/api/profile/' + email);
-        if (idToken) xhr.setRequestHeader("Authorization", "Bearer " + idToken);
-
-        xhr.onload = fillUserProfile;
-        xhr.send();
-      },
-      function rejected(err) {
-        console.err("problem getting ID token from GAPI");
-        console.err(err);
-        limeta.apiFail();
+    limeta.getGapiIDToken()
+    .then(function (idToken) {
+      var email = limeta.extractUserProfileEmailFromUrl();
+      return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
+    })
+    .then(_.fetchJson)
+    .then(fillUserProfile)
+    .catch(function (err) {
+      if (err.status === 404) {
+        _.notFound();
+        return;
       }
-    );
+      console.error("problem getting profile");
+      console.error(err);
+      limeta.apiFail();
+    });
   }
 
   limeta.extractUserProfileEmailFromUrl = function extractUserProfileEmailFromUrl() {
@@ -32,18 +31,7 @@
     return window.location.pathname.substring(1, window.location.pathname.indexOf('/', 1));
   }
 
-  function fillUserProfile() {
-    var xhr = this;
-    if (xhr.status === 404) {
-      _.notFound();
-      return;
-    }
-    if (xhr.status > 299) {
-      limeta.apiFail();
-      return;
-    }
-
-    var user = JSON.parse(xhr.responseText);
+  function fillUserProfile(user) {
     limeta.userPageIsAbout = user;
 
     functionsWaiting.forEach(function (f) { f(); });

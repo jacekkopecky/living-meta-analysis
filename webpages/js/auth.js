@@ -22,12 +22,12 @@
     });
 
     // register the user with the server
-    var id_token = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+    var idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/register');
-    xhr.setRequestHeader("Authorization", "Bearer " + id_token);
-    xhr.send();
+    fetch('/api/register', {
+      method: 'POST',
+      headers: _.idTokenToFetchHeaders(idToken),
+    })
   }
 
   function signOut() {
