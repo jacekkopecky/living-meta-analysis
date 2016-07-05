@@ -33,20 +33,20 @@ window.limeta.initPage = function () {
   var limeta = window.limeta;
   var _ = limeta._;
 
-  limeta.getGapiIDToken(function (err, idToken) {
-    if (err) {
+  limeta.getGapiIDToken().then(
+    function fulfilled(idToken) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/api/topusers');
+      if (idToken) xhr.setRequestHeader("Authorization", "Bearer " + idToken);
+
+      xhr.onload = showTopUsers;
+      xhr.send();
+    },
+    function rejected(err) {
       console.err('can\'t load top users');
       console.err(err);
-      return;
     }
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/api/topusers');
-    if (idToken) xhr.setRequestHeader("Authorization", "Bearer " + idToken);
-
-    xhr.onload = showTopUsers;
-    xhr.send();
-  })
+  );
 
   function showTopUsers() {
     var xhr = this;

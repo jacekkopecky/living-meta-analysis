@@ -7,24 +7,23 @@
 
   limeta.requestAndFillUserProfile = function requestAndFillUserProfile() {
     limeta.whenUserPageIsAboutIsKnown = whenUserPageIsAboutIsKnown;
-    limeta.getGapiIDToken(function (err, idToken) {
-      if (err) {
+    limeta.getGapiIDToken().then(
+      function fulfilled(idToken) {
+        var email = limeta.extractUserProfileEmailFromUrl();
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/profile/' + email);
+        if (idToken) xhr.setRequestHeader("Authorization", "Bearer " + idToken);
+
+        xhr.onload = fillUserProfile;
+        xhr.send();
+      },
+      function rejected(err) {
         console.err("problem getting ID token from GAPI");
         console.err(err);
         limeta.apiFail();
-        return;
       }
-
-      var email = limeta.extractUserProfileEmailFromUrl();
-
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', '/api/profile/' + email);
-      if (idToken) xhr.setRequestHeader("Authorization", "Bearer " + idToken);
-
-      xhr.onload = fillUserProfile;
-      xhr.send();
-
-    });
+    );
   }
 
   limeta.extractUserProfileEmailFromUrl = function extractUserProfileEmailFromUrl() {
@@ -45,8 +44,8 @@
     }
 
     var user = JSON.parse(xhr.responseText);
-
     limeta.userPageIsAbout = user;
+
     functionsWaiting.forEach(function (f) { f(); });
     functionsWaiting = [];
 

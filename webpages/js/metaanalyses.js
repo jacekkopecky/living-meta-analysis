@@ -6,24 +6,23 @@
   limeta.apiFail = limeta.apiFail || function(){};
 
   limeta.requestAndFillMetaanalysisList = function requestAndFillMetaanalysisList() {
-    limeta.getGapiIDToken(function (err, idToken) {
-      if (err) {
+    limeta.getGapiIDToken().then(
+      function fulfilled(idToken) {
+        var email = limeta.extractUserProfileEmailFromUrl();
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/metaanalyses/' + email);
+        if (idToken) xhr.setRequestHeader("Authorization", "Bearer " + idToken);
+
+        xhr.onload = fillMetaanalysissList;
+        xhr.send();
+      },
+      function rejected(err) {
         console.err("problem getting ID token from GAPI");
         console.err(err);
         limeta.apiFail();
-        return;
       }
-
-      var email = limeta.extractUserProfileEmailFromUrl();
-
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', '/api/metaanalyses/' + email);
-      if (idToken) xhr.setRequestHeader("Authorization", "Bearer " + idToken);
-
-      xhr.onload = fillMetaanalysissList;
-      xhr.send();
-
-    });
+    );
   }
 
   function fillMetaanalysissList() {

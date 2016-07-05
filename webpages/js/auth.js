@@ -44,30 +44,30 @@
   }
 
   /*
-   * Retrieve (and possibly refresh) the ID token from Google Auth, then call `cb`.
-   * As usual, `cb` has two parameters: (err, token) - if an error should occur, `err` will have a value,
-   * otherwise `token` will have a value.
+   * Retrieve (and possibly refresh) the ID token from Google Auth, as a Promise.
    */
-  limeta.getGapiIDToken = function getGapiIDToken(cb) {
-    var currUser = gapi.auth2.getAuthInstance().currentUser.get();
-    var authResp = currUser.getAuthResponse();
-    if (Date.now() > authResp.expires_at - 120000) {
-      // if the token is expired, or within two minutes of expiring, refresh it
-      console.log('refreshing id token');
-      currUser.reloadAuthResponse().then(
-        function fulfilled() {
-          authResp = currUser.getAuthResponse();
-          cb(null, authResp.id_token);
-        },
-        function rejected(reason) {
-          console.log('refreshing id token error');
-          cb(reason);
-        }
-      )
-    } else {
-      // call the callback asynchronously but immediately
-      setTimeout(cb, 0, null, authResp.id_token);
-    }
+  limeta.getGapiIDToken = function getGapiIDToken() {
+    return new Promise(function (resolve, reject) {
+      var currUser = gapi.auth2.getAuthInstance().currentUser.get();
+      var authResp = currUser.getAuthResponse();
+      if (Date.now() < authResp.expires_at - 120000) {
+        resolve(authResp.id_token);
+      } else {
+        // if the token is expired, or within two minutes of expiring, refresh it
+        console.log('refreshing id token');
+        currUser.reloadAuthResponse().then(
+          function fulfilled() {
+            authResp = currUser.getAuthResponse();
+            resolve(authResp.id_token);
+          },
+          function rejected(reason) {
+            console.error('error refreshing id token');
+            console.error(reason);
+            reject(reason);
+          }
+        )
+      }
+    });
   }
 
 
