@@ -46,8 +46,7 @@
 
     var user = JSON.parse(xhr.responseText);
 
-    limeta.userEmailPageIsAbout = user.email;
-    limeta.userFnamePageIsAbout = user.name.givenName;
+    limeta.userPageIsAbout = user;
     functionsWaiting.forEach(function (f) { f(); });
     functionsWaiting = [];
 

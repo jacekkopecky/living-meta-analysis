@@ -129,9 +129,7 @@
       }
     } catch (e) {console.info(e);} // any errors mean no current user
 
-    var userPageIsAbout = limeta.userEmailPageIsAbout;
-
-    if (!userPageIsAbout) {
+    if (!limeta.userPageIsAbout) {
       if (limeta.whenUserPageIsAboutIsKnown) {
         limeta.whenUserPageIsAboutIsKnown(setYouOrName);
         return;
@@ -141,8 +139,8 @@
       }
     }
 
-    var y = currentUser == userPageIsAbout;
-    var n = limeta.userFnamePageIsAbout || 'User';
+    var y = (currentUser == limeta.userPageIsAbout.email);
+    var n = limeta.userPageIsAbout.name.givenName || 'User';
 
     document.body.classList[y ? 'add' : 'remove']('page-about-you');
 
