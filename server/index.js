@@ -45,15 +45,16 @@ app.use(`/:email(${api.EMAIL_ADDRESS_RE})/:title/`, SLASH_URL);
 app.get(`/:email(${api.EMAIL_ADDRESS_RE})/:title/`,
         api.checkUserExists,
         (req, res, next) => {
-          api.getKindForTitle(req.params.email, req.params.title, (err, kind) => {
-            if (err || kind !== 'article' && kind !== 'metaanalysis') {
+          api.getKindForTitle(req.params.email, req.params.title)
+          .then((kind) => {
+            if (kind === 'article' || kind === 'metaanalysis') {
+              const file = `profile/${kind}.html`;
+              res.sendFile(file, { root: './webpages/' });
+            } else {
               next(new NotFoundError());
-              return;
             }
-
-            const file = `profile/${kind}.html`;
-            res.sendFile(file, { root: './webpages/' });
-          });
+          })
+          .catch(() => next(new NotFoundError()));
         });
 
 function SLASH_URL(req, res, next) {
@@ -93,6 +94,12 @@ app.use((err, req, res, next) => {
   } else {
     next(err);
   }
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('unhandled promise, logging err and Error');
+  console.error(err);
+  console.error(new Error());
 });
 
 const port = process.env.PORT || 8088;

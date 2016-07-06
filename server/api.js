@@ -53,18 +53,22 @@ api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listMetaanal
 function REGISTER_USER(req, res, next) {
   if (req.user) {
     const email = req.user.emails[0].value;
-    storage.getUser(email, (err, user) => {
-      if (!user) {
-        user = req.user;
-        // creation time - when the user was first registered
-        user.ctime = tools.uniqueNow();
-        storage.addUser(email, user);
-        console.log('registered user ' + email);
-      }
-      // access time - not currently saved in the database
+    storage.getUser(email)
+    .catch(() => { // register the user when not found
+      const user = req.user;
+      // creation time - when the user was first registered
+      user.ctime = tools.uniqueNow();
+      console.log('registering user ' + email);
+      return storage.addUser(email, user);
+    })
+    .then((user) => { // update access time
       user.atime = Date.now();
-
       next();
+    })
+    .catch((err) => {
+      console.error('failed to register user');
+      console.error(err);
+      next(err);
     });
   } else {
     next();
@@ -72,12 +76,8 @@ function REGISTER_USER(req, res, next) {
 }
 
 function returnUserProfile(req, res, next) {
-  storage.getUser(req.params.email, (err, user) => {
-    if (!user) {
-      next(new NotFoundError());
-      return;
-    }
-
+  storage.getUser(req.params.email)
+  .then((user) => {
     const retval = {
       displayName: user.displayName,
       name: user.name,
@@ -86,15 +86,16 @@ function returnUserProfile(req, res, next) {
       joined: user.ctime,
     };
     res.json(retval);
+  })
+  .catch((err) => {
+    console.error(err);
+    next(new NotFoundError());
   });
 }
 
 function listTopUsers(req, res, next) {
-  storage.listUsers((err, users) => {
-    if (err) {
-      next(new InternalError());
-      return;
-    }
+  storage.listUsers()
+  .then((users) => {
     const retval = [];
     for (const key of Object.keys(users)) {
       const user = users[key];
@@ -105,15 +106,17 @@ function listTopUsers(req, res, next) {
       });
     }
     res.json(retval);
-  });
+  })
+  .catch(() => next(new InternalError()));
 }
 
 
 module.exports.checkUserExists = function (req, res, next) {
-  storage.getUser(req.params.email, (err, user) => {
-    if (user) next();
-    else next(new NotFoundError());
-  });
+  storage.getUser(req.params.email)
+  .then(
+    () => next(),
+    () => next(new NotFoundError())
+  );
 };
 
 
@@ -129,24 +132,20 @@ module.exports.checkUserExists = function (req, res, next) {
  *
  *
  */
-module.exports.getKindForTitle = function getKindForTitle(email, title, cb) {
-  storage.getMetaanalysisByTitle(email, title, (err, metaanalysis) => {
-    if (metaanalysis) cb(null, 'metaanalysis');
-    else {
-      storage.getArticleByTitle(email, title, (er2, article) => {
-        if (article) cb(null, 'article');
-        else cb(err || er2, null);
-      });
-    }
+module.exports.getKindForTitle = function getKindForTitle(email, title) {
+  return new Promise((resolve, reject) => {
+    storage.getMetaanalysisByTitle(email, title)
+    .then(() => resolve('metaanalysis'))
+    .catch(() => storage.getArticleByTitle(email, title))
+    .then(() => resolve('article'))
+    .catch((err) => reject(err));
   });
 };
 
 function listArticles(req, res, next) {
-  storage.getArticlesEnteredBy(req.params.email, (err, articles) => {
-    if (err || !articles || articles.length === 0) {
-      next(new NotFoundError());
-      return;
-    }
+  storage.getArticlesEnteredBy(req.params.email)
+  .then((articles) => {
+    if (articles.length === 0) throw new Error('no metaanalyses found');
 
     const retval = [];
     articles.forEach((a) => {
@@ -166,7 +165,8 @@ function listArticles(req, res, next) {
       retval.push(retArticle);
     });
     res.json(retval);
-  });
+  })
+  .catch(() => next(new NotFoundError()));
 }
 
 
@@ -183,11 +183,9 @@ function listArticles(req, res, next) {
  *
  */
 function listMetaanalyses(req, res, next) {
-  storage.getMetaanalysesEnteredBy(req.params.email, (err, mas) => {
-    if (err || !mas || mas.length === 0) {
-      next(new NotFoundError());
-      return;
-    }
+  storage.getMetaanalysesEnteredBy(req.params.email)
+  .then((mas) => {
+    if (mas.length === 0) throw new Error('no metaanalyses found');
 
     const retval = [];
     mas.forEach((m) => {
@@ -205,5 +203,6 @@ function listMetaanalyses(req, res, next) {
       retval.push(retMA);
     });
     res.json(retval);
-  });
+  })
+  .catch(() => next(new NotFoundError()));
 }

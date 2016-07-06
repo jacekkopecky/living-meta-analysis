@@ -53,104 +53,75 @@ const datastore = gcloud.datastore({ namespace: 'living-meta-analysis-v1' });
  * }
  */
 
-const userCache = {};
-let userCacheReady = false;
-let userCacheRefreshing = false;
-let userCacheRequests = [];
+let userCache;
+
+// get all users immediately on the start of the server
+getAllUsers();
 
 function getAllUsers() {
-  if (userCacheReady || userCacheRefreshing) return;
-  userCacheRefreshing = true;
-
-  console.log('getAllUsers: making a datastore request');
-  datastore.createQuery('User').run()
+  userCache = new Promise((resolve, reject) => {
+    console.log('getAllUsers: making a datastore request');
+    const retval = {};
+    datastore.createQuery('User').run()
     .on('error', (err) => {
-      console.error('error retrieving user');
+      console.error('error retrieving users');
       console.error(err);
-      userCacheRequests.forEach((cb) => cb(err));
-      userCacheRequests = [];
-      userCacheRefreshing = false;
+      setTimeout(getAllUsers, 60 * 1000); // try loading again in a minute
+      reject(err);
     })
     .on('data', (entity) => {
       try {
-        userCache[entity.data.emails[0].value] = entity.data;
+        retval[entity.data.emails[0].value] = entity.data;
         console.log('getAllUsers: got a user ' + entity.data.emails[0].value);
       } catch (err) {
-        console.error('error in a user entity');
+        console.error('error in a user entity (ignoring)');
         console.error(err);
       }
     })
     .on('end', () => {
       console.log('getAllUsers: done');
-      userCacheReady = true;
-      userCacheRequests.forEach((cb) => cb());
-      userCacheRequests = [];
-      userCacheRefreshing = false;
+      resolve(retval);
     });
+  });
 }
 
-getAllUsers();
-
-module.exports.getUser = function getUser(email, cb) {
-  if (!email || !cb) {
-    setImmediate(cb, new Error('email/cb parameters required'));
-    return;
+module.exports.getUser = function getUser(email) {
+  if (!email) {
+    throw new Error('email parameter required');
   }
-  if (!userCacheReady) {
-    userCacheRequests.push((err) => {
-      if (err) cb(err);
-      else getUser(email, cb);
-    });
-    getAllUsers();
-    return;
-  }
-  setImmediate(cb, null, userCache[email]);
+  return userCache.then(
+    (users) => users[email] || Promise.reject(`user ${email} not found`)
+  );
 };
 
-module.exports.listUsers = function listUsers(cb) {
-  if (!cb) {
-    setImmediate(cb, new Error('cb parameter required'));
-    return;
-  }
-  if (!userCacheReady) {
-    userCacheRequests.push((err) => {
-      if (err) cb(err);
-      else listUsers(cb);
-    });
-    getAllUsers();
-    return;
-  }
-  setImmediate(cb, null, userCache);
+module.exports.listUsers = function listUsers() {
+  return userCache;
 };
 
-module.exports.addUser = function addUser(email, user, cb) {
+module.exports.addUser = function addUser(email, user) {
   if (!email || !user) {
-    setImmediate(cb, new Error('email/user parameters required'));
-    return;
+    throw new Error('email/user parameters required');
   }
-  if (!userCacheReady) {
-    userCacheRequests.push((err) => {
-      if (err) cb(err);
-      else addUser(email, user, cb);
-    });
-    getAllUsers();
-    return;
-  }
-  userCache[email] = user;
 
-  const key = datastore.key(['User', email]);
-
-  console.log('addUser making a datastore request');
-  datastore.save({
-    key,
-    data: user,
-  }, (err) => {
-    if (err) {
-      console.error('error saving user');
-      console.error(err);
-      if (cb) cb(err);
-    }
-  });
+  return userCache.then(
+    (users) => new Promise((resolve, reject) => {
+      users[email] = user;
+      const key = datastore.key(['User', email]);
+      console.log('addUser making a datastore request');
+      datastore.save({
+        key,
+        data: user,
+      }, (err) => {
+        if (err) {
+          console.error('error saving user');
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(user);
+        }
+      });
+    })
+  );
 };
 
 /*
@@ -250,19 +221,22 @@ const articles = [
 ];
 
 
-module.exports.getArticlesEnteredBy = function getArticlesEnteredBy(email, cb) {
-  setImmediate(cb, null, articles);
+module.exports.getArticlesEnteredBy = function getArticlesEnteredBy(email) { // eslint-disable-line
+  // todo do something with email, remove the eslint disable line above
+  return Promise.resolve(articles);
 };
 
-module.exports.getArticleByTitle = function getArticleByTitle(email, title, cb) {
-  // todo different users can use different titles for the same thing
-  for (const a of articles) {
-    if (a.title === title) {
-      setImmediate(cb, null, a);
-      return;
+module.exports.getArticleByTitle = function getArticleByTitle(email, title) {
+  return new Promise((resolve, reject) => {
+    // todo different users can use different titles for the same thing
+    for (const a of articles) {
+      if (a.title === title) {
+        resolve(a);
+        return;
+      }
     }
-  }
-  setImmediate(cb, null, null);
+    reject();
+  });
 };
 
 
@@ -327,18 +301,21 @@ brief description lorem ipsum`,
 ];
 
 
-module.exports.getMetaanalysesEnteredBy = function getMetaanalysesEnteredBy(email, cb) {
-  setImmediate(cb, null, metaanalyses);
+module.exports.getMetaanalysesEnteredBy = function getMetaanalysesEnteredBy(email) { // eslint-disable-line
+  // todo do something with email, remove the eslint disable line above
+  return Promise.resolve(metaanalyses);
 };
 
 
-module.exports.getMetaanalysisByTitle = function getMetaanalysisByTitle(email, title, cb) {
-  // todo different users can use different titles for the same thing
-  for (const ma of metaanalyses) {
-    if (ma.title === title) {
-      setImmediate(cb, null, ma);
-      return;
+module.exports.getMetaanalysisByTitle = function getMetaanalysisByTitle(email, title) {
+  return new Promise((resolve, reject) => {
+    // todo different users can use different titles for the same thing
+    for (const ma of metaanalyses) {
+      if (ma.title === title) {
+        resolve(ma);
+        return;
+      }
     }
-  }
-  setImmediate(cb, null, null);
+    reject();
+  });
 };
