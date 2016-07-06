@@ -178,4 +178,21 @@
   }
 
 
+  limeta.apiFail = limeta.apiFail || function apiFail() {
+    document.body.innerHTML = '';
+    fetch('/apifail')
+    .then(_.fetchText)
+    .catch(function (err) {
+      console.error('error getting apifail page');
+      console.error(err);
+      return 'sorry, the server is temporarily unhappy (API failure)';
+    })
+    .then(function (text) {
+      document.open();
+      document.write(text);
+      document.close();
+    })
+  }
+
+
 })(document, window);
