@@ -43,6 +43,7 @@
     if (user.photos && user.photos[0] && user.photos[0].value) {
       _.setProps('#personalinfo .photo', 'src', user.photos[0].value);
     }
+    _.removeClass('#personalinfo', 'loading');
 
     _.setYouOrName();
   }

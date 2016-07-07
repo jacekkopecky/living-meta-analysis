@@ -18,6 +18,10 @@ body:not(.page-about-you) .only-yours {
   display: none !important;
 }
 
+.loadingspinner { display: none; }
+
+.loading .loadingspinner { display: block; }
+
 
 /*
  *     #    #  ####  ###### #####  # #    # ######  ####
@@ -123,6 +127,11 @@ section#personalinfo {
   border-radius: .5em;
   border: 1px solid white;
   box-shadow: 0 0 3px 3px rgba(0,0,0,.3);
+}
+
+#personalinfo.loading .email,
+#personalinfo.loading .joined {
+  display: none;
 }
 
 
