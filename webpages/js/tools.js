@@ -194,5 +194,16 @@
     })
   }
 
+  _.fillTags = function fillTags(el, tags) {
+    if (tags && tags.length) {
+      var tagTemplate = _.byId('tag-template');
+      tags.forEach(function (tag) {
+        var tagEl = tagTemplate.content.cloneNode(true);
+        _.fillEls(tagEl, '.tag', tag);
+        el.appendChild(tagEl);
+      });
+    }
+  }
+
 
 })(document, window);

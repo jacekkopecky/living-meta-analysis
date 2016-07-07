@@ -37,15 +37,7 @@
         _.fillEls(li, '.description', metaanalysis.description);
         _.setProps(li, '.description', 'title', metaanalysis.description);
         _.setProps(li, 'a.mainlink', 'href', metaanalysis.title);
-        if (metaanalysis.tags && metaanalysis.tags.length) {
-          var tags = _.findEl(li, '.tags');
-          var tagTemplate = _.byId('tag-template');
-          metaanalysis.tags.forEach(function (tag) {
-            var tagEl = tagTemplate.content.cloneNode(true);
-            _.fillEls(tagEl, '.tag', tag);
-            tags.appendChild(tagEl);
-          });
-        }
+        _.fillTags(_.findEl(li, '.tags'), metaanalysis.tags);
         list.appendChild(li);
       });
     } else {

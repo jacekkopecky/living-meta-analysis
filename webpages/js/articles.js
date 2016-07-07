@@ -37,15 +37,7 @@
         _.fillEls(li, '.description', article.description);
         _.setProps(li, '.description', 'title', article.description);
         _.setProps(li, 'a.mainlink', 'href', article.title);
-        if (article.tags && article.tags.length) {
-          var tags = _.findEl(li, '.tags');
-          var tagTemplate = _.byId('tag-template');
-          article.tags.forEach(function (tag) {
-            var tagEl = tagTemplate.content.cloneNode(true);
-            _.fillEls(tagEl, '.tag', tag);
-            tags.appendChild(tagEl);
-          });
-        }
+        _.fillTags(_.findEl(li, '.tags'), article.tags);
         list.appendChild(li);
       });
     } else {
