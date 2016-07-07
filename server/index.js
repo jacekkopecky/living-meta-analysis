@@ -33,13 +33,15 @@ app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
  *
  */
 
-app.get('/profile/', (req, res) => res.sendFile('profile.html', { root: './webpages/' }));
+app.get(['/profile', '/profile/*'],
+        (req, res) => res.sendFile('profileRedirect.html', { root: './webpages/' }));
+
 app.use('/', express.static('webpages', { extensions: ['html'] }));
 
 app.use(`/:email(${api.EMAIL_ADDRESS_RE})/`, SLASH_URL);
 app.get(`/:email(${api.EMAIL_ADDRESS_RE})/`,
         api.checkUserExists,
-        (req, res) => res.sendFile('profile/index.html', { root: './webpages/' }));
+        (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
 
 app.use(`/:email(${api.EMAIL_ADDRESS_RE})/:title/`, SLASH_URL);
 app.get(`/:email(${api.EMAIL_ADDRESS_RE})/:title/`,
