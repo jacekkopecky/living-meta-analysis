@@ -34,6 +34,7 @@ api.get('/topusers', REGISTER_USER, listTopUsers);
 api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile);
 
 api.get(`/articles/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listArticles);
+api.get(`/articles/:email(${EMAIL_ADDRESS_RE})/:title/`, REGISTER_USER, getArticle);
 
 api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listMetaanalyses);
 
@@ -149,24 +150,42 @@ function listArticles(req, res, next) {
 
     const retval = [];
     articles.forEach((a) => {
-      const retArticle = {
-        id: a.id,
-        title: a.title,
-        enteredBy: a.enteredBy,
-        ctime: a.ctime,
-        mtime: a.mtime,
-        published: a.published,
-        description: a.description,
-        authors: a.authors,
-        link: a.link,
-        doi: a.doi,
-        tags: a.tags,
-      };
-      retval.push(retArticle);
+      retval.push(extractArticleForSending(a));
     });
     res.json(retval);
   })
   .catch(() => next(new NotFoundError()));
+}
+
+function getArticle(req, res, next) {
+  storage.getArticleByTitle(req.params.email, req.params.title)
+  .then((a) => {
+    res.json(extractArticleForSending(a));
+  })
+  .catch(() => next(new NotFoundError()));
+}
+
+function extractArticleForSending(storageArticle, includeDataValues) {
+  const retval = {
+    id: storageArticle.id,
+    title: storageArticle.title,
+    enteredBy: storageArticle.enteredBy,
+    ctime: storageArticle.ctime,
+    mtime: storageArticle.mtime,
+    published: storageArticle.published,
+    description: storageArticle.description,
+    authors: storageArticle.authors,
+    link: storageArticle.link,
+    doi: storageArticle.doi,
+    tags: storageArticle.tags,
+  };
+
+  if (includeDataValues) {
+    // todo this may not be how the data ends up being encoded
+    retval.data = storageArticle.data;
+  }
+
+  return retval;
 }
 
 
