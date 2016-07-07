@@ -22,6 +22,14 @@ body:not(.page-about-you) .only-yours {
 
 .loading .loadingspinner { display: block; }
 
+/* from https://codepen.io/flesler/pen/AEIFc */
+[contenteditable]:empty:before {
+  content: attr(placeholder);
+  color: #aaa;
+  font-style: italic;
+  display: block; /* For Firefox */
+}
+
 
 /*
  *     #    #  ####  ###### #####  # #    # ######  ####
@@ -137,6 +145,13 @@ section#personalinfo {
 #article.loading > p:not(.loadingspinner),
 #article.loading .tags {
   display: none;
+}
+
+#article .description {
+  white-space: pre-line;
+  display: inline-block;
+  vertical-align: top;
+  max-width: 30em;
 }
 
 

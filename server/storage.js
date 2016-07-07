@@ -194,7 +194,7 @@ const articles = [
     published: '1996-08-00', // for simply august, precise date unspecified
     description: 'brief description lorem ipsum',
     authors: 'J. Smith, J. Doe',
-    link: 'http:...',
+    link: 'http://en.wikipedia.org/smith96a',
     doi: '3409/465',
     tags: [
       'memory',
@@ -211,7 +211,7 @@ const articles = [
                   description lorem ipsum brief description lorem ipsum
                   brief description lorem ipsum`,
     authors: 'J. Doe, J. Smith',
-    link: 'http:...',
+    link: 'http://en.wikipedia.org/juliet04',
     doi: '3409/465',
     tags: [
       'misinformation',

@@ -81,10 +81,17 @@
 
   function fillArticle(article) {
     _.fillTags(_.findEl('#article .tags'), article.tags);
-    _.fillEls('#article .authors', article.authors);
-    _.fillEls('#article .published', article.published);
-    console.log('test');
-    _.fillEls('#article .description', article.desc);
+    _.fillEls ('#article .authors', article.authors);
+    _.fillEls ('#article .published', article.published);
+    _.fillEls ('#article .description', article.description);
+    _.fillEls ('#article .link', article.link);
+    _.setProps('#article .link', 'href', article.link);
+    _.fillEls ('#article .doi', article.doi);
+    _.setProps('#article .doi', 'href', function(el){return el.dataset.base + article.doi});
+    _.fillEls ('#article .enteredby', article.enteredBy);
+    _.setProps('#article .enteredby', 'href', '/' + article.enteredBy + '/');
+    _.fillEls ('#article .ctime', _.formatDateTime(article.ctime));
+    _.fillEls ('#article .mtime', _.formatDateTime(article.mtime));
 
     _.removeClass('#article', 'loading');
   }
