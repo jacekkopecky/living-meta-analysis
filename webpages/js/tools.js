@@ -6,7 +6,7 @@
    * param root is optional
    */
   _.findEl = function findEl(root, selector) {
-    if (selector == null) {
+    if (!(root instanceof Node)) {
       selector = root;
       root = document;
     }
@@ -17,7 +17,7 @@
    * param root is optional
    */
   _.findEls = function findEls(root, selector) {
-    if (selector == null) {
+    if (!(root instanceof Node)) {
       selector = root;
       root = document;
     }
@@ -33,7 +33,7 @@
   }
 
   _.fillEls = function fillEls(root, selector, value) {
-    if (value == null) {
+    if (!(root instanceof Node)) {
       value = selector;
       selector = root;
       root = document;
@@ -42,7 +42,7 @@
   }
 
   _.setProps = function setProps(root, selector, attr, value) {
-    if (value == null) {
+    if (!(root instanceof Node)) {
       value = attr;
       attr = selector;
       selector = root;
@@ -52,7 +52,7 @@
   }
 
   _.addClass = function addClass(root, selector, value) {
-    if (value == null) {
+    if (!(root instanceof Node)) {
       value = selector;
       selector = root;
       root = document;
@@ -61,7 +61,7 @@
   }
 
   _.removeClass = function removeClass(root, selector, value) {
-    if (value == null) {
+    if (!(root instanceof Node)) {
       value = selector;
       selector = root;
       root = document;
