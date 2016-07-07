@@ -32,13 +32,17 @@
       return [].slice.call(arr);
   }
 
+  function valOrFun(val, param) {
+    return (typeof val === 'function') ? val(param) : val;
+  }
+
   _.fillEls = function fillEls(root, selector, value) {
     if (!(root instanceof Node)) {
       value = selector;
       selector = root;
       root = document;
     }
-    _.findEls(root, selector).forEach(function (el) { el.textContent = value; });
+    _.findEls(root, selector).forEach(function (el) { el.textContent = valOrFun(value, el); });
   }
 
   _.setProps = function setProps(root, selector, attr, value) {
@@ -48,7 +52,7 @@
       selector = root;
       root = document;
     }
-    _.findEls(root, selector).forEach(function (el) { el[attr] = value; });
+    _.findEls(root, selector).forEach(function (el) { el[attr] = valOrFun(value, el); });
   }
 
   _.addClass = function addClass(root, selector, value) {
@@ -57,7 +61,7 @@
       selector = root;
       root = document;
     }
-    _.findEls(root, selector).forEach(function(el){el.classList.add(value);});
+    _.findEls(root, selector).forEach(function(el){el.classList.add(valOrFun(value, el));});
   }
 
   _.removeClass = function removeClass(root, selector, value) {
@@ -66,7 +70,7 @@
       selector = root;
       root = document;
     }
-    _.findEls(root, selector).forEach(function(el){el.classList.remove(value);});
+    _.findEls(root, selector).forEach(function(el){el.classList.remove(valOrFun(value, el));});
   }
 
   _.notFound = function notFound() {
