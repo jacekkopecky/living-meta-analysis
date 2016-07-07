@@ -6,10 +6,6 @@ body {
   z-index: 0;
 }
 
-body > h1 {
-  margin-bottom: 2em;
-}
-
 body:not(.signed-on) .when-signed-on {
   display: none !important;
 }
@@ -32,13 +28,17 @@ body:not(.page-about-you) .only-yours {
 
 
 /*
+ *
+ *
  *     #    #  ####  ###### #####  # #    # ######  ####
  *     #    # #      #      #    # # ##   # #      #    #
  *     #    #  ####  #####  #    # # # #  # #####  #    #
  *     #    #      # #      #####  # #  # # #      #    #
  *     #    # #    # #      #   #  # #   ## #      #    #
  *      ####   ####  ###### #    # # #    # #       ####
-*/
+ *
+ *
+ */
 
 .userinfo {
   position: absolute;
@@ -110,17 +110,36 @@ body:not(.page-about-you) .only-yours {
 
 
 /*
+ *
+ *
  *          ####  ######  ####  ##### #  ####  #    #  ####
  *         #      #      #    #   #   # #    # ##   # #
  *          ####  #####  #        #   # #    # # #  #  ####
  *              # #      #        #   # #    # #  # #      #
  *         #    # #      #    #   #   # #    # #   ## #    #
  *          ####  ######  ####    #   #  ####  #    #  ####
+ *
+ *
  */
 section {
   display: block;
   margin-left: 20em;
 }
+
+
+
+/*
+ *
+ *
+ *   #####  ###### #####   ####   ####  #    #   ##   #      # #    # ######  ####
+ *   #    # #      #    # #      #    # ##   #  #  #  #      # ##   # #      #    #
+ *   #    # #####  #    #  ####  #    # # #  # #    # #      # # #  # #####  #    #
+ *   #####  #      #####       # #    # #  # # ###### #      # #  # # #      #    #
+ *   #      #      #   #  #    # #    # #   ## #    # #      # #   ## #      #    #
+ *   #      ###### #    #  ####   ####  #    # #    # ###### # #    # #       ####
+ *
+ *
+ */
 
 section#personalinfo {
   position: absolute;
@@ -142,28 +161,20 @@ section#personalinfo {
   display: none;
 }
 
-#article.loading > p:not(.loadingspinner),
-#article.loading .tags {
-  display: none;
-}
-
-#article .description {
-  white-space: pre-line;
-  display: inline-block;
-  vertical-align: top;
-  max-width: 30em;
-}
-
 
 
 
 /*
+ *
+ *
  *         #      #  ####  #####  ####
  *         #      # #        #   #
  *         #      #  ####    #    ####
  *         #      #      #   #        #
  *         #      # #    #   #   #    #
  *         ###### #  ####    #    ####
+ *
+ *
  */
 section.list {
   display: block;
@@ -314,3 +325,51 @@ section.list > ul > li > ul.tags > li {
   background: #33c;
   color: white;
 }
+
+
+/*
+ *
+ *
+ *           ##   #####  ##### #  ####  #      ######  ####
+ *          #  #  #    #   #   # #    # #      #      #
+ *         #    # #    #   #   # #      #      #####   ####
+ *         ###### #####    #   # #      #      #           #
+ *         #    # #   #    #   # #    # #      #      #    #
+ *         #    # #    #   #   #  ####  ###### ######  ####
+ *
+ *
+ */
+
+#article.loading > p:not(.loadingspinner),
+#article.loading .tags {
+  display: none;
+}
+
+#article .description {
+  white-space: pre-line;
+  display: inline-block;
+  vertical-align: top;
+  max-width: 30em;
+}
+
+
+
+
+/*
+ *
+ *
+ *                #####  ####  #####   ####
+ *                  #   #    # #    # #    #
+ *                  #   #    # #    # #    #
+ *                  #   #    # #    # #    #
+ *                  #   #    # #    # #    #
+ *                  #    ####  #####   ####
+ *
+ *
+ */
+
+body > h1 {
+  margin-bottom: 2em;
+}
+
+/* move to flex layouts? */
