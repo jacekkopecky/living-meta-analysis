@@ -1,4 +1,52 @@
 <!doctype html>
-<title>article todo</title>
+<title>Article | Living Meta Analysis</title>
+<script src="https://apis.google.com/js/platform.js"></script>
+<link rel="stylesheet" href="/css/main.css">
 
-<h1>article todo</h1>
+<h1><a href="/">Living Meta Analysis</a> Article</h1>
+
+<!-- this puts a sign-in button, and a sign-out link, in the page -->
+<div class="userinfo signedoff">
+  <img src="/img/user.png" class="userphoto">
+  <div class="actions">
+    <div class="name when-signed-on">Signed in as: <span class="username"></span></div>
+    <div class="g-signin2 signin"></div>
+    <a href="/profile" class="profile when-signed-on">Profile</a>
+    <a href="#" class="signout when-signed-on">Sign out</a>
+  </div>
+</div>
+
+
+<!-- LiMeTa article is not an HTML5 article, really -->
+<section id="article" class="article loading" data-id="/id/a/4903">
+  <header>
+    <h1 class="title"></h1>
+    <ul class="tags">
+    </ul>
+    <template id="tag-template">
+      <li class="tag">error</li>
+    </template>
+  </header>
+  <p class="loadingspinner">loading&hellip;</p>
+  <p>Authors: <span class="authors">error</span></p>
+  <p>Published: <span class="published date">error</span></p>
+  <p>Description: <span class="description">error</span></p>
+  <p>Link: <a class="link" href="error">error</a></p>
+  <p>DOI: <a class="doi" href="error" data-base="https://dx.doi.org/">error</a></p>
+  <p>First entered by: <a class="enteredby" href="error">error</a></p>
+  <p>Added to LiMeTa: <span class="ctime date">error</span></p>
+  <p>Last modified: <span class="mtime date">error</span></p>
+</section>
+
+
+
+
+<script src="/js/tools.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/userprofile.js"></script>
+<script src="/js/articles.js"></script>
+<script>
+window.limeta.initPage = function () {
+  window.limeta.extractAndFillArticle();
+}
+</script>

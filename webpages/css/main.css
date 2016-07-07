@@ -134,6 +134,11 @@ section#personalinfo {
   display: none;
 }
 
+#article.loading > p:not(.loadingspinner),
+#article.loading .tags {
+  display: none;
+}
+
 
 
 

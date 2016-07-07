@@ -5,6 +5,17 @@
 
   limeta.apiFail = limeta.apiFail || function(){};
 
+  limeta.extractArticleTitleFromUrl = function extractArticleTitleFromUrl() {
+    // the path of a page for an article will be '/email/title/*',
+    // so extract the 'title' portion here:
+
+    var start = window.location.pathname.indexOf('/', 1) + 1;
+    if (start === 0) throw new Error('page url doesn\'t have a title');
+
+    return window.location.pathname.substring(start, window.location.pathname.indexOf('/', start));
+  }
+
+
   limeta.requestAndFillArticleList = function requestAndFillArticleList() {
     limeta.getGapiIDToken()
     .then(function (idToken) {
@@ -45,6 +56,37 @@
     }
 
     _.setYouOrName();
+  }
+
+  limeta.extractAndFillArticle = function extractAndFillArticle() {
+    var email = limeta.extractUserProfileEmailFromUrl();
+    var title = limeta.extractArticleTitleFromUrl();
+    _.fillEls('#article .title', title);
+
+    limeta.getGapiIDToken()
+    .then(function (idToken) {
+      return fetch('/api/articles/' + email + '/' + title, _.idTokenToFetchOptions(idToken));
+    })
+    .then(function (response) {
+      if (response.status === 404) _.notFound();
+      else return _.fetchJson(response);
+    })
+    .then(fillArticle)
+    .catch(function (err) {
+      console.error("problem getting article");
+      console.error(err);
+      limeta.apiFail();
+    });
+  }
+
+  function fillArticle(article) {
+    _.fillTags(_.findEl('#article .tags'), article.tags);
+    _.fillEls('#article .authors', article.authors);
+    _.fillEls('#article .published', article.published);
+    console.log('test');
+    _.fillEls('#article .description', article.desc);
+
+    _.removeClass('#article', 'loading');
   }
 
 })(window, document);
