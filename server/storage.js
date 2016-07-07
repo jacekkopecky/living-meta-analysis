@@ -188,7 +188,7 @@ const articles = [
   {
     id: '/id/a/4903',
     title: 'Smith96a',
-    enteredBy: 'example@example.com',
+    enteredBy: 'parkjamapp@gmail.com',
     ctime: 0,
     mtime: 5,
     published: '1996-08-00', // for simply august, precise date unspecified
@@ -203,7 +203,7 @@ const articles = [
   {
     id: '/id/a/4904',
     title: 'Juliet04',
-    enteredBy: 'example@example.com',
+    enteredBy: 'jacek.kopecky@port.ac.uk',
     ctime: 0,
     mtime: 5,
     published: '2004-01-17', // for simply august, precise date unspecified
@@ -221,9 +221,9 @@ const articles = [
 ];
 
 
-module.exports.getArticlesEnteredBy = function getArticlesEnteredBy(email) { // eslint-disable-line
-  // todo do something with email, remove the eslint disable line above
-  return Promise.resolve(articles);
+module.exports.getArticlesEnteredBy = function getArticlesEnteredBy(email) {
+  // todo also return articles contributed to by `email`
+  return Promise.resolve(articles.filter((a) => a.enteredBy === email));
 };
 
 module.exports.getArticleByTitle = function getArticleByTitle(email, title) {
@@ -276,7 +276,7 @@ const metaanalyses = [
   {
     id: '/id/m/4904',
     title: 'memory96',
-    enteredBy: 'example@example.com',
+    enteredBy: 'jacek.kopecky@port.ac.uk',
     ctime: 0,
     mtime: 5,
     published: '1997-08-00', // for simply august, precise date unspecified
@@ -289,7 +289,7 @@ const metaanalyses = [
   {
     id: '/id/m/4905',
     title: 'misinformation04',
-    enteredBy: 'example@example.com',
+    enteredBy: 'jacek.kopecky@port.ac.uk',
     ctime: 0,
     mtime: 5,
     published: '2005-01-17', // for simply august, precise date unspecified
@@ -302,8 +302,8 @@ brief description lorem ipsum`,
 
 
 module.exports.getMetaanalysesEnteredBy = function getMetaanalysesEnteredBy(email) { // eslint-disable-line
-  // todo do something with email, remove the eslint disable line above
-  return Promise.resolve(metaanalyses);
+  // todo also return metaanalyses contributed to by `email`
+  return Promise.resolve(metaanalyses.filter((ma) => ma.enteredBy === email));
 };
 
 
