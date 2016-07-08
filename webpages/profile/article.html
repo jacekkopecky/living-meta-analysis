@@ -21,21 +21,20 @@
 <section id="article" class="article loading" data-id="/id/a/4903">
   <header>
     <h1 class="title"></h1>
-    <ul class="tags">
-    </ul>
-    <template id="tag-template">
-      <li class="tag">error</li>
-    </template>
+    <ul class="tags"></ul><a href="" class="addtag only-yours">+</a>
+    <template id="tag-template"><li><span class="tag">error</span><span class="remove only-yours">&times;</span></li></template>
   </header>
   <p class="loadingspinner">loading&hellip;</p>
-  <p>Authors: <span class="authors">error</span></p>
-  <p>Published: <span class="published date">error</span></p>
-  <p>Description: <span contenteditable placeholder='add description' class="description">error</span></p>
-  <p>Link: <a class="link" href="error">error</a></p>
-  <p>DOI: <a class="doi" href="error" data-base="https://dx.doi.org/">error</a></p>
-  <p>First entered by: <a class="enteredby" href="error">error</a></p>
-  <p>Added to LiMeTa: <span class="ctime date">error</span></p>
-  <p>Last modified: <span class="mtime date">error</span></p>
+  <p class="enteredby">First entered by: <a class="value" href="error">error</a></p>
+  <p class="authors">Authors: <span class="value">error</span></p>
+  <p class="published">Published: <span class="value date">error</span></p>
+  <p class="description">Description: <span contenteditable placeholder='add description' class="value">error</span></p>
+  <p class="link">Link: <a class="value" href="error">error</a></p>
+  <p class="doi">DOI: <a class="value" href="error" data-base="https://dx.doi.org/">error</a></p>
+  <p class="ctime">Added to LiMeTa: <span class="value date">error</span></p>
+  <p class="mtime">Last modified: <span class="value date">error</span></p>
+  <!-- todo show "other contributors" or "forks" or "clones" ... -->
+  <!-- todo show history -->
 </section>
 
 
@@ -47,6 +46,7 @@
 <script src="/js/articles.js"></script>
 <script>
 window.limeta.initPage = function () {
+  window.limeta.requestAndFillUserProfile();
   window.limeta.extractAndFillArticle();
 }
 </script>

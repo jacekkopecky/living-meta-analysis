@@ -345,14 +345,88 @@ section.list > ul > li > ul.tags > li {
   display: none;
 }
 
-#article .description {
+#article .description .value {
   white-space: pre-line;
   display: inline-block;
   vertical-align: top;
   max-width: 30em;
 }
 
+#article header {
+  background: #ddf;
+  margin: 0;
+  padding: .5em;
+}
 
+#article header h1 {
+  display: inline-block;
+  line-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#article ul.tags {
+  display: inline-block;
+  margin: 0 0 0 2em;
+  padding: 0;
+  vertical-align: bottom;
+}
+
+#article ul.tags > li {
+  font-size: .7em;
+  display: inline-block;
+  margin: .2em;
+  padding: 0;
+  line-height: 100%;
+  border: 1px solid #008;
+  border-radius: .4em;
+  background: #33c;
+  color: white;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+#article ul.tags > li .tag {
+  display: inline-block;
+  margin: .4em;
+}
+
+#article ul.tags > li .remove {
+  background-color: rgba(0,0,0,.5);
+  display: inline-block;
+  margin: 0;
+  padding: .4em;
+}
+
+#article ul.tags > li .remove:hover {
+  background-color: rgba(255,255,255,1);
+  color: black;
+}
+
+#article ul.tags + a.addtag {
+  display: inline-block;
+  margin: .2em;
+  padding: .4em .6em;
+  vertical-align: bottom;
+
+  font-size: .7em;
+  line-height: 100%;
+  border: 1px solid #080;
+  border-radius: .4em;
+  background: #3c3;
+  color: white;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+#article ul.tags + a.addtag:hover {
+  background-color: rgba(255,255,255,1);
+  color: black;
+}
+
+#article { max-width: 40em; margin-left: 0; }
+
+#article p { margin: .3em 0; }
 
 
 /*

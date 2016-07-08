@@ -81,19 +81,21 @@
 
   function fillArticle(article) {
     _.fillTags(_.findEl('#article .tags'), article.tags);
-    _.fillEls ('#article .authors', article.authors);
-    _.fillEls ('#article .published', article.published);
-    _.fillEls ('#article .description', article.description);
-    _.fillEls ('#article .link', article.link);
-    _.setProps('#article .link', 'href', article.link);
-    _.fillEls ('#article .doi', article.doi);
-    _.setProps('#article .doi', 'href', function(el){return el.dataset.base + article.doi});
-    _.fillEls ('#article .enteredby', article.enteredBy);
-    _.setProps('#article .enteredby', 'href', '/' + article.enteredBy + '/');
-    _.fillEls ('#article .ctime', _.formatDateTime(article.ctime));
-    _.fillEls ('#article .mtime', _.formatDateTime(article.mtime));
+    _.fillEls ('#article .authors .value', article.authors);
+    _.fillEls ('#article .published .value', article.published);
+    _.fillEls ('#article .description .value', article.description);
+    _.fillEls ('#article .link .value', article.link);
+    _.setProps('#article .link .value', 'href', article.link);
+    _.fillEls ('#article .doi .value', article.doi);
+    _.setProps('#article .doi .value', 'href', function(el){return el.dataset.base + article.doi});
+    _.fillEls ('#article .enteredby .value', article.enteredBy);
+    _.setProps('#article .enteredby .value', 'href', '/' + article.enteredBy + '/');
+    _.fillEls ('#article .ctime .value', _.formatDateTime(article.ctime));
+    _.fillEls ('#article .mtime .value', _.formatDateTime(article.mtime));
 
     _.removeClass('#article', 'loading');
+
+    _.setYouOrName();
   }
 
 })(window, document);
