@@ -187,13 +187,13 @@ module.exports.addUser = function addUser(email, user) {
 const articles = [
   {
     id: '/id/a/4903',
-    title: 'Smith96a',
+    title: 'Smyth96a',
     enteredBy: 'parkjamapp@gmail.com',
     ctime: 0,
     mtime: 5,
     published: '1996-08-00', // for simply august, precise date unspecified
     description: 'brief description lorem ipsum',
-    authors: 'J. Smith, J. Doe',
+    authors: 'J. Smyth, J. Doe',
     link: 'http://en.wikipedia.org/smith96a',
     doi: '3409/465',
     tags: [
@@ -210,7 +210,7 @@ const articles = [
     description: `brief description lorem ipsum brief
                   description lorem ipsum brief description lorem ipsum
                   brief description lorem ipsum`,
-    authors: 'J. Doe, J. Smith',
+    authors: 'J. Juliet, J. Smith',
     link: 'http://en.wikipedia.org/juliet04',
     doi: '3409/465',
     tags: [
