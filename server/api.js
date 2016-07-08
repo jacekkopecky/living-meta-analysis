@@ -30,13 +30,17 @@ const EMAIL_ADDRESS_RE = module.exports.EMAIL_ADDRESS_RE = '[a-zA-Z.+-]+@[a-zA-Z
 api.get('/', (req, res) => res.redirect('/docs/api'));
 
 api.post('/register', GUARD, REGISTER_USER, (req, res) => res.sendStatus(200));
+
 api.get('/topusers', REGISTER_USER, listTopUsers);
+api.get('/toparticles', REGISTER_USER, listTopArticles);
+api.get('/topmetaanalyses', REGISTER_USER, listTopMetaanalyses);
+
 api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile);
 
-api.get(`/articles/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listArticles);
+api.get(`/articles/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listArticlesForUser);
 api.get(`/articles/:email(${EMAIL_ADDRESS_RE})/:title/`, REGISTER_USER, getArticle);
 
-api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listMetaanalyses);
+api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listMetaanalysesForUser);
 
 
 /*
@@ -143,7 +147,7 @@ module.exports.getKindForTitle = function getKindForTitle(email, title) {
   });
 };
 
-function listArticles(req, res, next) {
+function listArticlesForUser(req, res, next) {
   storage.getArticlesEnteredBy(req.params.email)
   .then((articles) => {
     if (articles.length === 0) throw new Error('no metaanalyses found');
@@ -188,6 +192,21 @@ function extractArticleForSending(storageArticle, includeDataValues) {
   return retval;
 }
 
+function listTopArticles(req, res, next) {
+  storage.listArticles()
+  .then((articles) => {
+    const retval = [];
+    for (const a of articles) {
+      retval.push({
+        title: a.title,
+        enteredBy: a.enteredBy,
+      });
+    }
+    res.json(retval);
+  })
+  .catch(() => next(new InternalError()));
+}
+
 
 /*
  *
@@ -201,7 +220,8 @@ function extractArticleForSending(storageArticle, includeDataValues) {
  *
  *
  */
-function listMetaanalyses(req, res, next) {
+function listMetaanalysesForUser(req, res, next) {
+  // todo by email
   storage.getMetaanalysesEnteredBy(req.params.email)
   .then((mas) => {
     if (mas.length === 0) throw new Error('no metaanalyses found');
@@ -224,4 +244,19 @@ function listMetaanalyses(req, res, next) {
     res.json(retval);
   })
   .catch(() => next(new NotFoundError()));
+}
+
+function listTopMetaanalyses(req, res, next) {
+  storage.listMetaanalyses()
+  .then((mas) => {
+    const retval = [];
+    for (const ma of mas) {
+      retval.push({
+        title: ma.title,
+        enteredBy: ma.enteredBy,
+      });
+    }
+    res.json(retval);
+  })
+  .catch(() => next(new InternalError()));
 }

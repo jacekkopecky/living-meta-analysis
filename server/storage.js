@@ -239,6 +239,10 @@ module.exports.getArticleByTitle = function getArticleByTitle(email, title) {
   });
 };
 
+module.exports.listArticles = function listArticles() {
+  return Promise.resolve(articles);
+};
+
 
 /*
  *
@@ -318,4 +322,8 @@ module.exports.getMetaanalysisByTitle = function getMetaanalysisByTitle(email, t
     }
     reject();
   });
+};
+
+module.exports.listMetaanalyses = function listMetaanalyses() {
+  return Promise.resolve(metaanalyses);
 };

@@ -46,6 +46,8 @@
   /*
    * Retrieve (and possibly refresh) the ID token from Google Auth, as a Promise.
    * May resolve to `null` when no user is signed in.
+   *
+   * Todo in case this is called multiple times in quick succession when the token is expired, it may lead to multiple reloadings...
    */
   limeta.getGapiIDToken = function getGapiIDToken() {
     return new Promise(function (resolve, reject) {

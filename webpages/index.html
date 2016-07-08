@@ -24,6 +24,14 @@
 <ol class="topusers"><li value="0">none</li></ol>
 
 
+<p>top metaanalyses:</p>
+<ol class="topmetaanalyses"><li value="0">none</li></ol>
+
+
+<p>top articles:</p>
+<ol class="toparticles"><li value="0">none</li></ol>
+
+
 <script src="/js/tools.js"></script>
 <script src="/js/auth.js"></script>
 <script>
@@ -45,6 +53,30 @@ window.limeta.initPage = function () {
     limeta.apiFail();
   });
 
+  limeta.getGapiIDToken()
+  .then(function (idToken) {
+    return fetch('/api/toparticles', _.idTokenToFetchOptions(idToken));
+  })
+  .then(_.fetchJson)
+  .then(showTopArticles)
+  .catch(function (err) {
+    console.error('can\'t load top articles');
+    console.error(err);
+    limeta.apiFail();
+  });
+
+  limeta.getGapiIDToken()
+  .then(function (idToken) {
+    return fetch('/api/topmetaanalyses', _.idTokenToFetchOptions(idToken));
+  })
+  .then(_.fetchJson)
+  .then(showTopMetaanalyses)
+  .catch(function (err) {
+    console.error('can\'t load top metaanalyses');
+    console.error(err);
+    limeta.apiFail();
+  });
+
   function showTopUsers(users) {
     var list = _.findEl('.topusers');
     list.innerHTML = '';
@@ -55,6 +87,34 @@ window.limeta.initPage = function () {
       userlink.href = '/' + user.email + '/';
       userlink.textContent = user.displayName;
       li.appendChild(userlink);
+      list.appendChild(li);
+    });
+  }
+
+  function showTopMetaanalyses(metaanalyses) {
+    var list = _.findEl('.topmetaanalyses');
+    list.innerHTML = '';
+
+    metaanalyses.forEach(function (metaanalysis) {
+      var li = document.createElement('li');
+      var metaanalysislink = document.createElement('a');
+      metaanalysislink.href = '/' + metaanalysis.enteredBy + '/' + metaanalysis.title + '/';
+      metaanalysislink.textContent = metaanalysis.title;
+      li.appendChild(metaanalysislink);
+      list.appendChild(li);
+    });
+  }
+
+  function showTopArticles(articles) {
+    var list = _.findEl('.toparticles');
+    list.innerHTML = '';
+
+    articles.forEach(function (article) {
+      var li = document.createElement('li');
+      var articlelink = document.createElement('a');
+      articlelink.href = '/' + article.enteredBy + '/' + article.title + '/';
+      articlelink.textContent = article.title;
+      li.appendChild(articlelink);
       list.appendChild(li);
     });
   }
