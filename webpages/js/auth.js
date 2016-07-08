@@ -45,10 +45,15 @@
 
   /*
    * Retrieve (and possibly refresh) the ID token from Google Auth, as a Promise.
+   * May resolve to `null` when no user is signed in.
    */
   limeta.getGapiIDToken = function getGapiIDToken() {
     return new Promise(function (resolve, reject) {
       var currUser = gapi.auth2.getAuthInstance().currentUser.get();
+      if (!currUser.isSignedIn()) {
+        resolve(null);
+        return;
+      }
       var authResp = currUser.getAuthResponse();
       if (Date.now() < authResp.expires_at - 120000) {
         resolve(authResp.id_token);
