@@ -85,7 +85,7 @@ function getAllUsers() {
   });
 }
 
-module.exports.getUser = function getUser(email) {
+module.exports.getUser = (email) => {
   if (!email) {
     throw new Error('email parameter required');
   }
@@ -94,11 +94,11 @@ module.exports.getUser = function getUser(email) {
   );
 };
 
-module.exports.listUsers = function listUsers() {
+module.exports.listUsers = () => { // eslint-disable-line arrow-body-style
   return userCache;
 };
 
-module.exports.addUser = function addUser(email, user) {
+module.exports.addUser = (email, user) => {
   if (!email || !user) {
     throw new Error('email/user parameters required');
   }
@@ -258,7 +258,7 @@ const articles = [
 ];
 
 
-module.exports.getArticlesEnteredBy = function getArticlesEnteredBy(email) {
+module.exports.getArticlesEnteredBy = (email) => { // eslint-disable-line arrow-body-style
   // todo also return articles contributed to by `email`
   return Promise.resolve(articles.filter((a) => a.enteredBy === email));
 };
@@ -279,7 +279,7 @@ module.exports.getArticleByTitle = (email, title, time) => {
   });
 };
 
-module.exports.listArticles = function listArticles() {
+module.exports.listArticles = () => { // eslint-disable-line arrow-body-style
   // todo
   return Promise.resolve(articles);
 };
@@ -361,13 +361,13 @@ brief description lorem ipsum`,
 ];
 
 
-module.exports.getMetaanalysesEnteredBy = function getMetaanalysesEnteredBy(email) { // eslint-disable-line
+module.exports.getMetaanalysesEnteredBy = (email) => { // eslint-disable-line
   // todo also return metaanalyses contributed to by `email`
   return Promise.resolve(metaanalyses.filter((ma) => ma.enteredBy === email));
 };
 
 
-module.exports.getMetaanalysisByTitle = function getMetaanalysisByTitle(email, title) {
+module.exports.getMetaanalysisByTitle = (email, title) => { // eslint-disable-line arrow-body-style
   return new Promise((resolve, reject) => {
     // todo different users can use different titles for the same thing
     for (const ma of metaanalyses) {
@@ -380,6 +380,6 @@ module.exports.getMetaanalysisByTitle = function getMetaanalysisByTitle(email, t
   });
 };
 
-module.exports.listMetaanalyses = function listMetaanalyses() {
+module.exports.listMetaanalyses = () => { // eslint-disable-line arrow-body-style
   return Promise.resolve(metaanalyses);
 };
