@@ -356,6 +356,7 @@ section.list > ul > li > ul.tags > li {
   background: #ddf;
   margin: 0;
   padding: .5em;
+  position: relative;
 }
 
 #article header h1 {
@@ -427,6 +428,19 @@ section.list > ul > li > ul.tags > li {
 #article { max-width: 40em; margin-left: 0; }
 
 #article p { margin: .3em 0; }
+
+#article header .savepending,
+#article header .saving {
+  font-style: italic;
+  color: #444;
+  position: absolute;
+  right: 0;
+  bottom: 120%;
+  display: none;
+}
+
+#article.saving header .saving,
+#article.savepending header .savepending { display: block; }
 
 
 /*
