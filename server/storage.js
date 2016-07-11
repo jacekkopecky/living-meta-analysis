@@ -144,7 +144,7 @@ module.exports.addUser = function addUser(email, user) {
   enteredBy: "example@example.com",
   ctime: 0,
   mtime: 5,
-  published: "1996-08-00", // for simply august, precise date unspecified
+  published: "1996-08, Intl J of Psy 40(4):7",
   description: "brief description lorem ipsum",
   authors: "J. Smith, J. Doe",
   link: "http:...",
@@ -153,6 +153,44 @@ module.exports.addUser = function addUser(email, user) {
     "memory",
     "misinformation",
   ],
+
+  modifiedBy: 'someoneelse@example.com', // if this is their computed version of this article
+  comments: [
+    {
+      by: "example@example.com",
+      onVersionBy: 'example@example.com',
+      text: "the article presents 5 experiments, only extracting 2 here",
+      ctime: 1,
+      hidden: false,
+      // we can view the version on which the comment was done
+    },
+  ]
+  experiments: [
+    {
+      title: "ex1", // needs to be unique within the article only
+      description: "initial memory experiment",
+      enteredBy: 'example@example.com',
+      ctime: 2,
+      data: {
+        "/id/p/12": {  // identifies the property (see below) for which we have a value here
+          value: "30",
+          ctime: 2,
+          enteredBy: 'example@example.com',
+          comments: ... as above,
+
+        }
+      }
+    }
+  ]
+}
+
+a property record looks like this: (see /api/properties)
+{
+  id: '/id/p/12',
+  title: 'N',
+  description: 'number of participants',
+  unit: 'person', // optional
+}
   // todo properties
   // todo versioning of the above data?
   //   one approach: keep a stream of timestamped and attributed updates that led to this state?
@@ -181,7 +219,6 @@ module.exports.addUser = function addUser(email, user) {
   // when computing "current state", for the orig. author it's simply the current state
   //   and for anyone else it's the current state plus all their non-approved changes
   //   but we need to highlight where the orig. author made a change after our non-approved change
-}
  */
 
 const articles = [
@@ -243,6 +280,7 @@ module.exports.getArticleByTitle = (email, title, time) => {
 };
 
 module.exports.listArticles = function listArticles() {
+  // todo
   return Promise.resolve(articles);
 };
 

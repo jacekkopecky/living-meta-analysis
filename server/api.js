@@ -231,7 +231,7 @@ function extractArticleForSending(storageArticle, includeDataValues) {
 
   if (includeDataValues) {
     // todo this may not be how the data ends up being encoded
-    retval.data = storageArticle.data;
+    retval.experiments = storageArticle.experiments;
   }
 
   return retval;
