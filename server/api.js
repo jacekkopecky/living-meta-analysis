@@ -1,9 +1,11 @@
 'use strict';
 
 const express = require('express');
+const jsonBodyParser = require('body-parser').json();
 const GUARD = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
 
 const NotFoundError = require('./errors/NotFoundError');
+const UnauthorizedError = require('./errors/UnauthorizedError');
 const InternalError = require('./errors/InternalError');
 const storage = require('./storage');
 const tools = require('./tools');
@@ -37,8 +39,16 @@ api.get('/topmetaanalyses', REGISTER_USER, listTopMetaanalyses);
 
 api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile);
 
-api.get(`/articles/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listArticlesForUser);
-api.get(`/articles/:email(${EMAIL_ADDRESS_RE})/:title/`, REGISTER_USER, getArticle);
+api.get(`/articles/:email(${EMAIL_ADDRESS_RE})`,
+        REGISTER_USER, listArticlesForUser);
+api.get(`/articles/:email(${EMAIL_ADDRESS_RE})/:title/`,
+        REGISTER_USER, getArticleVersion);
+api.get(`/articles/:email(${EMAIL_ADDRESS_RE})/:title/:time([0-9]+)/`,
+        REGISTER_USER, getArticleVersion);
+api.post(`/articles/:email(${EMAIL_ADDRESS_RE})/:title/`,
+        GUARD, SAME_USER, jsonBodyParser, saveArticle);
+
+// api.get(/)
 
 api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listMetaanalysesForUser);
 
@@ -78,6 +88,17 @@ function REGISTER_USER(req, res, next) {
   } else {
     next();
   }
+}
+
+function SAME_USER(req, res, next) {
+  try {
+    if (req.user.emails[0].value === req.params.email) {
+      next();
+      return;
+    }
+  } catch (e) { /* nothing */ }
+  // any error means it isn't the right user
+  throw new UnauthorizedError();
 }
 
 function returnUserProfile(req, res, next) {
@@ -161,12 +182,36 @@ function listArticlesForUser(req, res, next) {
   .catch(() => next(new NotFoundError()));
 }
 
-function getArticle(req, res, next) {
-  storage.getArticleByTitle(req.params.email, req.params.title)
+function getArticleVersion(req, res, next) {
+  storage.getArticleByTitle(req.params.email, req.params.title, req.params.time)
   .then((a) => {
     res.json(extractArticleForSending(a));
   })
-  .catch(() => next(new NotFoundError()));
+  .catch((e) => {
+    console.error(e);
+    next(new NotFoundError());
+  });
+}
+
+function saveArticle(req, res, next) {
+  // extract from incoming data stuff that is allowed
+  const toSave = extractArticleReceived(req.body);
+  if (req.user.emails[0].value !== toSave.enteredBy) {
+    next(new Error('not implemented saving someone else\'s article'));
+  }
+  storage.saveArticle(toSave)
+  .then((a) => {
+    res.json(extractArticleForSending(a));
+  })
+  .catch((e) => {
+    next(new InternalError(e));
+  });
+  // todo
+  // compute this user's version of this article, as it is in the database
+  // compute a diff between what's submitted and the user's version of this article
+  // detect any update conflicts (how?)
+  // add the diff to the article as a changeset
+  // update the article data if the user is the one who it's enteredBy
 }
 
 function extractArticleForSending(storageArticle, includeDataValues) {
@@ -188,6 +233,27 @@ function extractArticleForSending(storageArticle, includeDataValues) {
     // todo this may not be how the data ends up being encoded
     retval.data = storageArticle.data;
   }
+
+  return retval;
+}
+
+function extractArticleReceived(receivedArticle) {
+  // expecting receivedArticle to come from JSON.parse()
+  const retval = {
+    id: tools.string(receivedArticle.id),
+    title: tools.string(receivedArticle.title),
+    enteredBy: tools.string(receivedArticle.enteredBy),
+    ctime: tools.number(receivedArticle.ctime),
+    mtime: tools.number(receivedArticle.mtime),
+    published: tools.string(receivedArticle.published),
+    description: tools.string(receivedArticle.description),
+    authors: tools.string(receivedArticle.authors),
+    link: tools.string(receivedArticle.link),
+    doi: tools.string(receivedArticle.doi),
+    tags: tools.array(receivedArticle.tags, tools.string),
+  };
+
+  // todo comments, experiments, and anything else recently added to the data
 
   return retval;
 }

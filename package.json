@@ -24,6 +24,7 @@
     "eslint-plugin-jsx-a11y": "^1.2.0"
   },
   "dependencies": {
+    "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "gcloud": "^0.36.0",
     "simple-google-openid": "0.0.3"

@@ -13,6 +13,7 @@ const config = require('./config');
 
 const api = require('./api');
 const NotFoundError = require('./errors/NotFoundError');
+const UnauthorizedError = require('./errors/UnauthorizedError');
 
 const app = express({ caseSensitive: true });
 app.set('case sensitive routing', true);
@@ -93,6 +94,9 @@ app.use(() => { throw new NotFoundError(); });
 app.use((err, req, res, next) => {
   if (err.status === 404) {
     res.status(404).sendFile('404.html', { root: './webpages/' });
+  } else if (err.status === 401) {
+    res.set('WWW-Authenticate', 'Bearer realm="accounts.google.com"');
+    res.status(401).sendFile('401.html', { root: './webpages/' });
   } else {
     next(err);
   }

@@ -21,3 +21,39 @@ module.exports.uniqueNow = function uniqueNow() {
   lastTime = currTime;
   return currTime;
 };
+
+module.exports.string = function string(val) {
+  if (val === undefined || val === null) return val;
+
+  if (typeof val === 'object' || typeof val === 'function') {
+    console.error(`not a string: ${val}`);
+    console.error(new Error());
+    return void 0;
+  }
+
+  return '' + val;
+};
+
+module.exports.number = function number(val) {
+  if (val === undefined || val === null) return val;
+
+  if (typeof val === 'object' || typeof val === 'function' || isNaN(val)) {
+    console.error(`not a number: ${val}`);
+    console.error(new Error());
+    return void 0;
+  }
+
+  return +val;
+};
+
+module.exports.array = function array(val, f) {
+  if (val === undefined || val === null) return val;
+
+  if (Array.isArray(val)) {
+    return val.map(f);
+  }
+
+  console.error(`not an array: ${val}`);
+  console.error(new Error());
+  return void 0;
+};

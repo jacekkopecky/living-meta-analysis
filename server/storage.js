@@ -226,7 +226,10 @@ module.exports.getArticlesEnteredBy = function getArticlesEnteredBy(email) {
   return Promise.resolve(articles.filter((a) => a.enteredBy === email));
 };
 
-module.exports.getArticleByTitle = function getArticleByTitle(email, title) {
+module.exports.getArticleByTitle = (email, title, time) => {
+  // todo if time is specified, compute a version as of that time
+  if (time) return Promise.reject('getArticleByTitle with time not implemented');
+
   return new Promise((resolve, reject) => {
     // todo different users can use different titles for the same thing
     for (const a of articles) {
@@ -241,6 +244,21 @@ module.exports.getArticleByTitle = function getArticleByTitle(email, title) {
 
 module.exports.listArticles = function listArticles() {
   return Promise.resolve(articles);
+};
+
+module.exports.saveArticle = (article) => { // eslint-disable-line arrow-body-style
+  // todo
+
+  return new Promise((resolve, reject) => {
+    for (let i = 0; i < articles.length; i++) {
+      if (articles[i].title === article.title) {
+        articles[i] = article;
+        resolve(article);
+        return;
+      }
+    }
+    reject();
+  });
 };
 
 
