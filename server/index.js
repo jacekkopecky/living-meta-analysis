@@ -13,7 +13,6 @@ const config = require('./config');
 
 const api = require('./api');
 const NotFoundError = require('./errors/NotFoundError');
-const UnauthorizedError = require('./errors/UnauthorizedError');
 
 const app = express({ caseSensitive: true });
 app.set('case sensitive routing', true);
