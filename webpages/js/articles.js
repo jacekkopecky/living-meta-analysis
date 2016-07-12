@@ -103,6 +103,7 @@
 
     if (!addedArticleListeners) {
       addedArticleListeners = true;
+      _.findEl('#article .savingerror').addEventListener('click', saveArticle);
       _.findEl('#article .description .value').addEventListener('input', setPendingArticleSave);
     }
 
@@ -117,6 +118,9 @@
   var pendingSaveForceTime = null;
 
   function setPendingArticleSave() {
+    // don't save automatically after an error
+    if (_.findEl('#article.savingerror')) return;
+
     // setTimeout for save in 1s
     // if already set, cancel the old one and set a new one
     // but only replace the old one if the pending save started less than 10s ago
@@ -130,14 +134,21 @@
   }
 
   function saveArticle() {
+    if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
     pendingSaveTimeout = null;
     pendingSaveForceTime = null;
 
-    _.removeClass('#article', 'savepending');
-    _.addClass('#article', 'saving');
     updateArticleFromDom();
     limeta.getGapiIDToken()
     .then(function(idToken) {
+      if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
+      pendingSaveTimeout = null;
+      pendingSaveForceTime = null;
+
+      _.removeClass('#article', 'savingerror');
+      _.removeClass('#article', 'savepending');
+      _.addClass('#article', 'saving');
+
       return fetch(currentArticleUrl, {
         method: 'POST',
         headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
@@ -148,13 +159,15 @@
     .then(function(json) {
       _.removeClass('#article', 'saving');
       if (!pendingSaveTimeout) fillArticle(json);
-      return json;
     })
     .catch(function(err) {
       console.error('error saving article');
       console.error(err);
       _.addClass('#article', 'savingerror');
       _.removeClass('#article', 'saving');
+      if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
+      pendingSaveTimeout = null;
+      pendingSaveForceTime = null;
     })
 
   }

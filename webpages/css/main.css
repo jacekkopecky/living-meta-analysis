@@ -439,9 +439,22 @@ section.list > ul > li > ul.tags > li {
   display: none;
 }
 
+#article header .savingerror {
+  font-weight: bold;
+  color: black;
+  background: #f66;
+  padding: .5em .8em;
+  border-radius: .4em;
+  position: absolute;
+  right: 0;
+  bottom: 120%;
+  display: none;
+}
+
 #article.saving header .saving,
 #article.savepending:not(.saving) header .savepending { display: block; }
 
+#article.savingerror header .savingerror { display: block; }
 
 /*
  *
