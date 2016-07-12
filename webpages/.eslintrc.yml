@@ -9,3 +9,9 @@ env:
 
 rules:
   no-console: off
+  comma-dangle:
+    - error
+    - only-multiline
+
+globals:
+  Promise: true

@@ -16,3 +16,4 @@ rules:
   no-param-reassign: off
   prefer-rest-params: off
   no-trailing-spaces: off
+  arrow-body-style: off

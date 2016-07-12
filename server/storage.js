@@ -96,7 +96,7 @@ module.exports.getUser = (email) => {
   );
 };
 
-module.exports.listUsers = () => { // eslint-disable-line arrow-body-style
+module.exports.listUsers = () => {
   return userCache;
 };
 
@@ -250,7 +250,7 @@ function getAllArticles() {
 }
 
 
-module.exports.getArticlesEnteredBy = (email) => { // eslint-disable-line arrow-body-style
+module.exports.getArticlesEnteredBy = (email) => {
   // todo also return articles contributed to by `email`
   return articleCache.then(
     (articles) => articles.filter((a) => a.enteredBy === email)
@@ -412,13 +412,13 @@ brief description lorem ipsum`,
 ];
 
 
-module.exports.getMetaanalysesEnteredBy = (email) => { // eslint-disable-line
+module.exports.getMetaanalysesEnteredBy = (email) => {
   // todo also return metaanalyses contributed to by `email`
   return Promise.resolve(metaanalyses.filter((ma) => ma.enteredBy === email));
 };
 
 
-module.exports.getMetaanalysisByTitle = (email, title) => { // eslint-disable-line arrow-body-style
+module.exports.getMetaanalysisByTitle = (email, title) => {
   return new Promise((resolve, reject) => {
     // todo different users can use different titles for the same thing
     for (const ma of metaanalyses) {
@@ -431,6 +431,6 @@ module.exports.getMetaanalysisByTitle = (email, title) => { // eslint-disable-li
   });
 };
 
-module.exports.listMetaanalyses = () => { // eslint-disable-line arrow-body-style
+module.exports.listMetaanalyses = () => {
   return Promise.resolve(metaanalyses);
 };
