@@ -195,23 +195,13 @@ function getArticleVersion(req, res, next) {
 
 function saveArticle(req, res, next) {
   // extract from incoming data stuff that is allowed
-  const toSave = extractArticleReceived(req.body);
-  if (req.user.emails[0].value !== toSave.enteredBy) {
-    next(new Error('not implemented saving someone else\'s article'));
-  }
-  storage.saveArticle(toSave)
+  storage.saveArticle(extractArticleReceived(req.body), req.user.emails[0].value)
   .then((a) => {
     res.json(extractArticleForSending(a));
   })
   .catch((e) => {
     next(new InternalError(e));
   });
-  // todo
-  // compute this user's version of this article, as it is in the database
-  // compute a diff between what's submitted and the user's version of this article
-  // detect any update conflicts (how?)
-  // add the diff to the article as a changeset
-  // update the article data if the user is the one who it's enteredBy
 }
 
 function extractArticleForSending(storageArticle, includeDataValues) {
@@ -240,11 +230,11 @@ function extractArticleForSending(storageArticle, includeDataValues) {
 function extractArticleReceived(receivedArticle) {
   // expecting receivedArticle to come from JSON.parse()
   const retval = {
-    id: tools.string(receivedArticle.id),
+    id: tools.string(receivedArticle.id),                  // identifies the article to be changed
     title: tools.string(receivedArticle.title),
-    enteredBy: tools.string(receivedArticle.enteredBy),
-    ctime: tools.number(receivedArticle.ctime),
-    mtime: tools.number(receivedArticle.mtime),
+    // enteredBy: tools.string(receivedArticle.enteredBy), // can't be changed
+    // ctime: tools.number(receivedArticle.ctime),         // can't be changed
+    // mtime: tools.number(receivedArticle.mtime),         // will be updated
     published: tools.string(receivedArticle.published),
     description: tools.string(receivedArticle.description),
     authors: tools.string(receivedArticle.authors),

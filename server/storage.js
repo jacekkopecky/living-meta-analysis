@@ -7,6 +7,8 @@
 
 'use strict';
 
+const tools = require('./tools');
+
 const gcloud = require('gcloud')({
   projectId: 'jacek-soc-port-ac-uk',
   keyFilename: 'jacek-soc-port-ac-uk-google-key.json',
@@ -221,81 +223,130 @@ a property record looks like this: (see /api/properties)
   //   but we need to highlight where the orig. author made a change after our non-approved change
  */
 
-const articles = [
-  {
-    id: '/id/a/4903',
-    title: 'Smyth96a',
-    enteredBy: 'parkjamapp@gmail.com',
-    ctime: 0,
-    mtime: 5,
-    published: '1996-08-00', // for simply august, precise date unspecified
-    description: 'brief description lorem ipsum',
-    authors: 'J. Smyth, J. Doe',
-    link: 'http://en.wikipedia.org/smith96a',
-    doi: '3409/465',
-    tags: [
-      'memory',
-    ],
-  },
-  {
-    id: '/id/a/4904',
-    title: 'Juliet04',
-    enteredBy: 'jacek.kopecky@port.ac.uk',
-    ctime: 0,
-    mtime: 5,
-    published: '2004-01-17', // for simply august, precise date unspecified
-    description: `brief description lorem ipsum brief
-                  description lorem ipsum brief description lorem ipsum
-                  brief description lorem ipsum`,
-    authors: 'J. Juliet, J. Smith',
-    link: 'http://en.wikipedia.org/juliet04',
-    doi: '3409/465',
-    tags: [
-      'misinformation',
-      'testing',
-    ],
-  },
-];
+let articleCache;
+
+// get all users immediately on the start of the server
+getAllArticles();
+
+function getAllArticles() {
+  articleCache = new Promise((resolve, reject) => {
+    console.log('getAllArticles: making a datastore request');
+    const retval = [];
+    datastore.createQuery('Article').run()
+    .on('error', (err) => {
+      console.error('error retrieving articles');
+      console.error(err);
+      setTimeout(getAllArticles, 60 * 1000); // try loading again in a minute
+      reject(err);
+    })
+    .on('data', (entity) => {
+      retval.push(entity.data);
+    })
+    .on('end', () => {
+      console.log(`getAllArticles: ${retval.length} done`);
+      resolve(retval);
+    });
+  });
+}
 
 
 module.exports.getArticlesEnteredBy = (email) => { // eslint-disable-line arrow-body-style
   // todo also return articles contributed to by `email`
-  return Promise.resolve(articles.filter((a) => a.enteredBy === email));
+  return articleCache.then(
+    (articles) => articles.filter((a) => a.enteredBy === email)
+  );
 };
 
 module.exports.getArticleByTitle = (email, title, time) => {
   // todo if time is specified, compute a version as of that time
   if (time) return Promise.reject('getArticleByTitle with time not implemented');
 
-  return new Promise((resolve, reject) => {
-    // todo different users can use different titles for the same thing
+  // todo different users can use different titles for the same thing
+  return articleCache
+  .then((articles) => {
     for (const a of articles) {
       if (a.title === title) {
-        resolve(a);
-        return;
+        return a;
       }
     }
-    reject();
+    return Promise.reject();
   });
 };
 
-module.exports.listArticles = () => { // eslint-disable-line arrow-body-style
-  // todo
-  return Promise.resolve(articles);
-};
+module.exports.listArticles = () => articleCache;
 
-module.exports.saveArticle = (article) => { // eslint-disable-line arrow-body-style
-  // todo
+module.exports.saveArticle = (article, email) => {
+  // todo multiple users' views on one article
+  // compute this user's version of this article, as it is in the database
+  // compute a diff between what's submitted and the user's version of this article
+  // detect any update conflicts (how?)
+  // add the diff to the article as a changeset
+  // update the article data only if the user is the one who it's enteredBy
 
-  return new Promise((resolve, reject) => {
-    for (let i = 0; i < articles.length; i++) {
-      if (articles[i].title === article.title) {
-        articles[i] = article;
-        resolve(article);
-        return;
+  let doAddArticleToCache;
+
+  return articleCache
+  .then((articles) => {
+    if (!article.id) {
+      article.id = '/id/a/' + tools.uniqueNow();
+      article.enteredBy = email;
+      article.ctime = article.mtime = tools.uniqueNow();
+      doAddArticleToCache = () => articles.push(article);
+    } else {
+      let origArticle = null;
+      let i = 0;
+      for (; i < articles.length; i++) {
+        if (articles[i].id === article.id) { // todo change articleCache to be indexed by id?
+          origArticle = articles[i];
+          break;
+        }
       }
+
+      if (!origArticle) {
+        throw new Error('failed saveArticle: did not found id ' + article.id);
+      }
+      if (email !== origArticle.enteredBy) {
+        throw new Error('not implemented saving someone else\'s article');
+      }
+
+      article.enteredBy = origArticle.enteredBy;
+      article.ctime = origArticle.ctime;
+      article.mtime = tools.uniqueNow();
+      doAddArticleToCache = () => { articles[i] = article; };
     }
-    reject();
+  }).then(() => {
+    const key = datastore.key(['Article', article.id]);
+    // this is here until we add versioning on the articles themselves
+    const logKey = datastore.key(['Article', article.id,
+                                  'ArticleLog', article.id + '/' + article.mtime]);
+    console.log('saveArticle saving (into Article and ArticleLog)');
+    datastore.save(
+      [
+        { key, data: article },
+        { key: logKey,
+          data:
+          [
+            { name: 'mtime',
+              value: article.mtime },
+            { name: 'enteredBy',
+              value: email },
+            { name: 'article',
+              value: article,
+              excludeFromIndexes: true },
+          ] },
+      ],
+      (err) => {
+        if (err) {
+          console.error('error saving article');
+          console.error(err);
+          throw err;
+        }
+      }
+    );
+  })
+  .then(() => {
+    doAddArticleToCache();
+    return article;
   });
 };
 

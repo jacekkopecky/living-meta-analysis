@@ -33,7 +33,7 @@
   }
 
   function valOrFun(val, param) {
-    return (typeof val === 'function') ? val(param) : val;
+    return (typeof val === 'function' && val.valOrFun !== 'val') ? val(param) : val;
   }
 
   _.fillEls = function fillEls(root, selector, value) {
@@ -150,6 +150,8 @@
     var y = (currentUser == limeta.userPageIsAbout.email);
     var n = limeta.userPageIsAbout.name.givenName || 'User';
 
+    limeta.pageAboutYou = y;
+
     document.body.classList[y ? 'add' : 'remove']('page-about-you');
 
     _.fillEls('.fnOrYour', y ? 'Your' : n + "'s");
@@ -177,8 +179,13 @@
     return idToken ? { headers: _.idTokenToFetchHeaders(idToken) } : void 0;
   }
 
-  _.idTokenToFetchHeaders = function idTokenToFetchHeaders(idToken) {
-    return idToken ? { "Authorization": "Bearer " + idToken } : {};
+  _.idTokenToFetchHeaders = function idTokenToFetchHeaders(idToken, extraHeaders) {
+    var retval = {};
+    if (extraHeaders) {
+      Object.keys(extraHeaders).forEach(function (key) { retval[key] = extraHeaders[key]; });
+    }
+    if (idToken) retval.Authorization = "Bearer " + idToken;
+    return retval;
   }
 
 
@@ -199,7 +206,8 @@
   }
 
   _.fillTags = function fillTags(el, tags) {
-    if (tags && tags.length) {
+    if (el && tags && tags.length) {
+      el.innerHTML = '';
       var tagTemplate = _.byId('tag-template');
       tags.forEach(function (tag) {
         var tagEl = tagTemplate.content.cloneNode(true);

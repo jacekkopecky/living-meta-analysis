@@ -58,6 +58,8 @@
     _.setYouOrName();
   }
 
+  var currentArticleUrl, currentArticle;
+
   limeta.extractAndFillArticle = function extractAndFillArticle() {
     var email = limeta.extractUserProfileEmailFromUrl();
     var title = limeta.extractArticleTitleFromUrl();
@@ -65,7 +67,8 @@
 
     limeta.getGapiIDToken()
     .then(function (idToken) {
-      return fetch('/api/articles/' + email + '/' + title, _.idTokenToFetchOptions(idToken));
+      currentArticleUrl = '/api/articles/' + email + '/' + title;
+      return fetch(currentArticleUrl, _.idTokenToFetchOptions(idToken));
     })
     .then(function (response) {
       if (response.status === 404) _.notFound();
@@ -80,6 +83,7 @@
   }
 
   function fillArticle(article) {
+    currentArticle = article;
     _.fillTags(_.findEl('#article .tags'), article.tags);
     _.fillEls ('#article .authors .value', article.authors);
     _.fillEls ('#article .published .value', article.published);
@@ -96,6 +100,73 @@
     _.removeClass('#article', 'loading');
 
     _.setYouOrName();
+
+    if (!addedArticleListeners) {
+      addedArticleListeners = true;
+      _.findEl('#article .description .value').addEventListener('input', setPendingArticleSave);
+    }
+
+    // todo
+    // in fillArticle, only replace values if they have changed
+    // in fillArticle, do nothing if save is pending?
+  }
+
+  var addedArticleListeners = false;
+
+  var pendingSaveTimeout = null;
+  var pendingSaveForceTime = null;
+
+  function setPendingArticleSave() {
+    // setTimeout for save in 1s
+    // if already set, cancel the old one and set a new one
+    // but only replace the old one if the pending save started less than 10s ago
+    _.addClass('#article', 'savepending');
+    if (pendingSaveTimeout && pendingSaveForceTime > Date.now()) {
+      clearTimeout(pendingSaveTimeout);
+      pendingSaveTimeout = null;
+    }
+    if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(saveArticle, 1000);
+    if (!pendingSaveForceTime) pendingSaveForceTime = Date.now() + 10 * 1000; // ten seconds
+  }
+
+  function saveArticle() {
+    pendingSaveTimeout = null;
+    pendingSaveForceTime = null;
+
+    _.removeClass('#article', 'savepending');
+    _.addClass('#article', 'saving');
+    updateArticleFromDom();
+    limeta.getGapiIDToken()
+    .then(function(idToken) {
+      return fetch(currentArticleUrl, {
+        method: 'POST',
+        headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
+        body: JSON.stringify(currentArticle),
+      });
+    })
+    .then(_.fetchJson)
+    .then(function(json) {
+      _.removeClass('#article', 'saving');
+      if (!pendingSaveTimeout) fillArticle(json);
+      return json;
+    })
+    .catch(function(err) {
+      console.error('error saving article');
+      console.error(err);
+      _.addClass('#article', 'savingerror');
+      _.removeClass('#article', 'saving');
+    })
+
+  }
+
+  function updateArticleFromDom() {
+    // todo require title
+    // todo suggest default title: first word in authors and last two digits or the first four-digit sequence in published with 'a' or so appended to make unique
+    // todo on title change, check that it didn't exist
+
+    // ignoring rich formatting in description
+    currentArticle.description = _.findEl('#article .description .value').textContent;
+    // todo
   }
 
 })(window, document);

@@ -440,7 +440,7 @@ section.list > ul > li > ul.tags > li {
 }
 
 #article.saving header .saving,
-#article.savepending header .savepending { display: block; }
+#article.savepending:not(.saving) header .savepending { display: block; }
 
 
 /*
