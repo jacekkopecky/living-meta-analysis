@@ -462,16 +462,19 @@ section.list > ul > li > ul.tags > li {
 
 #article a.value + .edit {
   display: none;
+}
+
+#article a.value + span.edit {
   padding: 0 1em 0 .5em;
   font-style: italic;
   color: #444;
-  background: #eee;
+  /*background: #eee;*/
+  cursor: pointer;
 }
 
 #article a.value:hover + .edit,
 #article a.value + .edit:hover {
   display: inline-block;
-  cursor: pointer;
 }
 
 
@@ -504,7 +507,7 @@ section.list > ul > li > ul.tags > li {
   padding: .3em .5em;
 }
 
-#article table.experiments tr:nth-child(1) th {
+#article table.experiments tr:first-child th {
   padding: 0;
   min-width: 2.5em;
   height: 1em;
@@ -518,11 +521,13 @@ section.list > ul > li > ul.tags > li {
   border-right: 2px solid black;
 }
 
-#article table.experiments tr:nth-child(1) th:last-child {
+/* nth-last-child(2) because there's the heading for adding */
+#article table.experiments tr:first-child th:last-child,
+body:not(.page-about-you) #article table.experiments tr:first-child th:nth-last-child(2) {
   border-right: none;
 }
 
-#article table.experiments tr:nth-child(1) th > div {
+#article table.experiments tr:first-child th > div {
   transform: translate(-.5em,.8em) rotate(-45deg);
   transform-origin: top left;
   display: inline-block;
@@ -530,7 +535,8 @@ section.list > ul > li > ul.tags > li {
   bottom: 1em;
 }
 
-#article table.experiments tr:nth-child(1) th:not(:last-child):after {
+body.page-about-you #article table.experiments tr:first-child th:not(:last-child):after,
+body:not(.page-about-you) #article table.experiments tr:first-child th:not(:nth-last-child(-n+2)):after {
   border-bottom: 1px solid black;
   display: block;
   content: ' ';
@@ -542,11 +548,11 @@ section.list > ul > li > ul.tags > li {
   transform-origin: bottom right;
 }
 
-#article table.experiments tr:nth-child(1) th:first-child:after {
-  border-bottom: 2px solid black;
+#article table.experiments tr:first-child th:first-child:after {
+  border-bottom: 2px solid black !important;
 }
 
-#article table.experiments tr:nth-child(1) th > div > span {
+#article table.experiments tr:first-child th > div > span {
   width: 12em;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -556,7 +562,7 @@ section.list > ul > li > ul.tags > li {
   font-weight: bold;
 }
 
-#article table.experiments tr:nth-child(1) th > div > span:hover {
+#article table.experiments tr:first-child th > div > span:hover {
   text-overflow: ellipsis;
   overflow: visible;
   background-color: white;
@@ -577,6 +583,11 @@ section.list > ul > li > ul.tags > li {
 #article table.experiments tr:nth-child(2n) td,
 #article table.experiments tr:nth-child(2n) th {
   background-color: #eee;
+}
+
+body:not(.page-about-you) #article table.experiments tr.add,
+body:not(.page-about-you) #article table.experiments th.add {
+  display: none;
 }
 
 /*

@@ -39,51 +39,29 @@
   <p class="mtime">Last modified: <span class="value date">error</span></p>
   <!-- todo show "other contributors" or "forks" or "clones" ... -->
   <!-- todo show history -->
-  <table class="experiments">
-    <tr>
-      <th><div><span>Experiment</span></div></th>
-      <th><div><span>No. Participants</span></div></th>
-      <th><div><span>Type of Participants</span></div></th>
-      <th><div><span>Misinformation Paradigm</span></div></th>
-      <th><div><span>Delay of Misinformation</span></div></th>
-      <th><div><span>No. of Misleading Details</span></div></th>
-      <th><div><span>Type of Misleading Details</span></div></th>
-      <th><div><span>Delay of Test</span></div></th>
-      <th><div><span>Type of Test</span></div></th>
-      <th><div><span>Warning Specificity</span></div></th>
-      <th><div><span>Enlightenment</span></div></th>
-      <th><div><span>Social Discrediting</span></div></th>
-    </tr>
-    <tr>
-      <th>Ex1</th>
-      <td>72</td>
-      <td>STU</td>
-      <td>STA</td>
-      <td contenteditable>Short</td>
-      <td>2</td>
-      <td>CON</td>
-      <td>Short</td>
-      <td>REC</td>
-      <td>PRES</td>
-      <td>No</td>
-      <td>No</td>
-    </tr>
-    <tr>
-      <th>Ex2</th>
-      <td>172</td>
-      <td>STU</td>
-      <td>STA</td>
-      <td>Long</td>
-      <td>2</td>
-      <td>CON</td>
-      <td>Short</td>
-      <td>REC</td>
-      <td>some extralong value</td>
-      <td>No</td>
-      <td>No</td>
-    </tr>
+  <table class="experiments only-yours">
+    <tbody>
+      <tr>
+        <th><div><span>Experiment</span></div></th>
+        <th class="add"><div><span><button name="add">add property</button></span></div></th>
+      </tr>
+      <tr class="add">
+        <th><button name="add">add experiment</button></th>
+      </tr>
+    </tbody>
   </table>
 </section>
+<template id="prop-heading-template">
+  <th><div><span class="title"></span></div></th>
+</template>
+<template id="experiment-row-template">
+  <tr class="row">
+    <th class="title"></th>
+  </tr>
+</template>
+<template id="experiment-datum-template">
+  <td class="value"></td>
+</template>
 
 
 
@@ -91,6 +69,7 @@
 <script src="/js/tools.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/userprofile.js"></script>
+<script src="/js/props.js"></script>
 <script src="/js/articles.js"></script>
 <script>
 window.limeta.initPage = function () {

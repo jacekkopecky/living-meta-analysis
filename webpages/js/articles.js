@@ -101,6 +101,16 @@
     _.fillEls ('#article .ctime .value', _.formatDateTime(article.ctime));
     _.fillEls ('#article .mtime .value', _.formatDateTime(article.mtime));
 
+    if (Array.isArray(article.experiments) && article.experiments.length) {
+      fillArticleExperimentTable(article.experiments);
+
+      // show the table because it's not empty
+      _.removeClass('#article table.experiments', 'only-yours');
+    } else {
+      // hide the empty experiment data table if the user can't edit
+      _.addClass('#article table.experiments', 'only-yours');
+    }
+
     _.removeClass('#article', 'loading');
 
     _.setYouOrName();
@@ -114,6 +124,46 @@
     // todo
     // in fillArticle, only replace values if they have changed
     // in fillArticle, do nothing if save is pending?
+  }
+
+  function fillArticleExperimentTable(experiments) {
+    // find the properties used in the experiments
+    var usedProperties = {};
+    experiments.forEach(function (experiment) {
+      if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
+        usedProperties[key] = limeta.properties[key];
+      });
+    });
+
+    // fill the row of headings
+    var headingsRowNode = _.findEl('#article table.experiments tr:first-child');
+    var addPropertyNode = _.findEl('#article table.experiments tr:first-child > th.add');
+    Object.keys(usedProperties).forEach(function (propId) {
+      var prop = usedProperties[propId];
+      var thTemplate = _.byId('prop-heading-template');
+      var th = thTemplate.content.cloneNode(true);
+      _.fillEls(th, '.title', prop.title);
+      headingsRowNode.insertBefore(th, addPropertyNode);
+    });
+
+    var tableNode = _.findEl('#article table.experiments tbody');
+    var addRowNode = _.findEl('#article table.experiments tbody > tr.add');
+    experiments.forEach(function (experiment) {
+      var trTemplate = _.byId('experiment-row-template');
+      var tr = trTemplate.content.cloneNode(true);
+      _.fillEls(tr, '.title', experiment.title);
+
+      Object.keys(usedProperties).forEach(function (propId) {
+        var value = ' ';
+        if (experiment.data && experiment.data[propId]) value = experiment.data[propId].value;
+        var tdTemplate = _.byId('experiment-datum-template');
+        var td = tdTemplate.content.cloneNode(true);
+        _.fillEls(td, '.value', value);
+        tr.children[0].appendChild(td);
+      });
+
+      tableNode.insertBefore(tr, addRowNode);
+    });
   }
 
   var addedArticleListeners = false;
