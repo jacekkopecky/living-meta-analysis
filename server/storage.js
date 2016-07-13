@@ -192,6 +192,7 @@ a property record looks like this: (see /api/properties)
   title: 'N',
   description: 'number of participants',
   unit: 'person', // optional
+  definedBy: 'jacek.kopecky@port.ac.uk',
 }
   // todo properties
   // todo versioning of the above data?

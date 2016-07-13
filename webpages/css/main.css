@@ -1,5 +1,5 @@
 body {
-  font-family: sans-serif;
+  font-family: "Arial", sans-serif;
   background: white;
   color: black;
   line-height: 125%;
@@ -474,6 +474,110 @@ section.list > ul > li > ul.tags > li {
   cursor: pointer;
 }
 
+
+/*
+ *
+ *
+ *  ###### #    # #####  ###### #####  # #    # ###### #    # #####    #####    ##   #####   ##
+ *  #       #  #  #    # #      #    # # ##  ## #      ##   #   #      #    #  #  #    #    #  #
+ *  #####    ##   #    # #####  #    # # # ## # #####  # #  #   #      #    # #    #   #   #    #
+ *  #        ##   #####  #      #####  # #    # #      #  # #   #      #    # ######   #   ######
+ *  #       #  #  #      #      #   #  # #    # #      #   ##   #      #    # #    #   #   #    #
+ *  ###### #    # #      ###### #    # # #    # ###### #    #   #      #####  #    #   #   #    #
+ *
+ *
+ */
+
+/* rotated headings inspired by https://css-tricks.com/rotated-table-column-headers/ */
+
+#article table.experiments {
+  border-collapse: collapse;
+  margin-top: 1em;
+  text-align: center;
+  margin-right: 10em;
+  margin-top: 10em;
+}
+
+#article table.experiments th {
+  font-weight: normal;
+  vertical-align: top;
+  padding: .3em .5em;
+}
+
+#article table.experiments tr:nth-child(1) th {
+  padding: 0;
+  min-width: 2.5em;
+  height: 1em;
+  vertical-align: bottom;
+  text-align: center;
+  position: relative;
+  border-right: 1px solid black;
+}
+
+#article table.experiments tr th:first-child {
+  border-right: 2px solid black;
+}
+
+#article table.experiments tr:nth-child(1) th:last-child {
+  border-right: none;
+}
+
+#article table.experiments tr:nth-child(1) th > div {
+  transform: translate(-.5em,.8em) rotate(-45deg);
+  transform-origin: top left;
+  display: inline-block;
+  position: absolute;
+  bottom: 1em;
+}
+
+#article table.experiments tr:nth-child(1) th:not(:last-child):after {
+  border-bottom: 1px solid black;
+  display: block;
+  content: ' ';
+  position: absolute;
+  right: 0;
+  bottom: 1em;
+  width: 12em;
+  transform: rotate(135deg);
+  transform-origin: bottom right;
+}
+
+#article table.experiments tr:nth-child(1) th:first-child:after {
+  border-bottom: 2px solid black;
+}
+
+#article table.experiments tr:nth-child(1) th > div > span {
+  width: 12em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+  text-align: left;
+  font-weight: bold;
+}
+
+#article table.experiments tr:nth-child(1) th > div > span:hover {
+  text-overflow: ellipsis;
+  overflow: visible;
+  background-color: white;
+  width: auto;
+}
+
+#article table.experiments td {
+  padding: .3em .5em;
+  vertical-align: top;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+}
+
+#article table.experiments td:last-child {
+  border-right: none;
+}
+
+#article table.experiments tr:nth-child(2n) td,
+#article table.experiments tr:nth-child(2n) th {
+  background-color: #eee;
+}
 
 /*
  *
