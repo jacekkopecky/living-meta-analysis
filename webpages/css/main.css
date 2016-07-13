@@ -14,6 +14,10 @@ body:not(.page-about-you) .only-yours {
   display: none !important;
 }
 
+body.page-about-you .only-not-yours {
+  display: none !important;
+}
+
 .loadingspinner { display: none; }
 
 .loading .loadingspinner { display: block; }
@@ -454,7 +458,22 @@ section.list > ul > li > ul.tags > li {
 #article.saving header .saving,
 #article.savepending:not(.saving) header .savepending { display: block; }
 
-#article.savingerror header .savingerror { display: block; }
+#article.savingerror header .savingerror { display: block; cursor: pointer; }
+
+#article a.value + .edit {
+  display: none;
+  padding: 0 1em 0 .5em;
+  font-style: italic;
+  color: #444;
+  background: #eee;
+}
+
+#article a.value:hover + .edit,
+#article a.value + .edit:hover {
+  display: inline-block;
+  cursor: pointer;
+}
+
 
 /*
  *

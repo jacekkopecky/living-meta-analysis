@@ -83,6 +83,10 @@
   }
 
   function fillArticle(article) {
+    if (limeta.extractUserProfileEmailFromUrl() === article.enteredBy) {
+      _.addClass('#article .enteredby', 'only-not-yours');
+    }
+
     currentArticle = article;
     _.fillTags(_.findEl('#article .tags'), article.tags);
     _.fillEls ('#article .authors .value', article.authors);
