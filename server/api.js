@@ -195,7 +195,7 @@ function getArticleVersion(req, res, next) {
 
 function saveArticle(req, res, next) {
   // extract from incoming data stuff that is allowed
-  storage.saveArticle(extractArticleReceived(req.body), req.user.emails[0].value)
+  storage.saveArticle(extractReceivedArticle(req.body), req.user.emails[0].value)
   .then((a) => {
     res.json(extractArticleForSending(a, true));
   })
@@ -227,7 +227,7 @@ function extractArticleForSending(storageArticle, includeDataValues) {
   return retval;
 }
 
-function extractArticleReceived(receivedArticle) {
+function extractReceivedArticle(receivedArticle) {
   // expecting receivedArticle to come from JSON.parse()
   const retval = {
     id: tools.string(receivedArticle.id),                  // identifies the article to be changed
@@ -241,10 +241,29 @@ function extractArticleReceived(receivedArticle) {
     link: tools.string(receivedArticle.link),
     doi: tools.string(receivedArticle.doi),
     tags: tools.array(receivedArticle.tags, tools.string),
+    experiments: tools.array(receivedArticle.experiments, extractReceivedExperiment),
   };
 
-  // todo comments, experiments, and anything else recently added to the data
+  // todo comments and anything else recently added to the data
 
+  return retval;
+}
+
+function extractReceivedExperiment(receivedExperiment) {
+  const retval = {
+    title: tools.string(receivedExperiment.title),
+    description: tools.string(receivedExperiment.description),
+    data: tools.assoc(receivedExperiment.data, extractReceivedExperimentDatum),
+    // todo comments
+  };
+  return retval;
+}
+
+function extractReceivedExperimentDatum(receivedDatum) {
+  const retval = {
+    value: tools.string(receivedDatum.value),
+    // todo comments
+  };
   return retval;
 }
 

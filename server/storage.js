@@ -182,6 +182,7 @@ module.exports.addUser = (email, user) => {
 
         }
       }
+      comments: ... as above,
     }
   ]
 }
@@ -193,6 +194,7 @@ a property record looks like this: (see /api/properties)
   description: 'number of participants',
   unit: 'person', // optional
   definedBy: 'jacek.kopecky@port.ac.uk',
+  ctime: 4,
 }
   // todo properties
   // todo versioning of the above data?

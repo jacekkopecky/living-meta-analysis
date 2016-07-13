@@ -28,7 +28,7 @@ module.exports.string = function string(val) {
   if (typeof val === 'object' || typeof val === 'function') {
     console.error(`not a string: ${val}`);
     console.error(new Error());
-    return void 0;
+    return undefined;
   }
 
   return '' + val;
@@ -40,7 +40,7 @@ module.exports.number = function number(val) {
   if (typeof val === 'object' || typeof val === 'function' || isNaN(val)) {
     console.error(`not a number: ${val}`);
     console.error(new Error());
-    return void 0;
+    return undefined;
   }
 
   return +val;
@@ -50,10 +50,28 @@ module.exports.array = function array(val, f) {
   if (val === undefined || val === null) return val;
 
   if (Array.isArray(val)) {
-    return val.map(f);
+    return val.map(f).filter(defined);
   }
 
   console.error(`not an array: ${val}`);
   console.error(new Error());
-  return void 0;
+  return undefined;
 };
+
+module.exports.assoc = function assoc(val, f) {
+  if (val === undefined || val === null) return val;
+
+  if (typeof val === 'object') {
+    const retval = {};
+    for (const k of Object.keys(val)) {
+      retval[k] = f(val[k]);
+    }
+    return retval;
+  }
+
+  console.error(`not an object: ${val}`);
+  console.error(new Error());
+  return undefined;
+};
+
+function defined(x) { return x !== undefined; }
