@@ -185,7 +185,7 @@ function listArticlesForUser(req, res, next) {
 function getArticleVersion(req, res, next) {
   storage.getArticleByTitle(req.params.email, req.params.title, req.params.time)
   .then((a) => {
-    res.json(extractArticleForSending(a));
+    res.json(extractArticleForSending(a, true));
   })
   .catch((e) => {
     console.error(e);
@@ -197,7 +197,7 @@ function saveArticle(req, res, next) {
   // extract from incoming data stuff that is allowed
   storage.saveArticle(extractArticleReceived(req.body), req.user.emails[0].value)
   .then((a) => {
-    res.json(extractArticleForSending(a));
+    res.json(extractArticleForSending(a, true));
   })
   .catch((e) => {
     next(new InternalError(e));
