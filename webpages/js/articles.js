@@ -83,10 +83,6 @@
   }
 
   function fillArticle(article) {
-    if (limeta.extractUserProfileEmailFromUrl() === article.enteredBy) {
-      _.addClass('#article .enteredby', 'only-not-yours');
-    }
-
     currentArticle = article;
     _.fillTags(_.findEl('#article .tags'), article.tags);
     _.fillEls ('#article .authors .value', article.authors);
@@ -109,6 +105,10 @@
     } else {
       // hide the empty experiment data table if the user can't edit
       _.addClass('#article table.experiments', 'only-yours');
+    }
+
+    if (limeta.extractUserProfileEmailFromUrl() === article.enteredBy) {
+      _.addClass('#article .enteredby', 'only-not-yours');
     }
 
     _.removeClass('#article', 'loading');
@@ -143,6 +143,10 @@
       var thTemplate = _.byId('prop-heading-template');
       var th = thTemplate.content.cloneNode(true);
       _.fillEls(th, '.title', prop.title);
+      _.fillEls(th, '.description', prop.description);
+      _.fillEls(th, '.definedby .value', prop.definedBy);
+      _.setProps(th, '.definedby .value', 'href', '/' + prop.definedBy + '/');
+      _.fillEls(th, '.ctime .value', _.formatDateTime(prop.ctime));
       headingsRowNode.insertBefore(th, addPropertyNode);
     });
 

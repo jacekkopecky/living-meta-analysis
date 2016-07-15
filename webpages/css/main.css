@@ -4,6 +4,11 @@ body {
   color: black;
   line-height: 125%;
   z-index: 0;
+  min-height: 100vh;
+  margin: 0;
+  box-sizing: border-box;
+  padding: .5em .5em 6em .5em;
+  position: relative;
 }
 
 body:not(.signed-on) .when-signed-on {
@@ -28,6 +33,17 @@ body.page-about-you .only-not-yours {
   color: #aaa;
   font-style: italic;
   display: block; /* For Firefox */
+}
+
+body > footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4.5em;
+  background-color: #ddf;
+  box-sizing: border-box;
+  padding: 1em;
 }
 
 
@@ -460,6 +476,10 @@ section.list > ul > li > ul.tags > li {
 
 #article.savingerror header .savingerror { display: block; cursor: pointer; }
 
+#article a.value {
+  padding-right: .5em;
+}
+
 #article a.value + .edit {
   display: none;
 }
@@ -468,8 +488,11 @@ section.list > ul > li > ul.tags > li {
   padding: 0 1em 0 .5em;
   font-style: italic;
   color: #444;
-  /*background: #eee;*/
   cursor: pointer;
+}
+
+#article a.value + button.edit {
+  vertical-align: middle;
 }
 
 #article a.value:hover + .edit,
@@ -560,13 +583,55 @@ body:not(.page-about-you) #article table.experiments tr:first-child th:not(:nth-
   display: block;
   text-align: left;
   font-weight: bold;
+  background-color: white;
 }
 
-#article table.experiments tr:first-child th > div > span:hover {
+/*#article table.experiments tr:first-child th > div > span:hover {
   text-overflow: ellipsis;
   overflow: visible;
-  background-color: white;
   width: auto;
+}*/
+
+#article table.experiments tr:first-child th > div:hover {
+  z-index: 100; /* for fullinfo not to be overlapped by other parts of the table */
+}
+
+#article table.experiments tr:first-child th > div > span + .fullinfo {
+  display: none;
+  min-width: 5em;
+  max-width: 20em;
+  min-height: 5em;
+  border: 1px solid black;
+  border-radius: .5em;
+  padding: .3em .5em .1em .5em;
+  position: absolute;
+  left: 0;
+  top: 0;
+  text-align: left;
+  background-color: white;
+  transform: rotate(45deg);
+  transform-origin: left top;
+}
+
+#article table.experiments .fullinfo .title {
+  font-weight: bold;
+  margin-bottom: .5em;
+}
+
+#article table.experiments .fullinfo .definedbyblock {
+  font-size: 80%;
+  border-top: 1px solid #888;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+#article table.experiments .fullinfo .value {
+  white-space: nowrap;
+}
+
+#article table.experiments tr:first-child th > div > span:hover + .fullinfo,
+#article table.experiments tr:first-child th > div > span + .fullinfo:hover {
+  display: inline-block;
 }
 
 #article table.experiments td {

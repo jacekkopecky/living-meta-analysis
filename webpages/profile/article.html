@@ -34,8 +34,8 @@
   <p class="authors">Authors: <span class="value">error</span></p>
   <p class="published">Published: <span class="value">error</span></p>
   <p class="description">Description: <span contenteditable placeholder="add description" class="value">error</span></p>
-  <p class="link">Link: <a class="value" href="error">error</a><span class="edit">edit</span></p>
-  <p class="doi">DOI: <a class="value" href="error" data-base="https://dx.doi.org/">error</a><span class="edit">edit</span></p>
+  <p class="link">Link: <a class="value" href="error">error</a><button class="edit">edit</button></p>
+  <p class="doi">DOI: <a class="value" href="error" data-base="https://dx.doi.org/">error</a><button class="edit">edit</button></p>
   <p class="mtime">Last modified: <span class="value date">error</span></p>
   <!-- todo show "other contributors" or "forks" or "clones" ... -->
   <!-- todo show history -->
@@ -52,7 +52,20 @@
   </table>
 </section>
 <template id="prop-heading-template">
-  <th><div><span class="title"></span></div></th>
+  <th>
+    <div>
+      <span class="title"></span>
+      <div class="fullinfo">
+        <p class="title">error</p>
+        <p class="description">error</p>
+        <button>hide this column</button>
+        <!-- on hiding this column, store in localStorage that this column is being hidden,
+             also add to the end of every row a symbol that there are hidden values,
+             on hover, the symbol will list them and allow you to add some right back -->
+        <p class="definedbyblock">defined <span class="ctime"> on <span class="value date">error</span></span><span class="definedby enteredby"> by <a class="value" href="error">error</a></span></p>
+      </div>
+    </div>
+  </th>
 </template>
 <template id="experiment-row-template">
   <tr class="row">
@@ -62,6 +75,10 @@
 <template id="experiment-datum-template">
   <td class="value"></td>
 </template>
+
+<footer>
+  LivingMetaAnalysis by Jacek Kopecky at University of Portsmouth, 2016
+</footer>
 
 
 
