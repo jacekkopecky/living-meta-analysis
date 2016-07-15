@@ -70,6 +70,7 @@ function migrateAllArticlesToPapers() {
     entity.key.namespace = v2;
     entity.key.kind = 'Paper';
     entity.key.name = '/id/p/' + entity.key.name.substring(6);
+    entity.data.id = '/id/p/' + entity.data.id.substring(6);
     count++;
     datastorev2.save({
       key: entity.key,
@@ -113,10 +114,23 @@ function migrateAllArticleLogEntriesToPapersLog() {
     entity.key.parent.kind = 'Paper';
     entity.key.parent.name = '/id/p/' + entity.key.parent.name.substring(6);
 
+    entity.data.paper = entity.data.article;
+    delete entity.data.article;
+
+    entity.data.paper.id = '/id/p/' + entity.data.paper.id.substring(6);
+
     count++;
     datastorev2.save({
       key: entity.key,
-      data: entity.data,
+      data: [
+        { name: 'mtime',
+          value: entity.data.mtime },
+        { name: 'enteredBy',
+          value: entity.data.enteredBy },
+        { name: 'paper',
+          value: entity.data.paper,
+          excludeFromIndexes: true },
+      ],
     }, (err) => {
       if (err) {
         console.error('error saving paper log entry ' + entity.key.name);
