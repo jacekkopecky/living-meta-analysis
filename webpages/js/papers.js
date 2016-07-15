@@ -84,6 +84,11 @@
 
   function fillPaper(paper) {
     currentPaper = paper;
+
+    // fill the data table first in case the templates use any of the data below
+    fillPaperExperimentTable(paper.experiments);
+
+    _.fillEls('#paper .title', paper.title);
     _.fillTags(_.findEl('#paper .tags'), paper.tags);
     _.fillEls ('#paper .authors .value', paper.authors);
     _.fillEls ('#paper .published .value', paper.published);
@@ -97,15 +102,7 @@
     _.fillEls ('#paper .ctime .value', _.formatDateTime(paper.ctime));
     _.fillEls ('#paper .mtime .value', _.formatDateTime(paper.mtime));
 
-    if (Array.isArray(paper.experiments) && paper.experiments.length) {
       fillPaperExperimentTable(paper.experiments);
-
-      // show the table because it's not empty
-      _.removeClass('#paper table.experiments', 'only-yours');
-    } else {
-      // hide the empty experiment data table if the user can't edit
-      _.addClass('#paper table.experiments', 'only-yours');
-    }
 
     if (limeta.extractUserProfileEmailFromUrl() === paper.enteredBy) {
       _.addClass('#paper .enteredby', 'only-not-yours');
@@ -142,11 +139,14 @@
       var prop = usedProperties[propId];
       var thTemplate = _.byId('prop-heading-template');
       var th = thTemplate.content.cloneNode(true);
-      _.fillEls(th, '.title', prop.title);
-      _.fillEls(th, '.description', prop.description);
+      _.fillEls(th, '.proptitle', prop.title);
+      _.fillEls(th, '.propdescription', prop.description);
+      _.fillEls(th, '.propctime .value', _.formatDateTime(prop.ctime));
       _.fillEls(th, '.definedby .value', prop.definedBy);
       _.setProps(th, '.definedby .value', 'href', '/' + prop.definedBy + '/');
-      _.fillEls(th, '.ctime .value', _.formatDateTime(prop.ctime));
+      if (limeta.extractUserProfileEmailFromUrl() === prop.definedBy) {
+        _.addClass(th, '.definedby', 'only-not-yours');
+      }
       headingsRowNode.insertBefore(th, addPropertyNode);
     });
 
@@ -155,7 +155,7 @@
     experiments.forEach(function (experiment) {
       var trTemplate = _.byId('experiment-row-template');
       var tr = trTemplate.content.cloneNode(true);
-      _.fillEls(tr, '.title', experiment.title);
+      _.fillEls(tr, '.exptitle', experiment.title);
 
       Object.keys(usedProperties).forEach(function (propId) {
         var value = ' ';
@@ -167,6 +167,10 @@
       });
 
       tableNode.insertBefore(tr, addRowNode);
+    });
+
+    Object.keys(usedProperties).forEach(function () {
+      addRowNode.appendChild(document.createElement('td'));
     });
   }
 

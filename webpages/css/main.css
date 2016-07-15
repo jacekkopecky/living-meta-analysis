@@ -372,14 +372,14 @@ section.list > ul > li > ul.tags > li {
   max-width: 30em;
 }
 
-#paper header {
+#paper > header {
   background: #ddf;
   margin: 0;
   padding: .5em;
   position: relative;
 }
 
-#paper header h1 {
+#paper > header h1 {
   display: inline-block;
   line-height: 100%;
   margin: 0;
@@ -449,8 +449,8 @@ section.list > ul > li > ul.tags > li {
 
 #paper p { margin: .3em 0; }
 
-#paper header .savepending,
-#paper header .saving {
+#paper > header .savepending,
+#paper > header .saving {
   font-style: italic;
   color: #444;
   position: absolute;
@@ -459,7 +459,7 @@ section.list > ul > li > ul.tags > li {
   display: none;
 }
 
-#paper header .savingerror {
+#paper > header .savingerror {
   font-weight: bold;
   color: black;
   background: #f66;
@@ -471,10 +471,10 @@ section.list > ul > li > ul.tags > li {
   display: none;
 }
 
-#paper.saving header .saving,
-#paper.savepending:not(.saving) header .savepending { display: block; }
+#paper.saving > header .saving,
+#paper.savepending:not(.saving) > header .savepending { display: block; }
 
-#paper.savingerror header .savingerror { display: block; cursor: pointer; }
+#paper.savingerror > header .savingerror { display: block; cursor: pointer; }
 
 #paper a.value {
   padding-right: .5em;
@@ -613,12 +613,12 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   transform-origin: left top;
 }
 
-#paper table.experiments .fullinfo .title {
+#paper table.experiments .fullinfo header {
   font-weight: bold;
   margin-bottom: .5em;
 }
 
-#paper table.experiments .fullinfo .definedbyblock {
+#paper table.experiments .fullinfo footer {
   font-size: 80%;
   border-top: 1px solid #888;
   margin-bottom: 0;
@@ -641,7 +641,7 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   border-right: 1px solid black;
 }
 
-#paper table.experiments td:last-child {
+body:not(.page-about-you) #paper table.experiments td:last-child {
   border-right: none;
 }
 
@@ -653,6 +653,10 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
 body:not(.page-about-you) #paper table.experiments tr.add,
 body:not(.page-about-you) #paper table.experiments th.add {
   display: none;
+}
+
+#paper table.experiments th.add > div > span {
+  padding-left: .5em;
 }
 
 /*

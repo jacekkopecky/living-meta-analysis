@@ -42,11 +42,19 @@
   <table class="experiments only-yours">
     <tbody>
       <tr>
-        <th><div><span>Experiment</span></div></th>
-        <th class="add"><div><span><button name="add">add property</button></span></div></th>
+        <th>
+          <div>
+            <span>Study/Experiment</span>
+            <div class="fullinfo">
+              <header><p>Study/Experiment</p></header>
+              <p class="description">A row can be a study, an experiment, or a condition within an experiment.</p>
+            </div>
+          </div>
+        </th>
+        <th class="add"><div><span><button name="add">add a column</button></span></div></th>
       </tr>
       <tr class="add">
-        <th><button name="add">add experiment</button></th>
+        <th><button name="add">add a row</button></th>
       </tr>
     </tbody>
   </table>
@@ -54,22 +62,24 @@
 <template id="prop-heading-template">
   <th>
     <div>
-      <span class="title"></span>
+      <span class="proptitle">error</span>
       <div class="fullinfo">
-        <p class="title">error</p>
-        <p class="description">error</p>
+        <header>
+          <p class="proptitle">error</p>
+        </header>
+        <p class="propdescription">error</p>
         <button>hide this column</button>
         <!-- on hiding this column, store in localStorage that this column is being hidden,
              also add to the end of every row a symbol that there are hidden values,
              on hover, the symbol will list them and allow you to add some right back -->
-        <p class="definedbyblock">defined <span class="ctime"> on <span class="value date">error</span></span><span class="definedby enteredby"> by <a class="value" href="error">error</a></span></p>
+        <footer>defined <span class="propctime"> on <span class="value date">error</span></span><span class="definedby"> by <a class="value" href="error">error</a></span></footer>
       </div>
     </div>
   </th>
 </template>
 <template id="experiment-row-template">
   <tr class="row">
-    <th class="title"></th>
+    <th><span class="title">error</span>-<span class="exptitle"></span></th>
   </tr>
 </template>
 <template id="experiment-datum-template">
