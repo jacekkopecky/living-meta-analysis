@@ -134,29 +134,29 @@
       table.children[0].classList.add('only-yours');
     }
 
-    // find the properties used in the experiments
-    var usedProperties = {};
+    // find the columns used in the experiments
+    var usedColumns = {};
     experiments.forEach(function (experiment) {
       if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
-        usedProperties[key] = limeta.properties[key];
+        usedColumns[key] = limeta.columns[key];
       });
     });
 
     // fill the row of headings
     var headingsRowNode = _.findEl(table, 'tr:first-child');
-    var addPropertyNode = _.findEl(table, 'tr:first-child > th.add');
-    Object.keys(usedProperties).forEach(function (propId) {
-      var prop = usedProperties[propId];
-      var th = _.cloneTemplateById('prop-heading-template');
-      _.fillEls(th, '.proptitle', prop.title);
-      _.fillEls(th, '.propdescription', prop.description);
-      _.fillEls(th, '.propctime .value', _.formatDateTime(prop.ctime));
-      _.fillEls(th, '.definedby .value', prop.definedBy);
-      _.setProps(th, '.definedby .value', 'href', '/' + prop.definedBy + '/');
-      if (limeta.extractUserProfileEmailFromUrl() === prop.definedBy) {
+    var addColumnNode = _.findEl(table, 'tr:first-child > th.add');
+    Object.keys(usedColumns).forEach(function (colId) {
+      var col = usedColumns[colId];
+      var th = _.cloneTemplateById('col-heading-template');
+      _.fillEls(th, '.coltitle', col.title);
+      _.fillEls(th, '.coldescription', col.description);
+      _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime));
+      _.fillEls(th, '.definedby .value', col.definedBy);
+      _.setProps(th, '.definedby .value', 'href', '/' + col.definedBy + '/');
+      if (limeta.extractUserProfileEmailFromUrl() === col.definedBy) {
         _.addClass(th, '.definedby', 'only-not-yours');
       }
-      headingsRowNode.insertBefore(th, addPropertyNode);
+      headingsRowNode.insertBefore(th, addColumnNode);
     });
 
     var tableBodyNode = _.findEl(table, 'tbody');
@@ -165,9 +165,9 @@
       var tr = _.cloneTemplateById('experiment-row-template');
       _.fillEls(tr, '.exptitle', experiment.title);
 
-      Object.keys(usedProperties).forEach(function (propId) {
+      Object.keys(usedColumns).forEach(function (colId) {
         var value = ' ';
-        if (experiment.data && experiment.data[propId]) value = experiment.data[propId].value;
+        if (experiment.data && experiment.data[colId]) value = experiment.data[colId].value;
         var td = _.cloneTemplateById('experiment-datum-template');
         _.fillEls(td, '.value', value);
         tr.children[0].appendChild(td);
@@ -176,7 +176,7 @@
       tableBodyNode.insertBefore(tr, addRowNode);
     });
 
-    Object.keys(usedProperties).forEach(function () {
+    Object.keys(usedColumns).forEach(function () {
       addRowNode.appendChild(document.createElement('td'));
     });
 

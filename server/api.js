@@ -48,7 +48,7 @@ api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/:time([0-9]+)/`,
 api.post(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/`,
         GUARD, SAME_USER, jsonBodyParser, savePaper);
 
-// api.get(/)
+// api.get(/api/columns)
 
 api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listMetaanalysesForUser);
 

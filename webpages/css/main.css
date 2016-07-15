@@ -620,6 +620,7 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
 
 #paper table.experiments .fullinfo footer {
   font-size: 80%;
+  line-height: 120%;
   border-top: 1px solid #888;
   margin-bottom: 0;
   padding-bottom: 0;

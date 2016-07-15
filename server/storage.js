@@ -174,7 +174,7 @@ module.exports.addUser = (email, user) => {
       enteredBy: 'example@example.com',
       ctime: 2,
       data: {
-        "/id/p/12": {  // identifies the property (see below) for which we have a value here
+        "/id/p/12": {  // identifies the column (see below) for which we have a value here
           value: "30",
           ctime: 2,
           enteredBy: 'example@example.com',
@@ -187,7 +187,7 @@ module.exports.addUser = (email, user) => {
   ]
 }
 
-a property record looks like this: (see /api/properties)
+a column record looks like this: (see /api/columns)
 {
   id: '/id/p/12',
   title: 'N',
@@ -196,25 +196,25 @@ a property record looks like this: (see /api/properties)
   definedBy: 'jacek.kopecky@port.ac.uk',
   ctime: 4,
 }
-  // todo properties
+  // todo columns
   // todo versioning of the above data?
   //   one approach: keep a stream of timestamped and attributed updates that led to this state?
   //      versions: [
-  //        { prop: "title", newValue: "Smith96a", ctime: 1},
-  //        { prop: "published", newValue: "1996-08-00", ctime: 2},
-  //        { prop: "tags", addedValue: "memory", ctime: 3},
-  //        { prop: "tags", removedValue: "testing", ctime: 4},
+  //        { col: "title", newValue: "Smith96a", ctime: 1},
+  //        { col: "published", newValue: "1996-08-00", ctime: 2},
+  //        { col: "tags", addedValue: "memory", ctime: 3},
+  //        { col: "tags", removedValue: "testing", ctime: 4},
   //        // both entries have an implied enteredBy: the same as in the parent object
   //      ]
   //   but what do we do with contributions/changes by others? what about
   //      versions: [
-  //        { prop: "title", newValue: "SmithEtAl96a", ctime: 5,
+  //        { col: "title", newValue: "SmithEtAl96a", ctime: 5,
   //          enteredBy: 'someoneElse'},
-  //        { prop: "title", newValue: "SmithEtAl96a", ctime: 6,
+  //        { col: "title", newValue: "SmithEtAl96a", ctime: 6,
   //          approvesChangeWithCTime: 5},
-  //        { prop: "title", newValue: "vandalism", ctime: 7, enteredBy: 'troll',
+  //        { col: "title", newValue: "vandalism", ctime: 7, enteredBy: 'troll',
   //          declinedTime: 8},
-  //        { prop: "tags", addedValue: "mine", ctime: 9,
+  //        { col: "tags", addedValue: "mine", ctime: 9,
   //          enteredBy: 'someoneElse'},
   //      ]
   //

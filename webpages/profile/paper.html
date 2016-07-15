@@ -61,20 +61,20 @@
     </tbody>
   </table>
 </template>
-<template id="prop-heading-template">
+<template id="col-heading-template">
   <th>
     <div>
-      <span class="proptitle">error</span>
+      <span class="coltitle">error</span>
       <div class="fullinfo">
         <header>
-          <p class="proptitle">error</p>
+          <p class="coltitle">error</p>
         </header>
-        <p class="propdescription">error</p>
+        <p class="coldescription">error</p>
         <button>hide this column</button>
         <!-- on hiding this column, store in localStorage that this column is being hidden,
              also add to the end of every row a symbol that there are hidden values,
              on hover, the symbol will list them and allow you to add some right back -->
-        <footer>defined <span class="propctime"> on <span class="value date">error</span></span><span class="definedby"> by <a class="value" href="error">error</a></span></footer>
+        <footer>defined <span class="colctime"> on <span class="value date">error</span></span><span class="definedby"> by <a class="value" href="error">error</a></span></footer>
       </div>
     </div>
   </th>
@@ -98,7 +98,7 @@
 <script src="/js/tools.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/userprofile.js"></script>
-<script src="/js/props.js"></script>
+<script src="/js/columns.js"></script>
 <script src="/js/papers.js"></script>
 <script>
 window.limeta.initPage = function () {
