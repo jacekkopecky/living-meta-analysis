@@ -10,18 +10,23 @@
       title: 'No. of Participants',
       description: 'number of participants in the experiment',
       definedBy: 'jacek.kopecky@port.ac.uk',
+      type: 'characteristic', // todo: show characteristics first, then results
+                              // but also change the ID scheme from /id/p/ to something else,
+                              // and the name from props: maybe "column" and /id/col/?
       ctime: Date.now(),
     },
     '/id/p/13': {
       title: 'Type of Participants',
       description: 'STU means student, CHI means children',
       definedBy: 'jacek.kopecky@port.ac.uk',
+      type: 'characteristic',
       ctime: Date.now(),
     },
     '/id/p/14': {
       title: 'Delay of Misinformation',
       description: 'Short is under 24 hours, Long over that',
       definedBy: 'test@port.ac.uk',
+      type: 'characteristic',
       ctime: Date.now(),
     },
     '/id/p/15': {
