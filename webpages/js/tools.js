@@ -28,6 +28,13 @@
     return document.getElementById(id);
   }
 
+  _.cloneTemplateById = function cloneTemplateById(id) {
+    var template = _.byId(id);
+    if (!template) return void 0;
+
+    return template.content.cloneNode(true);
+  }
+
   _.array = function array(arr) {
       return [].slice.call(arr);
   }

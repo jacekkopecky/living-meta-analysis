@@ -41,8 +41,7 @@
     if (papers.length) {
       // todo sort
       papers.forEach(function (paper) {
-        var liTemplate = _.byId('paper-list-item-template');
-        var li = liTemplate.content.cloneNode(true);
+        var li = _.cloneTemplateById('paper-list-item-template');
         _.fillEls(li, '.name', paper.title);
         _.fillEls(li, '.date', paper.published);
         _.fillEls(li, '.description', paper.description);
@@ -52,7 +51,7 @@
         list.appendChild(li);
       });
     } else {
-      list.appendChild(_.byId('empty-list-template').content.cloneNode(true));
+      list.appendChild(_.cloneTemplateById('empty-list-template'));
     }
 
     _.setYouOrName();
@@ -102,8 +101,6 @@
     _.fillEls ('#paper .ctime .value', _.formatDateTime(paper.ctime));
     _.fillEls ('#paper .mtime .value', _.formatDateTime(paper.mtime));
 
-      fillPaperExperimentTable(paper.experiments);
-
     if (limeta.extractUserProfileEmailFromUrl() === paper.enteredBy) {
       _.addClass('#paper .enteredby', 'only-not-yours');
     }
@@ -124,6 +121,19 @@
   }
 
   function fillPaperExperimentTable(experiments) {
+    _.findEls('#paper table.experiments').forEach(function(el) {
+      el.parentElement.removeChild(el);
+    });
+
+    var table = _.cloneTemplateById('experiments-table-template');
+    // show the table if it's not empty or
+    // hide the empty experiment data table if the user can't edit it
+    if (Array.isArray(experiments) && experiments.length) {
+      table.children[0].classList.remove('only-yours');
+    } else {
+      table.children[0].classList.add('only-yours');
+    }
+
     // find the properties used in the experiments
     var usedProperties = {};
     experiments.forEach(function (experiment) {
@@ -133,12 +143,11 @@
     });
 
     // fill the row of headings
-    var headingsRowNode = _.findEl('#paper table.experiments tr:first-child');
-    var addPropertyNode = _.findEl('#paper table.experiments tr:first-child > th.add');
+    var headingsRowNode = _.findEl(table, 'tr:first-child');
+    var addPropertyNode = _.findEl(table, 'tr:first-child > th.add');
     Object.keys(usedProperties).forEach(function (propId) {
       var prop = usedProperties[propId];
-      var thTemplate = _.byId('prop-heading-template');
-      var th = thTemplate.content.cloneNode(true);
+      var th = _.cloneTemplateById('prop-heading-template');
       _.fillEls(th, '.proptitle', prop.title);
       _.fillEls(th, '.propdescription', prop.description);
       _.fillEls(th, '.propctime .value', _.formatDateTime(prop.ctime));
@@ -150,28 +159,28 @@
       headingsRowNode.insertBefore(th, addPropertyNode);
     });
 
-    var tableNode = _.findEl('#paper table.experiments tbody');
-    var addRowNode = _.findEl('#paper table.experiments tbody > tr.add');
+    var tableBodyNode = _.findEl(table, 'tbody');
+    var addRowNode = _.findEl(table, 'tbody > tr.add');
     experiments.forEach(function (experiment) {
-      var trTemplate = _.byId('experiment-row-template');
-      var tr = trTemplate.content.cloneNode(true);
+      var tr = _.cloneTemplateById('experiment-row-template');
       _.fillEls(tr, '.exptitle', experiment.title);
 
       Object.keys(usedProperties).forEach(function (propId) {
         var value = ' ';
         if (experiment.data && experiment.data[propId]) value = experiment.data[propId].value;
-        var tdTemplate = _.byId('experiment-datum-template');
-        var td = tdTemplate.content.cloneNode(true);
+        var td = _.cloneTemplateById('experiment-datum-template');
         _.fillEls(td, '.value', value);
         tr.children[0].appendChild(td);
       });
 
-      tableNode.insertBefore(tr, addRowNode);
+      tableBodyNode.insertBefore(tr, addRowNode);
     });
 
     Object.keys(usedProperties).forEach(function () {
       addRowNode.appendChild(document.createElement('td'));
     });
+
+    _.byId('paper').appendChild(table);
   }
 
   var addedPaperListeners = false;
