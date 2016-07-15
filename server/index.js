@@ -1,5 +1,5 @@
 /*
- * Living Meta Analysis server.
+ * Living Meta-Analysis server.
  *
  * Author: Jacek Kopecky jacek.kopecky@port.ac.uk
  */
@@ -49,7 +49,7 @@ app.get(`/:email(${api.EMAIL_ADDRESS_RE})/:title/`,
         (req, res, next) => {
           api.getKindForTitle(req.params.email, req.params.title)
           .then((kind) => {
-            if (kind === 'article' || kind === 'metaanalysis') {
+            if (kind === 'paper' || kind === 'metaanalysis') {
               const file = `profile/${kind}.html`;
               res.sendFile(file, { root: './webpages/' });
             } else {

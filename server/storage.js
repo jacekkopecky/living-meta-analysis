@@ -14,7 +14,7 @@ const gcloud = require('gcloud')({
   keyFilename: 'jacek-soc-port-ac-uk-google-key.json',
 });
 
-const datastore = gcloud.datastore({ namespace: 'living-meta-analysis-v1' });
+const datastore = gcloud.datastore({ namespace: 'living-meta-analysis-v2' });
 
 
 /*
@@ -51,7 +51,7 @@ const datastore = gcloud.datastore({ namespace: 'living-meta-analysis-v1' });
  *       "value": "https://lh5.googleusercontent.com/EXAMPLE/photo.jpg"
  *     }
  *   ]
- *   // todo favorites: [ "/id/a/4903", "/id/a/649803", ]
+ *   // todo favorites: [ "/id/p/4903", "/id/m/649803", ]
  * }
  */
 
@@ -139,9 +139,9 @@ module.exports.addUser = (email, user) => {
  *
  */
 
-/* an article record looks like this:
+/* a paper record looks like this:
 {
-  id: "/id/a/4903",
+  id: "/id/p/4903",
   title: "Smith96a",
   enteredBy: "example@example.com",
   ctime: 0,
@@ -156,12 +156,12 @@ module.exports.addUser = (email, user) => {
     "misinformation",
   ],
 
-  modifiedBy: 'someoneelse@example.com', // if this is their computed version of this article
+  modifiedBy: 'someoneelse@example.com', // if this is their computed version of this paper
   comments: [
     {
       by: "example@example.com",
       onVersionBy: 'example@example.com',
-      text: "the article presents 5 experiments, only extracting 2 here",
+      text: "the paper presents 5 experiments, only extracting 2 here",
       ctime: 1,
       hidden: false,
       // we can view the version on which the comment was done
@@ -169,7 +169,7 @@ module.exports.addUser = (email, user) => {
   ]
   experiments: [
     {
-      title: "ex1", // needs to be unique within the article only
+      title: "ex1", // needs to be unique within the paper only
       description: "initial memory experiment",
       enteredBy: 'example@example.com',
       ctime: 2,
@@ -226,121 +226,121 @@ a property record looks like this: (see /api/properties)
   //   but we need to highlight where the orig. author made a change after our non-approved change
  */
 
-let articleCache;
+let paperCache;
 
 // get all users immediately on the start of the server
-getAllArticles();
+getAllPapers();
 
-function getAllArticles() {
-  articleCache = new Promise((resolve, reject) => {
-    console.log('getAllArticles: making a datastore request');
+function getAllPapers() {
+  paperCache = new Promise((resolve, reject) => {
+    console.log('getAllPapers: making a datastore request');
     const retval = [];
-    datastore.createQuery('Article').run()
+    datastore.createQuery('Paper').run()
     .on('error', (err) => {
-      console.error('error retrieving articles');
+      console.error('error retrieving papers');
       console.error(err);
-      setTimeout(getAllArticles, 60 * 1000); // try loading again in a minute
+      setTimeout(getAllPapers, 60 * 1000); // try loading again in a minute
       reject(err);
     })
     .on('data', (entity) => {
       retval.push(entity.data);
     })
     .on('end', () => {
-      console.log(`getAllArticles: ${retval.length} done`);
+      console.log(`getAllPapers: ${retval.length} done`);
       resolve(retval);
     });
   });
 }
 
 
-module.exports.getArticlesEnteredBy = (email) => {
-  // todo also return articles contributed to by `email`
-  return articleCache.then(
-    (articles) => articles.filter((a) => a.enteredBy === email)
+module.exports.getPapersEnteredBy = (email) => {
+  // todo also return papers contributed to by `email`
+  return paperCache.then(
+    (papers) => papers.filter((p) => p.enteredBy === email)
   );
 };
 
-module.exports.getArticleByTitle = (email, title, time) => {
+module.exports.getPaperByTitle = (email, title, time) => {
   // todo if time is specified, compute a version as of that time
-  if (time) return Promise.reject('getArticleByTitle with time not implemented');
+  if (time) return Promise.reject('getPaperByTitle with time not implemented');
 
   // todo different users can use different titles for the same thing
-  return articleCache
-  .then((articles) => {
-    for (const a of articles) {
-      if (a.title === title) {
-        return a;
+  return paperCache
+  .then((papers) => {
+    for (const p of papers) {
+      if (p.title === title) {
+        return p;
       }
     }
     return Promise.reject();
   });
 };
 
-module.exports.listArticles = () => articleCache;
+module.exports.listPapers = () => paperCache;
 
-module.exports.saveArticle = (article, email) => {
-  // todo multiple users' views on one article
-  // compute this user's version of this article, as it is in the database
-  // compute a diff between what's submitted and the user's version of this article
+module.exports.savePaper = (paper, email) => {
+  // todo multiple users' views on one paper
+  // compute this user's version of this paper, as it is in the database
+  // compute a diff between what's submitted and the user's version of this paper
   // detect any update conflicts (how?)
-  // add the diff to the article as a changeset
-  // update the article data only if the user is the one who it's enteredBy
+  // add the diff to the paper as a changeset
+  // update the paper data only if the user is the one who it's enteredBy
 
-  let doAddArticleToCache;
+  let doAddPaperToCache;
 
-  return articleCache
-  .then((articles) => {
-    if (!article.id) {
-      article.id = '/id/a/' + tools.uniqueNow();
-      article.enteredBy = email;
-      article.ctime = article.mtime = tools.uniqueNow();
-      doAddArticleToCache = () => articles.push(article);
+  return paperCache
+  .then((papers) => {
+    if (!paper.id) {
+      paper.id = '/id/p/' + tools.uniqueNow();
+      paper.enteredBy = email;
+      paper.ctime = paper.mtime = tools.uniqueNow();
+      doAddPaperToCache = () => papers.push(paper);
     } else {
-      let origArticle = null;
+      let origPaper = null;
       let i = 0;
-      for (; i < articles.length; i++) {
-        if (articles[i].id === article.id) { // todo change articleCache to be indexed by id?
-          origArticle = articles[i];
+      for (; i < papers.length; i++) {
+        if (papers[i].id === paper.id) { // todo change paperCache to be indexed by id?
+          origPaper = papers[i];
           break;
         }
       }
 
-      if (!origArticle) {
-        throw new Error('failed saveArticle: did not found id ' + article.id);
+      if (!origPaper) {
+        throw new Error('failed savePaper: did not find id ' + paper.id);
       }
-      if (email !== origArticle.enteredBy) {
-        throw new Error('not implemented saving someone else\'s article');
+      if (email !== origPaper.enteredBy) {
+        throw new Error('not implemented saving someone else\'s paper');
       }
 
-      article.enteredBy = origArticle.enteredBy;
-      article.ctime = origArticle.ctime;
-      article.mtime = tools.uniqueNow();
-      doAddArticleToCache = () => { articles[i] = article; };
+      paper.enteredBy = origPaper.enteredBy;
+      paper.ctime = origPaper.ctime;
+      paper.mtime = tools.uniqueNow();
+      doAddPaperToCache = () => { papers[i] = paper; };
     }
   }).then(() => {
-    const key = datastore.key(['Article', article.id]);
-    // this is here until we add versioning on the articles themselves
-    const logKey = datastore.key(['Article', article.id,
-                                  'ArticleLog', article.id + '/' + article.mtime]);
-    console.log('saveArticle saving (into Article and ArticleLog)');
+    const key = datastore.key(['Paper', paper.id]);
+    // this is here until we add versioning on the papers themselves
+    const logKey = datastore.key(['Paper', paper.id,
+                                  'PaperLog', paper.id + '/' + paper.mtime]);
+    console.log('savePaper saving (into Paper and PaperLog)');
     datastore.save(
       [
-        { key, data: article },
+        { key, data: paper },
         { key: logKey,
           data:
           [
             { name: 'mtime',
-              value: article.mtime },
+              value: paper.mtime },
             { name: 'enteredBy',
               value: email },
-            { name: 'article',
-              value: article,
+            { name: 'paper',
+              value: paper,
               excludeFromIndexes: true },
           ] },
       ],
       (err) => {
         if (err) {
-          console.error('error saving article');
+          console.error('error saving paper');
           console.error(err);
           throw err;
         }
@@ -348,8 +348,8 @@ module.exports.saveArticle = (article, email) => {
     );
   })
   .then(() => {
-    doAddArticleToCache();
-    return article;
+    doAddPaperToCache();
+    return paper;
   });
 };
 
@@ -382,7 +382,7 @@ module.exports.saveArticle = (article, email) => {
     "misinformation",
   ],
   // todo various extra things
-  // todo versioning of the above data can be like for articles
+  // todo versioning of the above data can be like for papers
 }
  */
 

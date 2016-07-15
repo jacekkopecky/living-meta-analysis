@@ -1,11 +1,11 @@
 <!doctype html>
-<title>Living Meta Analysis</title>
+<title>LiMA – Living Meta-Analysis</title>
 <script src="/lib/promise.js"></script>
 <script src="/lib/fetch.js"></script>
 <script src="https://apis.google.com/js/platform.js"></script>
 <link rel="stylesheet" href="/css/main.css">
 
-<h1>Living Meta Analysis main page</h1>
+<h1>LiMA (Living Meta-Analysis) main page</h1>
 
 <!-- this puts a sign-in button, and a sign-out link, in the page -->
 <div class="userinfo signedoff">
@@ -26,12 +26,16 @@
 <ol class="topusers"><li value="0">none</li></ol>
 
 
-<p>top metaanalyses:</p>
+<p>top meta-analyses:</p>
 <ol class="topmetaanalyses"><li value="0">none</li></ol>
 
 
-<p>top articles:</p>
-<ol class="toparticles"><li value="0">none</li></ol>
+<p>top papers:</p>
+<ol class="toppapers"><li value="0">none</li></ol>
+
+<footer>
+  LiMA (Living Meta-Analysis) by Jacek Kopecky et al. at University of Portsmouth, 2016
+</footer>
 
 
 <script src="/js/tools.js"></script>
@@ -57,12 +61,12 @@ window.limeta.initPage = function () {
 
   limeta.getGapiIDToken()
   .then(function (idToken) {
-    return fetch('/api/toparticles', _.idTokenToFetchOptions(idToken));
+    return fetch('/api/toppapers', _.idTokenToFetchOptions(idToken));
   })
   .then(_.fetchJson)
-  .then(showTopArticles)
+  .then(showTopPapers)
   .catch(function (err) {
-    console.error('can\'t load top articles');
+    console.error('can\'t load top papers');
     console.error(err);
     limeta.apiFail();
   });
@@ -107,16 +111,16 @@ window.limeta.initPage = function () {
     });
   }
 
-  function showTopArticles(articles) {
-    var list = _.findEl('.toparticles');
+  function showTopPapers(papers) {
+    var list = _.findEl('.toppapers');
     list.innerHTML = '';
 
-    articles.forEach(function (article) {
+    papers.forEach(function (paper) {
       var li = document.createElement('li');
-      var articlelink = document.createElement('a');
-      articlelink.href = '/' + article.enteredBy + '/' + article.title + '/';
-      articlelink.textContent = article.title;
-      li.appendChild(articlelink);
+      var paperlink = document.createElement('a');
+      paperlink.href = '/' + paper.enteredBy + '/' + paper.title + '/';
+      paperlink.textContent = paper.title;
+      li.appendChild(paperlink);
       list.appendChild(li);
     });
   }

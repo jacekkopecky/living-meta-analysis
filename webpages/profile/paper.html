@@ -1,11 +1,11 @@
 <!doctype html>
-<title>Article | Living Meta Analysis</title>
+<title>LiMA Paper | Living Meta-Analysis</title>
 <script src="/lib/promise.js"></script>
 <script src="/lib/fetch.js"></script>
 <script src="https://apis.google.com/js/platform.js"></script>
 <link rel="stylesheet" href="/css/main.css">
 
-<h1><a href="/">Living Meta Analysis</a> Article</h1>
+<h1><a href="/">LiMA (Living Meta-Analysis)</a> Paper</h1>
 
 <!-- this puts a sign-in button, and a sign-out link, in the page -->
 <div class="userinfo signedoff">
@@ -19,8 +19,7 @@
 </div>
 
 
-<!-- LiMeTa article is not an HTML5 article, really, hence section with id article -->
-<section id="article" class="article loading">
+<section id="paper" class="paper loading">
   <header>
     <h1 class="title"></h1> todo required
     <ul class="tags"></ul><a href="" class="addtag only-yours">+</a>
@@ -38,6 +37,7 @@
   <p class="doi">DOI: <a class="value" href="error" data-base="https://dx.doi.org/">error</a><button class="edit">edit</button></p>
   <p class="mtime">Last modified: <span class="value date">error</span></p>
   <!-- todo show "other contributors" or "forks" or "clones" ... -->
+  <!-- todo show meta-analyses that use this paper -->
   <!-- todo show history -->
   <table class="experiments only-yours">
     <tbody>
@@ -77,7 +77,7 @@
 </template>
 
 <footer>
-  LivingMetaAnalysis by Jacek Kopecky at University of Portsmouth, 2016
+  LiMA (Living Meta-Analysis) by Jacek Kopecky et al. at University of Portsmouth, 2016
 </footer>
 
 
@@ -87,10 +87,10 @@
 <script src="/js/auth.js"></script>
 <script src="/js/userprofile.js"></script>
 <script src="/js/props.js"></script>
-<script src="/js/articles.js"></script>
+<script src="/js/papers.js"></script>
 <script>
 window.limeta.initPage = function () {
   window.limeta.requestAndFillUserProfile();
-  window.limeta.extractAndFillArticle();
+  window.limeta.extractAndFillPaper();
 };
 </script>

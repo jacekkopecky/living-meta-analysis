@@ -5,8 +5,8 @@
 
   limeta.apiFail = limeta.apiFail || function(){};
 
-  limeta.extractArticleTitleFromUrl = function extractArticleTitleFromUrl() {
-    // the path of a page for an article will be '/email/title/*',
+  limeta.extractPaperTitleFromUrl = function extractPaperTitleFromUrl() {
+    // the path of a page for a paper will be '/email/title/*',
     // so extract the 'title' portion here:
 
     var start = window.location.pathname.indexOf('/', 1) + 1;
@@ -16,39 +16,39 @@
   }
 
 
-  limeta.requestAndFillArticleList = function requestAndFillArticleList() {
+  limeta.requestAndFillPaperList = function requestAndFillPaperList() {
     limeta.getGapiIDToken()
     .then(function (idToken) {
       var email = limeta.extractUserProfileEmailFromUrl();
-      return fetch('/api/articles/' + email, _.idTokenToFetchOptions(idToken));
+      return fetch('/api/papers/' + email, _.idTokenToFetchOptions(idToken));
     })
     .then(function (response) {
       if (response.status === 404) return [];
       else return _.fetchJson(response);
     })
-    .then(fillArticlesList)
+    .then(fillPapersList)
     .catch(function (err) {
-      console.error("problem getting articles");
+      console.error("problem getting papers");
       console.error(err);
       limeta.apiFail();
     });
   }
 
-  function fillArticlesList(articles) {
-    var list = _.findEl('.article.list > ul');
+  function fillPapersList(papers) {
+    var list = _.findEl('.paper.list > ul');
     list.innerHTML = '';
 
-    if (articles.length) {
+    if (papers.length) {
       // todo sort
-      articles.forEach(function (article) {
-        var liTemplate = _.byId('article-list-item-template');
+      papers.forEach(function (paper) {
+        var liTemplate = _.byId('paper-list-item-template');
         var li = liTemplate.content.cloneNode(true);
-        _.fillEls(li, '.name', article.title);
-        _.fillEls(li, '.date', article.published);
-        _.fillEls(li, '.description', article.description);
-        _.setProps(li, '.description', 'title', article.description);
-        _.setProps(li, 'a.mainlink', 'href', article.title);
-        _.fillTags(_.findEl(li, '.tags'), article.tags);
+        _.fillEls(li, '.name', paper.title);
+        _.fillEls(li, '.date', paper.published);
+        _.fillEls(li, '.description', paper.description);
+        _.setProps(li, '.description', 'title', paper.description);
+        _.setProps(li, 'a.mainlink', 'href', paper.title);
+        _.fillTags(_.findEl(li, '.tags'), paper.tags);
         list.appendChild(li);
       });
     } else {
@@ -58,75 +58,75 @@
     _.setYouOrName();
   }
 
-  var currentArticleUrl, currentArticle;
+  var currentPaperUrl, currentPaper;
 
-  limeta.extractAndFillArticle = function extractAndFillArticle() {
+  limeta.extractAndFillPaper = function extractAndFillPaper() {
     var email = limeta.extractUserProfileEmailFromUrl();
-    var title = limeta.extractArticleTitleFromUrl();
-    _.fillEls('#article .title', title);
+    var title = limeta.extractPaperTitleFromUrl();
+    _.fillEls('#paper .title', title);
 
     limeta.getGapiIDToken()
     .then(function (idToken) {
-      currentArticleUrl = '/api/articles/' + email + '/' + title;
-      return fetch(currentArticleUrl, _.idTokenToFetchOptions(idToken));
+      currentPaperUrl = '/api/papers/' + email + '/' + title;
+      return fetch(currentPaperUrl, _.idTokenToFetchOptions(idToken));
     })
     .then(function (response) {
       if (response.status === 404) _.notFound();
       else return _.fetchJson(response);
     })
-    .then(fillArticle)
+    .then(fillPaper)
     .catch(function (err) {
-      console.error("problem getting article");
+      console.error("problem getting paper");
       console.error(err);
       limeta.apiFail();
     });
   }
 
-  function fillArticle(article) {
-    currentArticle = article;
-    _.fillTags(_.findEl('#article .tags'), article.tags);
-    _.fillEls ('#article .authors .value', article.authors);
-    _.fillEls ('#article .published .value', article.published);
-    _.fillEls ('#article .description .value', article.description);
-    _.fillEls ('#article .link .value', article.link);
-    _.setProps('#article .link .value', 'href', article.link);
-    _.fillEls ('#article .doi .value', article.doi);
-    _.setProps('#article .doi .value', 'href', function(el){return el.dataset.base + article.doi});
-    _.fillEls ('#article .enteredby .value', article.enteredBy);
-    _.setProps('#article .enteredby .value', 'href', '/' + article.enteredBy + '/');
-    _.fillEls ('#article .ctime .value', _.formatDateTime(article.ctime));
-    _.fillEls ('#article .mtime .value', _.formatDateTime(article.mtime));
+  function fillPaper(paper) {
+    currentPaper = paper;
+    _.fillTags(_.findEl('#paper .tags'), paper.tags);
+    _.fillEls ('#paper .authors .value', paper.authors);
+    _.fillEls ('#paper .published .value', paper.published);
+    _.fillEls ('#paper .description .value', paper.description);
+    _.fillEls ('#paper .link .value', paper.link);
+    _.setProps('#paper .link .value', 'href', paper.link);
+    _.fillEls ('#paper .doi .value', paper.doi);
+    _.setProps('#paper .doi .value', 'href', function(el){return el.dataset.base + paper.doi});
+    _.fillEls ('#paper .enteredby .value', paper.enteredBy);
+    _.setProps('#paper .enteredby .value', 'href', '/' + paper.enteredBy + '/');
+    _.fillEls ('#paper .ctime .value', _.formatDateTime(paper.ctime));
+    _.fillEls ('#paper .mtime .value', _.formatDateTime(paper.mtime));
 
-    if (Array.isArray(article.experiments) && article.experiments.length) {
-      fillArticleExperimentTable(article.experiments);
+    if (Array.isArray(paper.experiments) && paper.experiments.length) {
+      fillPaperExperimentTable(paper.experiments);
 
       // show the table because it's not empty
-      _.removeClass('#article table.experiments', 'only-yours');
+      _.removeClass('#paper table.experiments', 'only-yours');
     } else {
       // hide the empty experiment data table if the user can't edit
-      _.addClass('#article table.experiments', 'only-yours');
+      _.addClass('#paper table.experiments', 'only-yours');
     }
 
-    if (limeta.extractUserProfileEmailFromUrl() === article.enteredBy) {
-      _.addClass('#article .enteredby', 'only-not-yours');
+    if (limeta.extractUserProfileEmailFromUrl() === paper.enteredBy) {
+      _.addClass('#paper .enteredby', 'only-not-yours');
     }
 
-    _.removeClass('#article', 'loading');
+    _.removeClass('#paper', 'loading');
 
     _.setYouOrName();
 
-    if (!addedArticleListeners) {
-      addedArticleListeners = true;
-      _.findEl('#article .savingerror').addEventListener('click', saveArticle);
-      _.findEl('#article .description .value').addEventListener('input', setPendingArticleSave);
+    if (!addedPaperListeners) {
+      addedPaperListeners = true;
+      _.findEl('#paper .savingerror').addEventListener('click', savePaper);
+      _.findEl('#paper .description .value').addEventListener('input', setPendingPaperSave);
     }
 
     // todo
-    // in fillArticle, only replace values if they have changed
-    // in fillArticle, do nothing if save is pending?
+    // in fillPaper, only replace values if they have changed
+    // in fillPaper, do nothing if save is pending?
   }
 
-  function fillArticleExperimentTable(experiments) {
+  function fillPaperExperimentTable(experiments) {
     // find the properties used in the experiments
     var usedProperties = {};
     experiments.forEach(function (experiment) {
@@ -136,8 +136,8 @@
     });
 
     // fill the row of headings
-    var headingsRowNode = _.findEl('#article table.experiments tr:first-child');
-    var addPropertyNode = _.findEl('#article table.experiments tr:first-child > th.add');
+    var headingsRowNode = _.findEl('#paper table.experiments tr:first-child');
+    var addPropertyNode = _.findEl('#paper table.experiments tr:first-child > th.add');
     Object.keys(usedProperties).forEach(function (propId) {
       var prop = usedProperties[propId];
       var thTemplate = _.byId('prop-heading-template');
@@ -150,8 +150,8 @@
       headingsRowNode.insertBefore(th, addPropertyNode);
     });
 
-    var tableNode = _.findEl('#article table.experiments tbody');
-    var addRowNode = _.findEl('#article table.experiments tbody > tr.add');
+    var tableNode = _.findEl('#paper table.experiments tbody');
+    var addRowNode = _.findEl('#paper table.experiments tbody > tr.add');
     experiments.forEach(function (experiment) {
       var trTemplate = _.byId('experiment-row-template');
       var tr = trTemplate.content.cloneNode(true);
@@ -170,59 +170,59 @@
     });
   }
 
-  var addedArticleListeners = false;
+  var addedPaperListeners = false;
 
   var pendingSaveTimeout = null;
   var pendingSaveForceTime = null;
 
-  function setPendingArticleSave() {
+  function setPendingPaperSave() {
     // don't save automatically after an error
-    if (_.findEl('#article.savingerror')) return;
+    if (_.findEl('#paper.savingerror')) return;
 
     // setTimeout for save in 1s
     // if already set, cancel the old one and set a new one
     // but only replace the old one if the pending save started less than 10s ago
-    _.addClass('#article', 'savepending');
+    _.addClass('#paper', 'savepending');
     if (pendingSaveTimeout && pendingSaveForceTime > Date.now()) {
       clearTimeout(pendingSaveTimeout);
       pendingSaveTimeout = null;
     }
-    if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(saveArticle, 1000);
+    if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(savePaper, 1000);
     if (!pendingSaveForceTime) pendingSaveForceTime = Date.now() + 10 * 1000; // ten seconds
   }
 
-  function saveArticle() {
+  function savePaper() {
     if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
     pendingSaveTimeout = null;
     pendingSaveForceTime = null;
 
-    updateArticleFromDom();
+    updatePaperFromDom();
     limeta.getGapiIDToken()
     .then(function(idToken) {
       if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
       pendingSaveTimeout = null;
       pendingSaveForceTime = null;
 
-      _.removeClass('#article', 'savingerror');
-      _.removeClass('#article', 'savepending');
-      _.addClass('#article', 'saving');
+      _.removeClass('#paper', 'savingerror');
+      _.removeClass('#paper', 'savepending');
+      _.addClass('#paper', 'saving');
 
-      return fetch(currentArticleUrl, {
+      return fetch(currentPaperUrl, {
         method: 'POST',
         headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
-        body: JSON.stringify(currentArticle),
+        body: JSON.stringify(currentPaper),
       });
     })
     .then(_.fetchJson)
     .then(function(json) {
-      _.removeClass('#article', 'saving');
-      if (!pendingSaveTimeout) fillArticle(json);
+      _.removeClass('#paper', 'saving');
+      if (!pendingSaveTimeout) fillPaper(json);
     })
     .catch(function(err) {
-      console.error('error saving article');
+      console.error('error saving paper');
       console.error(err);
-      _.addClass('#article', 'savingerror');
-      _.removeClass('#article', 'saving');
+      _.addClass('#paper', 'savingerror');
+      _.removeClass('#paper', 'saving');
       if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
       pendingSaveTimeout = null;
       pendingSaveForceTime = null;
@@ -230,13 +230,13 @@
 
   }
 
-  function updateArticleFromDom() {
+  function updatePaperFromDom() {
     // todo require title
     // todo suggest default title: first word in authors and last two digits or the first four-digit sequence in published with 'a' or so appended to make unique
     // todo on title change, check that it didn't exist
 
     // ignoring rich formatting in description
-    currentArticle.description = _.findEl('#article .description .value').textContent;
+    currentPaper.description = _.findEl('#paper .description .value').textContent;
     // todo
   }
 

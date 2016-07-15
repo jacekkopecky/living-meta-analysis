@@ -1,11 +1,11 @@
 <!doctype html>
-<title>User Profile | Living Meta Analysis</title>
+<title>LiMA User Profile | Living Meta-Analysis</title>
 <script src="/lib/promise.js"></script>
 <script src="/lib/fetch.js"></script>
 <script src="https://apis.google.com/js/platform.js"></script>
 <link rel="stylesheet" href="/css/main.css">
 
-<h1><a href="/">Living Meta Analysis</a> User Profile</h1>
+<h1><a href="/">LiMA (Living Meta-Analysis)</a> User Profile</h1>
 
 <!-- this puts a sign-in button, and a sign-out link, in the page -->
 <div class="userinfo signedoff">
@@ -63,22 +63,22 @@
   </footer>
 </section>
 
-<section class="article list">
+<section class="paper list">
   <header>
-    <h2><span class="fnOrYour">User's</span> articles</h2>
+    <h2><span class="fnOrYour">User's</span> papers</h2>
     <div class="filter">Sort/filter
       <ul class="options">
-        <li><label><input type="radio" name="article-sort" value="modified" checked> recently modified</label></li>
-        <li><label><input type="radio" name="article-sort" value="created"> recently created</label></li>
-        <li><label><input type="radio" name="article-sort" value="name"> by name</label></li>
+        <li><label><input type="radio" name="paper-sort" value="modified" checked> recently modified</label></li>
+        <li><label><input type="radio" name="paper-sort" value="created"> recently created</label></li>
+        <li><label><input type="radio" name="paper-sort" value="name"> by name</label></li>
       </ul>
       <ul class="options">
-        <li><label><input type="checkbox" name="article-filter" value="created" checked> ones <span class="fnOryou">User</span> created</label></li>
-        <li><label><input type="checkbox" name="article-filter" value="contributed" checked> ones <span class="fnOryou">User</span> contributed to</label></li>
+        <li><label><input type="checkbox" name="paper-filter" value="created" checked> ones <span class="fnOryou">User</span> created</label></li>
+        <li><label><input type="checkbox" name="paper-filter" value="contributed" checked> ones <span class="fnOryou">User</span> contributed to</label></li>
       </ul>
     </div>
   </header>
-  <template id="article-list-item-template">
+  <template id="paper-list-item-template">
     <li><a href="" class="name mainlink">error</a> <span class="date">error</span> <span class="description">error</span>
       <ul class="tags">
       </ul>
@@ -89,22 +89,27 @@
   </ul>
   <footer>
     <!-- todo paging -->
-    <div class="add when-signed-on only-yours" name="article-add" title="Input a new article">+</div>
+    <div class="add when-signed-on only-yours" name="paper-add" title="Input a new paper">+</div>
   </footer>
 </section>
+
+<footer>
+  LiMA (Living Meta-Analysis) by Jacek Kopecky et al. at University of Portsmouth, 2016
+</footer>
+
 
 
 <script src="/js/tools.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/userprofile.js"></script>
-<script src="/js/articles.js"></script>
+<script src="/js/papers.js"></script>
 <script src="/js/metaanalyses.js"></script>
 <script>
 window.limeta.initPage = function () {
   // todo get papers and meta-analyses
 
   window.limeta.requestAndFillUserProfile();
-  window.limeta.requestAndFillArticleList();
+  window.limeta.requestAndFillPaperList();
   window.limeta.requestAndFillMetaanalysisList();
 }
 </script>

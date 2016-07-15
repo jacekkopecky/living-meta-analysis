@@ -360,40 +360,40 @@ section.list > ul > li > ul.tags > li {
  *
  */
 
-#article.loading > p:not(.loadingspinner),
-#article.loading .tags {
+#paper.loading > p:not(.loadingspinner),
+#paper.loading .tags {
   display: none;
 }
 
-#article .description .value {
+#paper .description .value {
   white-space: pre-line;
   display: inline-block;
   vertical-align: top;
   max-width: 30em;
 }
 
-#article header {
+#paper header {
   background: #ddf;
   margin: 0;
   padding: .5em;
   position: relative;
 }
 
-#article header h1 {
+#paper header h1 {
   display: inline-block;
   line-height: 100%;
   margin: 0;
   padding: 0;
 }
 
-#article ul.tags {
+#paper ul.tags {
   display: inline-block;
   margin: 0 0 0 2em;
   padding: 0;
   vertical-align: bottom;
 }
 
-#article ul.tags > li {
+#paper ul.tags > li {
   font-size: .7em;
   display: inline-block;
   margin: .2em;
@@ -407,24 +407,24 @@ section.list > ul > li > ul.tags > li {
   vertical-align: bottom;
 }
 
-#article ul.tags > li .tag {
+#paper ul.tags > li .tag {
   display: inline-block;
   margin: .4em;
 }
 
-#article ul.tags > li .remove {
+#paper ul.tags > li .remove {
   background-color: rgba(0,0,0,.5);
   display: inline-block;
   margin: 0;
   padding: .4em;
 }
 
-#article ul.tags > li .remove:hover {
+#paper ul.tags > li .remove:hover {
   background-color: rgba(255,255,255,1);
   color: black;
 }
 
-#article ul.tags + a.addtag {
+#paper ul.tags + a.addtag {
   display: inline-block;
   margin: .2em;
   padding: .4em .6em;
@@ -440,17 +440,17 @@ section.list > ul > li > ul.tags > li {
   text-decoration: none;
 }
 
-#article ul.tags + a.addtag:hover {
+#paper ul.tags + a.addtag:hover {
   background-color: rgba(255,255,255,1);
   color: black;
 }
 
-#article { max-width: 40em; margin-left: 0; }
+#paper { max-width: 40em; margin-left: 0; }
 
-#article p { margin: .3em 0; }
+#paper p { margin: .3em 0; }
 
-#article header .savepending,
-#article header .saving {
+#paper header .savepending,
+#paper header .saving {
   font-style: italic;
   color: #444;
   position: absolute;
@@ -459,7 +459,7 @@ section.list > ul > li > ul.tags > li {
   display: none;
 }
 
-#article header .savingerror {
+#paper header .savingerror {
   font-weight: bold;
   color: black;
   background: #f66;
@@ -471,32 +471,32 @@ section.list > ul > li > ul.tags > li {
   display: none;
 }
 
-#article.saving header .saving,
-#article.savepending:not(.saving) header .savepending { display: block; }
+#paper.saving header .saving,
+#paper.savepending:not(.saving) header .savepending { display: block; }
 
-#article.savingerror header .savingerror { display: block; cursor: pointer; }
+#paper.savingerror header .savingerror { display: block; cursor: pointer; }
 
-#article a.value {
+#paper a.value {
   padding-right: .5em;
 }
 
-#article a.value + .edit {
+#paper a.value + .edit {
   display: none;
 }
 
-#article a.value + span.edit {
+#paper a.value + span.edit {
   padding: 0 1em 0 .5em;
   font-style: italic;
   color: #444;
   cursor: pointer;
 }
 
-#article a.value + button.edit {
+#paper a.value + button.edit {
   vertical-align: middle;
 }
 
-#article a.value:hover + .edit,
-#article a.value + .edit:hover {
+#paper a.value:hover + .edit,
+#paper a.value + .edit:hover {
   display: inline-block;
 }
 
@@ -516,7 +516,7 @@ section.list > ul > li > ul.tags > li {
 
 /* rotated headings inspired by https://css-tricks.com/rotated-table-column-headers/ */
 
-#article table.experiments {
+#paper table.experiments {
   border-collapse: collapse;
   margin-top: 1em;
   text-align: center;
@@ -524,13 +524,13 @@ section.list > ul > li > ul.tags > li {
   margin-top: 10em;
 }
 
-#article table.experiments th {
+#paper table.experiments th {
   font-weight: normal;
   vertical-align: top;
   padding: .3em .5em;
 }
 
-#article table.experiments tr:first-child th {
+#paper table.experiments tr:first-child th {
   padding: 0;
   min-width: 2.5em;
   height: 1em;
@@ -540,17 +540,17 @@ section.list > ul > li > ul.tags > li {
   border-right: 1px solid black;
 }
 
-#article table.experiments tr th:first-child {
+#paper table.experiments tr th:first-child {
   border-right: 2px solid black;
 }
 
 /* nth-last-child(2) because there's the heading for adding */
-#article table.experiments tr:first-child th:last-child,
-body:not(.page-about-you) #article table.experiments tr:first-child th:nth-last-child(2) {
+#paper table.experiments tr:first-child th:last-child,
+body:not(.page-about-you) #paper table.experiments tr:first-child th:nth-last-child(2) {
   border-right: none;
 }
 
-#article table.experiments tr:first-child th > div {
+#paper table.experiments tr:first-child th > div {
   transform: translate(-.5em,.8em) rotate(-45deg);
   transform-origin: top left;
   display: inline-block;
@@ -558,8 +558,8 @@ body:not(.page-about-you) #article table.experiments tr:first-child th:nth-last-
   bottom: 1em;
 }
 
-body.page-about-you #article table.experiments tr:first-child th:not(:last-child):after,
-body:not(.page-about-you) #article table.experiments tr:first-child th:not(:nth-last-child(-n+2)):after {
+body.page-about-you #paper table.experiments tr:first-child th:not(:last-child):after,
+body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-last-child(-n+2)):after {
   border-bottom: 1px solid black;
   display: block;
   content: ' ';
@@ -571,11 +571,11 @@ body:not(.page-about-you) #article table.experiments tr:first-child th:not(:nth-
   transform-origin: bottom right;
 }
 
-#article table.experiments tr:first-child th:first-child:after {
+#paper table.experiments tr:first-child th:first-child:after {
   border-bottom: 2px solid black !important;
 }
 
-#article table.experiments tr:first-child th > div > span {
+#paper table.experiments tr:first-child th > div > span {
   width: 12em;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -586,17 +586,17 @@ body:not(.page-about-you) #article table.experiments tr:first-child th:not(:nth-
   background-color: white;
 }
 
-/*#article table.experiments tr:first-child th > div > span:hover {
+/*#paper table.experiments tr:first-child th > div > span:hover {
   text-overflow: ellipsis;
   overflow: visible;
   width: auto;
 }*/
 
-#article table.experiments tr:first-child th > div:hover {
+#paper table.experiments tr:first-child th > div:hover {
   z-index: 100; /* for fullinfo not to be overlapped by other parts of the table */
 }
 
-#article table.experiments tr:first-child th > div > span + .fullinfo {
+#paper table.experiments tr:first-child th > div > span + .fullinfo {
   display: none;
   min-width: 5em;
   max-width: 20em;
@@ -613,45 +613,45 @@ body:not(.page-about-you) #article table.experiments tr:first-child th:not(:nth-
   transform-origin: left top;
 }
 
-#article table.experiments .fullinfo .title {
+#paper table.experiments .fullinfo .title {
   font-weight: bold;
   margin-bottom: .5em;
 }
 
-#article table.experiments .fullinfo .definedbyblock {
+#paper table.experiments .fullinfo .definedbyblock {
   font-size: 80%;
   border-top: 1px solid #888;
   margin-bottom: 0;
   padding-bottom: 0;
 }
 
-#article table.experiments .fullinfo .value {
+#paper table.experiments .fullinfo .value {
   white-space: nowrap;
 }
 
-#article table.experiments tr:first-child th > div > span:hover + .fullinfo,
-#article table.experiments tr:first-child th > div > span + .fullinfo:hover {
+#paper table.experiments tr:first-child th > div > span:hover + .fullinfo,
+#paper table.experiments tr:first-child th > div > span + .fullinfo:hover {
   display: inline-block;
 }
 
-#article table.experiments td {
+#paper table.experiments td {
   padding: .3em .5em;
   vertical-align: top;
   border-left: 1px solid black;
   border-right: 1px solid black;
 }
 
-#article table.experiments td:last-child {
+#paper table.experiments td:last-child {
   border-right: none;
 }
 
-#article table.experiments tr:nth-child(2n) td,
-#article table.experiments tr:nth-child(2n) th {
+#paper table.experiments tr:nth-child(2n) td,
+#paper table.experiments tr:nth-child(2n) th {
   background-color: #eee;
 }
 
-body:not(.page-about-you) #article table.experiments tr.add,
-body:not(.page-about-you) #article table.experiments th.add {
+body:not(.page-about-you) #paper table.experiments tr.add,
+body:not(.page-about-you) #paper table.experiments th.add {
   display: none;
 }
 

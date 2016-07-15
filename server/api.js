@@ -34,19 +34,19 @@ api.get('/', (req, res) => res.redirect('/docs/api'));
 api.post('/register', GUARD, REGISTER_USER, (req, res) => res.sendStatus(200));
 
 api.get('/topusers', REGISTER_USER, listTopUsers);
-api.get('/toparticles', REGISTER_USER, listTopArticles);
+api.get('/toppapers', REGISTER_USER, listTopPapers);
 api.get('/topmetaanalyses', REGISTER_USER, listTopMetaanalyses);
 
 api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile);
 
-api.get(`/articles/:email(${EMAIL_ADDRESS_RE})`,
-        REGISTER_USER, listArticlesForUser);
-api.get(`/articles/:email(${EMAIL_ADDRESS_RE})/:title/`,
-        REGISTER_USER, getArticleVersion);
-api.get(`/articles/:email(${EMAIL_ADDRESS_RE})/:title/:time([0-9]+)/`,
-        REGISTER_USER, getArticleVersion);
-api.post(`/articles/:email(${EMAIL_ADDRESS_RE})/:title/`,
-        GUARD, SAME_USER, jsonBodyParser, saveArticle);
+api.get(`/papers/:email(${EMAIL_ADDRESS_RE})`,
+        REGISTER_USER, listPapersForUser);
+api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/`,
+        REGISTER_USER, getPaperVersion);
+api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/:time([0-9]+)/`,
+        REGISTER_USER, getPaperVersion);
+api.post(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/`,
+        GUARD, SAME_USER, jsonBodyParser, savePaper);
 
 // api.get(/)
 
@@ -162,30 +162,30 @@ module.exports.getKindForTitle = function getKindForTitle(email, title) {
   return new Promise((resolve, reject) => {
     storage.getMetaanalysisByTitle(email, title)
     .then(() => resolve('metaanalysis'))
-    .catch(() => storage.getArticleByTitle(email, title))
-    .then(() => resolve('article'))
+    .catch(() => storage.getPaperByTitle(email, title))
+    .then(() => resolve('paper'))
     .catch((err) => reject(err));
   });
 };
 
-function listArticlesForUser(req, res, next) {
-  storage.getArticlesEnteredBy(req.params.email)
-  .then((articles) => {
-    if (articles.length === 0) throw new Error('no metaanalyses found');
+function listPapersForUser(req, res, next) {
+  storage.getPapersEnteredBy(req.params.email)
+  .then((papers) => {
+    if (papers.length === 0) throw new Error('no metaanalyses found');
 
     const retval = [];
-    articles.forEach((a) => {
-      retval.push(extractArticleForSending(a));
+    papers.forEach((p) => {
+      retval.push(extractPaperForSending(p));
     });
     res.json(retval);
   })
   .catch(() => next(new NotFoundError()));
 }
 
-function getArticleVersion(req, res, next) {
-  storage.getArticleByTitle(req.params.email, req.params.title, req.params.time)
-  .then((a) => {
-    res.json(extractArticleForSending(a, true));
+function getPaperVersion(req, res, next) {
+  storage.getPaperByTitle(req.params.email, req.params.title, req.params.time)
+  .then((p) => {
+    res.json(extractPaperForSending(p, true));
   })
   .catch((e) => {
     console.error(e);
@@ -193,55 +193,55 @@ function getArticleVersion(req, res, next) {
   });
 }
 
-function saveArticle(req, res, next) {
+function savePaper(req, res, next) {
   // extract from incoming data stuff that is allowed
-  storage.saveArticle(extractReceivedArticle(req.body), req.user.emails[0].value)
-  .then((a) => {
-    res.json(extractArticleForSending(a, true));
+  storage.savePaper(extractReceivedPaper(req.body), req.user.emails[0].value)
+  .then((p) => {
+    res.json(extractPaperForSending(p, true));
   })
   .catch((e) => {
     next(new InternalError(e));
   });
 }
 
-function extractArticleForSending(storageArticle, includeDataValues) {
+function extractPaperForSending(storagePaper, includeDataValues) {
   const retval = {
-    id: storageArticle.id,
-    title: storageArticle.title,
-    enteredBy: storageArticle.enteredBy,
-    ctime: storageArticle.ctime,
-    mtime: storageArticle.mtime,
-    published: storageArticle.published,
-    description: storageArticle.description,
-    authors: storageArticle.authors,
-    link: storageArticle.link,
-    doi: storageArticle.doi,
-    tags: storageArticle.tags,
+    id: storagePaper.id,
+    title: storagePaper.title,
+    enteredBy: storagePaper.enteredBy,
+    ctime: storagePaper.ctime,
+    mtime: storagePaper.mtime,
+    published: storagePaper.published,
+    description: storagePaper.description,
+    authors: storagePaper.authors,
+    link: storagePaper.link,
+    doi: storagePaper.doi,
+    tags: storagePaper.tags,
   };
 
   if (includeDataValues) {
     // todo this may not be how the data ends up being encoded
-    retval.experiments = storageArticle.experiments;
+    retval.experiments = storagePaper.experiments;
   }
 
   return retval;
 }
 
-function extractReceivedArticle(receivedArticle) {
-  // expecting receivedArticle to come from JSON.parse()
+function extractReceivedPaper(receivedPaper) {
+  // expecting receivedPaper to come from JSON.parse()
   const retval = {
-    id: tools.string(receivedArticle.id),                  // identifies the article to be changed
-    title: tools.string(receivedArticle.title),
-    // enteredBy: tools.string(receivedArticle.enteredBy), // can't be changed
-    // ctime: tools.number(receivedArticle.ctime),         // can't be changed
-    // mtime: tools.number(receivedArticle.mtime),         // will be updated
-    published: tools.string(receivedArticle.published),
-    description: tools.string(receivedArticle.description),
-    authors: tools.string(receivedArticle.authors),
-    link: tools.string(receivedArticle.link),
-    doi: tools.string(receivedArticle.doi),
-    tags: tools.array(receivedArticle.tags, tools.string),
-    experiments: tools.array(receivedArticle.experiments, extractReceivedExperiment),
+    id: tools.string(receivedPaper.id),                  // identifies the paper to be changed
+    title: tools.string(receivedPaper.title),
+    // enteredBy: tools.string(receivedPaper.enteredBy), // can't be changed
+    // ctime: tools.number(receivedPaper.ctime),         // can't be changed
+    // mtime: tools.number(receivedPaper.mtime),         // will be updated
+    published: tools.string(receivedPaper.published),
+    description: tools.string(receivedPaper.description),
+    authors: tools.string(receivedPaper.authors),
+    link: tools.string(receivedPaper.link),
+    doi: tools.string(receivedPaper.doi),
+    tags: tools.array(receivedPaper.tags, tools.string),
+    experiments: tools.array(receivedPaper.experiments, extractReceivedExperiment),
   };
 
   // todo comments and anything else recently added to the data
@@ -267,14 +267,14 @@ function extractReceivedExperimentDatum(receivedDatum) {
   return retval;
 }
 
-function listTopArticles(req, res, next) {
-  storage.listArticles()
-  .then((articles) => {
+function listTopPapers(req, res, next) {
+  storage.listPapers()
+  .then((papers) => {
     const retval = [];
-    for (const a of articles) {
+    for (const p of papers) {
       retval.push({
-        title: a.title,
-        enteredBy: a.enteredBy,
+        title: p.title,
+        enteredBy: p.enteredBy,
       });
     }
     res.json(retval);
