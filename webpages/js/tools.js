@@ -224,5 +224,24 @@
     }
   }
 
+  /*
+   * Move item `i` in array `arr` to the left or right.
+   * `left` indicates direction; if `most`, move to the beginning (left) or end (right) of the array.
+   */
+  _.moveInArray = function moveInArray(arr, i, left, most) {
+    var moveTo = undefined;
+    if (left) {
+      if (i === 0) return arr;
+      moveTo = most ? 0 : i-1;
+    } else {
+      if (i === arr.length - 1) return arr;
+      moveTo = most ? arr.length - 1 : i+1;
+    }
+
+    var content = arr[i];
+    arr.splice(i, 1);
+    arr.splice(moveTo, 0, content);
+    return arr;
+  }
 
 })(document, window);

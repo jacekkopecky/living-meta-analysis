@@ -85,7 +85,7 @@
     currentPaper = paper;
 
     // fill the data table first in case the templates use any of the data below
-    fillPaperExperimentTable(paper.experiments);
+    fillPaperExperimentTable();
 
     _.fillEls('#paper .title', paper.title);
     _.fillTags(_.findEl('#paper .tags'), paper.tags);
@@ -120,7 +120,10 @@
     // in fillPaper, do nothing if save is pending?
   }
 
-  function fillPaperExperimentTable(experiments) {
+  function fillPaperExperimentTable() {
+    var experiments = currentPaper.experiments;
+    if (!Array.isArray(experiments)) experiments = currentPaper.experiments = [];
+
     _.findEls('#paper table.experiments').forEach(function(el) {
       el.parentElement.removeChild(el);
     });
@@ -128,25 +131,18 @@
     var table = _.cloneTemplateById('experiments-table-template');
     // show the table if it's not empty or
     // hide the empty experiment data table if the user can't edit it
-    if (Array.isArray(experiments) && experiments.length) {
+    if (experiments.length) {
       table.children[0].classList.remove('only-yours');
     } else {
       table.children[0].classList.add('only-yours');
     }
 
-    // find the columns used in the experiments
-    var usedColumns = {};
-    experiments.forEach(function (experiment) {
-      if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
-        usedColumns[key] = limeta.columns[key];
-      });
-    });
+    var showColumns = findColumnsInPaper();
 
     // fill the row of headings
     var headingsRowNode = _.findEl(table, 'tr:first-child');
     var addColumnNode = _.findEl(table, 'tr:first-child > th.add');
-    Object.keys(usedColumns).forEach(function (colId) {
-      var col = usedColumns[colId];
+    showColumns.forEach(function (col) {
       var th = _.cloneTemplateById('col-heading-template');
       _.fillEls(th, '.coltitle', col.title);
       _.fillEls(th, '.coldescription', col.description);
@@ -156,6 +152,10 @@
       if (limeta.extractUserProfileEmailFromUrl() === col.definedBy) {
         _.addClass(th, '.definedby', 'only-not-yours');
       }
+      _.findEls(th, 'button.move').forEach(function (el) {
+        el.addEventListener('click', moveColumn);
+        el.dataset.id = col.id;
+      });
       headingsRowNode.insertBefore(th, addColumnNode);
     });
 
@@ -165,7 +165,8 @@
       var tr = _.cloneTemplateById('experiment-row-template');
       _.fillEls(tr, '.exptitle', experiment.title);
 
-      Object.keys(usedColumns).forEach(function (colId) {
+      showColumns.forEach(function (col) {
+        var colId = col.id;
         var value = ' ';
         if (experiment.data && experiment.data[colId]) value = experiment.data[colId].value;
         var td = _.cloneTemplateById('experiment-datum-template');
@@ -176,11 +177,72 @@
       tableBodyNode.insertBefore(tr, addRowNode);
     });
 
-    Object.keys(usedColumns).forEach(function () {
-      addRowNode.appendChild(document.createElement('td'));
+    showColumns.forEach(function (col) {
+      var td = document.createElement('td');
+      addRowNode.appendChild(td);
     });
 
     _.byId('paper').appendChild(table);
+  }
+
+  function findColumnsInPaper() {
+    // find the columns used in the experiments
+    var showColumnsHash= {};
+    var showCharacteristicColumns = [];
+    var showResultColumns = [];
+    currentPaper.experiments.forEach(function (experiment) {
+      if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
+        if (!(key in showColumnsHash)) {
+          var col = limeta.columns[key];
+          col.id = key;
+          showColumnsHash[key] = col;
+          switch (col.type) {
+            case 'characteristic': showCharacteristicColumns.push(col); break;
+            case 'result':         showResultColumns.push(col); break;
+          }
+        }
+      });
+    });
+
+    showCharacteristicColumns.sort(compareColsByOrder);
+    showResultColumns.sort(compareColsByOrder);
+
+    return showCharacteristicColumns.concat(showResultColumns);
+  }
+
+  function compareColsByOrder(c1, c2) {
+    if (!Array.isArray(currentPaper.columnOrder)) return 0;
+    var i1 = currentPaper.columnOrder.indexOf(c1.id);
+    var i2 = currentPaper.columnOrder.indexOf(c2.id);
+    if (i1 === i2) return 0;
+    if (i1 === -1) return 1;
+    if (i2 === -1) return -1;
+    return i1 - i2;
+  }
+
+  function moveColumn() {
+    var left = this.classList.contains('left');
+    var most = this.classList.contains('most');
+    var colId = this.dataset.id;
+    if (!colId) return; // we don't know what to move
+
+    regenerateColumnOrder();
+    var i = currentPaper.columnOrder.indexOf(colId);
+    if (i === -1) return console.error('column ' + colId + ' not found in newly regenerated order!');
+    _.moveInArray(currentPaper.columnOrder, i, left, most);
+    fillPaper(currentPaper);
+    setPendingPaperSave();
+  }
+
+  function regenerateColumnOrder() {
+    if (!Array.isArray(currentPaper.columnOrder)) currentPaper.columnOrder = [];
+    var columns = findColumnsInPaper();
+
+    columns.forEach(function (col) {
+      if (currentPaper.columnOrder.indexOf(col.id) === -1) {
+        currentPaper.columnOrder.push(col.id);
+      }
+    })
   }
 
   var addedPaperListeners = false;

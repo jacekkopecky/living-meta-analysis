@@ -222,6 +222,7 @@ function extractPaperForSending(storagePaper, includeDataValues) {
   if (includeDataValues) {
     // todo this may not be how the data ends up being encoded
     retval.experiments = storagePaper.experiments;
+    retval.columnOrder = storagePaper.columnOrder;
   }
 
   return retval;
@@ -242,6 +243,7 @@ function extractReceivedPaper(receivedPaper) {
     doi: tools.string(receivedPaper.doi),
     tags: tools.array(receivedPaper.tags, tools.string),
     experiments: tools.array(receivedPaper.experiments, extractReceivedExperiment),
+    columnOrder: tools.array(receivedPaper.columnOrder, tools.string),
   };
 
   // todo comments and anything else recently added to the data

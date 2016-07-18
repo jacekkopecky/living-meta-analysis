@@ -167,6 +167,7 @@ module.exports.addUser = (email, user) => {
       // we can view the version on which the comment was done
     },
   ]
+  columnOrder: [ '/id/col/12', '/id/col/13', '/id/col/14' ],
   experiments: [
     {
       title: "ex1", // needs to be unique within the paper only
@@ -174,7 +175,7 @@ module.exports.addUser = (email, user) => {
       enteredBy: 'example@example.com',
       ctime: 2,
       data: {
-        "/id/p/12": {  // identifies the column (see below) for which we have a value here
+        "/id/col/12": {  // identifies the column (see below) for which we have a value here
           value: "30",
           ctime: 2,
           enteredBy: 'example@example.com',
@@ -184,12 +185,12 @@ module.exports.addUser = (email, user) => {
       }
       comments: ... as above,
     }
-  ]
+  ],
 }
 
 a column record looks like this: (see /api/columns)
 {
-  id: '/id/p/12',
+  id: '/id/col/12',
   title: 'N',
   description: 'number of participants',
   unit: 'person', // optional
