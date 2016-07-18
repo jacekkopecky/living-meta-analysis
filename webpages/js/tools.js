@@ -238,9 +238,15 @@
       moveTo = most ? arr.length - 1 : i+1;
     }
 
-    var content = arr[i];
-    arr.splice(i, 1);
-    arr.splice(moveTo, 0, content);
+    _.moveArrayElement(arr, i, moveTo);
+    return arr;
+  }
+
+  _.moveArrayElement = function moveArrayElement(arr, oldIndex, newIndex) {
+    if (oldIndex === newIndex || !Array.isArray(arr)) return arr;
+    var content = arr[oldIndex];
+    arr.splice(oldIndex, 1);
+    arr.splice(newIndex, 0, content);
     return arr;
   }
 

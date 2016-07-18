@@ -145,6 +145,7 @@
     showColumns.forEach(function (col) {
       var th = _.cloneTemplateById('col-heading-template');
       _.fillEls(th, '.coltitle', col.title);
+      _.addClass(th, '.coltype', col.type);
       _.fillEls(th, '.coldescription', col.description);
       _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime));
       _.fillEls(th, '.definedby .value', col.definedBy);
@@ -233,19 +234,34 @@
     var i = currentPaper.columnOrder.indexOf(colId);
     if (i === -1) return console.error('column ' + colId + ' not found in newly regenerated order!');
     _.moveInArray(currentPaper.columnOrder, i, left, most);
+    moveResultsAfterCharacteristics();
     fillPaper(currentPaper);
     setPendingPaperSave();
   }
 
   function regenerateColumnOrder() {
     if (!Array.isArray(currentPaper.columnOrder)) currentPaper.columnOrder = [];
-    var columns = findColumnsInPaper();
 
+    var columns = findColumnsInPaper();
     columns.forEach(function (col) {
       if (currentPaper.columnOrder.indexOf(col.id) === -1) {
         currentPaper.columnOrder.push(col.id);
       }
     })
+
+    moveResultsAfterCharacteristics();
+  }
+
+  function moveResultsAfterCharacteristics() {
+    // make sure result columns come after characteristics columns
+    var firstResult = 0;
+    for (var i = 0; i < currentPaper.columnOrder.length; i++) {
+      if (limeta.columns[currentPaper.columnOrder[i]].type === 'characteristic') {
+        _.moveArrayElement(currentPaper.columnOrder, i, firstResult);
+        firstResult++;
+      }
+    }
+
   }
 
   var addedPaperListeners = false;

@@ -637,10 +637,17 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   margin-bottom: .5em;
 }
 
+#paper table.experiments .fullinfo .coltype.result .type-characteristic,
+#paper table.experiments .fullinfo .coltype.characteristic .type-result {
+  display: none;
+}
+
 #paper table.experiments .fullinfo footer {
   font-size: 80%;
   line-height: 120%;
+  margin-top: .5em;
   border-top: 1px solid #888;
+  padding-top: .3em;
   margin-bottom: 0;
   padding-bottom: 0;
 }
