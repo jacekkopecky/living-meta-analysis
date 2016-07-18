@@ -7,6 +7,7 @@ const GUARD = require('simple-google-openid').guardMiddleware({ realm: 'accounts
 const NotFoundError = require('./errors/NotFoundError');
 const UnauthorizedError = require('./errors/UnauthorizedError');
 const InternalError = require('./errors/InternalError');
+const ValidationError = require('./errors/ValidationError');
 const storage = require('./storage');
 const tools = require('./tools');
 
@@ -200,7 +201,11 @@ function savePaper(req, res, next) {
     res.json(extractPaperForSending(p, true));
   })
   .catch((e) => {
-    next(new InternalError(e));
+    if (e instanceof ValidationError) {
+      next(e);
+    } else {
+      next(new InternalError(e));
+    }
   });
 }
 
@@ -233,8 +238,8 @@ function extractReceivedPaper(receivedPaper) {
   const retval = {
     id: tools.string(receivedPaper.id),                  // identifies the paper to be changed
     title: tools.string(receivedPaper.title),
-    // enteredBy: tools.string(receivedPaper.enteredBy), // can't be changed
-    // ctime: tools.number(receivedPaper.ctime),         // can't be changed
+    CHECKenteredBy: tools.string(receivedPaper.enteredBy), // can't be changed but should be checked
+    CHECKctime: tools.number(receivedPaper.ctime),         // can't be changed but should be checked
     // mtime: tools.number(receivedPaper.mtime),         // will be updated
     published: tools.string(receivedPaper.published),
     description: tools.string(receivedPaper.description),
@@ -243,10 +248,11 @@ function extractReceivedPaper(receivedPaper) {
     doi: tools.string(receivedPaper.doi),
     tags: tools.array(receivedPaper.tags, tools.string),
     experiments: tools.array(receivedPaper.experiments, extractReceivedExperiment),
+    comments: tools.array(receivedPaper.comments, extractReceivedComment),
     columnOrder: tools.array(receivedPaper.columnOrder, tools.string),
   };
 
-  // todo comments and anything else recently added to the data
+  // todo anything else recently added to the data
 
   return retval;
 }
@@ -254,9 +260,11 @@ function extractReceivedPaper(receivedPaper) {
 function extractReceivedExperiment(receivedExperiment) {
   const retval = {
     title: tools.string(receivedExperiment.title),
+    CHECKenteredBy: tools.string(receivedExperiment.enteredBy),
+    CHECKctime: tools.number(receivedExperiment.ctime),
     description: tools.string(receivedExperiment.description),
     data: tools.assoc(receivedExperiment.data, extractReceivedExperimentDatum),
-    // todo comments
+    comments: tools.array(receivedExperiment.comments, extractReceivedComment),
   };
   return retval;
 }
@@ -264,7 +272,20 @@ function extractReceivedExperiment(receivedExperiment) {
 function extractReceivedExperimentDatum(receivedDatum) {
   const retval = {
     value: tools.string(receivedDatum.value),
-    // todo comments
+    CHECKenteredBy: tools.string(receivedDatum.enteredBy),
+    CHECKctime: tools.number(receivedDatum.ctime),
+    comments: tools.array(receivedDatum.comments, extractReceivedComment),
+  };
+  return retval;
+}
+
+function extractReceivedComment(receivedComment) {
+  const retval = {
+    CHECKby: tools.string(receivedComment.by),
+    CHECKctime: tools.number(receivedComment.ctime),
+    onVersionBy: tools.string(receivedComment.onVersionBy),
+    text: tools.string(receivedComment.text),
+    hidden: tools.bool(receivedComment.hidden),
   };
   return retval;
 }

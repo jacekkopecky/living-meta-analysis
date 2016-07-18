@@ -96,6 +96,8 @@ app.use((err, req, res, next) => {
   } else if (err.status === 401) {
     res.set('WWW-Authenticate', 'Bearer realm="accounts.google.com"');
     res.status(401).sendFile('401.html', { root: './webpages/' });
+  } else if (err.status === 409) {
+    res.status(409).send(err.message);
   } else {
     next(err);
   }

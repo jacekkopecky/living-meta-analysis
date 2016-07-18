@@ -46,6 +46,18 @@ module.exports.number = function number(val) {
   return +val;
 };
 
+module.exports.bool = function bool(val) {
+  if (val === undefined || val === null) return val;
+
+  if (typeof val === 'object' || typeof val === 'function') {
+    console.error(`not a boolean: ${val}`);
+    console.error(new Error());
+    return undefined;
+  }
+
+  return !!val;
+};
+
 module.exports.array = function array(val, f) {
   if (val === undefined || val === null) return val;
 

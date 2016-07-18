@@ -8,6 +8,7 @@
 'use strict';
 
 const tools = require('./tools');
+const ValidationError = require('./errors/ValidationError');
 
 const gcloud = require('gcloud')({
   projectId: 'jacek-soc-port-ac-uk',
@@ -164,7 +165,7 @@ module.exports.addUser = (email, user) => {
       text: "the paper presents 5 experiments, only extracting 2 here",
       ctime: 1,
       hidden: false,
-      // we can view the version on which the comment was done
+      // with onVersionBy and ctime we can view the version on which the comment was done
     },
   ]
   columnOrder: [ '/id/col/12', '/id/col/13', '/id/col/14' ],
@@ -195,6 +196,7 @@ a column record looks like this: (see /api/columns)
   description: 'number of participants',
   unit: 'person', // optional
   definedBy: 'jacek.kopecky@port.ac.uk',
+  comments: ... as above,
   ctime: 4,
 }
   // todo columns
@@ -279,6 +281,41 @@ module.exports.getPaperByTitle = (email, title, time) => {
 
 module.exports.listPapers = () => paperCache;
 
+function deleteCHECKvalues(paper) {
+  if (paper !== null && (typeof paper === 'object' || typeof paper === 'function')) {
+    for (const key of Object.keys(paper)) {
+      if (key.startsWith('CHECK')) delete paper[key];
+      else deleteCHECKvalues(paper[key]);
+    }
+  }
+}
+
+function fillByAndCtimes(paper, email, ctime) {
+  if (!paper.enteredBy) paper.enteredBy = email;
+  if (!paper.ctime) paper.ctime = ctime;
+  fillByAndCtimeInComments(paper.comments, email, ctime);
+  if (paper.experiments) for (const exp of paper.experiments) { // eslint-disable-line curly
+    // todo these values should allow us to construct better patches
+    // (e.g. removal of the first experiment)
+    if (!exp.enteredBy) exp.enteredBy = email;
+    if (!exp.ctime) exp.ctime = ctime;
+    fillByAndCtimeInComments(exp.comments, email, ctime);
+    if (exp.data) for (const col of Object.keys(exp.data)) { // eslint-disable-line curly
+      if (!exp.data[col].enteredBy) exp.data[col].enteredBy = email;
+      if (!exp.data[col].ctime) exp.data[col].ctime = ctime;
+      fillByAndCtimeInComments(exp.data[col].comments, email, ctime);
+    }
+  }
+}
+
+function fillByAndCtimeInComments(comments, email, ctime) {
+  if (!Array.isArray(comments)) return;
+  for (const com of comments) {
+    if (!com.by) com.by = email;
+    if (!com.ctime) com.ctime = ctime;
+  }
+}
+
 module.exports.savePaper = (paper, email) => {
   // todo multiple users' views on one paper
   // compute this user's version of this paper, as it is in the database
@@ -291,10 +328,11 @@ module.exports.savePaper = (paper, email) => {
 
   return paperCache
   .then((papers) => {
+    const ctime = tools.uniqueNow();
     if (!paper.id) {
-      paper.id = '/id/p/' + tools.uniqueNow();
+      paper.id = '/id/p/' + ctime;
       paper.enteredBy = email;
-      paper.ctime = paper.mtime = tools.uniqueNow();
+      paper.ctime = paper.mtime = ctime;
       doAddPaperToCache = () => papers.push(paper);
     } else {
       let origPaper = null;
@@ -307,7 +345,7 @@ module.exports.savePaper = (paper, email) => {
       }
 
       if (!origPaper) {
-        throw new Error('failed savePaper: did not find id ' + paper.id);
+        throw new ValidationError('failed savePaper: did not find id ' + paper.id);
       }
       if (email !== origPaper.enteredBy) {
         throw new Error('not implemented saving someone else\'s paper');
@@ -318,6 +356,13 @@ module.exports.savePaper = (paper, email) => {
       paper.mtime = tools.uniqueNow();
       doAddPaperToCache = () => { papers[i] = paper; };
     }
+
+    // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
+    fillByAndCtimes(paper, email, ctime);
+
+    // for now, we choose to ignore if the incoming paper specifies the wrong immutable values here
+    // do not save any of the validation values
+    deleteCHECKvalues(paper);
   }).then(() => {
     const key = datastore.key(['Paper', paper.id]);
     // this is here until we add versioning on the papers themselves
