@@ -524,6 +524,16 @@ section.list > ul > li > ul.tags > li {
   margin-top: 10em;
 }
 
+#paper table.experiments + .no-table {
+  display: none;
+}
+
+body:not(.page-about-you) #paper table.experiments.only-yours + .no-table {
+  display: block;
+  padding: .5em;
+  border: 1px solid black;
+}
+
 #paper table.experiments th {
   font-weight: normal;
   vertical-align: top;
@@ -542,6 +552,44 @@ section.list > ul > li > ul.tags > li {
 
 #paper table.experiments tr th:first-child {
   border-right: 2px solid black;
+  position: relative;
+}
+
+#paper table.experiments tr th:first-child:hover {
+  z-index: 100;
+}
+
+#paper table.experiments tr th:first-child .expdescription.short {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 8em;
+  max-height: 1em;
+}
+
+#paper table.experiments tr .fullrowinfo {
+  display: none;
+}
+
+#paper table.experiments .fullrowinfo header {
+  font-weight: bold;
+  margin-bottom: .5em;
+}
+
+#paper table.experiments tr th:first-child:hover .fullrowinfo,
+#paper table.experiments tr th:first-child:active .fullrowinfo {
+  display: block;
+  min-width: 20em;
+  max-width: 30em;
+  min-height: 5em;
+  border: 1px solid black;
+  border-radius: .5em;
+  padding: .3em .5em .1em .5em;
+  position: absolute;
+  left: 90%;
+  top: -.5em;
+  text-align: left;
+  background-color: white;
 }
 
 /* nth-last-child(2) because there's the heading for adding */
@@ -612,13 +660,13 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
 }*/
 
 #paper table.experiments tr:first-child th > div:hover {
-  z-index: 100; /* for fullinfo not to be overlapped by other parts of the table */
+  z-index: 100; /* for fullcolinfo not to be overlapped by other parts of the table */
 }
 
-#paper table.experiments tr:first-child th > div > span + .fullinfo {
+#paper table.experiments tr:first-child th > div > span + .fullcolinfo {
   display: none;
-  min-width: 5em;
-  max-width: 20em;
+  min-width: 10em;
+  max-width: 30em;
   min-height: 5em;
   border: 1px solid black;
   border-radius: .5em;
@@ -632,17 +680,17 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   transform-origin: left top;
 }
 
-#paper table.experiments .fullinfo header {
+#paper table.experiments .fullcolinfo header {
   font-weight: bold;
   margin-bottom: .5em;
 }
 
-#paper table.experiments .fullinfo .coltype.result .type-characteristic,
-#paper table.experiments .fullinfo .coltype.characteristic .type-result {
+#paper table.experiments .fullcolinfo .coltype.result .type-characteristic,
+#paper table.experiments .fullcolinfo .coltype.characteristic .type-result {
   display: none;
 }
 
-#paper table.experiments .fullinfo footer {
+#paper table.experiments .fullcolinfo footer {
   font-size: 80%;
   line-height: 120%;
   margin-top: .5em;
@@ -652,12 +700,12 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   padding-bottom: 0;
 }
 
-#paper table.experiments .fullinfo .value {
+#paper table.experiments .fullcolinfo .value {
   white-space: nowrap;
 }
 
-#paper table.experiments tr:first-child th > div > span:hover + .fullinfo,
-#paper table.experiments tr:first-child th > div > span + .fullinfo:hover {
+#paper table.experiments tr:first-child th > div > span:hover + .fullcolinfo,
+#paper table.experiments tr:first-child th > div > span + .fullcolinfo:hover {
   display: inline-block;
 }
 
@@ -678,12 +726,23 @@ body:not(.page-about-you) #paper table.experiments td:last-child {
 }
 
 body:not(.page-about-you) #paper table.experiments tr.add,
-body:not(.page-about-you) #paper table.experiments th.add {
+body:not(.page-about-you) #paper table.experiments th.add,
+body.page-about-you #paper table.experiments.only-yours th.add {
   display: none;
 }
 
 #paper table.experiments th.add > div > span {
   padding-left: .5em;
+}
+
+/* only-yours on experiments table means it's empty */
+#paper table.experiments:not(.only-yours) tr.add .no-data {
+  display: none;
+}
+
+#paper table.experiments.only-yours tr.add .no-data {
+  position: absolute;
+  border: none;
 }
 
 /*

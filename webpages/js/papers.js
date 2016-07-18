@@ -166,6 +166,7 @@
     experiments.forEach(function (experiment) {
       var tr = _.cloneTemplateById('experiment-row-template');
       _.fillEls(tr, '.exptitle', experiment.title);
+      _.fillEls(tr, '.expdescription', experiment.description);
 
       showColumns.forEach(function (col) {
         var colId = col.id;
@@ -186,7 +187,8 @@
       addRowNode.appendChild(td);
     });
 
-    _.byId('paper').appendChild(table);
+    var noTableMarker = _.findEl('#paper .no-table');
+    noTableMarker.parentElement.insertBefore(table, noTableMarker);
   }
 
   function findColumnsInPaper() {

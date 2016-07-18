@@ -39,6 +39,7 @@
   <!-- todo show "other contributors" or "forks" or "clones" ... -->
   <!-- todo show meta-analyses that use this paper -->
   <!-- todo show history -->
+  <p class='no-table'>No data has been entered for this paper yet.<!-- todo instruction to clone the paper? --></p>
 </section>
 <template id="experiments-table-template">
   <table class="experiments only-yours">
@@ -47,7 +48,7 @@
         <th>
           <div>
             <span>Study/Experiment</span>
-            <div class="fullinfo">
+            <div class="fullcolinfo">
               <header><p>Study/Experiment</p></header>
               <p class="description">A row can be a study, an experiment, or a condition within an experiment.</p>
             </div>
@@ -57,6 +58,7 @@
       </tr>
       <tr class="add">
         <th><button name="add">add a row</button></th>
+        <td class='no-data'>enter data by adding a row and then columns</td>
       </tr>
     </tbody>
   </table>
@@ -65,7 +67,7 @@
   <th>
     <div>
       <span class="coltitle">error</span>
-      <div class="fullinfo">
+      <div class="fullcolinfo">
         <button class="move left most only-yours" title="move column to the left">|«</button>
         <button class="move left only-yours" title="move column to the left">«</button>
         <!-- <button class="hide only-yours">hide</button> -->
@@ -85,7 +87,17 @@
 </template>
 <template id="experiment-row-template">
   <tr class="row">
-    <th><span class="title">error</span>-<span class="exptitle"></span></th>
+    <th>
+      <span class="title">error</span>-<span class="exptitle"></span>
+      <div class="fullrowinfo">
+        <header>
+          <p>Study/experiment: <span class="title">error</span>-<span class="exptitle"></span></p>
+        </header>
+        <div class="expdescription" placeholder="enter description"></div>
+      </div>
+      <div class="expdescription short"></div>
+      <!-- todo comments -->
+    </th>
   </tr>
 </template>
 <template id="experiment-datum-template">
