@@ -156,6 +156,7 @@
         el.addEventListener('click', moveColumn);
         el.dataset.id = col.id;
       });
+      th.children[0].classList.add(col.type);
       headingsRowNode.insertBefore(th, addColumnNode);
     });
 
@@ -171,6 +172,7 @@
         if (experiment.data && experiment.data[colId]) value = experiment.data[colId].value;
         var td = _.cloneTemplateById('experiment-datum-template');
         _.fillEls(td, '.value', value);
+        td.children[0].classList.add(col.type);
         tr.children[0].appendChild(td);
       });
 
@@ -179,6 +181,7 @@
 
     showColumns.forEach(function (col) {
       var td = document.createElement('td');
+      td.classList.add(col.type);
       addRowNode.appendChild(td);
     });
 

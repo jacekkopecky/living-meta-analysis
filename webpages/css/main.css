@@ -571,9 +571,28 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   transform-origin: bottom right;
 }
 
+/* thicker first column divider line */
 #paper table.experiments tr:first-child th:first-child:after {
   border-bottom: 2px solid black !important;
 }
+
+/* thicker line between characteristics and results columns */
+#paper table.experiments tr:first-child th.characteristic + th.result,
+#paper table.experiments tr td.characteristic + td.result {
+  border-left: 2px solid black;
+}
+#paper table.experiments tr:first-child th.characteristic + th.result:before {
+  border-bottom: 2px solid black;
+  display: block;
+  content: ' ';
+  position: absolute;
+  left: 0;
+  bottom: 1em;
+  width: 12em;
+  transform: translate(-.5px,1px) rotate(-45deg);
+  transform-origin: bottom left;
+}
+
 
 #paper table.experiments tr:first-child th > div > span {
   width: 12em;
