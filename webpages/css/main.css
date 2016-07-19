@@ -666,7 +666,7 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   width: auto;
 }*/
 
-#paper table.experiments tr:first-child th > div:hover {
+#paper table.experiments tr:first-child th:hover > div {
   z-index: 100; /* for fullcolinfo not to be overlapped by other parts of the table */
 }
 
@@ -680,7 +680,7 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   padding: .3em .5em .1em .5em;
   position: absolute;
   left: 0;
-  top: 0;
+  top: -2em;
   text-align: left;
   background-color: white;
   transform: rotate(45deg);
@@ -711,9 +711,8 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   white-space: nowrap;
 }
 
-#paper table.experiments tr:first-child th > div > span:hover + .fullcolinfo,
-#paper table.experiments tr:first-child th > div > span + .fullcolinfo:hover {
-  display: inline-block;
+#paper table.experiments tr:first-child th:hover > div > span + .fullcolinfo {
+  display: block;
 }
 
 #paper table.experiments td {
@@ -756,6 +755,8 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   border-radius: .5em;
   padding: .3em .5em .1em .5em;
   position: absolute;
+  /* todo in javascript, when .comments are shown and if they're longer than the screen,
+     put them higher so they stand on the bottom of the screen */
   top: 0;
   left: 90%;
   text-align: left;
