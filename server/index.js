@@ -99,7 +99,8 @@ app.use((err, req, res, next) => {
   } else if (err.status === 409) {
     res.status(409).send(err.message);
   } else {
-    next(err);
+    console.error(err);
+    res.status(500).send('internal server error');
   }
 });
 
