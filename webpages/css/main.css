@@ -576,6 +576,13 @@ body:not(.page-about-you) #paper table.experiments.only-yours + .no-table {
   margin-bottom: .5em;
 }
 
+#paper table.experiments .fullrowinfo .expdescription:not([contenteditable]):empty:before {
+  content: 'No detailed description';
+  color: #aaa;
+  font-style: italic;
+  display: block;
+}
+
 #paper table.experiments tr th:first-child:hover .fullrowinfo,
 #paper table.experiments tr th:first-child:active .fullrowinfo {
   display: block;
