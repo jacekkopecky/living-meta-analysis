@@ -725,7 +725,7 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   right: 0;
   height: 0;
   width: 0;
-  border-top: .5em solid red;
+  border-top: .5em solid #f50;
   border-left: .5em solid transparent;
   z-index: 1;
 }
@@ -734,11 +734,17 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   z-index: 100;
 }
 
+#paper table.experiments td.hascomments:hover {
+  background: rgba(128,0,255,.2);
+}
+
 #paper table.experiments td.hascomments .comments {
   display: block;
   min-width: 20em;
   max-width: 30em;
   min-height: 5em;
+  max-height: 50vh;
+  overflow: auto;
   border: 1px solid black;
   border-radius: .5em;
   padding: .3em .5em .1em .5em;
@@ -748,6 +754,31 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   text-align: left;
   background-color: white;
   z-index: 100;
+}
+
+#paper table.experiments td.hascomments .comments > header {
+  margin-bottom: .5em;
+}
+
+#paper table.experiments .comments .comment {
+  display: block;
+  border-top: 1px solid black;
+  margin: .5em 0;
+  padding: .5em 0 0 0;
+}
+
+#paper table.experiments .comments .comment header {
+  font-size: 90%;
+  line-height: 120%;
+  margin-bottom: .5em;
+}
+
+#paper table.experiments .comments .comment .text {
+  display: block;
+}
+
+#paper table.experiments .comments .comment .ctime {
+  white-space: nowrap;
 }
 
 #paper table.experiments td:not(.hascomments) .comments,

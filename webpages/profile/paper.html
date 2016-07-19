@@ -103,8 +103,19 @@
 <template id="experiment-datum-template">
   <td>
     <span class="value"></span>
-    <div class="comments">test this will show comments</div>
+    <div class="comments">
+      <header><p>Comments:</p></header>
+      <main></main>
+    </div>
   </td>
+</template>
+<template id="comment-template">
+  <div class="comment">
+    <header>
+      <a class="by" href="error">error</a> wrote on <span class="ctime date"></span>:
+    </header>
+    <span class="text"></span>
+  </div>
 </template>
 
 <footer>
