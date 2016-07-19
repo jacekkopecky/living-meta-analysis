@@ -1,4 +1,5 @@
 // from https://raw.githubusercontent.com/taylorhakes/promise-polyfill/master/promise.js 2016-07-13
+/* eslint-disable no-undef */
 (function (root) {
 
   // Store setTimeout reference so promise-polyfill will be unaffected by
