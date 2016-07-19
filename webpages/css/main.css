@@ -714,14 +714,52 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   vertical-align: top;
   border-left: 1px solid black;
   border-right: 1px solid black;
+  position: relative;
+}
+
+#paper table.experiments td.hascomments:after {
+  display: block;
+  content: ' ';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 0;
+  width: 0;
+  border-top: .5em solid red;
+  border-left: .5em solid transparent;
+  z-index: 1;
+}
+
+#paper table.experiments td:hover {
+  z-index: 100;
+}
+
+#paper table.experiments td.hascomments .comments {
+  display: block;
+  min-width: 20em;
+  max-width: 30em;
+  min-height: 5em;
+  border: 1px solid black;
+  border-radius: .5em;
+  padding: .3em .5em .1em .5em;
+  position: absolute;
+  top: 0;
+  left: 90%;
+  text-align: left;
+  background-color: white;
+  z-index: 100;
+}
+
+#paper table.experiments td:not(.hascomments) .comments,
+#paper table.experiments td:not(:hover) .comments {
+  display: none;
 }
 
 body:not(.page-about-you) #paper table.experiments td:last-child {
   border-right: none;
 }
 
-#paper table.experiments tr:nth-child(2n) td,
-#paper table.experiments tr:nth-child(2n) th {
+#paper table.experiments tr:nth-child(2n) {
   background-color: #eee;
 }
 

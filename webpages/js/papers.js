@@ -171,9 +171,17 @@
       showColumns.forEach(function (col) {
         var colId = col.id;
         var value = ' ';
-        if (experiment.data && experiment.data[colId]) value = experiment.data[colId].value;
+        var comments;
+        if (experiment.data && experiment.data[colId]) {
+          value = experiment.data[colId].value;
+          comments = experiment.data[colId].comments;
+        }
         var td = _.cloneTemplateById('experiment-datum-template');
         _.fillEls(td, '.value', value);
+        if (Array.isArray(comments) && comments.length > 0) {
+          td.children[0].classList.add('hascomments');
+          // todo fill comments
+        }
         td.children[0].classList.add(col.type);
         tr.children[0].appendChild(td);
       });
