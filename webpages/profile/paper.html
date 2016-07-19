@@ -107,7 +107,7 @@
   <td>
     <span class="value"></span>
     <div class="comments">
-      <header><p>Comments:</p></header>
+      <header><p><span class="commentcount"></span> comments:</p></header>
       <main></main>
     </div>
   </td>
@@ -115,9 +115,9 @@
 <template id="comment-template">
   <div class="comment">
     <header>
-      <a class="by" href="error">error</a> wrote on <span class="ctime date"></span>:
+      #<span class="commentnumber"></span>: <a class="by" href="error">error</a> wrote on <span class="ctime date"></span>:
     </header>
-    <span class="text"></span>
+    <p><span class="text"></span></p>
   </div>
 </template>
 

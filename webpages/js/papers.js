@@ -180,7 +180,7 @@
         _.fillEls(td, '.value', value);
         if (Array.isArray(comments) && comments.length > 0) {
           td.children[0].classList.add('hascomments');
-          // todo fill comments
+          _.fillEls(td, '.commentcount', comments.length);
           fillComments('comment-template', td, '.comments main', comments);
         }
         td.children[0].classList.add(col.type);
@@ -202,9 +202,10 @@
 
   function fillComments(templateId, root, selector, comments) {
     var targetEl = _.findEl(root, selector);
-    comments.forEach(function (comment) {
+    comments.forEach(function (comment, index) {
       var el = _.cloneTemplateById(templateId);
       _.fillEls(el, '.by', comment.by);
+      _.fillEls(el, '.commentnumber', index+1);
       _.setProps(el, '.by', 'href', '/' + comment.by + '/');
       _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime));
       _.fillEls(el, '.text', comment.text);
