@@ -49,7 +49,7 @@ api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/:time([0-9]+)/`,
 api.post(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/`,
         GUARD, SAME_USER, jsonBodyParser, savePaper);
 
-// api.get(/api/columns)
+api.get('/columns', REGISTER_USER, listColumns);
 
 api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listMetaanalysesForUser);
 
@@ -150,12 +150,12 @@ module.exports.checkUserExists = function (req, res, next) {
 /*
  *
  *
- *          ##   #####  ##### #  ####  #      ######  ####
- *         #  #  #    #   #   # #    # #      #      #
- *        #    # #    #   #   # #      #      #####   ####
- *        ###### #####    #   # #      #      #           #
- *        #    # #   #    #   # #    # #      #      #    #
- *        #    # #    #   #   #  ####  ###### ######  ####
+ *        #####    ##   #####  ###### #####   ####
+ *        #    #  #  #  #    # #      #    # #
+ *        #    # #    # #    # #####  #    #  ####
+ *        #####  ###### #####  #      #####       #
+ *        #      #    # #      #      #   #  #    #
+ *        #      #    # #      ###### #    #  ####
  *
  *
  */
@@ -222,6 +222,7 @@ function extractPaperForSending(storagePaper, includeDataValues) {
     link: storagePaper.link,
     doi: storagePaper.doi,
     tags: storagePaper.tags,
+    // todo comments in various places?
   };
 
   if (includeDataValues) {
@@ -357,4 +358,42 @@ function listTopMetaanalyses(req, res, next) {
     res.json(retval);
   })
   .catch(() => next(new InternalError()));
+}
+
+
+/*
+ *
+ *
+ *         ####   ####  #      #    # #    # #    #  ####
+ *        #    # #    # #      #    # ##  ## ##   # #
+ *        #      #    # #      #    # # ## # # #  #  ####
+ *        #      #    # #      #    # #    # #  # #      #
+ *        #    # #    # #      #    # #    # #   ## #    #
+ *         ####   ####  ######  ####  #    # #    #  ####
+ *
+ *
+ */
+function listColumns(req, res, next) {
+  storage.listColumns()
+  .then((columns) => {
+    const retval = {};
+    for (const key of Object.keys(columns)) {
+      retval[key] = extractColumnForSending(columns[key]);
+    }
+    res.json(retval);
+  })
+  .catch(() => next(new InternalError('cannot get columns, why?!?')));
+}
+
+function extractColumnForSending(storageColumn) {
+  return {
+    id: storageColumn.id,
+    title: storageColumn.title,
+    type: storageColumn.type,
+    description: storageColumn.description,
+    definedBy: storageColumn.definedBy,
+    ctime: storageColumn.ctime,
+    // unit: 'person', // optional
+    // todo comments
+  };
 }

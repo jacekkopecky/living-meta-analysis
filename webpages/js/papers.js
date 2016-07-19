@@ -64,7 +64,8 @@
     var title = limeta.extractPaperTitleFromUrl();
     _.fillEls('#paper .title', title);
 
-    limeta.getGapiIDToken()
+    limeta.getColumns() // todo getColumns could run in parallel with everything before fillPaper
+    .then(limeta.getGapiIDToken)
     .then(function (idToken) {
       currentPaperUrl = '/api/papers/' + email + '/' + title;
       return fetch(currentPaperUrl, _.idTokenToFetchOptions(idToken));
@@ -222,7 +223,6 @@
       if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
         if (!(key in showColumnsHash)) {
           var col = limeta.columns[key];
-          col.id = key;
           showColumnsHash[key] = col;
           switch (col.type) {
             case 'characteristic': showCharacteristicColumns.push(col); break;
