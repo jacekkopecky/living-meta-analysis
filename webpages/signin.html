@@ -14,7 +14,7 @@
 <script src="/js/auth.js"></script>
 <script>
 window.limeta.initPage = function () {
-  window.gapi.auth2.getAuthInstance().currentUser.listen(signedIn);
+  window.limeta.onSignInChange(signedIn);
 }
 
 function signedIn() {
