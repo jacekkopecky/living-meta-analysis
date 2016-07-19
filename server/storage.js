@@ -290,29 +290,29 @@ function deleteCHECKvalues(paper) {
   }
 }
 
-function fillByAndCtimes(paper, email, ctime) {
+function fillByAndCtimes(paper, email) {
   if (!paper.enteredBy) paper.enteredBy = email;
-  if (!paper.ctime) paper.ctime = ctime;
-  fillByAndCtimeInComments(paper.comments, email, ctime);
+  if (!paper.ctime) paper.ctime = tools.uniqueNow();
+  fillByAndCtimeInComments(paper.comments, email);
   if (paper.experiments) for (const exp of paper.experiments) { // eslint-disable-line curly
     // todo these values should allow us to construct better patches
     // (e.g. removal of the first experiment)
     if (!exp.enteredBy) exp.enteredBy = email;
-    if (!exp.ctime) exp.ctime = ctime;
-    fillByAndCtimeInComments(exp.comments, email, ctime);
+    if (!exp.ctime) exp.ctime = tools.uniqueNow();
+    fillByAndCtimeInComments(exp.comments, email);
     if (exp.data) for (const col of Object.keys(exp.data)) { // eslint-disable-line curly
       if (!exp.data[col].enteredBy) exp.data[col].enteredBy = email;
-      if (!exp.data[col].ctime) exp.data[col].ctime = ctime;
-      fillByAndCtimeInComments(exp.data[col].comments, email, ctime);
+      if (!exp.data[col].ctime) exp.data[col].ctime = tools.uniqueNow();
+      fillByAndCtimeInComments(exp.data[col].comments, email);
     }
   }
 }
 
-function fillByAndCtimeInComments(comments, email, ctime) {
+function fillByAndCtimeInComments(comments, email) {
   if (!Array.isArray(comments)) return;
   for (const com of comments) {
     if (!com.by) com.by = email;
-    if (!com.ctime) com.ctime = ctime;
+    if (!com.ctime) com.ctime = tools.uniqueNow();
   }
 }
 
@@ -358,7 +358,7 @@ module.exports.savePaper = (paper, email) => {
     }
 
     // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
-    fillByAndCtimes(paper, email, ctime);
+    fillByAndCtimes(paper, email);
 
     // for now, we choose to ignore if the incoming paper specifies the wrong immutable values here
     // do not save any of the validation values
