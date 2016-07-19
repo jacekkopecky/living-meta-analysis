@@ -23,6 +23,12 @@ body.page-about-you .only-not-yours {
   display: none !important;
 }
 
+body:not(.editing) .editing,
+body:not(.page-about-you) .editing,
+body.editing.page-about-you .notediting {
+  display: none !important;
+}
+
 .loadingspinner { display: none; }
 
 .loading .loadingspinner { display: block; }
@@ -103,16 +109,18 @@ body > footer {
   text-align: center;
 }
 
-.userinfo .signout,
-.userinfo .profile,
+.userinfo .actions > a,
 .userinfo .username {
   text-decoration: none;
   color: black;
   line-height: 200%;
 }
 
-.userinfo .actions > .signout:hover,
-.userinfo .actions > .profile:hover {
+.userinfo .actions > a {
+  cursor: pointer;
+}
+
+.userinfo .actions > a:hover {
   box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
 }
 
@@ -528,7 +536,7 @@ section.list > ul > li > ul.tags > li {
   display: none;
 }
 
-body:not(.page-about-you) #paper table.experiments.only-yours + .no-table {
+body:not(.page-about-you) #paper table.experiments.editing + .no-table {
   display: block;
   padding: .5em;
   border: 1px solid black;
@@ -601,7 +609,8 @@ body:not(.page-about-you) #paper table.experiments.only-yours + .no-table {
 
 /* nth-last-child(2) because there's the heading for adding */
 #paper table.experiments tr:first-child th:last-child,
-body:not(.page-about-you) #paper table.experiments tr:first-child th:nth-last-child(2) {
+body:not(.page-about-you) #paper table.experiments tr:first-child th:nth-last-child(2),
+body:not(.editing) #paper table.experiments tr:first-child th:nth-last-child(2) {
   border-right: none;
 }
 
@@ -613,8 +622,9 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:nth-last-ch
   bottom: 1em;
 }
 
-body.page-about-you #paper table.experiments tr:first-child th:not(:last-child):after,
-body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-last-child(-n+2)):after {
+body.page-about-you.editing #paper table.experiments tr:first-child th:not(:last-child):after,
+body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-last-child(-n+2)):after,
+body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-child(-n+2)):after {
   border-bottom: 1px solid black;
   display: block;
   content: ' ';
@@ -794,7 +804,8 @@ body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-la
   display: none;
 }
 
-body:not(.page-about-you) #paper table.experiments td:last-child {
+body:not(.page-about-you) #paper table.experiments td:last-child,
+body:not(.editing) #paper table.experiments td:last-child {
   border-right: none;
 }
 
@@ -804,7 +815,9 @@ body:not(.page-about-you) #paper table.experiments td:last-child {
 
 body:not(.page-about-you) #paper table.experiments tr.add,
 body:not(.page-about-you) #paper table.experiments th.add,
-body.page-about-you #paper table.experiments.only-yours th.add {
+body:not(.editing) #paper table.experiments tr.add,
+body:not(.editing) #paper table.experiments th.add,
+body.page-about-you.editing #paper table.experiments.editing th.add {
   display: none;
 }
 
@@ -812,12 +825,12 @@ body.page-about-you #paper table.experiments.only-yours th.add {
   padding-left: .5em;
 }
 
-/* only-yours on experiments table means it's empty */
-#paper table.experiments:not(.only-yours) tr.add .no-data {
+/* editing on experiments table means it's empty */
+#paper table.experiments:not(.editing) tr.add .no-data {
   display: none;
 }
 
-#paper table.experiments.only-yours tr.add .no-data {
+#paper table.experiments.editing tr.add .no-data {
   position: absolute;
   border: none;
 }

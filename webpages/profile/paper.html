@@ -14,7 +14,8 @@
     <div class="name when-signed-on">Signed in as: <span class="username"></span></div>
     <div class="g-signin2 signin"></div>
     <a href="/profile" class="profile when-signed-on">Profile</a>
-    <a href="#" class="signout when-signed-on">Sign out</a>
+    <a id="toggle-editing" class="only-yours">Toggle editing</a>
+    <a class="signout when-signed-on">Sign out</a>
   </div>
 </div>
 
@@ -22,8 +23,8 @@
 <section id="paper" class="paper loading">
   <header>
     <h1 class="title"></h1> todo required
-    <ul class="tags"></ul><a href="" class="addtag only-yours">+</a>
-    <template id="tag-template"><li><span class="tag">error</span><span class="remove only-yours">&times;</span></li></template>
+    <ul class="tags"></ul><a href="" class="addtag editing">+</a>
+    <template id="tag-template"><li><span class="tag">error</span><span class="remove editing">&times;</span></li></template>
     <span class="savepending">will be saved soon&hellip;</span>
     <span class="saving">saving&hellip;</span>
     <span class="savingerror" title="Sorry, something unexpected happened. Error details might be available in the browser console. Click here to try saving again.">saving error!</span>
@@ -32,9 +33,12 @@
   <p>Entered <span class="enteredby"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
   <p class="authors">Authors: <span class="value">error</span></p>
   <p class="published">Published: <span class="value">error</span></p>
-  <p class="description">Description: <span contenteditable placeholder="add description" class="value">error</span></p>
-  <p class="link">Link: <a class="value" href="error">error</a><button class="edit">edit</button></p>
-  <p class="doi">DOI: <a class="value" href="error" data-base="https://dx.doi.org/">error</a><button class="edit">edit</button></p>
+  <p class="description">Description:
+    <span contenteditable placeholder="add description" class="value editing">error</span>
+    <span placeholder="add description" class="value notediting">error</span>
+  </p>
+  <p class="link">Link: <a class="value" href="error">error</a><button class="edit editing">edit</button></p>
+  <p class="doi">DOI: <a class="value" href="error" data-base="https://dx.doi.org/">error</a><button class="edit editing">edit</button></p>
   <p class="mtime">Last modified: <span class="value date">error</span></p>
   <!-- todo show "other contributors" or "forks" or "clones" ... -->
   <!-- todo show meta-analyses that use this paper -->
@@ -43,7 +47,7 @@
   <p class='no-table'>No data has been entered for this paper yet.<!-- todo instruction to clone the paper? --></p>
 </section>
 <template id="experiments-table-template">
-  <table class="experiments only-yours">
+  <table class="experiments editing">
     <tbody>
       <tr>
         <th>
@@ -70,11 +74,11 @@
     <div>
       <span class="coltitle">error</span>
       <div class="fullcolinfo">
-        <button class="move left most only-yours" title="move column to the left">|«</button>
-        <button class="move left only-yours" title="move column to the left">«</button>
-        <!-- <button class="hide only-yours">hide</button> -->
-        <button class="move right only-yours" title="move column to the right">»</button>
-        <button class="move right most only-yours" title="move column to the right">»|</button>
+        <button class="move left most editing" title="move column to the left">|«</button>
+        <button class="move left editing" title="move column to the left">«</button>
+        <!-- <button class="hide editing">hide</button> -->
+        <button class="move right editing" title="move column to the right">»</button>
+        <button class="move right most editing" title="move column to the right">»|</button>
         <header>
           <p class="coltitle">error</p>
         </header>

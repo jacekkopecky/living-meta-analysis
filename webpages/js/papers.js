@@ -133,9 +133,9 @@
     // show the table if it's not empty or
     // hide the empty experiment data table if the user can't edit it
     if (experiments.length) {
-      table.children[0].classList.remove('only-yours');
+      table.children[0].classList.remove('editing');
     } else {
-      table.children[0].classList.add('only-yours');
+      table.children[0].classList.add('editing');
     }
 
     var showColumns = findColumnsInPaper();

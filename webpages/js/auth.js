@@ -7,7 +7,6 @@
   var CLIENT_ID = "358237292980-kbme56c9ih4rpmob16sq8bjig5dms6pl.apps.googleusercontent.com";
 
   function onSignIn(googleUser) {
-    // do something with the user profile
     if (!googleUser.isSignedIn()) {
       _.removeClass('body', 'signed-on');
       return;
@@ -21,6 +20,8 @@
       if (profile.getImageUrl()) el.src = profile.getImageUrl();
     });
 
+    onSignInListeners.forEach(function (cb) { cb(); });
+
     // register the user with the server
     var idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
 
@@ -30,12 +31,31 @@
     })
   }
 
+  var toggleButton = _.byId('toggle-editing');
+  limeta.editing = localStorage.limaEditing !== 'false';
+
+  function toggleEditing(val) {
+    limeta.editing = val;
+    localStorage.limaEditing = limeta.editing;
+    toggleButton.textContent = limeta.editing ? 'Turn editing off' : 'Turn editing on';
+    document.body.classList[limeta.editing ? 'add' : 'remove']('editing');
+  }
+
+  if (toggleButton) {
+    toggleEditing(limeta.editing);
+    toggleButton.addEventListener('click', function () {
+      toggleEditing(!limeta.editing);
+    })
+  }
+
+
   function signOut() {
     gapi.auth2.getAuthInstance().signOut().then(
       function () {
         _.findEls('.userinfo .userphoto').forEach(function(el){
           if (el.dataset.origsrc) el.src = el.dataset.origsrc;
         });
+        onSignInListeners.forEach(function (cb) { cb(); });
       },
       function (err) {
         console.log('error signing out');
@@ -108,5 +128,11 @@
         console.log(err);
       });
   })
+
+  var onSignInListeners = [];
+
+  limeta.onSignInChange = function (cb) {
+    if (onSignInListeners.indexOf(cb) === -1) onSignInListeners.push(cb);
+  }
 
 })(window, document);

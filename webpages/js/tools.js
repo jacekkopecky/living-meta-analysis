@@ -122,7 +122,6 @@
   }
 
 
-  var listeningForCurrentUser = false;
   /*
    * if the currently logged-in user matches the user the page is about,
    * use "your" and "you" in some places in the whole document,
@@ -132,10 +131,7 @@
    * fnOrYour, fnOryou
    */
   _.setYouOrName = function setYouOrName() {
-    if (!listeningForCurrentUser) {
-      listeningForCurrentUser = true;
-      window.gapi.auth2.getAuthInstance().currentUser.listen(setYouOrName);
-    }
+    limeta.onSignInChange(setYouOrName);
 
     var currentUser = null;
     try {
