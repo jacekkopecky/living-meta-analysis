@@ -22,21 +22,28 @@
 
 <section id="paper" class="paper loading">
   <header>
-    <h1 class="title"></h1> todo required
-    <ul class="tags"></ul><a href="" class="addtag editing">+</a>
-    <template id="tag-template"><li><span class="tag">error</span><span class="remove editing">&times;</span></li></template>
+    <h1 class="title notediting"></h1>
+    <h1 class="title editing" contenteditable placeholder="enter paper title"></h1>
+    <ul class="tags"></ul><a class="addtag editing">+</a>
     <span class="savepending">will be saved soon&hellip;</span>
     <span class="saving">saving&hellip;</span>
     <span class="savingerror" title="Sorry, something unexpected happened. Error details might be available in the browser console. Click here to try saving again.">saving error!</span>
   </header>
   <p class="loadingspinner">loading&hellip;</p>
   <p>Entered <span class="enteredby"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
-  <p class="authors">Authors: <span class="value">error</span></p>
-  <p class="published">Published: <span class="value">error</span></p>
-  <p class="description">Description:
-    <span contenteditable placeholder="add description" class="value editing">error</span>
-    <span placeholder="add description" class="value notediting">error</span>
+  <p class="authors">Authors:
+    <span class="value notediting">error</span>
+    <span class="value editing" contenteditable placeholder="enter the authors">error</span>
   </p>
+  <p class="published">Published:
+    <span class="value notediting">error</span>
+    <span class="value editing" contenteditable placeholder="when and where it was published">error</span>
+  </p>
+  <p class="description">Description:
+    <span class="value notediting">error</span>
+    <span class="value editing" contenteditable placeholder="add description">error</span>
+  </p>
+  <!-- todo link and doi editing -->
   <p class="link">Link: <a class="value" href="error">error</a><button class="edit editing">edit</button></p>
   <p class="doi">DOI: <a class="value" href="error" data-base="https://dx.doi.org/">error</a><button class="edit editing">edit</button></p>
   <p class="mtime">Last modified: <span class="value date">error</span></p>
@@ -46,6 +53,7 @@
   <!-- todo comments -->
   <p class='no-table'>No data has been entered for this paper yet.<!-- todo instruction to clone the paper? --></p>
 </section>
+<template id="tag-template"><li><span class="tag">error</span><span class="remove editing">&times;</span></li></template>
 <template id="experiments-table-template">
   <table class="experiments editing">
     <tbody>
@@ -80,9 +88,11 @@
         <button class="move right editing" title="move column to the right">»</button>
         <button class="move right most editing" title="move column to the right">»|</button>
         <header>
-          <p class="coltitle">error</p>
+          <p class="coltitle notediting">error</p>
+          <p class="coltitle editing" contenteditable placeholder="column title">error</p>
         </header>
-        <p class="coldescription">error</p>
+        <p class="coldescription notediting">error</p>
+        <p class="coldescription editing" contenteditable placeholder="add column description">error</p>
         <!-- on hiding this column, store in localStorage that this column is being hidden,
              also add to the end of every row a symbol that there are hidden values,
              on hover, the symbol will list them and allow you to add some right back -->
@@ -95,10 +105,11 @@
 <template id="experiment-row-template">
   <tr class="row">
     <th>
+      <!-- todo click on title or exptitle should focus the contenteditable exptitle -->
       <span class="title">error</span>-<span class="exptitle"></span>
       <div class="fullrowinfo">
         <header>
-          <p>Study/experiment: <span class="title">error</span>-<span class="exptitle"></span></p>
+          <p>Study/experiment: <span class="title">error</span>-<span class="exptitle notediting"></span><span class="exptitle editing" contenteditable placeholder="row title"></span></p>
         </header>
         <div class="expdescription" placeholder="enter description"></div>
       </div>
@@ -109,7 +120,8 @@
 </template>
 <template id="experiment-datum-template">
   <td>
-    <span class="value"></span>
+    <span class="value notediting"></span>
+    <span class="value editing" contenteditable></span>
     <div class="comments">
       <header><p><span class="commentcount"></span> comments:</p></header>
       <main></main>

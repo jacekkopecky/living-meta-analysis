@@ -38,7 +38,7 @@ body.editing.page-about-you .notediting {
   content: attr(placeholder);
   color: #aaa;
   font-style: italic;
-  display: block; /* For Firefox */
+  display: inline-block;
 }
 
 body > footer {
@@ -536,7 +536,8 @@ section.list > ul > li > ul.tags > li {
   display: none;
 }
 
-body:not(.page-about-you) #paper table.experiments.editing + .no-table {
+body:not(.page-about-you) #paper table.experiments.editing + .no-table,
+body:not(.editing) #paper table.experiments.editing + .no-table {
   display: block;
   padding: .5em;
   border: 1px solid black;
@@ -588,7 +589,7 @@ body:not(.page-about-you) #paper table.experiments.editing + .no-table {
   content: 'No detailed description';
   color: #aaa;
   font-style: italic;
-  display: block;
+  display: inline-block;
 }
 
 #paper table.experiments tr th:first-child:hover .fullrowinfo,
@@ -731,6 +732,12 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   border-left: 1px solid black;
   border-right: 1px solid black;
   position: relative;
+}
+
+#paper table.experiments td span[contenteditable] {
+  min-width: 1em;
+  min-height: 1em;
+  display: inline-block;
 }
 
 #paper table.experiments td.hascomments:after {
