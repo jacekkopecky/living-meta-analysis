@@ -5,6 +5,7 @@
 <script src="https://apis.google.com/js/platform.js"></script>
 <link rel="stylesheet" href="/css/main.css">
 
+<body class="loading">
 <h1><a href="/">LiMA (Living Meta-Analysis)</a> Paper</h1>
 
 <!-- this puts a sign-in button, and a sign-out link, in the page -->
@@ -20,39 +21,41 @@
 </div>
 
 
-<section id="paper" class="paper loading">
-  <header>
-    <h1 class="title notediting"></h1>
-    <h1 class="title editing" contenteditable placeholder="enter paper title"></h1>
-    <ul class="tags"></ul><a class="addtag editing">+</a>
-    <span class="savepending">will be saved soon&hellip;</span>
-    <span class="saving">saving&hellip;</span>
-    <span class="savingerror" title="Sorry, something unexpected happened. Error details might be available in the browser console. Click here to try saving again.">saving error!</span>
-  </header>
-  <p class="loadingspinner">loading&hellip;</p>
-  <p>Entered <span class="enteredby"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
-  <p class="authors">Authors:
-    <span class="value notediting">error</span>
-    <span class="value editing" contenteditable placeholder="enter the authors">error</span>
-  </p>
-  <p class="published">Published:
-    <span class="value notediting">error</span>
-    <span class="value editing" contenteditable placeholder="when and where it was published">error</span>
-  </p>
-  <p class="description">Description:
-    <span class="value notediting">error</span>
-    <span class="value editing" contenteditable placeholder="add description">error</span>
-  </p>
-  <!-- todo link and doi editing -->
-  <p class="link">Link: <a class="value" href="error">error</a><button class="edit editing">edit</button></p>
-  <p class="doi">DOI: <a class="value" href="error" data-base="https://dx.doi.org/">error</a><button class="edit editing">edit</button></p>
-  <p class="mtime">Last modified: <span class="value date">error</span></p>
-  <!-- todo show "other contributors" or "forks" or "clones" ... -->
-  <!-- todo show meta-analyses that use this paper -->
-  <!-- todo show history -->
-  <!-- todo comments -->
-  <p class='no-table'>No data has been entered for this paper yet.<!-- todo instruction to clone the paper? --></p>
-</section>
+<template id="paper-template">
+  <section id="paper">
+    <header>
+      <h1 class="title notediting"></h1>
+      <h1 class="title editing" contenteditable placeholder="enter paper title"></h1>
+      <ul class="tags"></ul><a class="addtag editing">+</a>
+      <span class="savepending">will be saved soon&hellip;</span>
+      <span class="saving">saving&hellip;</span>
+      <span class="savingerror" title="Sorry, something unexpected happened. Error details might be available in the browser console. Click here to try saving again.">saving error!</span>
+    </header>
+    <p>Entered <span class="enteredby"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
+    <p class="authors">Authors:
+      <span class="value notediting">error</span>
+      <span class="value editing" contenteditable placeholder="enter the authors">error</span>
+    </p>
+    <p class="published">Published:
+      <span class="value notediting">error</span>
+      <span class="value editing" contenteditable placeholder="when and where it was published">error</span>
+    </p>
+    <p class="description">Description:
+      <span class="value notediting">error</span>
+      <span class="value editing" contenteditable placeholder="add description">error</span>
+    </p>
+    <!-- todo link and doi editing -->
+    <p class="link">Link: <a class="value" href="error">error</a><button class="edit editing">edit</button></p>
+    <p class="doi">DOI: <a class="value" href="error" data-base="https://dx.doi.org/">error</a><button class="edit editing">edit</button></p>
+    <p class="mtime">Last modified: <span class="value date">error</span></p>
+    <!-- todo show "other contributors" or "forks" or "clones" ... -->
+    <!-- todo show meta-analyses that use this paper -->
+    <!-- todo show history -->
+    <!-- todo comments -->
+    <p class='no-table'>No data has been entered for this paper yet.<!-- todo instruction to clone the paper? --></p>
+  </section>
+</template>
+<p class="loadingspinner">loading&hellip;</p>
 <template id="tag-template"><li><span class="tag">error</span><span class="remove editing">&times;</span></li></template>
 <template id="experiments-table-template">
   <table class="experiments editing">
@@ -155,3 +158,5 @@ window.limeta.initPage = function () {
   window.limeta.extractAndFillPaper();
 };
 </script>
+
+</body>

@@ -28,8 +28,8 @@
     return document.getElementById(id);
   }
 
-  _.cloneTemplateById = function cloneTemplateById(id) {
-    var template = _.byId(id);
+  _.cloneTemplate = function cloneTemplate(template) {
+    if (!(template instanceof Node)) template = _.byId(template);
     if (!template) return void 0;
 
     return template.content.cloneNode(true);
@@ -78,6 +78,16 @@
       root = document;
     }
     _.findEls(root, selector).forEach(function(el){el.classList.remove(valOrFun(value, el));});
+  }
+
+  _.addEventListener = function addEventListener(root, selector, event, f) {
+    if (!(root instanceof Node)) {
+      f = event;
+      event = selector;
+      selector = root;
+      root = document;
+    }
+    _.findEls(root, selector).forEach(function(el){el.addEventListener(event, f);});
   }
 
   _.notFound = function notFound() {

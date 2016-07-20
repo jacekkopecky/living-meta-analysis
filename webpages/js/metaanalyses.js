@@ -30,7 +30,7 @@
     if (metaanalyses.length) {
       // todo sort
       metaanalyses.forEach(function (metaanalysis) {
-        var li = _.cloneTemplateById('metaanalysis-list-item-template');
+        var li = _.cloneTemplate('metaanalysis-list-item-template');
         _.fillEls(li, '.name', metaanalysis.title);
         _.fillEls(li, '.date', metaanalysis.published);
         _.fillEls(li, '.description', metaanalysis.description);
@@ -40,7 +40,7 @@
         list.appendChild(li);
       });
     } else {
-      list.appendChild(_.cloneTemplateById('empty-list-template'));
+      list.appendChild(_.cloneTemplate('empty-list-template'));
     }
 
     _.setYouOrName();

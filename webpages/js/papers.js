@@ -41,7 +41,7 @@
     if (papers.length) {
       // todo sort
       papers.forEach(function (paper) {
-        var li = _.cloneTemplateById('paper-list-item-template');
+        var li = _.cloneTemplate('paper-list-item-template');
         _.fillEls(li, '.name', paper.title);
         _.fillEls(li, '.date', paper.published);
         _.fillEls(li, '.description', paper.description);
@@ -51,7 +51,7 @@
         list.appendChild(li);
       });
     } else {
-      list.appendChild(_.cloneTemplateById('empty-list-template'));
+      list.appendChild(_.cloneTemplate('empty-list-template'));
     }
 
     _.setYouOrName();
@@ -85,6 +85,14 @@
   function fillPaper(paper) {
     currentPaper = paper;
 
+    var oldPaperEl = _.byId('paper');
+    if (oldPaperEl) oldPaperEl.parentElement.removeChild(oldPaperEl);
+
+    var paperTemplate = _.byId('paper-template');
+    var paperEl = _.cloneTemplate(paperTemplate);
+    paperTemplate.parentElement.insertBefore(paperEl, paperTemplate);
+
+
     // fill the data table first in case the templates use any of the data below
     fillPaperExperimentTable();
 
@@ -106,15 +114,12 @@
       _.addClass('#paper .enteredby', 'only-not-yours');
     }
 
-    _.removeClass('#paper', 'loading');
+    _.removeClass('body', 'loading');
 
     _.setYouOrName();
 
-    if (!addedPaperListeners) {
-      addedPaperListeners = true;
-      _.findEl('#paper .savingerror').addEventListener('click', savePaper);
-      _.findEl('#paper .description .value').addEventListener('input', setPendingPaperSave);
-    }
+    _.addEventListener('#paper .savingerror', 'click', savePaper);
+    _.addEventListener('#paper .description .value', 'input', setPendingPaperSave);
 
     // todo
     // in fillPaper, only replace values if they have changed
@@ -129,7 +134,7 @@
       el.parentElement.removeChild(el);
     });
 
-    var table = _.cloneTemplateById('experiments-table-template');
+    var table = _.cloneTemplate('experiments-table-template');
     // show the table if it's not empty or
     // hide the empty experiment data table if the user can't edit it
     if (experiments.length) {
@@ -144,7 +149,7 @@
     var headingsRowNode = _.findEl(table, 'tr:first-child');
     var addColumnNode = _.findEl(table, 'tr:first-child > th.add');
     showColumns.forEach(function (col) {
-      var th = _.cloneTemplateById('col-heading-template');
+      var th = _.cloneTemplate('col-heading-template');
       _.fillEls(th, '.coltitle', col.title);
       _.addClass(th, '.coltype', col.type);
       _.fillEls(th, '.coldescription', col.description);
@@ -165,7 +170,7 @@
     var tableBodyNode = _.findEl(table, 'tbody');
     var addRowNode = _.findEl(table, 'tbody > tr.add');
     experiments.forEach(function (experiment) {
-      var tr = _.cloneTemplateById('experiment-row-template');
+      var tr = _.cloneTemplate('experiment-row-template');
       _.fillEls(tr, '.exptitle', experiment.title);
       _.fillEls(tr, '.expdescription', experiment.description);
 
@@ -177,7 +182,7 @@
           value = experiment.data[colId].value;
           comments = experiment.data[colId].comments;
         }
-        var td = _.cloneTemplateById('experiment-datum-template');
+        var td = _.cloneTemplate('experiment-datum-template');
         _.fillEls(td, '.value', value);
         if (Array.isArray(comments) && comments.length > 0) {
           td.children[0].classList.add('hascomments');
@@ -204,7 +209,7 @@
   function fillComments(templateId, root, selector, comments) {
     var targetEl = _.findEl(root, selector);
     comments.forEach(function (comment, index) {
-      var el = _.cloneTemplateById(templateId);
+      var el = _.cloneTemplate(templateId);
       _.fillEls(el, '.by', comment.by);
       _.fillEls(el, '.commentnumber', index+1);
       _.setProps(el, '.by', 'href', '/' + comment.by + '/');
@@ -288,8 +293,6 @@
 
   }
 
-  var addedPaperListeners = false;
-
   var pendingSaveTimeout = null;
   var pendingSaveForceTime = null;
 
@@ -314,7 +317,6 @@
     pendingSaveTimeout = null;
     pendingSaveForceTime = null;
 
-    updatePaperFromDom();
     limeta.getGapiIDToken()
     .then(function(idToken) {
       if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
@@ -346,16 +348,6 @@
       pendingSaveForceTime = null;
     })
 
-  }
-
-  function updatePaperFromDom() {
-    // todo require title
-    // todo suggest default title: first word in authors and last two digits or the first four-digit sequence in published with 'a' or so appended to make unique
-    // todo on title change, check that it didn't exist
-
-    // ignoring rich formatting in description
-    currentPaper.description = _.findEl('#paper .description .value').textContent;
-    // todo
   }
 
 })(window, document);
