@@ -17,6 +17,12 @@
     .then(_.fetchJson)
     .then(function (columns) {
       lima.columns = columns;
+      lima.columnTypes = [];
+      Object.keys(columns).forEach(function (colId) {
+        if (lima.columnTypes.indexOf(columns[colId].type) === -1) {
+          lima.columnTypes.push(columns[colId].type);
+        }
+      })
       return columns;
     })
     .catch(function (err) {
