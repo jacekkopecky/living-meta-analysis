@@ -1,8 +1,8 @@
 (function (window, document) { // eslint-disable-line no-unused-vars
   'use strict';
   var gapi = window.gapi;
-  var limeta = window.limeta;
-  var _ = limeta._;
+  var lima = window.lima;
+  var _ = lima._;
 
   var CLIENT_ID = "358237292980-kbme56c9ih4rpmob16sq8bjig5dms6pl.apps.googleusercontent.com";
 
@@ -32,19 +32,19 @@
   }
 
   var toggleButton = _.byId('toggle-editing');
-  limeta.editing = localStorage.limaEditing !== 'false';
+  lima.editing = localStorage.limaEditing !== 'false';
 
   function toggleEditing(val) {
-    limeta.editing = val;
-    localStorage.limaEditing = limeta.editing;
-    toggleButton.textContent = limeta.editing ? 'Turn editing off' : 'Turn editing on';
-    document.body.classList[limeta.editing ? 'add' : 'remove']('editing');
+    lima.editing = val;
+    localStorage.limaEditing = lima.editing;
+    toggleButton.textContent = lima.editing ? 'Turn editing off' : 'Turn editing on';
+    document.body.classList[lima.editing ? 'add' : 'remove']('editing');
   }
 
   if (toggleButton) {
-    toggleEditing(limeta.editing);
+    toggleEditing(lima.editing);
     toggleButton.addEventListener('click', function () {
-      toggleEditing(!limeta.editing);
+      toggleEditing(!lima.editing);
     })
   }
 
@@ -70,7 +70,7 @@
 
   var pendingToken = null;
 
-  limeta.getGapiIDToken = function getGapiIDToken() {
+  lima.getGapiIDToken = function getGapiIDToken() {
     if (pendingToken) return pendingToken;
 
     var token = pendingToken = new Promise(function (resolve, reject) {
@@ -121,7 +121,7 @@
         gauth.currentUser.listen(onSignIn);
         _.findEls('a.signout').forEach(function (el){el.addEventListener('click', signOut)});
         if (gauth.isSignedIn.get()) onSignIn(gauth.currentUser.get());
-        if (limeta.initPage) limeta.initPage();
+        if (lima.initPage) lima.initPage();
       },
       function (err) {
         console.log('failed getting gapi auth instance');
@@ -131,7 +131,7 @@
 
   var onSignInListeners = [];
 
-  limeta.onSignInChange = function (cb) {
+  lima.onSignInChange = function (cb) {
     if (onSignInListeners.indexOf(cb) === -1) onSignInListeners.push(cb);
   }
 

@@ -1,28 +1,28 @@
 (function (window, document) { // eslint-disable-line no-unused-vars
   'use strict';
-  var limeta = window.limeta;
-  var _ = limeta._;
+  var lima = window.lima;
+  var _ = lima._;
 
-  limeta.apiFail = limeta.apiFail || function(){};
+  lima.apiFail = lima.apiFail || function(){};
 
   var columnsPromise;
 
-  limeta.getColumns = function() {
+  lima.getColumns = function() {
     if (columnsPromise) return columnsPromise;
 
-    columnsPromise = limeta.getGapiIDToken()
+    columnsPromise = lima.getGapiIDToken()
     .then(function (idToken) {
       return fetch('/api/columns', _.idTokenToFetchOptions(idToken));
     })
     .then(_.fetchJson)
     .then(function (columns) {
-      limeta.columns = columns;
+      lima.columns = columns;
       return columns;
     })
     .catch(function (err) {
       console.error("problem getting columns");
       console.error(err);
-      limeta.apiFail();
+      lima.apiFail();
     });
 
     return columnsPromise;

@@ -1,11 +1,11 @@
 (function (window, document) { // eslint-disable-line no-unused-vars
   'use strict';
-  var limeta = window.limeta;
-  var _ = limeta._;
+  var lima = window.lima;
+  var _ = lima._;
 
-  limeta.apiFail = limeta.apiFail || function(){};
+  lima.apiFail = lima.apiFail || function(){};
 
-  limeta.extractPaperTitleFromUrl = function extractPaperTitleFromUrl() {
+  lima.extractPaperTitleFromUrl = function extractPaperTitleFromUrl() {
     // the path of a page for a paper will be '/email/title/*',
     // so extract the 'title' portion here:
 
@@ -16,10 +16,10 @@
   }
 
 
-  limeta.requestAndFillPaperList = function requestAndFillPaperList() {
-    limeta.getGapiIDToken()
+  lima.requestAndFillPaperList = function requestAndFillPaperList() {
+    lima.getGapiIDToken()
     .then(function (idToken) {
-      var email = limeta.extractUserProfileEmailFromUrl();
+      var email = lima.extractUserProfileEmailFromUrl();
       return fetch('/api/papers/' + email, _.idTokenToFetchOptions(idToken));
     })
     .then(function (response) {
@@ -30,7 +30,7 @@
     .catch(function (err) {
       console.error("problem getting papers");
       console.error(err);
-      limeta.apiFail();
+      lima.apiFail();
     });
   }
 
@@ -59,13 +59,13 @@
 
   var currentPaperUrl, currentPaper;
 
-  limeta.extractAndFillPaper = function extractAndFillPaper() {
-    var email = limeta.extractUserProfileEmailFromUrl();
-    var title = limeta.extractPaperTitleFromUrl();
+  lima.extractAndFillPaper = function extractAndFillPaper() {
+    var email = lima.extractUserProfileEmailFromUrl();
+    var title = lima.extractPaperTitleFromUrl();
     _.fillEls('#paper .title', title);
 
-    limeta.getColumns() // todo getColumns could run in parallel with everything before fillPaper
-    .then(limeta.getGapiIDToken)
+    lima.getColumns() // todo getColumns could run in parallel with everything before fillPaper
+    .then(lima.getGapiIDToken)
     .then(function (idToken) {
       currentPaperUrl = '/api/papers/' + email + '/' + title;
       return fetch(currentPaperUrl, _.idTokenToFetchOptions(idToken));
@@ -78,7 +78,7 @@
     .catch(function (err) {
       console.error("problem getting paper");
       console.error(err);
-      limeta.apiFail();
+      lima.apiFail();
     });
   }
 
@@ -110,7 +110,7 @@
     _.fillEls ('#paper .ctime .value', _.formatDateTime(paper.ctime));
     _.fillEls ('#paper .mtime .value', _.formatDateTime(paper.mtime));
 
-    if (limeta.extractUserProfileEmailFromUrl() === paper.enteredBy) {
+    if (lima.extractUserProfileEmailFromUrl() === paper.enteredBy) {
       _.addClass('#paper .enteredby', 'only-not-yours');
     }
 
@@ -156,7 +156,7 @@
       _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime));
       _.fillEls(th, '.definedby .value', col.definedBy);
       _.setProps(th, '.definedby .value', 'href', '/' + col.definedBy + '/');
-      if (limeta.extractUserProfileEmailFromUrl() === col.definedBy) {
+      if (lima.extractUserProfileEmailFromUrl() === col.definedBy) {
         _.addClass(th, '.definedby', 'only-not-yours');
       }
       _.findEls(th, 'button.move').forEach(function (el) {
@@ -227,7 +227,7 @@
     currentPaper.experiments.forEach(function (experiment) {
       if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
         if (!(key in showColumnsHash)) {
-          var col = limeta.columns[key];
+          var col = lima.columns[key];
           showColumnsHash[key] = col;
           switch (col.type) {
             case 'characteristic': showCharacteristicColumns.push(col); break;
@@ -285,7 +285,7 @@
     // make sure result columns come after characteristics columns
     var firstResult = 0;
     for (var i = 0; i < currentPaper.columnOrder.length; i++) {
-      if (limeta.columns[currentPaper.columnOrder[i]].type === 'characteristic') {
+      if (lima.columns[currentPaper.columnOrder[i]].type === 'characteristic') {
         _.moveArrayElement(currentPaper.columnOrder, i, firstResult);
         firstResult++;
       }
@@ -317,7 +317,7 @@
     pendingSaveTimeout = null;
     pendingSaveForceTime = null;
 
-    limeta.getGapiIDToken()
+    lima.getGapiIDToken()
     .then(function(idToken) {
       if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
       pendingSaveTimeout = null;

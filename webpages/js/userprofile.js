@@ -1,15 +1,15 @@
 (function (window, document) { // eslint-disable-line no-unused-vars
   'use strict';
-  var limeta = window.limeta;
-  var _ = limeta._;
+  var lima = window.lima;
+  var _ = lima._;
 
-  limeta.apiFail = limeta.apiFail || function(){};
+  lima.apiFail = lima.apiFail || function(){};
 
-  limeta.requestAndFillUserProfile = function requestAndFillUserProfile() {
-    limeta.whenUserPageIsAboutIsKnown = whenUserPageIsAboutIsKnown;
-    limeta.getGapiIDToken()
+  lima.requestAndFillUserProfile = function requestAndFillUserProfile() {
+    lima.whenUserPageIsAboutIsKnown = whenUserPageIsAboutIsKnown;
+    lima.getGapiIDToken()
     .then(function (idToken) {
-      var email = limeta.extractUserProfileEmailFromUrl();
+      var email = lima.extractUserProfileEmailFromUrl();
       return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
     })
     .then(_.fetchJson)
@@ -21,18 +21,18 @@
       }
       console.error("problem getting profile");
       console.error(err);
-      limeta.apiFail();
+      lima.apiFail();
     });
   }
 
-  limeta.extractUserProfileEmailFromUrl = function extractUserProfileEmailFromUrl() {
+  lima.extractUserProfileEmailFromUrl = function extractUserProfileEmailFromUrl() {
     // the path of a page attributed to a user will be '/email/something',
     // so extract the 'email' portion here:
     return window.location.pathname.substring(1, window.location.pathname.indexOf('/', 1));
   }
 
   function fillUserProfile(user) {
-    limeta.userPageIsAbout = user;
+    lima.userPageIsAbout = user;
 
     functionsWaiting.forEach(function (f) { f(); });
     functionsWaiting = [];

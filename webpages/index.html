@@ -41,13 +41,13 @@
 <script src="/js/tools.js"></script>
 <script src="/js/auth.js"></script>
 <script>
-window.limeta.initPage = function () {
+window.lima.initPage = function () {
   // todo this is provisional
 
-  var limeta = window.limeta;
-  var _ = limeta._;
+  var lima = window.lima;
+  var _ = lima._;
 
-  limeta.getGapiIDToken()
+  lima.getGapiIDToken()
   .then(function (idToken) {
     return fetch('/api/topusers', _.idTokenToFetchOptions(idToken));
   })
@@ -56,10 +56,10 @@ window.limeta.initPage = function () {
   .catch(function (err) {
     console.error('can\'t load top users');
     console.error(err);
-    limeta.apiFail();
+    lima.apiFail();
   });
 
-  limeta.getGapiIDToken()
+  lima.getGapiIDToken()
   .then(function (idToken) {
     return fetch('/api/toppapers', _.idTokenToFetchOptions(idToken));
   })
@@ -68,10 +68,10 @@ window.limeta.initPage = function () {
   .catch(function (err) {
     console.error('can\'t load top papers');
     console.error(err);
-    limeta.apiFail();
+    lima.apiFail();
   });
 
-  limeta.getGapiIDToken()
+  lima.getGapiIDToken()
   .then(function (idToken) {
     return fetch('/api/topmetaanalyses', _.idTokenToFetchOptions(idToken));
   })
@@ -80,7 +80,7 @@ window.limeta.initPage = function () {
   .catch(function (err) {
     console.error('can\'t load top metaanalyses');
     console.error(err);
-    limeta.apiFail();
+    lima.apiFail();
   });
 
   function showTopUsers(users) {

@@ -1,14 +1,14 @@
 (function (window, document) { // eslint-disable-line no-unused-vars
   'use strict';
-  var limeta = window.limeta;
-  var _ = limeta._;
+  var lima = window.lima;
+  var _ = lima._;
 
-  limeta.apiFail = limeta.apiFail || function(){};
+  lima.apiFail = lima.apiFail || function(){};
 
-  limeta.requestAndFillMetaanalysisList = function requestAndFillMetaanalysisList() {
-    limeta.getGapiIDToken()
+  lima.requestAndFillMetaanalysisList = function requestAndFillMetaanalysisList() {
+    lima.getGapiIDToken()
     .then(function (idToken) {
-      var email = limeta.extractUserProfileEmailFromUrl();
+      var email = lima.extractUserProfileEmailFromUrl();
       return fetch('/api/metaanalyses/' + email, _.idTokenToFetchOptions(idToken));
     })
     .then(function (response) {
@@ -19,7 +19,7 @@
     .catch(function (err) {
       console.error("problem getting metaanalyses");
       console.error(err);
-      limeta.apiFail();
+      lima.apiFail();
     });
   }
 

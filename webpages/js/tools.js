@@ -1,6 +1,6 @@
 (function (document, window) {
-  var limeta = window.limeta = window.limeta || {};
-  var _ = window.limeta._ = {};
+  var lima = window.lima = window.lima || {};
+  var _ = window.lima._ = {};
 
   /*
    * param root is optional
@@ -141,7 +141,7 @@
    * fnOrYour, fnOryou
    */
   _.setYouOrName = function setYouOrName() {
-    limeta.onSignInChange(setYouOrName);
+    lima.onSignInChange(setYouOrName);
 
     var currentUser = null;
     try {
@@ -150,9 +150,9 @@
       }
     } catch (e) {console.info(e);} // any errors mean no current user
 
-    if (!limeta.userPageIsAbout) {
-      if (limeta.whenUserPageIsAboutIsKnown) {
-        limeta.whenUserPageIsAboutIsKnown(setYouOrName);
+    if (!lima.userPageIsAbout) {
+      if (lima.whenUserPageIsAboutIsKnown) {
+        lima.whenUserPageIsAboutIsKnown(setYouOrName);
         return;
       } else {
         console.error('setNameOfYou can\'t be called on a page that\'s not about a user');
@@ -160,10 +160,10 @@
       }
     }
 
-    var y = (currentUser == limeta.userPageIsAbout.email);
-    var n = limeta.userPageIsAbout.name.givenName || 'User';
+    var y = (currentUser == lima.userPageIsAbout.email);
+    var n = lima.userPageIsAbout.name.givenName || 'User';
 
-    limeta.pageAboutYou = y;
+    lima.pageAboutYou = y;
 
     document.body.classList[y ? 'add' : 'remove']('page-about-you');
 
@@ -202,7 +202,7 @@
   }
 
 
-  limeta.apiFail = limeta.apiFail || function apiFail() {
+  lima.apiFail = lima.apiFail || function apiFail() {
     document.body.innerHTML = '';
     fetch('/apifail')
     .then(_.fetchText)
