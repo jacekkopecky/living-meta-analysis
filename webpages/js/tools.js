@@ -218,16 +218,23 @@
     })
   }
 
-  _.fillTags = function fillTags(el, tags) {
-    if (el && tags && tags.length) {
+  _.fillTags = function fillTags(root, selector, tags) {
+    if (!(root instanceof Node)) {
+      tags = selector;
+      selector = root;
+      root = document;
+    }
+    if (!tags) tags = [];
+
+    var tagTemplate = _.byId('tag-template');
+    _.findEls(root, selector).forEach(function (el) {
       el.innerHTML = '';
-      var tagTemplate = _.byId('tag-template');
       tags.forEach(function (tag) {
-        var tagEl = tagTemplate.content.cloneNode(true);
+        var tagEl = _.cloneTemplate(tagTemplate);
         _.fillEls(tagEl, '.tag', tag);
         el.appendChild(tagEl);
       });
-    }
+    });
   }
 
   /*

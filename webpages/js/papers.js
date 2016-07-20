@@ -47,7 +47,7 @@
         _.fillEls(li, '.description', paper.description);
         _.setProps(li, '.description', 'title', paper.description);
         _.setProps(li, 'a.mainlink', 'href', paper.title);
-        _.fillTags(_.findEl(li, '.tags'), paper.tags);
+        _.fillTags(li, '.tags', paper.tags);
         list.appendChild(li);
       });
     } else {
@@ -97,7 +97,7 @@
     fillPaperExperimentTable();
 
     _.fillEls('#paper .title', paper.title);
-    _.fillTags(_.findEl('#paper .tags'), paper.tags);
+    _.fillTags('#paper .tags', paper.tags);
     _.fillEls ('#paper .authors .value', paper.authors);
     _.fillEls ('#paper .published .value', paper.published);
     _.fillEls ('#paper .description .value', paper.description);

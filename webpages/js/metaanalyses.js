@@ -36,7 +36,7 @@
         _.fillEls(li, '.description', metaanalysis.description);
         _.setProps(li, '.description', 'title', metaanalysis.description);
         _.setProps(li, 'a.mainlink', 'href', metaanalysis.title);
-        _.fillTags(_.findEl(li, '.tags'), metaanalysis.tags);
+        _.fillTags(li, '.tags', metaanalysis.tags);
         list.appendChild(li);
       });
     } else {
