@@ -294,21 +294,6 @@
     noTableMarker.parentElement.insertBefore(table, noTableMarker);
   }
 
-  function setPopupBoxes(el, selector, localid) {
-    _.findEls(el, selector).forEach(function (box) {
-      box.dataset.boxid = box.dataset.boxtype + "@" + localid;
-
-      // find nearest parent-or-self that is '.zindexed' so it can be raised above others when pinned
-      var zIndexed = box;
-      while (zIndexed && !zIndexed.classList.contains('zindexed')) zIndexed = zIndexed.parentElement;
-
-      var operation = pinnedBox === box.dataset.boxid ? 'add' : 'remove';
-      box.classList[operation]('pinned');
-      zIndexed.classList[operation]('pinned');
-    })
-
-  }
-
   function fillComments(templateId, root, selector, comments) {
     var targetEl = _.findEl(root, selector);
     targetEl.innerHTML = '';
@@ -378,54 +363,6 @@
     moveResultsAfterCharacteristics(currentPaper);
     paperHasChanged();
     setPendingPaperSave();
-  }
-
-  var pinnedBox = null;
-  function doPinPopupBox(el) {
-    var box = el;
-    while (box && !box.classList.contains('popupbox')) box = box.parentElement;
-    if (box) {
-      pinnedBox = box.dataset.boxid;
-      document.body.classList.add('boxpinned');
-    }
-  }
-
-  function pinPopupBox(el) {
-    if (el instanceof Event) el = el.target;
-    if (!(el instanceof Node)) {
-      console.log('looking for popup box element for boxid ' + el);
-      el = _.findEl('[data-boxid="' + el + '"]')
-    }
-    if (!el) throw new Error('cannot find element for popup box');
-    doPinPopupBox(el);
-    paperHasChanged();
-  }
-
-  function doUnpinPopupBox() {
-    pinnedBox = null;
-    document.body.classList.remove('boxpinned');
-  }
-
-  function unpinPopupBox() {
-    doUnpinPopupBox();
-    paperHasChanged();
-  }
-
-  function togglePopupBox(el) {
-    if (!el && this instanceof Node) el = this;
-    if (el instanceof Event) el = el.target;
-
-    var box = el;
-    while (box && !box.classList.contains('popupbox')) box = box.parentElement;
-    if (!box) {
-      console.warn('tried to pin popup box but not found it from element ' + el);
-      return;
-    }
-
-    if (pinnedBox === box.dataset.boxid) doUnpinPopupBox();
-    else doPinPopupBox(box);
-
-    paperHasChanged();
   }
 
   function regenerateColumnOrder(paper) {
@@ -506,6 +443,71 @@
       if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
       pendingSaveTimeout = null;
       pendingSaveForceTime = null;
+    })
+
+  }
+
+
+  // functions for popup boxes
+  var pinnedBox = null;
+  function doPinPopupBox(el) {
+    var box = el;
+    while (box && !box.classList.contains('popupbox')) box = box.parentElement;
+    if (box) {
+      pinnedBox = box.dataset.boxid;
+      document.body.classList.add('boxpinned');
+    }
+  }
+
+  function pinPopupBox(el) {
+    if (el instanceof Event) el = el.target;
+    if (!(el instanceof Node)) {
+      console.log('looking for popup box element for boxid ' + el);
+      el = _.findEl('[data-boxid="' + el + '"]')
+    }
+    if (!el) throw new Error('cannot find element for popup box');
+    doPinPopupBox(el);
+    paperHasChanged();
+  }
+
+  function doUnpinPopupBox() {
+    pinnedBox = null;
+    document.body.classList.remove('boxpinned');
+  }
+
+  function unpinPopupBox() {
+    doUnpinPopupBox();
+    paperHasChanged();
+  }
+
+  function togglePopupBox(el) {
+    if (!el && this instanceof Node) el = this;
+    if (el instanceof Event) el = el.target;
+
+    var box = el;
+    while (box && !box.classList.contains('popupbox')) box = box.parentElement;
+    if (!box) {
+      console.warn('tried to pin popup box but not found it from element ' + el);
+      return;
+    }
+
+    if (pinnedBox === box.dataset.boxid) doUnpinPopupBox();
+    else doPinPopupBox(box);
+
+    paperHasChanged();
+  }
+
+  function setPopupBoxes(el, selector, localid) {
+    _.findEls(el, selector).forEach(function (box) {
+      box.dataset.boxid = box.dataset.boxtype + "@" + localid;
+
+      // find nearest parent-or-self that is '.zindexed' so it can be raised above others when pinned
+      var zIndexed = box;
+      while (zIndexed && !zIndexed.classList.contains('zindexed')) zIndexed = zIndexed.parentElement;
+
+      var operation = pinnedBox === box.dataset.boxid ? 'add' : 'remove';
+      box.classList[operation]('pinned');
+      zIndexed.classList[operation]('pinned');
     })
 
   }
