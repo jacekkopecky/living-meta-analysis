@@ -41,6 +41,10 @@ body.editing.page-about-you .notediting {
   display: inline-block;
 }
 
+[contenteditable]:hover {
+  box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
+}
+
 body > footer {
   position: absolute;
   bottom: 0;
