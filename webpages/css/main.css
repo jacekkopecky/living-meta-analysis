@@ -56,6 +56,45 @@ body > footer {
   padding: 1em;
 }
 
+.zindexed:hover {
+  z-index: 10;
+}
+
+.zindexed.pinned {
+  z-index: 11;
+}
+
+.popupbox {
+  position: relative;
+}
+
+.popupbox .unpin {
+  display: none;
+  font-size: 150%;
+  font-weight: bold;
+  color: #888;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: .1em;
+  padding: 0;
+  text-align: center;
+  min-width: 1em;
+  line-height: 100%;
+  border-radius: .2em;
+}
+
+.popupbox.pinned .unpin {
+  display: block;
+}
+
+.popupbox.pinned .unpin:hover {
+  display: block;
+  background: #888;
+  color: white;
+}
+
+
 
 /*
  *
@@ -563,10 +602,6 @@ body:not(.editing) #paper table.experiments.editing + .no-table {
   position: relative;
 }
 
-#paper table.experiments tr th:first-child:hover {
-  z-index: 100;
-}
-
 #paper table.experiments tr th:first-child .expdescription.short {
   white-space: nowrap;
   overflow: hidden;
@@ -591,8 +626,7 @@ body:not(.editing) #paper table.experiments.editing + .no-table {
   display: inline-block;
 }
 
-#paper table.experiments tr th:first-child:hover .fullrowinfo,
-#paper table.experiments tr th:first-child:active .fullrowinfo {
+body:not(.boxpinned) #paper table.experiments tr th:first-child:hover .fullrowinfo {
   display: block;
   min-width: 20em;
   max-width: 30em;
@@ -670,16 +704,6 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   background-color: white;
 }
 
-/*#paper table.experiments tr:first-child th > div > span:hover {
-  text-overflow: ellipsis;
-  overflow: visible;
-  width: auto;
-}*/
-
-#paper table.experiments tr:first-child th:hover > div {
-  z-index: 100; /* for fullcolinfo not to be overlapped by other parts of the table */
-}
-
 #paper table.experiments tr:first-child th > div > span + .fullcolinfo {
   display: none;
   min-width: 10em;
@@ -721,7 +745,8 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   white-space: nowrap;
 }
 
-#paper table.experiments tr:first-child th:hover > div > span + .fullcolinfo {
+body:not(.boxpinned) #paper table.experiments tr:first-child th:hover > div > span + .fullcolinfo,
+#paper table.experiments tr:first-child th > div > span + .fullcolinfo.pinned {
   display: block;
 }
 
@@ -753,15 +778,15 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
 }
 
 #paper table.experiments td:hover {
-  z-index: 100;
+  z-index: 10;
 }
 
 #paper table.experiments td.hascomments:hover {
   background: rgba(128,0,255,.2);
 }
 
-#paper table.experiments td.hascomments .comments {
-  display: block;
+#paper table.experiments td .comments {
+  display: none;
   min-width: 20em;
   max-width: 30em;
   min-height: 5em;
@@ -777,8 +802,13 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   left: 90%;
   text-align: left;
   background-color: white;
-  z-index: 100;
+  z-index: 10;
 }
+
+body:not(.boxpinned) #paper table.experiments td.hascomments:hover .comments {
+  display: block;
+}
+
 
 #paper table.experiments td.hascomments .comments > header {
   margin-bottom: .5em;
@@ -803,11 +833,6 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
 
 #paper table.experiments .comments .comment .ctime {
   white-space: nowrap;
-}
-
-#paper table.experiments td:not(.hascomments) .comments,
-#paper table.experiments td:not(:hover) .comments {
-  display: none;
 }
 
 body:not(.page-about-you) #paper table.experiments td:last-child,

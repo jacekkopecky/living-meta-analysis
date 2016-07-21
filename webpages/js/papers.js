@@ -220,6 +220,18 @@
           });
           lima.columnTypes.forEach(function (type) {th.classList.remove(type);});
           th.classList.add(col.type);
+
+          _.findEls(th, '.popupbox').forEach(function (box) {
+            box.dataset.boxid = box.dataset.boxname + "@" + col.id;
+
+            // find nearest parent-or-self that is '.zindexed' so it can be raised above others when pinned
+            var zIndexed = box;
+            while (zIndexed && !zIndexed.classList.contains('zindexed')) zIndexed = zIndexed.parentElement;
+
+            var operation = pinnedBox === box.dataset.boxid ? 'add' : 'remove';
+            box.classList[operation]('pinned');
+            zIndexed.classList[operation]('pinned');
+          })
         });
     });
 
@@ -328,19 +340,73 @@
   }
 
   function moveColumn() {
-    var left = this.classList.contains('left');
-    var most = this.classList.contains('most');
-    var colId = this.dataset.id;
+    // since a click (incl. on the moving button) could dismiss a pinned box,
+    // this timout makes sure the click gets processed first and then we do the moving
+    setTimeout(doMoveColumn, 0, this);
+  }
+
+  function doMoveColumn(el) {
+    var left = el.classList.contains('left');
+    var most = el.classList.contains('most');
+    var colId = el.dataset.id;
     if (!colId) return; // we don't know what to move
+
+    pinPopupBox(el);
 
     regenerateColumnOrder(currentPaper);
     var i = currentPaper.columnOrder.indexOf(colId);
     if (i === -1) return console.error('column ' + colId + ' not found in newly regenerated order!');
     _.moveInArray(currentPaper.columnOrder, i, left, most);
     moveResultsAfterCharacteristics(currentPaper);
-    paperHasChanged(currentPaper);
+    paperHasChanged();
     setPendingPaperSave();
   }
+
+  var pinnedBox = null;
+  function pinPopupBox(el) {
+    var box = el;
+    while (box && !box.classList.contains('popupbox')) box = box.parentElement;
+    if (!box) {
+      console.warn('tried to pin popup box but not found it from element ' + el);
+      return;
+    }
+
+    pinnedBox = box.dataset.boxid;
+    document.body.classList.add('boxpinned');
+  }
+
+  function unpinPopupBox() {
+    pinnedBox = null;
+    document.body.classList.remove('boxpinned');
+  }
+
+  lima.pinPopupBox = function(el) {
+    pinPopupBox(el);
+    paperHasChanged();
+  }
+
+  lima.unpinPopupBox = function() {
+    unpinPopupBox();
+    paperHasChanged();
+  }
+
+  // dismiss pinned popup boxes with Escape or with a click outside them
+  document.addEventListener('keydown', function (ev) {
+    if (pinnedBox && ev.keyCode === 27) {
+      unpinPopupBox();
+      paperHasChanged();
+    }
+  });
+
+  document.addEventListener('click', function (ev) {
+    if (!pinnedBox) return;
+    var el = ev.target;
+    while (el && el.dataset.boxid !== pinnedBox) el = el.parentElement;
+    if (!el) {
+      unpinPopupBox();
+      paperHasChanged();
+    }
+  });
 
   function regenerateColumnOrder(paper) {
     if (!Array.isArray(paper.columnOrder)) paper.columnOrder = [];
