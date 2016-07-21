@@ -85,7 +85,7 @@
 
   var currentPaperUrl, currentPaper;
 
-  function extractAndFillPaper() {
+  function requestAndFillPaper() {
     var email = lima.extractUserProfileEmailFromUrl();
     var title = lima.extractPaperTitleFromUrl();
     _.fillEls('#paper .title', title);
@@ -659,7 +659,7 @@
   // api to other scripts
   lima.extractPaperTitleFromUrl = extractPaperTitleFromUrl;
   lima.requestAndFillPaperList = requestAndFillPaperList;
-  lima.extractAndFillPaper = extractAndFillPaper;
+  lima.requestAndFillPaper = requestAndFillPaper;
 
   // for testing
   lima.pinPopupBox = pinPopupBox;
