@@ -115,7 +115,7 @@ body > footer {
 
 
 
-/*
+/* userinfo
  *
  *
  *     #    #  ####  ###### #####  # #    # ######  ####
@@ -199,7 +199,7 @@ body > footer {
 
 
 
-/*
+/* sections
  *
  *
  *          ####  ######  ####  ##### #  ####  #    #  ####
@@ -218,7 +218,7 @@ section {
 
 
 
-/*
+/* personalinfo
  *
  *
  *   #####  ###### #####   ####   ####  #    #   ##   #      # #    # ######  ####
@@ -254,7 +254,7 @@ section#personalinfo {
 
 
 
-/*
+/* lists
  *
  *
  *         #      #  ####  #####  ####
@@ -417,7 +417,7 @@ section.list > ul > li > ul.tags > li {
 }
 
 
-/*
+/* papers
  *
  *
  *         #####    ##   #####  ###### #####   ####
@@ -566,7 +566,7 @@ section.list > ul > li > ul.tags > li {
 }
 
 
-/*
+/* experiment data
  *
  *
  *  ###### #    # #####  ###### #####  # #    # ###### #    # #####    #####    ##   #####   ##
@@ -880,7 +880,7 @@ body.page-about-you.editing #paper table.experiments.editing th.add {
   border: none;
 }
 
-/*
+/* todo
  *
  *
  *                #####  ####  #####   ####

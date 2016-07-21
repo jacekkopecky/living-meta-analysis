@@ -20,7 +20,7 @@ app.set('strict routing', true);
 
 app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
 
-/*
+/* routes
  *
  *
  *        #####   ####  #    # ##### ######  ####
@@ -68,7 +68,7 @@ function SLASH_URL(req, res, next) {
 }
 
 
-/*
+/* error handling
  *
  *
  *  ###### #####  #####   ####  #####     #    #   ##   #    # #####  #      # #    #  ####

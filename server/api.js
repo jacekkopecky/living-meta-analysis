@@ -17,7 +17,7 @@ const api = module.exports = express.Router({
 
 const EMAIL_ADDRESS_RE = module.exports.EMAIL_ADDRESS_RE = '[a-zA-Z.+-]+@[a-zA-Z.+-]+';
 
-/*
+/* routes
  *
  *
  *        #####   ####  #    # ##### ######  ####
@@ -54,7 +54,7 @@ api.get('/columns', REGISTER_USER, listColumns);
 api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listMetaanalysesForUser);
 
 
-/*
+/* users
  *
  *
  *         #    #  ####  ###### #####   ####
@@ -147,7 +147,7 @@ module.exports.checkUserExists = function (req, res, next) {
 };
 
 
-/*
+/* papers
  *
  *
  *        #####    ##   #####  ###### #####   ####
@@ -307,7 +307,7 @@ function listTopPapers(req, res, next) {
 }
 
 
-/*
+/* metaanalyses
  *
  *
  *    #    # ###### #####   ##     ##   #    #   ##   #      #   #  ####  ######  ####
@@ -361,7 +361,7 @@ function listTopMetaanalyses(req, res, next) {
 }
 
 
-/*
+/* columns
  *
  *
  *         ####   ####  #      #    # #    # #    #  ####

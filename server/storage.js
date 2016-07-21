@@ -18,7 +18,7 @@ const gcloud = require('gcloud')({
 const datastore = gcloud.datastore({ namespace: 'living-meta-analysis-v2' });
 
 
-/*
+/* users
  *
  *
  *         #    #  ####  ###### #####   ####
@@ -127,7 +127,7 @@ module.exports.addUser = (email, user) => {
   );
 };
 
-/*
+/* papers
  *
  *
  *        #####    ##   #####  ###### #####   ####
@@ -400,7 +400,7 @@ module.exports.savePaper = (paper, email) => {
 };
 
 
-/*
+/* metaanalyses
  *
  *
  *    #    # ###### #####   ##     ##   #    #   ##   #      #   #  ####  ######  ####
@@ -485,7 +485,7 @@ module.exports.listMetaanalyses = () => {
 };
 
 
-/*
+/* columns
  *
  *
  *         ####   ####  #      #    # #    # #    #  ####

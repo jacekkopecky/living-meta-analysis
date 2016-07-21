@@ -428,7 +428,19 @@
   }
 
 
-  // DOM update machinery
+  /* DOM updates
+   *
+   *
+   *         ######  ####### #     #
+   *         #     # #     # ##   ##    #    # #####  #####    ##   ##### ######  ####
+   *         #     # #     # # # # #    #    # #    # #    #  #  #    #   #      #
+   *         #     # #     # #  #  #    #    # #    # #    # #    #   #   #####   ####
+   *         #     # #     # #     #    #    # #####  #    # ######   #   #           #
+   *         #     # #     # #     #    #    # #      #    # #    #   #   #      #    #
+   *         ######  ####### #     #     ####  #      #####  #    #   #   ######  ####
+   *
+   *
+   */
   var paperDOMSetters;
   var paperDOMCleanups;
   var paperChangeVerifiers;
@@ -456,7 +468,18 @@
   }
 
 
-  // functions for popup boxes
+  /* popup boxes
+   *
+   *
+   *            #####   ####  #####  #    # #####     #####   ####  #    # ######  ####
+   *            #    # #    # #    # #    # #    #    #    # #    #  #  #  #      #
+   *            #    # #    # #    # #    # #    #    #####  #    #   ##   #####   ####
+   *            #####  #    # #####  #    # #####     #    # #    #   ##   #           #
+   *            #      #    # #      #    # #         #    # #    #  #  #  #      #    #
+   *            #       ####  #       ####  #         #####   ####  #    # ######  ####
+   *
+   *
+   */
   var pinnedBox = null;
   function doPinPopupBox(el) {
     var box = el;
@@ -521,7 +544,18 @@
   }
 
 
-  // general event listeners for popup boxes and input fields
+  /* event listeners
+   *
+   *
+   *       ###### #    # ###### #    # #####    #      #  ####  ##### ###### #    # ###### #####   ####
+   *       #      #    # #      ##   #   #      #      # #        #   #      ##   # #      #    # #
+   *       #####  #    # #####  # #  #   #      #      #  ####    #   #####  # #  # #####  #    #  ####
+   *       #      #    # #      #  # #   #      #      #      #   #   #      #  # # #      #####       #
+   *       #       #  #  #      #   ##   #      #      # #    #   #   #      #   ## #      #   #  #    #
+   *       ######   ##   ###### #    #   #      ###### #  ####    #   ###### #    # ###### #    #  ####
+   *
+   *
+   */
   document.addEventListener('keydown', dismissOrBlurOnEscape);
   document.addEventListener('click', dismissOnOutsideClick);
 
@@ -555,6 +589,18 @@
     }
   }
 
+  /* api
+   *
+   *
+   *                ##   #####  #
+   *               #  #  #    # #
+   *              #    # #    # #
+   *              ###### #####  #
+   *              #    # #      #
+   *              #    # #      #
+   *
+   *
+   */
 
   // api to other scripts
   lima.extractPaperTitleFromUrl = extractPaperTitleFromUrl;
