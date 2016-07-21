@@ -100,7 +100,7 @@
       if (response.status === 404) _.notFound();
       else return _.fetchJson(response);
     })
-    .then(paperHasChanged)
+    .then(updatePaperView)
     .catch(function (err) {
       console.error("problem getting paper");
       console.error(err);
@@ -108,7 +108,7 @@
     });
   }
 
-  function paperHasChanged(paper) {
+  function updatePaperView(paper) {
     if (!paper) paper = currentPaper;
 
     var isSmallChange = currentPaper != null && paperChangeVerifiers.every(function (verifier) { return verifier(paper); });
@@ -371,7 +371,7 @@
     .then(_.fetchJson)
     .then(function(json) {
       _.removeClass('#paper', 'saving');
-      if (!pendingSaveTimeout) paperHasChanged(json);
+      if (!pendingSaveTimeout) updatePaperView(json);
     })
     .catch(function(err) {
       console.error('error saving paper');
@@ -453,7 +453,7 @@
     if (i === -1) return console.error('column ' + colId + ' not found in newly regenerated order!');
     _.moveInArray(currentPaper.columnOrder, i, left, most);
     moveResultsAfterCharacteristics(currentPaper);
-    paperHasChanged();
+    updatePaperView();
     setPendingPaperSave();
   }
 
@@ -552,7 +552,7 @@
     }
     if (!el) throw new Error('cannot find element for popup box');
     doPinPopupBox(el);
-    paperHasChanged();
+    updatePaperView();
   }
 
   function doUnpinPopupBox() {
@@ -562,7 +562,7 @@
 
   function unpinPopupBox() {
     doUnpinPopupBox();
-    paperHasChanged();
+    updatePaperView();
   }
 
   function togglePopupBox(el) {
@@ -579,7 +579,7 @@
     if (pinnedBox === box.dataset.boxid) doUnpinPopupBox();
     else doPinPopupBox(box);
 
-    paperHasChanged();
+    updatePaperView();
   }
 
   function setPopupBoxes(el, selector, localid) {
@@ -620,7 +620,7 @@
         ev.target.blur();
       } else if (pinnedBox) {
         doUnpinPopupBox();
-        paperHasChanged();
+        updatePaperView();
       }
     }
   }
@@ -631,7 +631,7 @@
     while (el && el.dataset.boxid !== pinnedBox) el = el.parentElement;
     if (!el) {
       doUnpinPopupBox();
-      paperHasChanged();
+      updatePaperView();
     }
   }
 
@@ -665,6 +665,6 @@
   lima.pinPopupBox = pinPopupBox;
   lima.unpinPopupBox = unpinPopupBox;
   lima.togglePopupBox = togglePopupBox;
-  lima.paperHasChanged = paperHasChanged;
+  lima.updatePaperView = updatePaperView;
 
 })(window, document);
