@@ -82,24 +82,6 @@
     });
   }
 
-  var paperDOMSetters = [];
-  var paperDOMCleanups = [];
-  var paperChangeVerifiers = [];
-
-  function addPaperDOMSetter (f, cleanup) {
-    if (f && paperDOMSetters.indexOf(f) === -1) paperDOMSetters.push(f);
-    if (cleanup && paperDOMCleanups.indexOf(cleanup) === -1) paperDOMCleanups.push(cleanup);
-  }
-
-  function addPaperChangeVerifier (f) {
-    if (paperChangeVerifiers.indexOf(f) === -1) paperChangeVerifiers.push(f);
-  }
-
-  function callPaperDOMSetters(paper) {
-    paperDOMSetters.forEach(function (setter) { setter(paper); });
-    paperDOMCleanups.forEach(function (cleanup) { cleanup(paper); });
-  }
-
   function paperHasChanged(paper) {
     if (!paper) paper = currentPaper;
 
@@ -110,12 +92,10 @@
 
     // todo for testing
     lima.currentPaper = paper;
-    lima.paperHasChanged = paperHasChanged;
   }
 
   function fillPaper(paper) {
-    paperDOMSetters = [];
-    paperChangeVerifiers = [];
+    resetDOMSetters();
 
     // cleanup
     var oldPaperEl = _.byId('paper');
@@ -448,6 +428,34 @@
   }
 
 
+  // DOM update machinery
+  var paperDOMSetters;
+  var paperDOMCleanups;
+  var paperChangeVerifiers;
+
+  resetDOMSetters();
+
+  function resetDOMSetters() {
+    paperDOMSetters = [];
+    paperDOMCleanups = [];
+    paperChangeVerifiers = [];
+  }
+
+  function addPaperDOMSetter (f, cleanup) {
+    if (f && paperDOMSetters.indexOf(f) === -1) paperDOMSetters.push(f);
+    if (cleanup && paperDOMCleanups.indexOf(cleanup) === -1) paperDOMCleanups.push(cleanup);
+  }
+
+  function addPaperChangeVerifier (f) {
+    if (paperChangeVerifiers.indexOf(f) === -1) paperChangeVerifiers.push(f);
+  }
+
+  function callPaperDOMSetters(paper) {
+    paperDOMSetters.forEach(function (setter) { setter(paper); });
+    paperDOMCleanups.forEach(function (cleanup) { cleanup(paper); });
+  }
+
+
   // functions for popup boxes
   var pinnedBox = null;
   function doPinPopupBox(el) {
@@ -557,5 +565,6 @@
   lima.pinPopupBox = pinPopupBox;
   lima.unpinPopupBox = unpinPopupBox;
   lima.togglePopupBox = togglePopupBox;
+  lima.paperHasChanged = paperHasChanged;
 
 })(window, document);
