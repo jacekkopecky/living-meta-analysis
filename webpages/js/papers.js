@@ -5,7 +5,7 @@
 
   lima.apiFail = lima.apiFail || function(){};
 
-  lima.extractPaperTitleFromUrl = function extractPaperTitleFromUrl() {
+  function extractPaperTitleFromUrl() {
     // the path of a page for a paper will be '/email/title/*',
     // so extract the 'title' portion here:
 
@@ -16,7 +16,7 @@
   }
 
 
-  lima.requestAndFillPaperList = function requestAndFillPaperList() {
+  function requestAndFillPaperList() {
     lima.getGapiIDToken()
     .then(function (idToken) {
       var email = lima.extractUserProfileEmailFromUrl();
@@ -59,7 +59,7 @@
 
   var currentPaperUrl, currentPaper;
 
-  lima.extractAndFillPaper = function extractAndFillPaper() {
+  function extractAndFillPaper() {
     var email = lima.extractUserProfileEmailFromUrl();
     var title = lima.extractPaperTitleFromUrl();
     _.fillEls('#paper .title', title);
@@ -153,7 +153,7 @@
 
     _.findEls('[contenteditable]').forEach(function (el) {
       if (el.classList.contains('oneline')) {
-        el.addEventListener('keydown', blurOnEscape);
+        el.addEventListener('keydown', blurOnEnter);
       }
 
       el.addEventListener('focus', pinPopupBox);
@@ -428,35 +428,6 @@
     paperHasChanged();
   }
 
-  // dismiss pinned popup boxes with Escape or with a click outside them
-  document.addEventListener('keydown', function (ev) {
-    if (ev.keyCode === 27) {
-      if (ev.target === document.activeElement && document.activeElement !== document.body) {
-        ev.target.blur();
-      } else if (pinnedBox) {
-        doUnpinPopupBox();
-        paperHasChanged();
-      }
-    }
-  });
-
-  document.addEventListener('click', function (ev) {
-    if (!pinnedBox) return;
-    var el = ev.target;
-    while (el && el.dataset.boxid !== pinnedBox) el = el.parentElement;
-    if (!el) {
-      doUnpinPopupBox();
-      paperHasChanged();
-    }
-  });
-
-  function blurOnEscape(ev) {
-    if (ev.keyCode == 13 && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
-      ev.preventDefault();
-      ev.target.blur();
-    }
-  }
-
   function regenerateColumnOrder(paper) {
     if (!Array.isArray(paper.columnOrder)) paper.columnOrder = [];
 
@@ -538,6 +509,47 @@
     })
 
   }
+
+
+  // general event listeners for popup boxes and input fields
+  document.addEventListener('keydown', dismissOrBlurOnEscape);
+  document.addEventListener('click', dismissOnOutsideClick);
+
+  // dismiss pinned popup boxes with Escape or with a click outside them
+  function dismissOrBlurOnEscape(ev) {
+    if (ev.keyCode === 27) {
+      if (ev.target === document.activeElement && document.activeElement !== document.body) {
+        ev.target.blur();
+      } else if (pinnedBox) {
+        doUnpinPopupBox();
+        paperHasChanged();
+      }
+    }
+  }
+
+  function dismissOnOutsideClick(ev) {
+    if (!pinnedBox) return;
+    var el = ev.target;
+    while (el && el.dataset.boxid !== pinnedBox) el = el.parentElement;
+    if (!el) {
+      doUnpinPopupBox();
+      paperHasChanged();
+    }
+  }
+
+  // oneline input fields get blurred on enter (for Excel-like editing)
+  function blurOnEnter(ev) {
+    if (ev.keyCode == 13 && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+      ev.preventDefault();
+      ev.target.blur();
+    }
+  }
+
+
+  // api to other scripts
+  lima.extractPaperTitleFromUrl = extractPaperTitleFromUrl;
+  lima.requestAndFillPaperList = requestAndFillPaperList;
+  lima.extractAndFillPaper = extractAndFillPaper;
 
   // for testing
   lima.pinPopupBox = pinPopupBox;
