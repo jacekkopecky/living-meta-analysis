@@ -16,6 +16,18 @@
   }
 
 
+  /* paper list
+   *
+   *
+   *        #####    ##   #####  ###### #####     #      #  ####  #####
+   *        #    #  #  #  #    # #      #    #    #      # #        #
+   *        #    # #    # #    # #####  #    #    #      #  ####    #
+   *        #####  ###### #####  #      #####     #      #      #   #
+   *        #      #    # #      #      #   #     #      # #    #   #
+   *        #      #    # #      ###### #    #    ###### #  ####    #
+   *
+   *
+   */
   function requestAndFillPaperList() {
     lima.getGapiIDToken()
     .then(function (idToken) {
@@ -56,6 +68,20 @@
 
     _.setYouOrName();
   }
+
+
+  /* paper
+   *
+   *
+   *           #####    ##   #####  ###### #####
+   *           #    #  #  #  #    # #      #    #
+   *           #    # #    # #    # #####  #    #
+   *           #####  ###### #####  #      #####
+   *           #      #    # #      #      #   #
+   *           #      #    # #      ###### #    #
+   *
+   *
+   */
 
   var currentPaperUrl, currentPaper;
 
@@ -288,6 +314,92 @@
     })
   }
 
+
+  /* save
+   *
+   *
+   *             ####    ##   #    # ######
+   *            #       #  #  #    # #
+   *             ####  #    # #    # #####
+   *                 # ###### #    # #
+   *            #    # #    #  #  #  #
+   *             ####  #    #   ##   ######
+   *
+   *
+   */
+
+  var pendingSaveTimeout = null;
+  var pendingSaveForceTime = null;
+
+  function setPendingPaperSave() {
+    // don't save automatically after an error
+    if (_.findEl('#paper.savingerror')) return;
+
+    // setTimeout for save in 1s -- todo should be more?
+    // if already set, cancel the old one and set a new one
+    // but only replace the old one if the pending save started less than 10s ago
+    _.addClass('#paper', 'savepending');
+    if (pendingSaveTimeout && pendingSaveForceTime > Date.now()) {
+      clearTimeout(pendingSaveTimeout);
+      pendingSaveTimeout = null;
+    }
+    if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(savePaper, 1000);
+    if (!pendingSaveForceTime) pendingSaveForceTime = Date.now() + 10 * 1000; // ten seconds
+  }
+
+  function savePaper() {
+    if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
+    pendingSaveTimeout = null;
+    pendingSaveForceTime = null;
+
+    lima.getGapiIDToken()
+    .then(function(idToken) {
+      if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
+      pendingSaveTimeout = null;
+      pendingSaveForceTime = null;
+
+      _.removeClass('#paper', 'savingerror');
+      _.removeClass('#paper', 'savepending');
+      _.addClass('#paper', 'saving');
+
+      return fetch(currentPaperUrl, {
+        method: 'POST',
+        headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
+        body: JSON.stringify(currentPaper),
+      });
+    })
+    .then(_.fetchJson)
+    .then(function(json) {
+      _.removeClass('#paper', 'saving');
+      if (!pendingSaveTimeout) paperHasChanged(json);
+    })
+    .catch(function(err) {
+      console.error('error saving paper');
+      console.error(err);
+      _.addClass('#paper', 'savingerror');
+      _.removeClass('#paper', 'saving');
+      if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
+      pendingSaveTimeout = null;
+      pendingSaveForceTime = null;
+    })
+
+  }
+
+
+
+  /* moving cols
+   *
+   *
+   *         #    #  ####  #    # # #    #  ####      ####   ####  #       ####
+   *         ##  ## #    # #    # # ##   # #    #    #    # #    # #      #
+   *         # ## # #    # #    # # # #  # #         #      #    # #       ####
+   *         #    # #    # #    # # #  # # #  ###    #      #    # #           #
+   *         #    # #    #  #  #  # #   ## #    #    #    # #    # #      #    #
+   *         #    #  ####    ##   # #    #  ####      ####   ####  ######  ####
+   *
+   *
+   */
+
   function findColumnsInPaper(paper) {
     // find the columns used in the experiments
     var showColumnsHash= {};
@@ -369,64 +481,6 @@
     }
 
   }
-
-  var pendingSaveTimeout = null;
-  var pendingSaveForceTime = null;
-
-  function setPendingPaperSave() {
-    // don't save automatically after an error
-    if (_.findEl('#paper.savingerror')) return;
-
-    // setTimeout for save in 1s
-    // if already set, cancel the old one and set a new one
-    // but only replace the old one if the pending save started less than 10s ago
-    _.addClass('#paper', 'savepending');
-    if (pendingSaveTimeout && pendingSaveForceTime > Date.now()) {
-      clearTimeout(pendingSaveTimeout);
-      pendingSaveTimeout = null;
-    }
-    if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(savePaper, 1000);
-    if (!pendingSaveForceTime) pendingSaveForceTime = Date.now() + 10 * 1000; // ten seconds
-  }
-
-  function savePaper() {
-    if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
-    pendingSaveTimeout = null;
-    pendingSaveForceTime = null;
-
-    lima.getGapiIDToken()
-    .then(function(idToken) {
-      if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
-      pendingSaveTimeout = null;
-      pendingSaveForceTime = null;
-
-      _.removeClass('#paper', 'savingerror');
-      _.removeClass('#paper', 'savepending');
-      _.addClass('#paper', 'saving');
-
-      return fetch(currentPaperUrl, {
-        method: 'POST',
-        headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
-        body: JSON.stringify(currentPaper),
-      });
-    })
-    .then(_.fetchJson)
-    .then(function(json) {
-      _.removeClass('#paper', 'saving');
-      if (!pendingSaveTimeout) paperHasChanged(json);
-    })
-    .catch(function(err) {
-      console.error('error saving paper');
-      console.error(err);
-      _.addClass('#paper', 'savingerror');
-      _.removeClass('#paper', 'saving');
-      if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
-      pendingSaveTimeout = null;
-      pendingSaveForceTime = null;
-    })
-
-  }
-
 
   /* DOM updates
    *
