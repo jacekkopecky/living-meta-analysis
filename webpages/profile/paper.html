@@ -25,7 +25,7 @@
   <section id="paper">
     <header>
       <h1 class="title notediting"></h1>
-      <h1 class="title editing" contenteditable placeholder="enter paper title"></h1>
+      <h1 class="title editing oneline" contenteditable placeholder="enter paper title"></h1>
       <ul class="tags"></ul><a class="addtag editing">+</a>
       <span class="savepending">will be saved soon&hellip;</span>
       <span class="saving">saving&hellip;</span>
@@ -34,11 +34,11 @@
     <p>Entered <span class="enteredby"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
     <p class="authors">Authors:
       <span class="value notediting">error</span>
-      <span class="value editing" contenteditable placeholder="enter the authors">error</span>
+      <span class="value editing oneline" contenteditable placeholder="enter the authors">error</span>
     </p>
     <p class="published">Published:
       <span class="value notediting">error</span>
-      <span class="value editing" contenteditable placeholder="when and where it was published">error</span>
+      <span class="value editing oneline" contenteditable placeholder="when and where it was published">error</span>
     </p>
     <p class="description">Description:
       <span class="value notediting">error</span>
@@ -85,7 +85,7 @@
   <th>
     <div class="zindexed">
       <span class="coltitle">error</span>
-      <div class="fullcolinfo popupbox" data-boxname='fullcolinfo'>
+      <div class="fullcolinfo popupbox" data-boxtype='fullcolinfo'>
         <div class="unpin" onclick="lima.unpinPopupBox()">&times;</div>
         <button class="move left most editing" title="move column to the left">|«</button>
         <button class="move left editing" title="move column to the left">«</button>
@@ -94,7 +94,7 @@
         <button class="move right most editing" title="move column to the right">»|</button>
         <header>
           <p class="coltitle notediting">error</p>
-          <p class="coltitle editing" contenteditable placeholder="column title">error</p>
+          <p class="coltitle editing oneline" contenteditable placeholder="column title">error</p>
         </header>
         <p class="coldescription notediting">error</p>
         <p class="coldescription editing" contenteditable placeholder="add column description">error</p>
@@ -114,9 +114,11 @@
       <span class="title">error</span>-<span class="exptitle"></span>
       <div class="fullrowinfo">
         <header>
-          <p>Study/experiment: <span class="title">error</span>-<span class="exptitle notediting"></span><span class="exptitle editing" contenteditable placeholder="row title"></span></p>
+          <p>Study/experiment: <span class="title">error</span>-<span class="exptitle notediting"></span><span class="exptitle editing oneline" contenteditable placeholder="row title"></span></p>
         </header>
-        <div class="expdescription" placeholder="enter description"></div>
+        <!-- todo click on .exdescription.short should focus the contenteditable exptitle -->
+        <div class="expdescription editing" contenteditable placeholder="enter description"></div>
+        <div class="expdescription notediting"></div>
       </div>
       <div class="expdescription short"></div>
       <!-- todo comments -->
@@ -126,7 +128,7 @@
 <template id="experiment-datum-template">
   <td>
     <span class="value notediting"></span>
-    <span class="value editing" contenteditable></span>
+    <span class="value editing oneline" contenteditable></span>
     <div class="comments zindexed">
       <header><p><span class="commentcount"></span> comments:</p></header>
       <main></main>
@@ -135,6 +137,7 @@
 </template>
 <template id="comment-template">
   <div class="comment">
+    <!-- todo comment editing -->
     <header>
       #<span class="commentnumber"></span>: <a class="by" href="error">error</a> wrote on <span class="ctime date"></span>:
     </header>

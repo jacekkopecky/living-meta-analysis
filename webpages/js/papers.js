@@ -151,6 +151,15 @@
     _.removeClass('body', 'loading');
     _.setYouOrName();
 
+    _.findEls('.editing.oneline[contenteditable]').forEach(function (el) {
+      el.addEventListener('keydown', function (ev) {
+        if (ev.keyCode == 13 && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+          ev.preventDefault();
+          ev.target.blur();
+        }
+      });
+    });
+
     // _.addEventListener('#paper .savingerror', 'click', savePaper);
     // _.addEventListener('#paper .description .value', 'input', setPendingPaperSave);
 
@@ -221,17 +230,7 @@
           lima.columnTypes.forEach(function (type) {th.classList.remove(type);});
           th.classList.add(col.type);
 
-          _.findEls(th, '.popupbox').forEach(function (box) {
-            box.dataset.boxid = box.dataset.boxname + "@" + col.id;
-
-            // find nearest parent-or-self that is '.zindexed' so it can be raised above others when pinned
-            var zIndexed = box;
-            while (zIndexed && !zIndexed.classList.contains('zindexed')) zIndexed = zIndexed.parentElement;
-
-            var operation = pinnedBox === box.dataset.boxid ? 'add' : 'remove';
-            box.classList[operation]('pinned');
-            zIndexed.classList[operation]('pinned');
-          })
+          setPopupBoxes(th, col.id);
         });
     });
 
@@ -289,6 +288,21 @@
 
     var noTableMarker = _.findEl('#paper .no-table');
     noTableMarker.parentElement.insertBefore(table, noTableMarker);
+  }
+
+  function setPopupBoxes(el, localid) {
+    _.findEls(el, '.popupbox').forEach(function (box) {
+      box.dataset.boxid = box.dataset.boxtype + "@" + localid;
+
+      // find nearest parent-or-self that is '.zindexed' so it can be raised above others when pinned
+      var zIndexed = box;
+      while (zIndexed && !zIndexed.classList.contains('zindexed')) zIndexed = zIndexed.parentElement;
+
+      var operation = pinnedBox === box.dataset.boxid ? 'add' : 'remove';
+      box.classList[operation]('pinned');
+      zIndexed.classList[operation]('pinned');
+    })
+
   }
 
   function fillComments(templateId, root, selector, comments) {
