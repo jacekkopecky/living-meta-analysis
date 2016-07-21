@@ -65,7 +65,7 @@
           <div class="zindexed">
             <span>Study/Experiment</span>
             <div class="fullcolinfo popupbox" data-boxid='studyexperimentheading'>
-              <div class="unpin" onclick="lima.unpinPopupBox()">&times;</div>
+              <div class="pin"></div>
               <header><p>Study/Experiment</p></header>
               <p class="description">A row can be a study, an experiment, or a condition within an experiment.</p>
               <!-- todo comments -->
@@ -86,7 +86,7 @@
     <div class="zindexed">
       <span class="coltitle">error</span>
       <div class="fullcolinfo popupbox" data-boxtype='fullcolinfo'>
-        <div class="unpin" onclick="lima.unpinPopupBox()">&times;</div>
+        <div class="pin"></div>
         <button class="move left most editing" title="move column to the left">|«</button>
         <button class="move left editing" title="move column to the left">«</button>
         <!-- <button class="hide editing">hide</button> -->
@@ -112,7 +112,8 @@
     <th class="zindexed">
       <!-- todo click on title or exptitle should focus the contenteditable exptitle -->
       <span class="title">error</span>-<span class="exptitle"></span>
-      <div class="fullrowinfo">
+      <div class="fullrowinfo popupbox" data-boxtype='fullrowinfo'>
+        <div class="pin"></div>
         <header>
           <p>Study/experiment: <span class="title">error</span>-<span class="exptitle notediting"></span><span class="exptitle editing oneline" contenteditable placeholder="row title"></span></p>
         </header>
@@ -126,10 +127,11 @@
   </tr>
 </template>
 <template id="experiment-datum-template">
-  <td>
+  <td class="zindexed">
     <span class="value notediting"></span>
     <span class="value editing oneline" contenteditable></span>
-    <div class="comments zindexed">
+    <div class="comments popupbox" data-boxtype='datacomments'>
+      <div class="pin"></div>
       <header><p><span class="commentcount"></span> comments:</p></header>
       <main></main>
     </div>

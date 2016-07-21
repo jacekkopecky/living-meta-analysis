@@ -70,10 +70,19 @@ body > footer {
 
 .popupbox {
   position: relative;
+  border: 1px solid black;
+  border-radius: .5em;
+  padding: .3em .5em .1em .5em;
+  background-color: white;
+  box-shadow: 0 0 .3em .3em rgba(128,0,255,.2);
 }
 
-.popupbox .unpin {
-  display: none;
+.popupbox.pinned {
+  box-shadow: 0 0 .3em .3em rgba(0,0,0,.3);
+}
+
+.popupbox .pin {
+  display: block;
   font-size: 150%;
   font-weight: bold;
   color: #888;
@@ -88,12 +97,18 @@ body > footer {
   border-radius: .2em;
 }
 
-.popupbox.pinned .unpin {
+.popupbox .pin:after {
+  content: '▿';
   display: block;
+  height: 100%;
+  width: 100%;
 }
 
-.popupbox.pinned .unpin:hover {
-  display: block;
+.popupbox.pinned .pin:after {
+  content: '×';
+}
+
+.popupbox .pin:hover {
   background: #888;
   color: white;
 }
@@ -630,19 +645,16 @@ body:not(.editing) #paper table.experiments.editing + .no-table {
   display: inline-block;
 }
 
-body:not(.boxpinned) #paper table.experiments tr th:first-child:hover .fullrowinfo {
+body:not(.boxpinned) #paper table.experiments tr th:first-child:hover .fullrowinfo,
+#paper table.experiments tr th:first-child .fullrowinfo.pinned {
   display: block;
   min-width: 20em;
   max-width: 30em;
   min-height: 5em;
-  border: 1px solid black;
-  border-radius: .5em;
-  padding: .3em .5em .1em .5em;
   position: absolute;
   left: 90%;
   top: -.5em;
   text-align: left;
-  background-color: white;
 }
 
 /* nth-last-child(2) because there's the heading for adding */
@@ -713,14 +725,10 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   min-width: 10em;
   max-width: 30em;
   min-height: 5em;
-  border: 1px solid black;
-  border-radius: .5em;
-  padding: .3em .5em .1em .5em;
   position: absolute;
   left: 0;
   top: -2em;
   text-align: left;
-  background-color: white;
   transform: rotate(45deg);
   transform-origin: left top;
 }
@@ -785,7 +793,12 @@ body:not(.boxpinned) #paper table.experiments tr:first-child th:hover > div > sp
   z-index: 10;
 }
 
-#paper table.experiments td.hascomments:hover {
+body:not(.boxpinned) #paper table.experiments tr:not(:first-child) th:first-child:hover,
+#paper table.experiments tr:not(:first-child) th:first-child:hover.pinned,
+body:not(.boxpinned) #paper table.experiments tr:first-child th > div:hover > span,
+#paper table.experiments tr:first-child th > div.pinned:hover > span,
+body:not(.boxpinned) #paper table.experiments td.hascomments:hover,
+#paper table.experiments td.hascomments.pinned:hover {
   background: rgba(128,0,255,.2);
 }
 
@@ -796,20 +809,17 @@ body:not(.boxpinned) #paper table.experiments tr:first-child th:hover > div > sp
   min-height: 5em;
   max-height: 50vh;
   overflow: auto;
-  border: 1px solid black;
-  border-radius: .5em;
-  padding: .3em .5em .1em .5em;
   position: absolute;
   /* todo in javascript, when .comments are shown and if they're longer than the screen,
      put them higher so they stand on the bottom of the screen */
   top: 0;
   left: 90%;
   text-align: left;
-  background-color: white;
   z-index: 10;
 }
 
-body:not(.boxpinned) #paper table.experiments td.hascomments:hover .comments {
+body:not(.boxpinned) #paper table.experiments td.hascomments:hover .comments,
+#paper table.experiments td.hascomments .comments.pinned {
   display: block;
 }
 
