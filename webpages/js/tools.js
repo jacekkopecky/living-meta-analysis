@@ -245,7 +245,7 @@
         }
         el.appendChild(tagEl);
       });
-      el.appendChild(_.cloneTemplate(newTagTemplate));
+      if (newTagTemplate) el.appendChild(_.cloneTemplate(newTagTemplate));
     });
   }
 

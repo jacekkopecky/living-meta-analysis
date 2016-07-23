@@ -14,6 +14,8 @@ const config = require('./config');
 const api = require('./api');
 const NotFoundError = require('./errors/NotFoundError');
 
+const exec = require('child_process').exec;
+
 const app = express({ caseSensitive: true });
 app.set('case sensitive routing', true);
 app.set('strict routing', true);
@@ -32,6 +34,9 @@ app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
  *
  *
  */
+
+app.get('/version', oneLineVersion);
+app.get('/version/log', changeLog);
 
 app.get(['/profile', '/profile/*'],
         (req, res) => res.sendFile('profileRedirect.html', { root: './webpages/' }));
@@ -67,6 +72,46 @@ function SLASH_URL(req, res, next) {
   }
 }
 
+
+/* version
+ *
+ *
+ *         #    # ###### #####   ####  #  ####  #    #
+ *         #    # #      #    # #      # #    # ##   #
+ *         #    # #####  #    #  ####  # #    # # #  #
+ *         #    # #      #####       # # #    # #  # #
+ *          #  #  #      #   #  #    # # #    # #   ##
+ *           ##   ###### #    #  ####  #  ####  #    #
+ *
+ *
+ */
+
+let oneLineVersionString = 'version unknown';
+let changeLogString = 'changelog unknown';
+
+function oneLineVersion(req, res) {
+  res.set('Content-Type', 'text/plain');
+  res.send(oneLineVersionString);
+}
+
+function changeLog(req, res) {
+  res.set('Content-Type', 'text/plain');
+  res.send(changeLogString);
+}
+
+exec('git log -1 --pretty=format:"%ai \'%s\'"',
+  (error, stdout, stderr) => {
+    if (error) oneLineVersionString = 'error getting version: ' + error + '\n' + stderr;
+    else oneLineVersionString = stdout;
+  }
+);
+
+exec('git log -500',
+  (error, stdout, stderr) => {
+    if (error) changeLogString = 'error getting change log: ' + error + '\n' + stderr;
+    else changeLogString = stdout;
+  }
+);
 
 /* error handling
  *
