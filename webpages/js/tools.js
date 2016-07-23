@@ -43,6 +43,11 @@
     return (typeof val === 'function' && val.valOrFun !== 'val') ? val(param) : val;
   }
 
+  _.f = function val(f) {
+    if (typeof f === 'function') f.valOrFun = 'val';
+    return f;
+  }
+
   _.fillEls = function fillEls(root, selector, value) {
     if (!(root instanceof Node)) {
       value = selector;
@@ -218,8 +223,9 @@
     })
   }
 
-  _.fillTags = function fillTags(root, selector, tags) {
+  _.fillTags = function fillTags(root, selector, tags, flashTag) {
     if (!(root instanceof Node)) {
+      flashTag = tags;
       tags = selector;
       selector = root;
       root = document;
@@ -227,13 +233,19 @@
     if (!tags) tags = [];
 
     var tagTemplate = _.byId('tag-template');
+    var newTagTemplate = _.byId('new-tag-template');
     _.findEls(root, selector).forEach(function (el) {
       el.innerHTML = '';
       tags.forEach(function (tag) {
-        var tagEl = _.cloneTemplate(tagTemplate);
+        var tagEl = _.cloneTemplate(tagTemplate).children[0];
         _.fillEls(tagEl, '.tag', tag);
+        if (flashTag === tag) {
+          tagEl.classList.add('flash');
+          setTimeout(function(){tagEl.classList.remove('flash');}, 50);
+        }
         el.appendChild(tagEl);
       });
+      el.appendChild(_.cloneTemplate(newTagTemplate));
     });
   }
 

@@ -26,10 +26,11 @@
     <header>
       <h1 class="title notediting"></h1>
       <h1 class="title editing oneline" contenteditable placeholder="enter paper title"></h1>
-      <ul class="tags"></ul><a class="addtag editing">+</a>
+      <ul class="tags"></ul>
       <span class="savepending">will be saved soon&hellip;</span>
       <span class="saving">saving&hellip;</span>
       <span class="savingerror" title="Sorry, something unexpected happened. Error details might be available in the browser console. Click here to try saving again.">saving error!</span>
+      <span class="validationerrormessage">please correct fields highlighted below</span>
     </header>
     <p>Entered <span class="enteredby"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
     <p class="authors">Authors:
@@ -56,7 +57,8 @@
   </section>
 </template>
 <p class="loadingspinner">loading&hellip;</p>
-<template id="tag-template"><li><span class="tag">error</span><span class="remove editing">&times;</span></li></template>
+<template id="tag-template"><li><span class="tag">error</span><span class="removetag editing">&times;</span></li></template>
+<template id="new-tag-template"><li class="new"><span class="tag" contenteditable></span></li><li class="addtag editing"><span class="tag">+</span></li></template>
 <template id="experiments-table-template">
   <table class="experiments editing">
     <tbody>

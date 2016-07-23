@@ -43,10 +43,15 @@ body.editing.page-about-you .notediting {
 
 [contenteditable] {
   white-space: pre-line; /* to use \n instead of <br> as newlines */
+  min-width: 1em;
 }
 
-[contenteditable]:hover {
+[contenteditable]:hover:not(.validationerror) {
   box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
+}
+
+[contenteditable]:focus.validationerror {
+  outline: initial;
 }
 
 body > footer {
@@ -467,9 +472,28 @@ section.list > ul > li > ul.tags > li {
   border: 1px solid #008;
   border-radius: .4em;
   background: #33c;
+  transition: background .5s;
   color: white;
   overflow: hidden;
   vertical-align: bottom;
+}
+
+#paper ul.tags > li.flash {
+  background: #ff0;
+}
+
+#paper ul.tags > li.new {
+  background: white;
+  color: black;
+}
+
+#paper ul.tags > li.new [contenteditable]:focus {
+  outline: initial;
+  /* todo something in firefox puts the cursor too high */
+}
+
+#paper ul.tags > li.new:not(.editing) {
+  display: none;
 }
 
 #paper ul.tags > li .tag {
@@ -477,35 +501,30 @@ section.list > ul > li > ul.tags > li {
   margin: .4em;
 }
 
-#paper ul.tags > li .remove {
-  background-color: rgba(0,0,0,.5);
+#paper ul.tags > li .removetag {
+  background-color: #226;
+  color: white;
   display: inline-block;
   margin: 0;
   padding: .4em;
 }
 
-#paper ul.tags > li .remove:hover {
+#paper ul.tags > li .removetag:hover {
   background-color: rgba(255,255,255,1);
   color: black;
 }
 
-#paper ul.tags + a.addtag {
-  display: inline-block;
-  margin: .2em;
-  padding: .4em .6em;
-  vertical-align: bottom;
-
-  font-size: .7em;
-  line-height: 100%;
-  border: 1px solid #080;
-  border-radius: .4em;
+#paper ul.tags > li.addtag {
   background: #3c3;
+  transition: background 0s;
   color: white;
-  overflow: hidden;
-  text-decoration: none;
 }
 
-#paper ul.tags + a.addtag:hover {
+#paper ul.tags > li.new.editing + li.addtag {
+  display: none;
+}
+
+#paper ul.tags .addtag:hover {
   background-color: rgba(255,255,255,1);
   color: black;
 }
@@ -518,6 +537,15 @@ section.list > ul > li > ul.tags > li {
 #paper > header .saving {
   font-style: italic;
   color: #444;
+  position: absolute;
+  right: 0;
+  bottom: 120%;
+  display: none;
+}
+
+#paper > header .validationerrormessage {
+  font-style: italic;
+  color: #a00;
   position: absolute;
   right: 0;
   bottom: 120%;
@@ -537,7 +565,11 @@ section.list > ul > li > ul.tags > li {
 }
 
 #paper.saving > header .saving,
-#paper.savepending:not(.saving) > header .savepending { display: block; }
+#paper.savepending:not(.saving) > header .savepending,
+#paper.validationerror > header .validationerrormessage {
+  display: block;
+}
+
 
 #paper.savingerror > header .savingerror { display: block; cursor: pointer; }
 
@@ -878,6 +910,35 @@ body.page-about-you.editing #paper table.experiments.editing th.add {
 #paper table.experiments.editing tr.add .no-data {
   position: absolute;
   border: none;
+}
+
+/* validation
+ *
+ *
+ *           #    #   ##   #      # #####    ##   ##### #  ####  #    #
+ *           #    #  #  #  #      # #    #  #  #    #   # #    # ##   #
+ *           #    # #    # #      # #    # #    #   #   # #    # # #  #
+ *           #    # ###### #      # #    # ######   #   # #    # #  # #
+ *            #  #  #    # #      # #    # #    #   #   # #    # #   ##
+ *             ##   #    # ###### # #####  #    #   #   #  ####  #    #
+ *
+ *
+ */
+[contenteditable].validationerror {
+  box-shadow: 0 0 3px 3px rgba(255,0,0,.5);
+  position: relative;
+}
+
+[contenteditable].validationerror[data-validationmessage]:after {
+  display: block;
+  position: absolute;
+  left: 100%;
+  bottom: 0;
+  font-size: 80%;
+  white-space: nowrap;
+  padding-left: 1em;
+  color: #a00;
+  content: attr(data-validationmessage);
 }
 
 /* todo

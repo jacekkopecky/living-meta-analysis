@@ -120,8 +120,14 @@
     lima.currentPaper = paper;
   }
 
+  var startNewTag = null;
+  var flashTag = null;
+  var fillingTags = false;
+
   function fillPaper(paper) {
     resetDOMSetters();
+
+    addPaperDOMSetter(removeValidationErrorClass);
 
     // cleanup
     var oldPaperEl = _.byId('paper');
@@ -134,7 +140,9 @@
     addPaperChangeVerifier(function (newPaper) { return paper.id === newPaper.id; });
     addPaperDOMSetter(function(paper) {
       _.fillEls('#paper .title', paper.title);
-      _.fillTags('#paper .tags', paper.tags);
+      fillingTags = true; // because that causes onBlur on a new tag and that mustn't be a save
+      _.fillTags('#paper .tags', paper.tags, flashTag); flashTag = null;
+      fillingTags = false;
       _.fillEls ('#paper .authors .value', paper.authors);
       _.fillEls ('#paper .published .value', paper.published);
       _.fillEls ('#paper .description .value', paper.description);
@@ -150,6 +158,104 @@
       if (lima.extractUserProfileEmailFromUrl() === paper.enteredBy) {
         _.addClass('#paper .enteredby', 'only-not-yours');
       }
+
+      addOnInput("#paper .authors .value", 'textContent', identity, paper, 'authors');
+      addOnInput("#paper .published .value", 'textContent', identity, paper, 'published');
+      addOnInput("#paper .description .value", 'textContent', identity, paper, 'description');
+
+      // events for removing a tag
+      _.findEls('#paper .tags .tag + .removetag').forEach(function (btn) {
+        btn.onclick = function () {
+          var el = btn;
+          while (el && !el.classList.contains('tag')) el = el.previousElementSibling;
+          while (el && !el.classList.contains('tag')) el = el.parentElement;
+          if (el) {
+            var text = el.textContent;
+            var i = paper.tags.indexOf(text);
+            if (i !== -1) {
+              paper.tags.splice(i, 1);
+              updatePaperView();
+              schedulePaperSave();
+            } else {
+              console.error('removing tag but can\'t find it: ' + text);
+            }
+          }
+        }
+      })
+      // events for starting to add a tag
+      _.findEls('#paper .tags .new + .addtag').forEach(function (btn) {
+        btn.onclick = function () {
+          var el = btn.previousElementSibling;
+          el.classList.add('editing');
+          _.findEl(el, '.tag').focus();
+        }
+        if (startNewTag !== null) {
+          btn.onclick();
+          var el = _.findEl('#paper .tags .new .tag');
+          el.textContent = startNewTag;
+          if (startNewTag) {
+            // put cursor at the end of the text
+            var selection = window.getSelection();
+            var range = document.createRange();
+            range.setStartAfter(el.childNodes[el.childNodes.length-1]);
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+          }
+          startNewTag = null;
+        }
+      })
+      // events for adding a tag
+      _.findEls('#paper .tags .new .tag').forEach(function (el) {
+        el.onblur = function () {
+          if (fillingTags) {
+            startNewTag = el.textContent;
+            return;
+          }
+          var text = el.textContent;
+          if (!text) {
+            if (startNewTag !== null) {
+              el.focus();
+              console.log('got this startnewtag "' + startNewTag + '"');
+              el.textContent = startNewTag;
+            } else {
+              _.removeClass('#paper .tags .new', 'editing');
+            }
+          } else {
+            var add = paper.tags.indexOf(text) === -1;
+            if (add) {
+              paper.tags.push(text);
+            }
+            flashTag = text;
+            updatePaperView();
+            if (add) {
+              schedulePaperSave();
+            }
+          }
+        }
+        el.onkeydown = function (ev) {
+          // enter
+          if (ev.keyCode === 13 && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+            startNewTag = null;
+            ev.preventDefault();
+            el.blur();
+          }
+          // escape
+          else if (ev.keyCode === 27) {
+            startNewTag = null;
+            _.removeClass('#paper .tags .new', 'editing');
+            el.textContent = '';
+          }
+          // tab or comma starts a new tag
+          else if ((ev.keyCode === 9 || ev.keyCode === 188) && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+            startNewTag = '';
+            ev.preventDefault();
+            el.blur();
+          }
+          else deferScheduledPaperSave();
+        }
+      })
+
     });
 
     fillPaperExperimentTable(paper);
@@ -157,20 +263,17 @@
     _.removeClass('body', 'loading');
     _.setYouOrName();
 
-    _.findEls('[contenteditable]').forEach(function (el) {
-      if (el.classList.contains('oneline')) {
+    // now that the paper is all there, install general event listeners
+    installBlurOnEnter('[contenteditable].oneline');
+    function installBlurOnEnter(root, selector) {
+      _.findEls(root, selector).forEach(function (el) {
         el.addEventListener('keydown', blurOnEnter);
-      }
+      });
+    }
 
-      el.addEventListener('focus', pinPopupBox);
-    });
 
-    // _.addEventListener('#paper .savingerror', 'click', savePaper);
-    // _.addEventListener('#paper .description .value', 'input', setPendingPaperSave);
-
-    // todo
-    // in fillPaper, do nothing if save is pending?
-
+    _.addEventListener('[contenteditable]', 'focus', pinPopupBox);
+    _.addEventListener('#paper .savingerror', 'click', savePaper);
     _.addEventListener('.pin', 'click', togglePopupBox);
   }
 
@@ -331,26 +434,53 @@
   var pendingSaveTimeout = null;
   var pendingSaveForceTime = null;
 
-  function setPendingPaperSave() {
+  var PAPER_SAVE_PENDING_TIMEOUT = 3000;
+  var PAPER_SAVE_MAX_TIMEOUT = 10000;
+
+  function schedulePaperSave() {
     // don't save automatically after an error
     if (_.findEl('#paper.savingerror')) return;
+    if (_.findEl('#paper.validationerror')) return;
 
-    // setTimeout for save in 1s -- todo should be more?
-    // if already set, cancel the old one and set a new one
-    // but only replace the old one if the pending save started less than 10s ago
     _.addClass('#paper', 'savepending');
-    if (pendingSaveTimeout && pendingSaveForceTime > Date.now()) {
-      clearTimeout(pendingSaveTimeout);
-      pendingSaveTimeout = null;
-    }
-    if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(savePaper, 1000);
-    if (!pendingSaveForceTime) pendingSaveForceTime = Date.now() + 10 * 1000; // ten seconds
+
+    deferScheduledPaperSave();
+    if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(savePaper, PAPER_SAVE_PENDING_TIMEOUT);
+    if (!pendingSaveForceTime) pendingSaveForceTime = Date.now() + PAPER_SAVE_MAX_TIMEOUT;
   }
 
-  function savePaper() {
+  function cancelScheduledPaperSave() {
     if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
     pendingSaveTimeout = null;
     pendingSaveForceTime = null;
+
+  }
+
+  // setTimeout for save in 1s -- todo should be more?
+  // if already set, cancel the old one and set a new one
+  // but only replace the old one if the pending save started less than 10s ago
+  function deferScheduledPaperSave() {
+    // todo
+    if (pendingSaveTimeout && pendingSaveForceTime > Date.now()) {
+      clearTimeout(pendingSaveTimeout);
+      pendingSaveTimeout = setTimeout(savePaper, PAPER_SAVE_PENDING_TIMEOUT);
+    }
+  }
+
+  var savingPaper = false;
+  var scheduleAnotherPaperSave = false;
+
+  function savePaper() {
+    // don't save when a validation error is there
+    if (_.findEl('#paper.validationerror')) return;
+
+    cancelScheduledPaperSave();
+    if (savingPaper) {
+      scheduleAnotherPaperSave = true;
+      return;
+    }
+
+    savingPaper = true;
 
     lima.getGapiIDToken()
     .then(function(idToken) {
@@ -371,13 +501,20 @@
     .then(_.fetchJson)
     .then(function(json) {
       _.removeClass('#paper', 'saving');
-      if (!pendingSaveTimeout) updatePaperView(json);
+      savingPaper = false;
+      updatePaperView(json);
+      if (scheduleAnotherPaperSave) {
+        scheduleAnotherPaperSave = false;
+        schedulePaperSave();
+      }
     })
     .catch(function(err) {
       console.error('error saving paper');
       console.error(err);
       _.addClass('#paper', 'savingerror');
       _.removeClass('#paper', 'saving');
+      savingPaper = false;
+      scheduleAnotherPaperSave = false;
       if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
       pendingSaveTimeout = null;
       pendingSaveForceTime = null;
@@ -454,7 +591,7 @@
     _.moveInArray(currentPaper.columnOrder, i, left, most);
     moveResultsAfterCharacteristics(currentPaper);
     updatePaperView();
-    setPendingPaperSave();
+    schedulePaperSave();
   }
 
   function regenerateColumnOrder(paper) {
@@ -519,6 +656,47 @@
   function callPaperDOMSetters(paper) {
     paperDOMSetters.forEach(function (setter) { setter(paper); });
     paperDOMCleanups.forEach(function (cleanup) { cleanup(paper); });
+  }
+
+  var identity = null; // special value to use as validatorSanitizer
+  function addOnInput(root, selector, property, validatorSanitizer, target, targetProp) {
+    if (!(root instanceof Node)) {
+      targetProp = target;
+      target = validatorSanitizer;
+      validatorSanitizer = property;
+      property = selector;
+      selector = root;
+      root = document;
+    }
+
+    _.findEls(root, selector).forEach(function (el) {
+      if (el.classList.contains('editing') || el.isContentEditable) {
+        el.classList.remove('validationerror');
+        el.addEventListener('keydown', deferScheduledPaperSave);
+        el.oninput = function () {
+          var value = el[property];
+          try {
+            if (validatorSanitizer) value = validatorSanitizer(value, el, property);
+          } catch (err) {
+            // this class will be removed by updatePaperView when validation succeeds again
+            el.classList.add('validationerror');
+            el.dataset.validationmessage = err.message || err;
+            _.addClass('#paper', 'validationerror');
+            cancelScheduledPaperSave();
+            return;
+          }
+          target[targetProp] = value;
+          updatePaperView();
+          schedulePaperSave();
+        };
+      } else {
+        el.oninput = null;
+      }
+    });
+  }
+
+  function removeValidationErrorClass() {
+    _.removeClass('#paper', 'validationerror');
   }
 
 
@@ -666,5 +844,7 @@
   lima.unpinPopupBox = unpinPopupBox;
   lima.togglePopupBox = togglePopupBox;
   lima.updatePaperView = updatePaperView;
+  lima.savePaper = savePaper;
+  window._ = _;
 
 })(window, document);
