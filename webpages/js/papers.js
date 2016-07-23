@@ -215,9 +215,9 @@
           var text = el.textContent;
           if (!text) {
             if (startNewTag !== null) {
-              el.focus();
-              console.log('got this startnewtag "' + startNewTag + '"');
+              setTimeout(function() {el.focus()}, 0); // focus() inside the blur event may not work
               el.textContent = startNewTag;
+              startNewTag = null;
             } else {
               _.removeClass('#paper .tags .new', 'editing');
             }
