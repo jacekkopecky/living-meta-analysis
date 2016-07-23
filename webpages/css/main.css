@@ -789,9 +789,13 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   white-space: nowrap;
 }
 
-body:not(.boxpinned) #paper table.experiments tr:first-child th:hover > div > span + .fullcolinfo,
+body:not(.boxpinned) #paper table.experiments tr:first-child th > div:hover > span + .fullcolinfo,
 #paper table.experiments tr:first-child th > div > span + .fullcolinfo.pinned {
   display: block;
+}
+
+body:not(.boxpinned) #paper table.experiments tr:first-child th:hover .zindexed {
+  z-index: 10;
 }
 
 #paper table.experiments td {
@@ -825,10 +829,10 @@ body:not(.boxpinned) #paper table.experiments tr:first-child th:hover > div > sp
   z-index: 10;
 }
 
-body:not(.boxpinned) #paper table.experiments tr:not(:first-child) th:first-child:hover,
-#paper table.experiments tr:not(:first-child) th:first-child:hover.pinned,
 body:not(.boxpinned) #paper table.experiments tr:first-child th > div:hover > span,
 #paper table.experiments tr:first-child th > div.pinned:hover > span,
+body:not(.boxpinned) #paper table.experiments tr:not(:first-child) th:first-child:hover,
+#paper table.experiments tr:not(:first-child) th:first-child:hover.pinned,
 body:not(.boxpinned) #paper table.experiments td.hascomments:hover,
 #paper table.experiments td.hascomments.pinned:hover {
   background: rgba(128,0,255,.2);
