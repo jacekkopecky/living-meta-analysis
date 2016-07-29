@@ -371,6 +371,7 @@
             comments = experiment.data[colId].comments;
           }
           _.fillEls(td, '.value', value);
+          addOnInput(td, ".value", 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value']);
           if (Array.isArray(comments) && comments.length > 0) {
             td.classList.add('hascomments');
             _.fillEls(td, '.commentcount', comments.length);
@@ -685,7 +686,7 @@
             cancelScheduledPaperSave();
             return;
           }
-          target[targetProp] = value;
+          assign(target, targetProp, value);
           updatePaperView();
           schedulePaperSave();
         };
@@ -694,6 +695,24 @@
       }
     });
   }
+
+  function assign(target, targetProp, value) {
+    if (Array.isArray(targetProp)) {
+      while (targetProp.length > 1) {
+        var prop = targetProp.shift();
+        if (!(prop in target)) {
+          if (Number.isInteger(targetProp[0])) target[prop] = [];
+          else target[prop] = {};
+        }
+        target = target[prop];
+      }
+      targetProp = targetProp[0];
+    }
+
+    target[targetProp] = value;
+    return value;
+  }
+
 
   function removeValidationErrorClass() {
     _.removeClass('#paper', 'validationerror');
