@@ -854,7 +854,7 @@ body:not(.boxpinned) #paper table.experiments td.hascomments:hover,
   min-width: 20em;
   max-width: 30em;
   min-height: 5em;
-  max-height: 50vh;
+  max-height: 66vh;
   overflow: auto;
   position: absolute;
   /* todo in javascript, when .comments are shown and if they're longer than the screen,

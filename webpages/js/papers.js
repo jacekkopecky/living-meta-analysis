@@ -376,6 +376,7 @@
             td.classList.add('hascomments');
             _.fillEls(td, '.commentcount', comments.length);
             fillComments('comment-template', td, '.comments main', comments);
+            td.addEventListener('mouseenter', positionCommentsBox, false);
           } else {
             td.classList.remove('hascomments');
             _.fillEls(td, '.commentcount', 0);
@@ -402,6 +403,28 @@
 
     var noTableMarker = _.findEl('#paper .no-table');
     noTableMarker.parentElement.insertBefore(table, noTableMarker);
+  }
+
+  function positionCommentsBox(ev) {
+    // find the comment box
+    var el = ev.target;
+    while (el && !el.classList.contains('hascomments')) el = el.parentElement;
+    if (!el) return;
+    var box = _.findEl(el, '.comments.popupbox');
+    if (!box) return;
+
+    // compute the position of the comment box in the body
+    var top = 0;
+    el = box;
+    while (el) {
+      top += el.offsetTop;
+      el = el.offsetParent || el.parentElement;
+    }
+
+    // box goes below the screen, position it at the bottom of the screen instead
+    if (top + box.offsetHeight > document.body.offsetHeight) {
+      box.style.top = (document.body.offsetHeight - 5 - top - box.offsetHeight) + 'px';
+    }
   }
 
   function fillComments(templateId, root, selector, comments) {
