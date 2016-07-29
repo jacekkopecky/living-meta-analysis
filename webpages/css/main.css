@@ -840,9 +840,9 @@ body:not(.boxpinned) #paper table.experiments tr:first-child th:hover .zindexed 
   z-index: 10;
 }
 
-body:not(.boxpinned) #paper table.experiments tr:first-child th > div:hover > span,
-#paper table.experiments tr:first-child th > div.pinned:hover > span,
-body:not(.boxpinned) #paper table.experiments tr:not(:first-child) th:first-child:hover,
+body:not(.boxpinned) #paper table.experiments tr:first-child th:not(.add) > div:hover > span,
+#paper table.experiments tr:first-child th:not(.add) > div.pinned:hover > span,
+body:not(.boxpinned) #paper table.experiments tr:not(:first-child):not(.add) th:first-child:hover,
 #paper table.experiments tr:not(:first-child) th:first-child:hover.pinned,
 body:not(.boxpinned) #paper table.experiments td.hascomments:hover,
 #paper table.experiments td.hascomments.pinned:hover {
@@ -915,6 +915,10 @@ body.page-about-you.editing #paper table.experiments.editing th.add {
 
 #paper table.experiments th.add > div > span {
   padding-left: .5em;
+}
+
+#paper table.experiments .add button {
+  margin: .3em 0;
 }
 
 /* editing on experiments table means it's empty */
