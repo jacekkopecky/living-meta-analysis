@@ -290,7 +290,8 @@ function deleteCHECKvalues(paper) {
   }
 }
 
-function fillByAndCtimes(paper, email) {
+function fillByAndCtimes(paper, origPaper, email) {
+  // todo if origPaper != null, update by and ctimes deep in the data structure of paper
   if (!paper.enteredBy) paper.enteredBy = email;
   if (!paper.ctime) paper.ctime = tools.uniqueNow();
   fillByAndCtimeInComments(paper.comments, email);
@@ -329,13 +330,13 @@ module.exports.savePaper = (paper, email) => {
   return paperCache
   .then((papers) => {
     const ctime = tools.uniqueNow();
+    let origPaper = null;
     if (!paper.id) {
       paper.id = '/id/p/' + ctime;
       paper.enteredBy = email;
       paper.ctime = paper.mtime = ctime;
       doAddPaperToCache = () => papers.push(paper);
     } else {
-      let origPaper = null;
       let i = 0;
       for (; i < papers.length; i++) {
         if (papers[i].id === paper.id) { // todo change paperCache to be indexed by id?
@@ -358,7 +359,7 @@ module.exports.savePaper = (paper, email) => {
     }
 
     // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
-    fillByAndCtimes(paper, email);
+    fillByAndCtimes(paper, origPaper, email);
 
     // for now, we choose to ignore if the incoming paper specifies the wrong immutable values here
     // do not save any of the validation values
