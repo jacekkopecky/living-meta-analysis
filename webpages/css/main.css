@@ -23,6 +23,8 @@ body.page-about-you .only-not-yours {
   display: none !important;
 }
 
+.editing-if-yours:not(.yours),
+.notediting-if-yours.yours,
 body:not(.editing) .editing,
 body:not(.page-about-you) .editing,
 body.editing.page-about-you .notediting {
@@ -695,7 +697,7 @@ body:not(.boxpinned) #paper table.experiments tr th:first-child:hover .fullrowin
   max-width: 30em;
   min-height: 5em;
   position: absolute;
-  left: 90%;
+  left: 99%;
   top: -.5em;
   text-align: left;
 }
@@ -860,7 +862,7 @@ body:not(.boxpinned) #paper table.experiments td.hascomments:hover,
   /* todo in javascript, when .comments are shown and if they're longer than the screen,
      put them higher so they stand on the bottom of the screen */
   top: 0;
-  left: 90%;
+  left: 99%;
   text-align: left;
   z-index: 10;
 }
@@ -871,7 +873,8 @@ body:not(.boxpinned) #paper table.experiments td.hascomments:hover .comments,
 }
 
 
-#paper table.experiments td.hascomments .comments > header {
+#paper table.experiments td.hascomments .comments > header,
+#paper table.experiments td.hascomments .comments > footer {
   margin-bottom: .5em;
 }
 

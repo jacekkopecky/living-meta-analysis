@@ -339,7 +339,7 @@
           lima.columnTypes.forEach(function (type) {th.classList.remove(type);});
           th.classList.add(col.type);
 
-          setPopupBoxes(th, '.fullcolinfo.popupbox', col.id);
+          setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
         });
     });
 
@@ -354,7 +354,7 @@
         _.fillEls(tr, '.exptitle', paper.experiments[expIndex].title);
         _.fillEls(tr, '.expdescription', paper.experiments[expIndex].description);
 
-        setPopupBoxes(tr, '.fullrowinfo.popupbox', paper.experiments[expIndex].title);
+        setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', paper.experiments[expIndex].title);
       })
 
       showColumns.forEach(function (col, colIndex) {
@@ -372,6 +372,8 @@
           }
           _.fillEls(td, '.value', value);
           addOnInput(td, ".value", 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value']);
+
+          // populate comments
           if (Array.isArray(comments) && comments.length > 0) {
             td.classList.add('hascomments');
             _.fillEls(td, '.commentcount', comments.length);
@@ -385,7 +387,7 @@
           lima.columnTypes.forEach(function (type) {td.classList.remove(type);});
           td.classList.add(newPaperShowColumns[colIndex].type);
 
-          setPopupBoxes(td, '.comments.popupbox', paper.experiments[expIndex].title + '$' + colId);
+          setupPopupBoxPinning(td, '.comments.popupbox', paper.experiments[expIndex].title + '$' + colId);
         });
       });
 
@@ -428,11 +430,16 @@
   }
 
   function fillComments(templateId, root, selector, comments) {
+    var email = lima.extractUserProfileEmailFromUrl();
     var targetEl = _.findEl(root, selector);
     targetEl.innerHTML = '';
     comments.forEach(function (comment, index) {
-      var el = _.cloneTemplate(templateId);
+      var el = _.cloneTemplate(templateId).children[0];
       _.fillEls(el, '.by', comment.by);
+      if (email === comment.by) {
+        _.addClass(el, '.editing-if-yours', 'yours');
+        _.addClass(el, '.notediting-if-yours', 'yours');
+      }
       _.fillEls(el, '.commentnumber', index+1);
       _.setProps(el, '.by', 'href', '/' + comment.by + '/');
       _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime));
@@ -802,7 +809,7 @@
     updatePaperView();
   }
 
-  function setPopupBoxes(el, selector, localid) {
+  function setupPopupBoxPinning(el, selector, localid) {
     _.findEls(el, selector).forEach(function (box) {
       box.dataset.boxid = box.dataset.boxtype + "@" + localid;
 

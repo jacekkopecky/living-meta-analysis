@@ -135,17 +135,23 @@
     <div class="comments popupbox" data-boxtype='datacomments'>
       <div class="pin"></div>
       <header><p><span class="commentcount"></span> comments:</p></header>
-      <main></main>
+      <main><!-- this is where the comments will come --></main>
+      <div class="comment">
+        <header>
+          new comment:
+        </header>
+        <p><span class="text" contenteditable placeholder="enter a new comment"></span></p>
+      </div>
     </div>
   </td>
 </template>
 <template id="comment-template">
   <div class="comment">
-    <!-- todo comment editing -->
     <header>
       #<span class="commentnumber"></span>: <a class="by" href="error">error</a> wrote on <span class="ctime date"></span>:
     </header>
-    <p><span class="text"></span></p>
+    <p><span class="text editing-if-yours" contenteditable placeholder="enter your comment"></span></p>
+    <p><span class="text notediting-if-yours"></span></p>
   </div>
 </template>
 
