@@ -11,6 +11,10 @@ body {
   position: relative;
 }
 
+body.signed-on .when-signed-out {
+  display: none !important;
+}
+
 body:not(.signed-on) .when-signed-on {
   display: none !important;
 }
@@ -147,9 +151,9 @@ body > footer > p {
  */
 
 .userinfo {
-  position: absolute;
-  top: 1em;
-  right: 1em;
+  position: fixed;
+  top: 12px;
+  right: 12px;
   transition: border 1s;
   min-width: 50px;
   min-height: 50px;
