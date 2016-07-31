@@ -683,6 +683,7 @@
         el.addEventListener('keydown', deferScheduledPaperSave);
         el.oninput = function () {
           var value = el[property];
+          if (typeof value === 'string' && value.trim() === '') value = '';
           try {
             if (validatorSanitizer) value = validatorSanitizer(value, el, property);
           } catch (err) {

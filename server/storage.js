@@ -290,6 +290,8 @@ function deleteCHECKvalues(paper) {
   }
 }
 
+// todo trim incoming textual values?
+
 function fillByAndCtimes(paper, origPaper, email) {
   // todo if origPaper != null, update by and ctimes deep in the data structure of paper
   if (!paper.enteredBy) paper.enteredBy = email;

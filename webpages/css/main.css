@@ -820,6 +820,13 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   z-index: 1;
 }
 
+#paper table.experiments .comments .value:empty:before {
+  content: 'empty value';
+  color: #aaa;
+  font-style: italic;
+  display: inline-block;
+}
+
 #paper table.experiments .comments .comment {
   display: block;
   border-top: 1px solid black;
