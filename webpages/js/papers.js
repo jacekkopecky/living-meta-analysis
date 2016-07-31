@@ -272,9 +272,11 @@
     }
 
 
-    _.addEventListener('[contenteditable]', 'focus', pinPopupBox);
     _.addEventListener('#paper .savingerror', 'click', savePaper);
-    _.addEventListener('.pin', 'click', togglePopupBox);
+
+    addPaperDOMSetter(function () {
+      if (pinnedBox) pinPopupBox(pinnedBox);
+    });
   }
 
   function fillPaperExperimentTable(paper) {
@@ -378,7 +380,6 @@
             td.classList.add('hascomments');
             _.fillEls(td, '.commentcount', comments.length);
             fillComments('comment-template', td, '.comments main', comments);
-            td.addEventListener('mouseenter', positionCommentsBox, false);
           } else {
             td.classList.remove('hascomments');
             _.fillEls(td, '.commentcount', 0);
@@ -405,28 +406,6 @@
 
     var noTableMarker = _.findEl('#paper .no-table');
     noTableMarker.parentElement.insertBefore(table, noTableMarker);
-  }
-
-  function positionCommentsBox(ev) {
-    // find the comment box
-    var el = ev.target;
-    while (el && !el.classList.contains('hascomments')) el = el.parentElement;
-    if (!el) return;
-    var box = _.findEl(el, '.comments.popupbox');
-    if (!box) return;
-
-    // compute the position of the comment box in the body
-    var top = 0;
-    el = box;
-    while (el) {
-      top += el.offsetTop;
-      el = el.offsetParent || el.parentElement;
-    }
-
-    // box goes below the screen, position it at the bottom of the screen instead
-    if (top + box.offsetHeight > document.body.offsetHeight) {
-      box.style.top = (document.body.offsetHeight - 5 - top - box.offsetHeight) + 'px';
-    }
   }
 
   function fillComments(templateId, root, selector, comments) {
@@ -603,7 +582,7 @@
   }
 
   function moveColumn() {
-    // since a click (incl. on the moving button) could dismiss a pinned box,
+    // a click will pin the box,
     // this timout makes sure the click gets processed first and then we do the moving
     setTimeout(doMoveColumn, 0, this);
   }
@@ -613,8 +592,6 @@
     var most = el.classList.contains('most');
     var colId = el.dataset.id;
     if (!colId) return; // we don't know what to move
-
-    doPinPopupBox(el);
 
     regenerateColumnOrder(currentPaper);
     var i = currentPaper.columnOrder.indexOf(colId);
@@ -761,67 +738,63 @@
    *
    *
    */
+  // box can be one of these types of values:
+  // - the popup box element itself
+  // - or an element inside the box
+  // - or an element outside the box (then we use the first box we find inside)
+  // - or an event whose target is such an element
+  // - or a box ID by which we can find the element
+  function findPopupBox(box) {
+    if (box instanceof Event) box = box.target;
+    if (box instanceof Node) {
+      // find the popupbox, first inside el, then outside it
+      if (!box.classList.contains('popupbox')) {
+        box = _.findEl(box, '.popupbox') || box;
+        while (box && !box.classList.contains('popupbox')) box = box.nextElementSibling || box.parentElement;
+      }
+    } else {
+      box = _.findEl('.popupbox[data-boxid="' + box + '"]')
+    }
+    if (!box) console.warn('cannot find element for popup box');
+    return box;
+  }
+
   var pinnedBox = null;
-  function doPinPopupBox(el) {
-    var box = el;
-    while (box && !box.classList.contains('popupbox')) box = box.parentElement;
+  function pinPopupBox(el) {
+    unpinPopupBox();
+
+    var box = findPopupBox(el);
+
     if (box) {
       pinnedBox = box.dataset.boxid;
       document.body.classList.add('boxpinned');
+      box.classList.add('pinned');
+
+      // find nearest parent-or-self that is '.popupboxtrigger' so it can be raised above others when pinned
+      var trigger = box;
+      while (trigger && !trigger.classList.contains('popupboxtrigger')) trigger = trigger.parentElement;
+      if (trigger) trigger.classList.add('pinned');
     }
   }
 
-  function pinPopupBox(el) {
-    if (el instanceof Event) el = el.target;
-    if (!(el instanceof Node)) {
-      console.log('looking for popup box element for boxid ' + el);
-      el = _.findEl('[data-boxid="' + el + '"]')
-    }
-    if (!el) throw new Error('cannot find element for popup box');
-    doPinPopupBox(el);
-    updatePaperView();
-  }
+  function unpinPopupBox() {
+    if (pinnedBox) {
+      var pinned = _.findEl('[data-boxid="' + pinnedBox + '"]')
+      pinned.classList.remove('pinned');
 
-  function doUnpinPopupBox() {
+      var trigger = pinned;
+      while (trigger && !trigger.classList.contains('popupboxtrigger')) trigger = trigger.parentElement;
+      if (trigger) trigger.classList.remove('pinned');
+    }
     pinnedBox = null;
     document.body.classList.remove('boxpinned');
   }
 
-  function unpinPopupBox() {
-    doUnpinPopupBox();
-    updatePaperView();
-  }
-
-  function togglePopupBox(el) {
-    if (!el && this instanceof Node) el = this;
-    if (el instanceof Event) el = el.target;
-
-    var box = el;
-    while (box && !box.classList.contains('popupbox')) box = box.parentElement;
-    if (!box) {
-      console.warn('tried to pin popup box but not found it from element ' + el);
-      return;
-    }
-
-    if (pinnedBox === box.dataset.boxid) doUnpinPopupBox();
-    else doPinPopupBox(box);
-
-    updatePaperView();
-  }
-
   function setupPopupBoxPinning(el, selector, localid) {
     _.findEls(el, selector).forEach(function (box) {
-      box.dataset.boxid = box.dataset.boxtype + "@" + localid;
-
-      // find nearest parent-or-self that is '.zindexed' so it can be raised above others when pinned
-      var zIndexed = box;
-      while (zIndexed && !zIndexed.classList.contains('zindexed')) zIndexed = zIndexed.parentElement;
-
-      var operation = pinnedBox === box.dataset.boxid ? 'add' : 'remove';
-      box.classList[operation]('pinned');
-      zIndexed.classList[operation]('pinned');
+      if (box.dataset.boxtype) box.dataset.boxid = box.dataset.boxtype + "@" + localid;
+      box.classList.remove('pinned');
     })
-
   }
 
 
@@ -838,7 +811,7 @@
    *
    */
   document.addEventListener('keydown', dismissOrBlurOnEscape);
-  document.addEventListener('click', dismissOnOutsideClick);
+  document.addEventListener('click', popupOnClick);
 
   // dismiss pinned popup boxes with Escape or with a click outside them
   function dismissOrBlurOnEscape(ev) {
@@ -846,20 +819,19 @@
       if (ev.target === document.activeElement && document.activeElement !== document.body) {
         ev.target.blur();
       } else if (pinnedBox) {
-        doUnpinPopupBox();
-        updatePaperView();
+        unpinPopupBox();
       }
     }
   }
 
-  function dismissOnOutsideClick(ev) {
-    if (!pinnedBox) return;
+  function popupOnClick(ev) {
     var el = ev.target;
-    while (el && el.dataset.boxid !== pinnedBox) el = el.parentElement;
-    if (!el) {
-      doUnpinPopupBox();
-      updatePaperView();
+    // check if we've clicked on the 'pin' button or otherwise in a popupboxtrigger
+    while (el && !el.classList.contains('pin') && !el.classList.contains('popupboxtrigger')) el = el.parentElement;
+    if (!el || el.classList.contains('pin') && pinnedBox) {
+      unpinPopupBox();
     }
+    else pinPopupBox(el);
   }
 
   // oneline input fields get blurred on enter (for Excel-like editing)
@@ -891,7 +863,6 @@
   // for testing
   lima.pinPopupBox = pinPopupBox;
   lima.unpinPopupBox = unpinPopupBox;
-  lima.togglePopupBox = togglePopupBox;
   lima.updatePaperView = updatePaperView;
   lima.savePaper = savePaper;
   window._ = _;

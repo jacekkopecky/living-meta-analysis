@@ -3,7 +3,6 @@ body {
   background: white;
   color: black;
   line-height: 125%;
-  z-index: 0;
   min-height: 100vh;
   margin: 0;
   box-sizing: border-box;
@@ -82,25 +81,61 @@ body > footer > p {
   font-family: monospace;
 }
 
-.zindexed:hover {
-  z-index: 10;
-}
-
-.zindexed.pinned {
-  z-index: 11;
-}
-
 .popupbox {
-  position: relative;
-  border: 1px solid black;
-  border-radius: .5em;
+  display: none;
+  position: fixed;
+  top: 72px;
+  top: 10em; /* todo better positioning, this is here to put it under the paper title */
+  bottom: 0;
+  right: 0;
+  width: 15em;
+  border-left: 1px solid black;
+  border-top: 1px solid black;
+  border-radius: .5em 0 0 0;
   padding: .3em .5em .1em .5em;
   background-color: white;
-  box-shadow: 0 0 .3em .3em rgba(128,0,255,.2);
+  text-align: left;
+  overflow: auto;
+  z-index: 1;
 }
 
+.popupbox > header,
+.popupbox > footer {
+  margin-bottom: .5em;
+}
+
+.popupbox > header {
+  font-weight: bold;
+  margin-right: 1.5em;
+}
+
+.popupbox > footer {
+  font-size: 80%;
+  line-height: 120%;
+  margin-top: .5em;
+  border-top: 1px solid #888;
+  padding-top: .3em;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+
+body:not(.boxpinned) .popupboxtrigger:hover .popupbox {
+  display: block;
+}
+
+/* highlight the field whose popupbox is showing */
+body:not(.boxpinned) .popupboxtrigger:hover .popupboxhighlight,
+body:not(.boxpinned) .popupboxtrigger.popupboxhighlight:hover,
+.popupboxtrigger.pinned .popupboxhighlight,
+.popupboxtrigger.pinned.popupboxhighlight {
+  background: rgba(128,0,255,.1);
+}
+
+
 .popupbox.pinned {
-  box-shadow: 0 0 .3em .3em rgba(0,0,0,.3);
+  box-shadow: 0 0 .3em .3em rgba(128,0,255,.2);
+  display: block;
 }
 
 .popupbox .pin {
@@ -452,6 +487,8 @@ section.list > ul > li > ul.tags > li {
  *
  */
 
+/* todo make space for all the boxes on the right-hand side of the page */
+
 #paper .description .value {
   white-space: pre-line;
   display: inline-block;
@@ -678,32 +715,11 @@ body:not(.editing) #paper table.experiments.editing + .no-table {
   max-height: 1em;
 }
 
-#paper table.experiments tr .fullrowinfo {
-  display: none;
-}
-
-#paper table.experiments .fullrowinfo header {
-  font-weight: bold;
-  margin-bottom: .5em;
-}
-
 #paper table.experiments .fullrowinfo .expdescription:not([contenteditable]):empty:before {
   content: 'No detailed description';
   color: #aaa;
   font-style: italic;
   display: inline-block;
-}
-
-body:not(.boxpinned) #paper table.experiments tr th:first-child:hover .fullrowinfo,
-#paper table.experiments tr th:first-child .fullrowinfo.pinned {
-  display: block;
-  min-width: 20em;
-  max-width: 30em;
-  min-height: 5em;
-  position: absolute;
-  left: 99%;
-  top: -.5em;
-  text-align: left;
 }
 
 /* nth-last-child(2) because there's the heading for adding */
@@ -713,7 +729,7 @@ body:not(.editing) #paper table.experiments tr:first-child th:nth-last-child(2) 
   border-right: none;
 }
 
-#paper table.experiments tr:first-child th > div {
+#paper table.experiments tr:first-child th > div:not(.popupbox) {
   transform: translate(-.5em,.8em) rotate(-45deg);
   transform-origin: top left;
   display: inline-block;
@@ -766,25 +782,6 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   display: block;
   text-align: left;
   font-weight: bold;
-  background-color: white;
-}
-
-#paper table.experiments tr:first-child th > div > span + .fullcolinfo {
-  display: none;
-  min-width: 10em;
-  max-width: 30em;
-  min-height: 5em;
-  position: absolute;
-  left: 0;
-  top: -2em;
-  text-align: left;
-  transform: rotate(45deg);
-  transform-origin: left top;
-}
-
-#paper table.experiments .fullcolinfo header {
-  font-weight: bold;
-  margin-bottom: .5em;
 }
 
 #paper table.experiments .fullcolinfo .coltype.result .type-characteristic,
@@ -792,27 +789,8 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   display: none;
 }
 
-#paper table.experiments .fullcolinfo footer {
-  font-size: 80%;
-  line-height: 120%;
-  margin-top: .5em;
-  border-top: 1px solid #888;
-  padding-top: .3em;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
 #paper table.experiments .fullcolinfo .value {
   white-space: nowrap;
-}
-
-body:not(.boxpinned) #paper table.experiments tr:first-child th > div:hover > span + .fullcolinfo,
-#paper table.experiments tr:first-child th > div > span + .fullcolinfo.pinned {
-  display: block;
-}
-
-body:not(.boxpinned) #paper table.experiments tr:first-child th:hover .zindexed {
-  z-index: 10;
 }
 
 #paper table.experiments td {
@@ -840,46 +818,6 @@ body:not(.boxpinned) #paper table.experiments tr:first-child th:hover .zindexed 
   border-top: .5em solid #f50;
   border-left: .5em solid transparent;
   z-index: 1;
-}
-
-#paper table.experiments td:hover {
-  z-index: 10;
-}
-
-body:not(.boxpinned) #paper table.experiments tr:first-child th:not(.add) > div:hover > span,
-#paper table.experiments tr:first-child th:not(.add) > div.pinned:hover > span,
-body:not(.boxpinned) #paper table.experiments tr:not(:first-child):not(.add) th:first-child:hover,
-#paper table.experiments tr:not(:first-child) th:first-child:hover.pinned,
-body:not(.boxpinned) #paper table.experiments td.hascomments:hover,
-#paper table.experiments td.hascomments.pinned:hover {
-  background: rgba(128,0,255,.2);
-}
-
-#paper table.experiments td .comments {
-  display: none;
-  min-width: 20em;
-  max-width: 30em;
-  min-height: 5em;
-  max-height: 66vh;
-  overflow: auto;
-  position: absolute;
-  /* todo in javascript, when .comments are shown and if they're longer than the screen,
-     put them higher so they stand on the bottom of the screen */
-  top: 0;
-  left: 99%;
-  text-align: left;
-  z-index: 10;
-}
-
-body:not(.boxpinned) #paper table.experiments td.hascomments:hover .comments,
-#paper table.experiments td.hascomments .comments.pinned {
-  display: block;
-}
-
-
-#paper table.experiments td.hascomments .comments > header,
-#paper table.experiments td.hascomments .comments > footer {
-  margin-bottom: .5em;
 }
 
 #paper table.experiments .comments .comment {

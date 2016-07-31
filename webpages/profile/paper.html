@@ -63,15 +63,15 @@
   <table class="experiments editing">
     <tbody>
       <tr>
-        <th>
-          <div class="zindexed">
+        <th class="popupboxtrigger">
+          <div class="popupboxhighlight">
             <span>Study/Experiment</span>
-            <div class="fullcolinfo popupbox" data-boxid='studyexperimentheading'>
-              <div class="pin"></div>
-              <header><p>Study/Experiment</p></header>
-              <p class="description">A row can be a study, an experiment, or a condition within an experiment.</p>
-              <!-- todo comments -->
-            </div>
+          </div>
+          <div class="fullcolinfo popupbox" data-boxid='studyexperimentheading'>
+            <div class="pin"></div>
+            <header><p>Study/Experiment</p></header>
+            <p class="description">A row can be a study, an experiment, or a condition within an experiment.</p>
+            <!-- todo comments -->
           </div>
         </th>
         <th class="add"><div><span><button name="add">add a column</button></span></div></th>
@@ -84,34 +84,34 @@
   </table>
 </template>
 <template id="col-heading-template">
-  <th>
-    <div class="zindexed">
+  <th class="popupboxtrigger">
+    <div class="popupboxhighlight">
       <span class="coltitle">error</span>
-      <div class="fullcolinfo popupbox" data-boxtype='fullcolinfo'>
-        <div class="pin"></div>
-        <button class="move left most editing" title="move column to the left">|«</button>
-        <button class="move left editing" title="move column to the left">«</button>
-        <!-- <button class="hide editing">hide</button> -->
-        <button class="move right editing" title="move column to the right">»</button>
-        <button class="move right most editing" title="move column to the right">»|</button>
-        <header>
-          <p class="coltitle notediting">error</p>
-          <p class="coltitle editing oneline" contenteditable placeholder="column title">error</p>
-        </header>
-        <p class="coldescription notediting">error</p>
-        <p class="coldescription editing" contenteditable placeholder="add column description">error</p>
-        <!-- on hiding this column, store in localStorage that this column is being hidden,
-             also add to the end of every row a symbol that there are hidden values,
-             on hover, the symbol will list them and allow you to add some right back -->
-        <!-- todo comments -->
-        <footer class="coltype"><span class="type-characteristic">characteristic&nbsp;or&nbsp;moderator&nbsp;column</span><span class="type-result">result column</span> defined <span class="colctime"> on <span class="value date">error</span></span><span class="definedby"> by <a class="value" href="error">error</a></span></footer>
-      </div>
+    </div>
+    <div class="fullcolinfo popupbox" data-boxtype='fullcolinfo'>
+      <div class="pin"></div>
+      <button class="move left most editing" title="move column to the left">|«</button>
+      <button class="move left editing" title="move column to the left">«</button>
+      <!-- <button class="hide editing">hide</button> -->
+      <button class="move right editing" title="move column to the right">»</button>
+      <button class="move right most editing" title="move column to the right">»|</button>
+      <header>
+        <p class="coltitle notediting">error</p>
+        <p class="coltitle editing oneline" contenteditable placeholder="column title">error</p>
+      </header>
+      <p class="coldescription notediting">error</p>
+      <p class="coldescription editing" contenteditable placeholder="add column description">error</p>
+      <!-- on hiding this column, store in localStorage that this column is being hidden,
+      also add to the end of every row a symbol that there are hidden values,
+      on hover, the symbol will list them and allow you to add some right back -->
+      <!-- todo comments -->
+      <footer class="coltype"><span class="type-characteristic">characteristic&nbsp;or&nbsp;moderator&nbsp;column</span><span class="type-result">result column</span> defined <span class="colctime"> on <span class="value date">error</span></span><span class="definedby"> by <a class="value" href="error">error</a></span></footer>
     </div>
   </th>
 </template>
 <template id="experiment-row-template">
   <tr class="row">
-    <th class="zindexed">
+    <th class="popupboxtrigger popupboxhighlight">
       <!-- todo click on title or exptitle should focus the contenteditable exptitle -->
       <span class="title">error</span>-<span class="exptitle"></span>
       <div class="fullrowinfo popupbox" data-boxtype='fullrowinfo'>
@@ -129,7 +129,7 @@
   </tr>
 </template>
 <template id="experiment-datum-template">
-  <td class="zindexed">
+  <td class="popupboxtrigger popupboxhighlight">
     <span class="value notediting"></span>
     <span class="value editing oneline" contenteditable></span>
     <div class="comments popupbox" data-boxtype='datacomments'>
