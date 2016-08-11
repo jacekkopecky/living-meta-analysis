@@ -294,28 +294,40 @@ function deleteCHECKvalues(paper) {
 
 function fillByAndCtimes(paper, origPaper, email) {
   // todo if origPaper != null, update by and ctimes deep in the data structure of paper
-  if (!paper.enteredBy) paper.enteredBy = email;
-  if (!paper.ctime) paper.ctime = tools.uniqueNow();
-  fillByAndCtimeInComments(paper.comments, email);
-  if (paper.experiments) for (const exp of paper.experiments) { // eslint-disable-line curly
-    // todo these values should allow us to construct better patches
-    // (e.g. removal of the first experiment)
-    if (!exp.enteredBy) exp.enteredBy = email;
-    if (!exp.ctime) exp.ctime = tools.uniqueNow();
-    fillByAndCtimeInComments(exp.comments, email);
-    if (exp.data) for (const col of Object.keys(exp.data)) { // eslint-disable-line curly
-      if (!exp.data[col].enteredBy) exp.data[col].enteredBy = email;
-      if (!exp.data[col].ctime) exp.data[col].ctime = tools.uniqueNow();
-      fillByAndCtimeInComments(exp.data[col].comments, email);
+  const orig = origPaper || {};
+  if (!paper.enteredBy) paper.enteredBy = orig.enteredBy || email;
+  if (!paper.ctime) paper.ctime = orig.ctime || tools.uniqueNow();
+  fillByAndCtimeInComments(paper.comments, orig.comments, email);
+  if (paper.experiments) {
+    for (let expIndex = 0; expIndex < paper.experiments.length; expIndex++) {
+      const exp = paper.experiments[expIndex];
+      const origExp = (orig.experiments || [])[expIndex] || {};
+      // todo these values should allow us to construct better patches
+      // (e.g. removal of the first experiment)
+      if (!exp.enteredBy) exp.enteredBy = origExp.enteredBy || email;
+      if (!exp.ctime) exp.ctime = origExp.ctime || tools.uniqueNow();
+      fillByAndCtimeInComments(exp.comments, origExp.comments, email);
+      for (const col of Object.keys(exp.data || {})) {
+        const expCol = exp.data[col];
+        const origCol = (origExp.data || {})[col] || {};
+        const origColIfSameVal = expCol.value === origCol.value ? origCol : {};
+        if (!expCol.enteredBy) expCol.enteredBy = origColIfSameVal.enteredBy || email;
+        if (!expCol.ctime) expCol.ctime = origColIfSameVal.ctime || tools.uniqueNow();
+        fillByAndCtimeInComments(expCol.comments, origCol.comments, email);
+      }
     }
   }
 }
 
-function fillByAndCtimeInComments(comments, email) {
+function fillByAndCtimeInComments(comments, origComments, email) {
+  origComments = origComments || [];
   if (!Array.isArray(comments)) return;
-  for (const com of comments) {
-    if (!com.by) com.by = email;
-    if (!com.ctime) com.ctime = tools.uniqueNow();
+  for (let i = 0; i < comments.length; i++) {
+    const com = comments[i];
+    const origCom = origComments[i] || {};
+    const origComIfSameText = origCom.text === com.text ? origCom : {};
+    if (!com.by) com.by = origComIfSameText.by || email;
+    if (!com.ctime) com.ctime = origComIfSameText.ctime || tools.uniqueNow();
   }
 }
 
