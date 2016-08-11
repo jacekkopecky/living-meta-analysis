@@ -827,6 +827,11 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   display: inline-block;
 }
 
+#paper table.experiments .comments .by {
+  font-size: 90%;
+  font-weight: normal;
+}
+
 #paper table.experiments .comments .comment {
   display: block;
   border-top: 1px solid black;

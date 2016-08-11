@@ -362,34 +362,51 @@
       showColumns.forEach(function (col, colIndex) {
         var td = _.cloneTemplate('experiment-datum-template').children[0];
         tr.appendChild(td);
+        var colId = newPaperShowColumns[colIndex].id;
+        var comments = [];
+        var commentsLength = 0;
 
         addPaperDOMSetter(function (paper) {
-          var colId = newPaperShowColumns[colIndex].id;
-          var value = ' ';
-          var comments;
+          var val = { value: ' ' };
           var experiment = paper.experiments[expIndex];
           if (experiment.data && experiment.data[colId]) {
-            value = experiment.data[colId].value;
-            comments = experiment.data[colId].comments;
+            val = experiment.data[colId];
           }
-          _.fillEls(td, '.value', value);
-          addOnInput(td, ".value", 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value']);
+          _.fillEls(td, '.value', val.value);
+          addOnInput(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value']);
 
-          // populate comments
-          if (Array.isArray(comments) && comments.length > 0) {
-            td.classList.add('hascomments');
-            _.fillEls(td, '.commentcount', comments.length);
-            fillComments('comment-template', td, '.comments main', comments);
-          } else {
-            td.classList.remove('hascomments');
-            _.fillEls(td, '.commentcount', 0);
-            fillComments('comment-template', td, '.comments main', []);
-          }
+          _.fillEls (td, '.valenteredby', val.enteredBy);
+          _.setProps(td, '.valenteredby', 'href', '/' + val.enteredBy + '/');
+          _.fillEls (td, '.valctime', _.formatDateTime(val.ctime));
+
           lima.columnTypes.forEach(function (type) {td.classList.remove(type);});
           td.classList.add(newPaperShowColumns[colIndex].type);
 
           setupPopupBoxPinning(td, '.comments.popupbox', paper.experiments[expIndex].title + '$' + colId);
         });
+
+        // populate comments
+        if (experiment.data && experiment.data[colId]) {
+          comments = experiment.data[colId].comments || [];
+          // commentsLength is a static snapshot of the size in case `comments` changes underneath us by adding a comment
+          commentsLength = comments.length;
+        }
+
+        addPaperChangeVerifier(function (newPaper) {
+          var newComments = [];
+          if (newPaper.experiments[expIndex].data && newPaper.experiments[expIndex].data[colId]) {
+            newComments = newPaper.experiments[expIndex].data[colId].comments || [];
+          }
+          return commentsLength === newComments.length;
+        });
+
+        if (comments.length > 0) {
+          td.classList.add('hascomments');
+        } else {
+          td.classList.remove('hascomments');
+        }
+        _.fillEls(td, '.commentcount', comments.length);
+        fillComments('comment-template', td, '.comments main', comments, ['experiments', expIndex, 'data', colId, 'comments']);
       });
 
     });
@@ -408,23 +425,32 @@
     noTableMarker.parentElement.insertBefore(table, noTableMarker);
   }
 
-  function fillComments(templateId, root, selector, comments) {
+  function fillComments(templateId, root, selector, comments, commentsPropSelectors) {
     var email = lima.extractUserProfileEmailFromUrl();
     var targetEl = _.findEl(root, selector);
     targetEl.innerHTML = '';
-    comments.forEach(function (comment, index) {
-      var el = _.cloneTemplate(templateId).children[0];
-      _.fillEls(el, '.by', comment.by);
-      if (email === comment.by) {
-        _.addClass(el, '.editing-if-yours', 'yours');
-        _.addClass(el, '.notediting-if-yours', 'yours');
-      }
-      _.fillEls(el, '.commentnumber', index+1);
-      _.setProps(el, '.by', 'href', '/' + comment.by + '/');
-      _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime));
-      _.fillEls(el, '.text', comment.text);
-      targetEl.appendChild(el);
-    })
+    for (var index = 0; index < comments.length; index++) {
+      (function (index) {
+        // inline function to save `index` and `el`
+        var el = _.cloneTemplate(templateId).children[0];
+        addPaperDOMSetter(function (paper) {
+          var commentSelector = commentsPropSelectors.concat(index);
+          var comment = getDeepValue(paper, commentSelector);
+          _.fillEls(el, '.by', comment.by);
+          if (email === comment.by) {
+            _.addClass(el, '.editing-if-yours', 'yours');
+            _.addClass(el, '.notediting-if-yours', 'yours');
+          }
+          _.fillEls(el, '.commentnumber', index+1);
+          _.setProps(el, '.by', 'href', '/' + comment.by + '/');
+          _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime));
+          _.fillEls(el, '.text', comment.text);
+
+          addOnInput(el, '.text', 'textContent', identity, paper, commentSelector.concat('text'));
+        });
+        targetEl.appendChild(el);
+      })(index);
+    }
   }
 
 
@@ -678,7 +704,7 @@
     }
 
     _.findEls(root, selector).forEach(function (el) {
-      if (el.classList.contains('editing') || el.isContentEditable) {
+      if (el.classList.contains('editing') || el.isContentEditable || el.contentEditable === 'true') {
         el.classList.remove('validationerror');
         el.addEventListener('keydown', deferScheduledPaperSave);
         el.oninput = function () {
@@ -694,7 +720,7 @@
             cancelScheduledPaperSave();
             return;
           }
-          assign(target, targetProp, value);
+          assignDeepValue(target, targetProp, value);
           updatePaperView();
           schedulePaperSave();
         };
@@ -704,7 +730,7 @@
     });
   }
 
-  function assign(target, targetProp, value) {
+  function assignDeepValue(target, targetProp, value) {
     if (Array.isArray(targetProp)) {
       while (targetProp.length > 1) {
         var prop = targetProp.shift();
@@ -719,6 +745,22 @@
 
     target[targetProp] = value;
     return value;
+  }
+
+  function getDeepValue(target, targetProp) {
+    if (Array.isArray(targetProp)) {
+      targetProp = [].concat(targetProp); // duplicate the array so we don't affect the passed value
+      while (targetProp.length > 1) {
+        var prop = targetProp.shift();
+        if (!(prop in target)) {
+          return undefined;
+        }
+        target = target[prop];
+      }
+      targetProp = targetProp[0];
+    }
+
+    return target[targetProp];
   }
 
 
