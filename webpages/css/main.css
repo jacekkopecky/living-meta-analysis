@@ -839,6 +839,10 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   padding: .5em 0 0 0;
 }
 
+#paper table.experiments td:not(.hascomments) .comments .comment.new {
+  border-top: none;
+}
+
 #paper table.experiments .comments .comment header {
   font-size: 90%;
   line-height: 120%;

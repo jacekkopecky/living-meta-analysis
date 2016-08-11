@@ -425,7 +425,7 @@
     noTableMarker.parentElement.insertBefore(table, noTableMarker);
   }
 
-  function fillComments(templateId, root, selector, comments, commentsPropSelectors) {
+  function fillComments(templateId, root, selector, comments, commentsPropPath) {
     var email = lima.extractUserProfileEmailFromUrl();
     var targetEl = _.findEl(root, selector);
     targetEl.innerHTML = '';
@@ -434,7 +434,7 @@
         // inline function to save `index` and `el`
         var el = _.cloneTemplate(templateId).children[0];
         addPaperDOMSetter(function (paper) {
-          var commentSelector = commentsPropSelectors.concat(index);
+          var commentSelector = commentsPropPath.concat(index);
           var comment = getDeepValue(paper, commentSelector);
           _.fillEls(el, '.by', comment.by);
           if (email === comment.by) {
@@ -451,6 +451,23 @@
         targetEl.appendChild(el);
       })(index);
     }
+
+    addPaperDOMSetter(function (paper) {
+      // events for adding a comment
+      _.findEls(root, '.comment.new .text').forEach(function (el) {
+        el.onblur = function () {
+          var text = el.textContent;
+          if (text.trim()) {
+            var comments = getDeepValue(paper, commentsPropPath, true);
+            comments.push({ text: text });
+            el.textContent = '';
+            updatePaperView();
+            schedulePaperSave();
+          }
+        }
+      });
+    });
+
   }
 
 
@@ -747,13 +764,18 @@
     return value;
   }
 
-  function getDeepValue(target, targetProp) {
+  function getDeepValue(target, targetProp, adding) {
     if (Array.isArray(targetProp)) {
       targetProp = [].concat(targetProp); // duplicate the array so we don't affect the passed value
       while (targetProp.length > 1) {
         var prop = targetProp.shift();
         if (!(prop in target)) {
-          return undefined;
+          if (adding) {
+            if (Number.isInteger(targetProp[0])) target[prop] = [];
+            else target[prop] = {};
+          } else {
+            return undefined;
+          }
         }
         target = target[prop];
       }
