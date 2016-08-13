@@ -566,7 +566,8 @@
     })
     .catch(function(err) {
       console.error('error saving paper');
-      console.error(err);
+      if (err instanceof Response) err.text().then(function (t) {console.error(t)});
+      else console.error(err);
       _.addClass('#paper', 'savingerror');
       _.removeClass('#paper', 'saving');
       savingPaper = false;

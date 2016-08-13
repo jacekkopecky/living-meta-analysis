@@ -330,6 +330,61 @@ function fillByAndCtimeInComments(comments, origComments, email) {
   }
 }
 
+function checkForDisallowedChanges(paper, origPaper) {
+  // todo really, this should use a diff format and check that all diffs are allowed
+  //   this will be a diff from the user's last version to the incoming version,
+  //   not from the existing version to the incoming version,
+  //   so that collaborative concurrent updates are allowed
+  //   so for example adding a comment number 9 will become adding a comment
+  //   and if comments 9 and 10 were already added by other users, we will add comment 11
+  // but for now we don't have the diffs, so
+  //   do the checks we can think of for changes that wouldn't be allowed
+  // for example, we can't really allow removing values because we don't allow removing comments
+
+  // check that every experiment has at least the data values that were there originally
+  // check that only last comment by a given user has changed, if any
+  if (paper.experiments) {
+    for (let expIndex = 0; expIndex < paper.experiments.length; expIndex++) {
+      const exp = paper.experiments[expIndex];
+      const origExp = (origPaper.experiments || [])[expIndex] || {};
+
+      if (origExp.data) {
+        if (!exp.data) throw new ValidationError('cannot remove experiment data array');
+
+        for (const origDataKey of Object.keys(origExp.data)) {
+          if (!(origDataKey in exp.data)) {
+            throw new ValidationError('cannot remove experiment data');
+          }
+
+          const comments = exp.data[origDataKey].comments;
+          const origComments = origExp.data[origDataKey].comments;
+
+          if (origComments) {
+            if (!comments || comments.length < origComments.length) {
+              throw new ValidationError('cannot remove comments');
+            }
+
+            const changedCommentByOwner = {};
+            for (let i = 0; i < origComments.length; i++) {
+              const comment = comments[i];
+              const origComment = origComments[i];
+              if (comment.CHECKby !== origComment.by) {
+                throw new ValidationError('cannot change comment owner');
+              }
+              if (comment.CHECKby in changedCommentByOwner) {
+                throw new ValidationError('cannot edit comment before the last by a given owner');
+              }
+              if (comment.text !== origComment.text) {
+                changedCommentByOwner[comment.CHECKby] = 1;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 module.exports.savePaper = (paper, email) => {
   // todo multiple users' views on one paper
   // compute this user's version of this paper, as it is in the database
@@ -337,7 +392,9 @@ module.exports.savePaper = (paper, email) => {
   // detect any update conflicts (how?)
   // add the diff to the paper as a changeset
   // update the paper data only if the user is the one who it's enteredBy
-  // only allow editing a comment if it's the last one and by this user
+  // only allow editing a comment if it's the last one by this user
+  //   (must allow editing the last comment by this user in case in the meantime another user
+  //    has added another comment)
 
   let doAddPaperToCache;
 
@@ -366,6 +423,8 @@ module.exports.savePaper = (paper, email) => {
       if (email !== origPaper.enteredBy) {
         throw new Error('not implemented saving someone else\'s paper');
       }
+
+      checkForDisallowedChanges(paper, origPaper);
 
       paper.enteredBy = origPaper.enteredBy;
       paper.ctime = origPaper.ctime;

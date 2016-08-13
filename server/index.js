@@ -135,7 +135,7 @@ app.use('/api', api);
 
 app.use(() => { throw new NotFoundError(); });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   if (err.status === 404) {
     res.status(404).sendFile('404.html', { root: './webpages/' });
   } else if (err.status === 401) {
