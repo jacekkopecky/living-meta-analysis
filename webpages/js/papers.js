@@ -462,7 +462,7 @@
           var text = el.textContent;
           el.textContent = '';
           if (text.trim()) {
-            var comments = getDeepValue(paper, commentsPropPath, true);
+            var comments = getDeepValue(paper, commentsPropPath, []);
             comments.push({ text: text });
             updatePaperView();
             schedulePaperSave();
@@ -768,27 +768,29 @@
     return value;
   }
 
-  function getDeepValue(target, targetProp, adding) {
+  function getDeepValue(target, targetProp, addDefaultValue) {
     if (Array.isArray(targetProp)) {
       targetProp = [].concat(targetProp); // duplicate the array so we don't affect the passed value
-      while (targetProp.length > 1) {
-        var prop = targetProp.shift();
-        if (!(prop in target)) {
-          if (adding) {
-            if (Number.isInteger(targetProp[0])) target[prop] = [];
-            else target[prop] = {};
-          } else {
-            return undefined;
-          }
-        }
-        target = target[prop];
-      }
-      targetProp = targetProp[0];
+    } else {
+      targetProp = [targetProp];
     }
 
-    return target[targetProp];
-  }
+    while (targetProp.length > 0) {
+      var prop = targetProp.shift();
+      if (!(prop in target)) {
+        if (addDefaultValue != null) {
+          if (targetProp.length == 0) target[prop] = addDefaultValue;
+          else if (Number.isInteger(targetProp[0])) target[prop] = [];
+          else target[prop] = {};
+        } else {
+          return undefined;
+        }
+      }
+      target = target[prop];
+    }
 
+    return target;
+  }
 
   function removeValidationErrorClass() {
     _.removeClass('#paper', 'validationerror');
@@ -934,6 +936,9 @@
   lima.unpinPopupBox = unpinPopupBox;
   lima.updatePaperView = updatePaperView;
   lima.savePaper = savePaper;
+  lima.assignDeepValue = assignDeepValue;
+  lima.getDeepValue = getDeepValue;
+
   window._ = _;
 
 })(window, document);
