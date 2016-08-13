@@ -436,7 +436,6 @@
         addPaperDOMSetter(function (paper) {
           var comments = getDeepValue(paper, commentsPropPath);
           var comment = comments[index];
-          _.fillEls(el, '.by', comment.by);
           if (index === comments.length - 1 && email === comment.by) {
             _.addClass(el, '.editing-if-yours', 'yours');
             _.addClass(el, '.notediting-if-yours', 'yours');
@@ -445,8 +444,9 @@
             _.removeClass(el, '.notediting-if-yours', 'yours');
           }
           _.fillEls(el, '.commentnumber', index+1);
-          _.setProps(el, '.by', 'href', '/' + comment.by + '/');
-          _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime));
+          _.fillEls(el, '.by', comment.by || email);
+          _.setProps(el, '.by', 'href', '/' + (comment.by || email) + '/');
+          _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime || Date.now()));
           _.fillEls(el, '.text', comment.text);
 
           addOnInput(el, '.text', 'textContent', identity, paper, commentsPropPath.concat(index, 'text'));
