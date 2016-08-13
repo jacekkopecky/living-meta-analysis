@@ -434,19 +434,22 @@
         // inline function to save `index` and `el`
         var el = _.cloneTemplate(templateId).children[0];
         addPaperDOMSetter(function (paper) {
-          var commentSelector = commentsPropPath.concat(index);
-          var comment = getDeepValue(paper, commentSelector);
+          var comments = getDeepValue(paper, commentsPropPath);
+          var comment = comments[index];
           _.fillEls(el, '.by', comment.by);
-          if (email === comment.by) {
+          if (index === comments.length - 1 && email === comment.by) {
             _.addClass(el, '.editing-if-yours', 'yours');
             _.addClass(el, '.notediting-if-yours', 'yours');
+          } else {
+            _.removeClass(el, '.editing-if-yours', 'yours');
+            _.removeClass(el, '.notediting-if-yours', 'yours');
           }
           _.fillEls(el, '.commentnumber', index+1);
           _.setProps(el, '.by', 'href', '/' + comment.by + '/');
           _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime));
           _.fillEls(el, '.text', comment.text);
 
-          addOnInput(el, '.text', 'textContent', identity, paper, commentSelector.concat('text'));
+          addOnInput(el, '.text', 'textContent', identity, paper, commentsPropPath.concat(index, 'text'));
         });
         targetEl.appendChild(el);
       })(index);
@@ -457,10 +460,10 @@
       _.findEls(root, '.comment.new .text').forEach(function (el) {
         el.onblur = function () {
           var text = el.textContent;
+          el.textContent = '';
           if (text.trim()) {
             var comments = getDeepValue(paper, commentsPropPath, true);
             comments.push({ text: text });
-            el.textContent = '';
             updatePaperView();
             schedulePaperSave();
           }

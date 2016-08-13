@@ -293,7 +293,6 @@ function deleteCHECKvalues(paper) {
 // todo trim incoming textual values?
 
 function fillByAndCtimes(paper, origPaper, email) {
-  // todo if origPaper != null, update by and ctimes deep in the data structure of paper
   const orig = origPaper || {};
   if (!paper.enteredBy) paper.enteredBy = orig.enteredBy || email;
   if (!paper.ctime) paper.ctime = orig.ctime || tools.uniqueNow();
@@ -338,11 +337,13 @@ module.exports.savePaper = (paper, email) => {
   // detect any update conflicts (how?)
   // add the diff to the paper as a changeset
   // update the paper data only if the user is the one who it's enteredBy
+  // only allow editing a comment if it's the last one and by this user
 
   let doAddPaperToCache;
 
   return paperCache
   .then((papers) => {
+    // prepare the paper for saving
     const ctime = tools.uniqueNow();
     let origPaper = null;
     if (!paper.id) {
@@ -378,35 +379,40 @@ module.exports.savePaper = (paper, email) => {
     // for now, we choose to ignore if the incoming paper specifies the wrong immutable values here
     // do not save any of the validation values
     deleteCHECKvalues(paper);
-  }).then(() => {
+
+    // save tha paper in the data store
     const key = datastore.key(['Paper', paper.id]);
     // this is here until we add versioning on the papers themselves
     const logKey = datastore.key(['Paper', paper.id,
                                   'PaperLog', paper.id + '/' + paper.mtime]);
     console.log('savePaper saving (into Paper and PaperLog)');
-    datastore.save(
-      [
-        { key, data: paper },
-        { key: logKey,
-          data:
-          [
-            { name: 'mtime',
-              value: paper.mtime },
-            { name: 'enteredBy',
-              value: email },
-            { name: 'paper',
-              value: paper,
-              excludeFromIndexes: true },
-          ] },
-      ],
-      (err) => {
-        if (err) {
-          console.error('error saving paper');
-          console.error(err);
-          throw err;
+    return new Promise((resolve, reject) => {
+      datastore.save(
+        [
+          { key, data: paper },
+          { key: logKey,
+            data:
+            [
+              { name: 'mtime',
+                value: paper.mtime },
+              { name: 'enteredBy',
+                value: email },
+              { name: 'paper',
+                value: paper,
+                excludeFromIndexes: true },
+            ] },
+        ],
+        (err) => {
+          if (err) {
+            console.error('error saving paper');
+            console.error(err);
+            reject(err);
+          } else {
+            resolve();
+          }
         }
-      }
-    );
+      );
+    });
   })
   .then(() => {
     doAddPaperToCache();
