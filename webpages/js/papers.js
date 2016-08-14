@@ -108,8 +108,15 @@
     });
   }
 
+  function Paper() {}
+  Paper.prototype.scheduleSave = schedulePaperSave;
+
   function updatePaperView(paper) {
     if (!paper) paper = currentPaper;
+
+    if (!(paper instanceof Paper)) {
+      paper = Object.assign(new Paper(), paper);
+    }
 
     var isSmallChange = currentPaper != null && paperChangeVerifiers.every(function (verifier) { return verifier(paper); });
     currentPaper = paper;
@@ -341,6 +348,8 @@
           lima.columnTypes.forEach(function (type) {th.classList.remove(type);});
           th.classList.add(col.type);
 
+          addOnInput(th, '.coldescription', 'textContent', identity, lima.columns, [col.id, 'description']);
+
           setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
         });
     });
@@ -510,13 +519,13 @@
     pendingSaveTimeout = null;
     pendingSaveForceTime = null;
 
+    _.removeClass('#paper', 'savepending');
   }
 
-  // setTimeout for save in 1s -- todo should be more?
+  // setTimeout for save in 3s
   // if already set, cancel the old one and set a new one
   // but only replace the old one if the pending save started less than 10s ago
   function deferScheduledPaperSave() {
-    // todo
     if (pendingSaveTimeout && pendingSaveForceTime > Date.now()) {
       clearTimeout(pendingSaveTimeout);
       pendingSaveTimeout = setTimeout(savePaper, PAPER_SAVE_PENDING_TIMEOUT);
@@ -714,6 +723,7 @@
   }
 
   var identity = null; // special value to use as validatorSanitizer
+
   function addOnInput(root, selector, property, validatorSanitizer, target, targetProp) {
     if (!(root instanceof Node)) {
       targetProp = target;
@@ -743,7 +753,8 @@
           }
           assignDeepValue(target, targetProp, value);
           updatePaperView();
-          schedulePaperSave();
+          if (target.scheduleSave) target.scheduleSave();
+          else schedulePaperSave();
         };
       } else {
         el.oninput = null;

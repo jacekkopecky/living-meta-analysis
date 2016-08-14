@@ -7,6 +7,9 @@
 
   var columnsPromise;
 
+  function Columns() {}
+  Columns.prototype.scheduleSave = function() { console.info('scheduling save of columns'); };
+
   lima.getColumns = function() {
     if (columnsPromise) return columnsPromise;
 
@@ -16,6 +19,7 @@
     })
     .then(_.fetchJson)
     .then(function (columns) {
+      if (!(columns instanceof Columns)) columns = Object.assign(new Columns(), columns);
       lima.columns = columns;
       lima.columnTypes = [];
       Object.keys(columns).forEach(function (colId) {
