@@ -2,6 +2,19 @@
   var lima = window.lima = window.lima || {};
   var _ = window.lima._ = {};
 
+  /* dom functions
+   *
+   *
+   *  #####   ####  #    #    ###### #    # #    #  ####  ##### #  ####  #    #  ####
+   *  #    # #    # ##  ##    #      #    # ##   # #    #   #   # #    # ##   # #
+   *  #    # #    # # ## #    #####  #    # # #  # #        #   # #    # # #  #  ####
+   *  #    # #    # #    #    #      #    # #  # # #        #   # #    # #  # #      #
+   *  #    # #    # #    #    #      #    # #   ## #    #   #   # #    # #   ## #    #
+   *  #####   ####  #    #    #       ####  #    #  ####    #   #  ####  #    #  ####
+   *
+   *
+   */
+
   /*
    * param root is optional
    */
@@ -95,6 +108,85 @@
     _.findEls(root, selector).forEach(function(el){el.addEventListener(event, f);});
   }
 
+  _.fillTags = function fillTags(root, selector, tags, flashTag) {
+    if (!(root instanceof Node)) {
+      flashTag = tags;
+      tags = selector;
+      selector = root;
+      root = document;
+    }
+    if (!tags) tags = [];
+
+    var tagTemplate = _.byId('tag-template');
+    var newTagTemplate = _.byId('new-tag-template');
+    _.findEls(root, selector).forEach(function (el) {
+      el.innerHTML = '';
+      tags.forEach(function (tag) {
+        var tagEl = _.cloneTemplate(tagTemplate).children[0];
+        _.fillEls(tagEl, '.tag', tag);
+        if (flashTag === tag) {
+          tagEl.classList.add('flash');
+          setTimeout(function(){tagEl.classList.remove('flash');}, 50);
+        }
+        el.appendChild(tagEl);
+      });
+      if (newTagTemplate) el.appendChild(_.cloneTemplate(newTagTemplate));
+    });
+  }
+
+
+
+  /* move array
+   *
+   *
+   *    #    #  ####  #    # ######      ##   #####  #####    ##   #   #
+   *    ##  ## #    # #    # #          #  #  #    # #    #  #  #   # #
+   *    # ## # #    # #    # #####     #    # #    # #    # #    #   #
+   *    #    # #    # #    # #         ###### #####  #####  ######   #
+   *    #    # #    #  #  #  #         #    # #   #  #   #  #    #   #
+   *    #    #  ####    ##   ######    #    # #    # #    # #    #   #
+   *
+   *
+   * Move item `i` in array `arr` to the left or right.
+   * `left` indicates direction; if `most`, move to the beginning (left) or end (right) of the array.
+   */
+  _.moveInArray = function moveInArray(arr, i, left, most) {
+    var moveTo = undefined;
+    if (left) {
+      if (i === 0) return arr;
+      moveTo = most ? 0 : i-1;
+    } else {
+      if (i === arr.length - 1) return arr;
+      moveTo = most ? arr.length - 1 : i+1;
+    }
+
+    _.moveArrayElement(arr, i, moveTo);
+    return arr;
+  }
+
+  _.moveArrayElement = function moveArrayElement(arr, oldIndex, newIndex) {
+    if (oldIndex === newIndex || !Array.isArray(arr)) return arr;
+    var content = arr[oldIndex];
+    arr.splice(oldIndex, 1);
+    arr.splice(newIndex, 0, content);
+    return arr;
+  }
+
+
+
+  /* error handling
+   *
+   *
+   *    ###### #####  #####   ####  #####     #    #   ##   #    # #####  #      # #    #  ####
+   *    #      #    # #    # #    # #    #    #    #  #  #  ##   # #    # #      # ##   # #    #
+   *    #####  #    # #    # #    # #    #    ###### #    # # #  # #    # #      # # #  # #
+   *    #      #####  #####  #    # #####     #    # ###### #  # # #    # #      # #  # # #  ###
+   *    #      #   #  #   #  #    # #   #     #    # #    # #   ## #    # #      # #   ## #    #
+   *    ###### #    # #    #  ####  #    #    #    # #    # #    # #####  ###### # #    #  ####
+   *
+   *
+   */
+
   _.notFound = function notFound() {
     document.body.innerHTML = '';
     fetch('/404')
@@ -110,6 +202,36 @@
       document.close();
     })
   }
+
+  lima.apiFail = lima.apiFail || function apiFail() {
+    document.body.innerHTML = '';
+    fetch('/apifail')
+    .then(_.fetchText)
+    .catch(function (err) {
+      console.error('error getting apifail page');
+      console.error(err);
+      return 'sorry, the server is temporarily unhappy (API failure)';
+    })
+    .then(function (text) {
+      document.open();
+      document.write(text);
+      document.close();
+    })
+  }
+
+
+  /* formatting
+   *
+   *
+   *   ######  ####  #####  #    #   ##   ##### ##### # #    #  ####
+   *   #      #    # #    # ##  ##  #  #    #     #   # ##   # #    #
+   *   #####  #    # #    # # ## # #    #   #     #   # # #  # #
+   *   #      #    # #####  #    # ######   #     #   # #  # # #  ###
+   *   #      #    # #   #  #    # #    #   #     #   # #   ## #    #
+   *   #       ####  #    # #    # #    #   #     #   # #    #  ####
+   *
+   *
+   */
 
   var months = ['Jan ', 'Feb ', 'Mar ', 'Apr ', 'May ', 'Jun ', 'Jul ', 'Aug ', 'Sep ', 'Oct ', 'Nov ', 'Dec '];
 
@@ -137,7 +259,18 @@
   }
 
 
-  /*
+  /* youOrName
+   *
+   *
+   *                        #######        #     #
+   *    #   #  ####  #    # #     # #####  ##    #   ##   #    # ######
+   *     # #  #    # #    # #     # #    # # #   #  #  #  ##  ## #
+   *      #   #    # #    # #     # #    # #  #  # #    # # ## # #####
+   *      #   #    # #    # #     # #####  #   # # ###### #    # #
+   *      #   #    # #    # #     # #   #  #    ## #    # #    # #
+   *      #    ####   ####  ####### #    # #     # #    # #    # ######
+   *
+   *
    * if the currently logged-in user matches the user the page is about,
    * use "your" and "you" in some places in the whole document,
    * otherwise use "Jo's" or "Jo" if the fname of the user the page is about is "Jo".
@@ -177,7 +310,17 @@
   }
 
 
-  /*
+  /* fetch
+   *
+   *
+   *    ###### ###### #####  ####  #    #
+   *    #      #        #   #    # #    #
+   *    #####  #####    #   #      ######
+   *    #      #        #   #      #    #
+   *    #      #        #   #    # #    #
+   *    #      ######   #    ####  #    #
+   *
+   *
    * with fetch API, get the response JSON, but if the HTTP code wasn't 2xx, make the response a rejected promise
    */
   _.fetchJson = function fetchJson(response) {
@@ -204,75 +347,6 @@
     }
     if (idToken) retval.Authorization = "Bearer " + idToken;
     return retval;
-  }
-
-
-  lima.apiFail = lima.apiFail || function apiFail() {
-    document.body.innerHTML = '';
-    fetch('/apifail')
-    .then(_.fetchText)
-    .catch(function (err) {
-      console.error('error getting apifail page');
-      console.error(err);
-      return 'sorry, the server is temporarily unhappy (API failure)';
-    })
-    .then(function (text) {
-      document.open();
-      document.write(text);
-      document.close();
-    })
-  }
-
-  _.fillTags = function fillTags(root, selector, tags, flashTag) {
-    if (!(root instanceof Node)) {
-      flashTag = tags;
-      tags = selector;
-      selector = root;
-      root = document;
-    }
-    if (!tags) tags = [];
-
-    var tagTemplate = _.byId('tag-template');
-    var newTagTemplate = _.byId('new-tag-template');
-    _.findEls(root, selector).forEach(function (el) {
-      el.innerHTML = '';
-      tags.forEach(function (tag) {
-        var tagEl = _.cloneTemplate(tagTemplate).children[0];
-        _.fillEls(tagEl, '.tag', tag);
-        if (flashTag === tag) {
-          tagEl.classList.add('flash');
-          setTimeout(function(){tagEl.classList.remove('flash');}, 50);
-        }
-        el.appendChild(tagEl);
-      });
-      if (newTagTemplate) el.appendChild(_.cloneTemplate(newTagTemplate));
-    });
-  }
-
-  /*
-   * Move item `i` in array `arr` to the left or right.
-   * `left` indicates direction; if `most`, move to the beginning (left) or end (right) of the array.
-   */
-  _.moveInArray = function moveInArray(arr, i, left, most) {
-    var moveTo = undefined;
-    if (left) {
-      if (i === 0) return arr;
-      moveTo = most ? 0 : i-1;
-    } else {
-      if (i === arr.length - 1) return arr;
-      moveTo = most ? arr.length - 1 : i+1;
-    }
-
-    _.moveArrayElement(arr, i, moveTo);
-    return arr;
-  }
-
-  _.moveArrayElement = function moveArrayElement(arr, oldIndex, newIndex) {
-    if (oldIndex === newIndex || !Array.isArray(arr)) return arr;
-    var content = arr[oldIndex];
-    arr.splice(oldIndex, 1);
-    arr.splice(newIndex, 0, content);
-    return arr;
   }
 
 })(document, window);
