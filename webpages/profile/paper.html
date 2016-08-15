@@ -96,15 +96,16 @@
       <button class="move right editing" title="move column to the right">»</button>
       <button class="move right most editing" title="move column to the right">»|</button>
       <header>
-        <p class="coltitle notediting">error</p>
-        <p class="coltitle editing oneline" contenteditable placeholder="column title">error</p>
+        <p class="coltitle notediting-if-yours">error</p>
+        <p class="coltitle editing-if-yours oneline" contenteditable placeholder="column title">error</p>
       </header>
-      <p class="coldescription notediting">error</p>
-      <p class="coldescription editing" contenteditable placeholder="add column description">error</p>
+      <p class="coldescription notediting-if-yours">error</p>
+      <p class="coldescription editing-if-yours" contenteditable placeholder="add column description">error</p>
       <!-- on hiding this column, store in localStorage that this column is being hidden,
       also add to the end of every row a symbol that there are hidden values,
       on hover, the symbol will list them and allow you to add some right back -->
       <!-- todo comments -->
+      <!-- todo add a way of cloning a column -->
       <footer class="coltype"><span class="type-characteristic">characteristic&nbsp;or&nbsp;moderator&nbsp;column</span><span class="type-result">result column</span> defined <span class="colctime"> on <span class="value date">error</span></span><span class="definedby"> by <a class="value" href="error">error</a></span></footer>
     </div>
   </th>

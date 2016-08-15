@@ -339,6 +339,12 @@
           _.removeClass(th, '.definedby', 'only-not-yours');
           if (lima.extractUserProfileEmailFromUrl() === col.definedBy) {
             _.addClass(th, '.definedby', 'only-not-yours');
+            _.addClass(th, '.editing-if-yours', 'yours');
+            _.addClass(th, '.notediting-if-yours', 'yours');
+          } else {
+            _.removeClass(th, '.definedby', 'only-not-yours');
+            _.removeClass(th, '.editing-if-yours', 'yours');
+            _.removeClass(th, '.notediting-if-yours', 'yours');
           }
           _.findEls(th, 'button.move').forEach(function (el) {
             el.dataset.id = col.id;
