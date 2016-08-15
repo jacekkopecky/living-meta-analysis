@@ -5,6 +5,9 @@
 
   var columnsPromise;
 
+  // predefined possible column types
+  lima.columnTypes = ['characteristic', 'result'];
+
   function Columns() {}
   Columns.prototype.save = saveColumns;
 
@@ -29,12 +32,6 @@
   function storeColumns(columns) {
     if (!(columns instanceof Columns)) columns = Object.assign(new Columns(), columns);
     lima.columns = columns;
-    lima.columnTypes = [];
-    Object.keys(columns).forEach(function (colId) {
-      if (lima.columnTypes.indexOf(columns[colId].type) === -1) {
-        lima.columnTypes.push(columns[colId].type);
-      }
-    })
     return columns;
   }
 
