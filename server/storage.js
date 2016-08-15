@@ -574,47 +574,6 @@ module.exports.listColumns = () => columnCache;
 
 const COLUMN_TYPES = ['characteristic', 'result'];
 
-const testColumns = {
-  '/id/col/12': {
-    id: '/id/col/12',
-    title: 'No. of Participants',
-    description: 'number of participants in the experiment',
-    definedBy: 'jacek.kopecky@port.ac.uk',
-    type: 'characteristic', // todo: show characteristics first, then results
-    ctime: Date.now(),
-    mtime: Date.now(),
-  },
-  '/id/col/13': {
-    id: '/id/col/13',
-    title: 'Type of Participants',
-    description: 'STU means student, CHI means children',
-    definedBy: 'jacek.kopecky@port.ac.uk',
-    type: 'characteristic',
-    ctime: Date.now(),
-    mtime: Date.now(),
-  },
-  '/id/col/14': {
-    id: '/id/col/14',
-    title: 'Delay of Misinformation',
-    description: 'Short is under 24 hours, Long over that',
-    definedBy: 'test@port.ac.uk',
-    type: 'characteristic',
-    ctime: Date.now(),
-    mtime: Date.now(),
-  },
-  '/id/col/15': {
-    id: '/id/col/15',
-    title: 'Mem/mis/post-warning',
-    // eslint-disable-next-line max-len
-    description: 'Memory for original event details (%correct) for misled participants in post-warning condition',
-    definedBy: 'test@port.ac.uk',
-    type: 'result',
-    ctime: Date.now(),
-    mtime: Date.now(),
-  },
-};
-
-
 let columnCache;
 
 // get all users immediately on the start of the server
@@ -623,7 +582,7 @@ getAllColumns();
 function getAllColumns() {
   columnCache = new Promise((resolve, reject) => {
     console.log('getAllColumns: making a datastore request');
-    const retval = testColumns; // should be {}
+    const retval = {};
     datastore.createQuery('Column').run()
     .on('error', (err) => {
       console.error('error retrieving columns');
@@ -668,21 +627,56 @@ module.exports.saveColumn = (recvCol, email) => {
       recvCol.definedBy = email;
     } else {
       // recvCol is a column that already exists
+      recvCol.ctime = origCol.ctime;
+      recvCol.mtime = origCol.mtime;
+      recvCol.definedBy = origCol.definedBy;
       if (recvCol.title !== origCol.title ||
           recvCol.type !== origCol.type ||
           recvCol.description !== origCol.description) {
         if (origCol.definedBy !== email) {
           throw new ValidationError(`only ${origCol.definedBy} can edit column ${recvCol.id}`);
         }
-        recvCol.ctime = origCol.ctime;
-        recvCol.definedBy = origCol.definedBy;
         recvCol.mtime = tools.uniqueNow();
       }
       // todo column comments - a non-owner can add/edit comments
     }
 
     tools.deleteCHECKvalues(recvCol);
-    columns[recvCol.id] = recvCol;
-    return recvCol;
+
+    // save tha paper in the data store
+    const key = datastore.key(['Column', recvCol.id]);
+    // this is here until we add versioning on the papers themselves
+    const logKey = datastore.key(['Column', recvCol.id,
+                                  'ColumnLog', recvCol.id + '/' + recvCol.mtime]);
+    console.log('saveColumn saving (into Column and ColumnLog)');
+    return new Promise((resolve, reject) => {
+      datastore.save(
+        [
+          { key, data: recvCol },
+          { key: logKey,
+            data:
+            [
+              { name: 'mtime',
+                value: recvCol.mtime },
+              { name: 'column',
+                value: recvCol,
+                excludeFromIndexes: true },
+            ] },
+        ],
+        (err) => {
+          if (err) {
+            console.error('error saving column');
+            console.error(err);
+            reject(err);
+          } else {
+            resolve();
+          }
+        }
+      );
+    })
+    .then(() => {
+      columns[recvCol.id] = recvCol;
+      return recvCol;
+    });
   });
 };
