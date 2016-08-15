@@ -109,7 +109,7 @@
   }
 
   function Paper() {}
-  Paper.prototype.scheduleSave = schedulePaperSave;
+  Paper.prototype.save = savePaper;
 
   function updatePaperView(paper) {
     if (!paper) paper = currentPaper;
@@ -182,7 +182,7 @@
             if (i !== -1) {
               paper.tags.splice(i, 1);
               updatePaperView();
-              schedulePaperSave();
+              _.scheduleSave(paper);
             } else {
               console.error('removing tag but can\'t find it: ' + text);
             }
@@ -236,7 +236,7 @@
             flashTag = text;
             updatePaperView();
             if (add) {
-              schedulePaperSave();
+              _.scheduleSave(paper);
             }
           }
         }
@@ -259,7 +259,7 @@
             ev.preventDefault();
             el.blur();
           }
-          else deferScheduledPaperSave();
+          else _.deferScheduledSave();
         }
       })
 
@@ -279,7 +279,7 @@
     }
 
 
-    _.addEventListener('#paper .savingerror', 'click', savePaper);
+    _.addEventListener('#paper .savingerror', 'click', _.manualSave);
 
     addPaperDOMSetter(function () {
       if (pinnedBox) pinPopupBox(pinnedBox);
@@ -474,7 +474,7 @@
             var comments = getDeepValue(paper, commentsPropPath, []);
             comments.push({ text: text });
             updatePaperView();
-            schedulePaperSave();
+            _.scheduleSave(paper);
           }
         }
       });
@@ -496,96 +496,57 @@
    *
    */
 
-  var pendingSaveTimeout = null;
-  var pendingSaveForceTime = null;
-
-  var PAPER_SAVE_PENDING_TIMEOUT = 3000;
-  var PAPER_SAVE_MAX_TIMEOUT = 10000;
-
-  function schedulePaperSave() {
-    // don't save automatically after an error
-    if (_.findEl('#paper.savingerror')) return;
-    if (_.findEl('#paper.validationerror')) return;
-
-    _.addClass('#paper', 'savepending');
-
-    deferScheduledPaperSave();
-    if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(savePaper, PAPER_SAVE_PENDING_TIMEOUT);
-    if (!pendingSaveForceTime) pendingSaveForceTime = Date.now() + PAPER_SAVE_MAX_TIMEOUT;
+  // don't save automatically after an error
+  lima.checkToPreventSaving = function checkToPreventSaving() {
+    return _.findEl('#paper.savingerror') || _.findEl('#paper.validationerror');
   }
 
-  function cancelScheduledPaperSave() {
-    if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
-    pendingSaveTimeout = null;
-    pendingSaveForceTime = null;
+  // don't save at all when a validation error is there
+  lima.checkToPreventForcedSaving = function checkToPreventForcedSaving() {
+    return _.findEl('#paper.validationerror');
+  }
 
+  lima.savePendingStarted = function savePendingStarted() {
+    _.addClass('#paper', 'savepending');
+  }
+
+  lima.savePendingStopped = function savePendingStopped() {
     _.removeClass('#paper', 'savepending');
   }
 
-  // setTimeout for save in 3s
-  // if already set, cancel the old one and set a new one
-  // but only replace the old one if the pending save started less than 10s ago
-  function deferScheduledPaperSave() {
-    if (pendingSaveTimeout && pendingSaveForceTime > Date.now()) {
-      clearTimeout(pendingSaveTimeout);
-      pendingSaveTimeout = setTimeout(savePaper, PAPER_SAVE_PENDING_TIMEOUT);
-    }
+  lima.saveStarted = function saveStarted() {
+    _.removeClass('#paper', 'savingerror');
+    _.addClass('#paper', 'saving');
   }
 
-  var savingPaper = false;
-  var scheduleAnotherPaperSave = false;
+  lima.saveStopped = function saveStopped() {
+    _.removeClass('#paper', 'saving');
+  }
+
+  lima.saveError = function saveError() {
+    _.addClass('#paper', 'savingerror');
+    _.removeClass('#paper', 'saving');
+  }
 
   function savePaper() {
-    // don't save when a validation error is there
-    if (_.findEl('#paper.validationerror')) return;
-
-    cancelScheduledPaperSave();
-    if (savingPaper) {
-      scheduleAnotherPaperSave = true;
-      return;
-    }
-
-    savingPaper = true;
-
-    lima.getGapiIDToken()
-    .then(function(idToken) {
-      if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
-      pendingSaveTimeout = null;
-      pendingSaveForceTime = null;
-
-      _.removeClass('#paper', 'savingerror');
-      _.removeClass('#paper', 'savepending');
-      _.addClass('#paper', 'saving');
-
-      return fetch(currentPaperUrl, {
-        method: 'POST',
-        headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
-        body: JSON.stringify(currentPaper),
-      });
-    })
-    .then(_.fetchJson)
-    .then(function(json) {
-      _.removeClass('#paper', 'saving');
-      savingPaper = false;
-      updatePaperView(json);
-      if (scheduleAnotherPaperSave) {
-        scheduleAnotherPaperSave = false;
-        schedulePaperSave();
-      }
-    })
-    .catch(function(err) {
-      console.error('error saving paper');
-      if (err instanceof Response) err.text().then(function (t) {console.error(t)});
-      else console.error(err);
-      _.addClass('#paper', 'savingerror');
-      _.removeClass('#paper', 'saving');
-      savingPaper = false;
-      scheduleAnotherPaperSave = false;
-      if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
-      pendingSaveTimeout = null;
-      pendingSaveForceTime = null;
-    })
-
+    return lima.getGapiIDToken()
+      .then(function(idToken) {
+        return fetch(currentPaperUrl, {
+          method: 'POST',
+          headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
+          body: JSON.stringify(currentPaper),
+        });
+      })
+      .then(_.fetchJson)
+      .then(function(json) {
+        updatePaperView(json);
+      })
+      .catch(function(err) {
+        console.error('error saving paper');
+        if (err instanceof Response) err.text().then(function (t) {console.error(t)});
+        else console.error(err);
+        throw err;
+      })
   }
 
 
@@ -655,7 +616,7 @@
     _.moveInArray(currentPaper.columnOrder, i, left, most);
     moveResultsAfterCharacteristics(currentPaper);
     updatePaperView();
-    schedulePaperSave();
+    _.scheduleSave(currentPaper);
   }
 
   function regenerateColumnOrder(paper) {
@@ -737,7 +698,7 @@
     _.findEls(root, selector).forEach(function (el) {
       if (el.classList.contains('editing') || el.isContentEditable || el.contentEditable === 'true') {
         el.classList.remove('validationerror');
-        el.addEventListener('keydown', deferScheduledPaperSave);
+        el.addEventListener('keydown', _.deferScheduledSave);
         el.oninput = function () {
           var value = el[property];
           if (typeof value === 'string' && value.trim() === '') value = '';
@@ -748,13 +709,12 @@
             el.classList.add('validationerror');
             el.dataset.validationmessage = err.message || err;
             _.addClass('#paper', 'validationerror');
-            cancelScheduledPaperSave();
+            _.cancelScheduledSave(target);
             return;
           }
           assignDeepValue(target, targetProp, value);
           updatePaperView();
-          if (target.scheduleSave) target.scheduleSave();
-          else schedulePaperSave();
+          _.scheduleSave(target);
         };
       } else {
         el.oninput = null;
@@ -946,7 +906,6 @@
   lima.pinPopupBox = pinPopupBox;
   lima.unpinPopupBox = unpinPopupBox;
   lima.updatePaperView = updatePaperView;
-  lima.savePaper = savePaper;
   lima.assignDeepValue = assignDeepValue;
   lima.getDeepValue = getDeepValue;
 
