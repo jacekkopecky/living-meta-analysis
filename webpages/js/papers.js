@@ -527,6 +527,7 @@
   }
 
   function savePaper() {
+    console.log('saving paper');
     return lima.getGapiIDToken()
       .then(function(idToken) {
         return fetch(currentPaperUrl, {
@@ -536,9 +537,7 @@
         });
       })
       .then(_.fetchJson)
-      .then(function(json) {
-        updatePaperView(json);
-      })
+      .then(updatePaperView)
       .catch(function(err) {
         console.error('error saving paper');
         if (err instanceof Response) err.text().then(function (t) {console.error(t)});
@@ -899,6 +898,8 @@
   lima.extractPaperTitleFromUrl = extractPaperTitleFromUrl;
   lima.requestAndFillPaperList = requestAndFillPaperList;
   lima.requestAndFillPaper = requestAndFillPaper;
+
+  lima.updateView = updatePaperView;
 
   // for testing
   lima.pinPopupBox = pinPopupBox;

@@ -634,7 +634,13 @@ function getAllColumns() {
       reject(err);
     })
     .on('data', (entity) => {
-      retval[entity.data.id] = entity.data;
+      try {
+        retval[entity.data.id] = entity.data;
+        console.log('getAllColumns: got a column ' + entity.data.id);
+      } catch (err) {
+        console.error('error in a column entity (ignoring)');
+        console.error(err);
+      }
     })
     .on('end', () => {
       console.log(`getAllColumns: ${Object.keys(retval).length} done`);
@@ -642,3 +648,9 @@ function getAllColumns() {
     });
   });
 }
+
+module.exports.saveColumns = (columns, email) => {
+  // todo identify the columns to be saved and actually save them
+  columnCache = Promise.resolve(columns);
+  return columnCache || email;
+};
