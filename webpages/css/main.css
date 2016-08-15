@@ -627,27 +627,27 @@ section.list > ul > li > ul.tags > li {
 
 #paper.savingerror > header .savingerror { display: block; cursor: pointer; }
 
-#paper a.value {
+#paper > p > a.value {
   padding-right: .5em;
 }
 
-#paper a.value + .edit {
+#paper > p > a.value + .edit {
   display: none;
 }
 
-#paper a.value + span.edit {
+#paper > p > a.value + span.edit {
   padding: 0 1em 0 .5em;
   font-style: italic;
   color: #444;
   cursor: pointer;
 }
 
-#paper a.value + button.edit {
+#paper > p > a.value + button.edit {
   vertical-align: middle;
 }
 
-#paper a.value:hover + .edit,
-#paper a.value + .edit:hover {
+#paper > p > a.value:hover + .edit,
+#paper > p > a.value + .edit:hover {
   display: inline-block;
 }
 

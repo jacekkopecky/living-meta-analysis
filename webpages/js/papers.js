@@ -334,6 +334,7 @@
           _.addClass(th, '.coltype', col.type);
           _.fillEls(th, '.coldescription', col.description);
           _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime));
+          _.fillEls(th, '.colmtime .value', _.formatDateTime(col.mtime));
           _.fillEls(th, '.definedby .value', col.definedBy);
           _.setProps(th, '.definedby .value', 'href', '/' + col.definedBy + '/');
           _.removeClass(th, '.definedby', 'only-not-yours');

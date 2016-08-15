@@ -582,6 +582,7 @@ const testColumns = {
     definedBy: 'jacek.kopecky@port.ac.uk',
     type: 'characteristic', // todo: show characteristics first, then results
     ctime: Date.now(),
+    mtime: Date.now(),
   },
   '/id/col/13': {
     id: '/id/col/13',
@@ -590,6 +591,7 @@ const testColumns = {
     definedBy: 'jacek.kopecky@port.ac.uk',
     type: 'characteristic',
     ctime: Date.now(),
+    mtime: Date.now(),
   },
   '/id/col/14': {
     id: '/id/col/14',
@@ -598,6 +600,7 @@ const testColumns = {
     definedBy: 'test@port.ac.uk',
     type: 'characteristic',
     ctime: Date.now(),
+    mtime: Date.now(),
   },
   '/id/col/15': {
     id: '/id/col/15',
@@ -607,6 +610,7 @@ const testColumns = {
     definedBy: 'test@port.ac.uk',
     type: 'result',
     ctime: Date.now(),
+    mtime: Date.now(),
   },
 };
 
