@@ -3,8 +3,6 @@
   var lima = window.lima;
   var _ = lima._;
 
-  lima.apiFail = lima.apiFail || function(){};
-
   function extractPaperTitleFromUrl() {
     // the path of a page for a paper will be '/email/title/*',
     // so extract the 'title' portion here:
@@ -42,7 +40,7 @@
     .catch(function (err) {
       console.error("problem getting papers");
       console.error(err);
-      lima.apiFail();
+      _.apiFail();
     });
   }
 
@@ -104,7 +102,7 @@
     .catch(function (err) {
       console.error("problem getting paper");
       console.error(err);
-      lima.apiFail();
+      _.apiFail();
     });
   }
 

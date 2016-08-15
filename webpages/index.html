@@ -57,7 +57,7 @@ window.lima.initPage = function () {
   .catch(function (err) {
     console.error('can\'t load top users');
     console.error(err);
-    lima.apiFail();
+    _.apiFail();
   });
 
   lima.getGapiIDToken()
@@ -69,7 +69,7 @@ window.lima.initPage = function () {
   .catch(function (err) {
     console.error('can\'t load top papers');
     console.error(err);
-    lima.apiFail();
+    _.apiFail();
   });
 
   lima.getGapiIDToken()
@@ -81,7 +81,7 @@ window.lima.initPage = function () {
   .catch(function (err) {
     console.error('can\'t load top metaanalyses');
     console.error(err);
-    lima.apiFail();
+    _.apiFail();
   });
 
   function showTopUsers(users) {

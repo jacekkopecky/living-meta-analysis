@@ -3,8 +3,6 @@
   var lima = window.lima;
   var _ = lima._;
 
-  lima.apiFail = lima.apiFail || function(){};
-
   var columnsPromise;
 
   function Columns() {}
@@ -32,7 +30,7 @@
     .catch(function (err) {
       console.error("problem getting columns");
       console.error(err);
-      lima.apiFail();
+      _.apiFail();
     });
 
     return columnsPromise;

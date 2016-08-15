@@ -3,8 +3,6 @@
   var lima = window.lima;
   var _ = lima._;
 
-  lima.apiFail = lima.apiFail || function(){};
-
   lima.requestAndFillMetaanalysisList = function requestAndFillMetaanalysisList() {
     lima.getGapiIDToken()
     .then(function (idToken) {
@@ -19,7 +17,7 @@
     .catch(function (err) {
       console.error("problem getting metaanalyses");
       console.error(err);
-      lima.apiFail();
+      _.apiFail();
     });
   }
 

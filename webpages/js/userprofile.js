@@ -3,8 +3,6 @@
   var lima = window.lima;
   var _ = lima._;
 
-  lima.apiFail = lima.apiFail || function(){};
-
   lima.requestAndFillUserProfile = function requestAndFillUserProfile() {
     lima.whenUserPageIsAboutIsKnown = whenUserPageIsAboutIsKnown;
     lima.getGapiIDToken()
@@ -21,7 +19,7 @@
       }
       console.error("problem getting profile");
       console.error(err);
-      lima.apiFail();
+      _.apiFail();
     });
   }
 

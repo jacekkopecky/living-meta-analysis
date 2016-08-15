@@ -203,7 +203,7 @@
     })
   }
 
-  lima.apiFail = lima.apiFail || function apiFail() {
+  _.apiFail = function apiFail() {
     document.body.innerHTML = '';
     fetch('/apifail')
     .then(_.fetchText)
