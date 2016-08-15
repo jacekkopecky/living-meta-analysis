@@ -87,3 +87,12 @@ module.exports.assoc = function assoc(val, f) {
 };
 
 function defined(x) { return x !== undefined; }
+
+module.exports.deleteCHECKvalues = function deleteCHECKvalues(obj) {
+  if (obj !== null && (typeof obj === 'object' || typeof obj === 'function')) {
+    for (const key of Object.keys(obj)) {
+      if (key.startsWith('CHECK')) delete obj[key];
+      else deleteCHECKvalues(obj[key]);
+    }
+  }
+};

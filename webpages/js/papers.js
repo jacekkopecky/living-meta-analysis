@@ -352,7 +352,7 @@
           lima.columnTypes.forEach(function (type) {th.classList.remove(type);});
           th.classList.add(col.type);
 
-          addOnInput(th, '.coldescription', 'textContent', identity, lima.columns, [col.id, 'description']);
+          addOnInput(th, '.coldescription', 'textContent', identity, lima.columns[col.id], ['description']);
 
           setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
         });

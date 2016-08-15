@@ -50,7 +50,7 @@ api.post(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/`,
         GUARD, SAME_USER, jsonBodyParser, savePaper);
 
 api.get('/columns', REGISTER_USER, listColumns);
-api.post('/columns', GUARD, REGISTER_USER, jsonBodyParser, saveColumns);
+api.post('/columns', GUARD, REGISTER_USER, jsonBodyParser, saveColumn);
 
 api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, listMetaanalysesForUser);
 
@@ -400,15 +400,11 @@ function extractColumnForSending(storageColumn) {
   };
 }
 
-function saveColumns(req, res, next) {
+function saveColumn(req, res, next) {
   // extract from incoming data stuff that is allowed
-  storage.saveColumns(extractReceivedColumns(req.body), req.user.emails[0].value)
-  .then((columns) => {
-    const retval = {};
-    for (const key of Object.keys(columns)) {
-      retval[key] = extractColumnForSending(columns[key]);
-    }
-    res.json(retval);
+  storage.saveColumn(extractReceivedColumn(req.body), req.user.emails[0].value)
+  .then((column) => {
+    res.json(extractColumnForSending(column));
   })
   .catch((e) => {
     if (e instanceof ValidationError) {
@@ -419,22 +415,15 @@ function saveColumns(req, res, next) {
   });
 }
 
-function extractReceivedColumns(receivedColumns) {
-  // expecting receivedPaper to come from JSON.parse()
-  const retval = {};
-  for (const key of Object.keys(receivedColumns)) {
-    const recCol = receivedColumns[key];
-    if (typeof recCol === 'object') {
-      retval[key] = {
-        id: tools.string(recCol.id),
-        title: tools.string(recCol.title),
-        CHECKdefinedBy: tools.string(recCol.definedBy), // can't be changed but should be checked
-        CHECKctime: tools.number(recCol.ctime),         // can't be changed but should be checked
-        // mtime: tools.number(recCol.mtime),           // will be updated
-        type: tools.string(recCol.type),
-        description: tools.string(recCol.description),
-      };
-    }
-  }
-  return retval;
+function extractReceivedColumn(recCol) {
+  // expecting receivedColumn to come from JSON.parse()
+  return {
+    id: tools.string(recCol.id),
+    title: tools.string(recCol.title),
+    type: tools.string(recCol.type),
+    description: tools.string(recCol.description),
+    CHECKdefinedBy: tools.string(recCol.definedBy), // can't be changed but should be checked
+    CHECKctime: tools.number(recCol.ctime),         // can't be changed but should be checked
+    // mtime: tools.number(recCol.mtime),           // will be updated
+  };
 }

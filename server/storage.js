@@ -281,15 +281,6 @@ module.exports.getPaperByTitle = (email, title, time) => {
 
 module.exports.listPapers = () => paperCache;
 
-function deleteCHECKvalues(paper) {
-  if (paper !== null && (typeof paper === 'object' || typeof paper === 'function')) {
-    for (const key of Object.keys(paper)) {
-      if (key.startsWith('CHECK')) delete paper[key];
-      else deleteCHECKvalues(paper[key]);
-    }
-  }
-}
-
 // todo trim incoming textual values?
 
 function fillByAndCtimes(paper, origPaper, email) {
@@ -340,6 +331,7 @@ function checkForDisallowedChanges(paper, origPaper) {
   // but for now we don't have the diffs, so
   //   do the checks we can think of for changes that wouldn't be allowed
   // for example, we can't really allow removing values because we don't allow removing comments
+  // todo comment mtimes
 
   // check that every experiment has at least the data values that were there originally
   // check that only last comment by a given user has changed, if any
@@ -437,7 +429,7 @@ module.exports.savePaper = (paper, email) => {
 
     // for now, we choose to ignore if the incoming paper specifies the wrong immutable values here
     // do not save any of the validation values
-    deleteCHECKvalues(paper);
+    tools.deleteCHECKvalues(paper);
 
     // save tha paper in the data store
     const key = datastore.key(['Paper', paper.id]);
@@ -580,6 +572,8 @@ module.exports.listMetaanalyses = () => {
 
 module.exports.listColumns = () => columnCache;
 
+const COLUMN_TYPES = ['characteristic', 'result'];
+
 const testColumns = {
   '/id/col/12': {
     id: '/id/col/12',
@@ -649,8 +643,42 @@ function getAllColumns() {
   });
 }
 
-module.exports.saveColumns = (columns, email) => {
+module.exports.saveColumn = (recvCol, email) => {
   // todo identify the columns to be saved and actually save them
-  columnCache = Promise.resolve(columns);
-  return columnCache || email;
+  return columnCache
+  .then((columns) => {
+    const origCol = columns[recvCol.id];
+
+    // first validate title and type
+    if (!recvCol.title.trim() || COLUMN_TYPES.indexOf(recvCol.type) === -1) {
+      throw new ValidationError('column invalid: must have title and allowed type');
+    }
+
+    if (!origCol) {
+      // recvCol is a new column
+      if (recvCol.id != null) {
+        console.warn('new column should not have an ID');
+      }
+      recvCol.ctime = recvCol.mtime = tools.uniqueNow();
+      recvCol.id = '/id/col/' + recvCol.ctime;
+      recvCol.definedBy = email;
+    } else {
+      // recvCol is a column that already exists
+      if (recvCol.title !== origCol.title ||
+          recvCol.type !== origCol.type ||
+          recvCol.description !== origCol.description) {
+        if (origCol.definedBy !== email) {
+          throw new ValidationError(`only ${origCol.definedBy} can edit column ${recvCol.id}`);
+        }
+        recvCol.ctime = origCol.ctime;
+        recvCol.definedBy = origCol.definedBy;
+        recvCol.mtime = tools.uniqueNow();
+      }
+      // todo column comments - a non-owner can add/edit comments
+    }
+
+    tools.deleteCHECKvalues(recvCol);
+    columns[recvCol.id] = recvCol;
+    return recvCol;
+  });
 };
