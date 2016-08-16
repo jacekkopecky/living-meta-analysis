@@ -48,6 +48,7 @@ api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/:time([0-9]+)/`,
         REGISTER_USER, getPaperVersion);
 api.post(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/`,
         GUARD, SAME_USER, jsonBodyParser, savePaper);
+// todo above, a user that isn't SAME_USER should be able to submit new comments
 
 api.get('/columns', REGISTER_USER, listColumns);
 api.post('/columns', GUARD, REGISTER_USER, jsonBodyParser, saveColumn);

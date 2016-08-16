@@ -340,12 +340,8 @@
           _.removeClass(th, '.definedby', 'only-not-yours');
           if (lima.extractUserProfileEmailFromUrl() === col.definedBy) {
             _.addClass(th, '.definedby', 'only-not-yours');
-            _.addClass(th, '.editing-if-yours', 'yours');
-            _.addClass(th, '.notediting-if-yours', 'yours');
           } else {
             _.removeClass(th, '.definedby', 'only-not-yours');
-            _.removeClass(th, '.editing-if-yours', 'yours');
-            _.removeClass(th, '.notediting-if-yours', 'yours');
           }
           _.findEls(th, 'button.move').forEach(function (el) {
             el.dataset.id = col.id;
@@ -440,7 +436,7 @@
   }
 
   function fillComments(templateId, root, selector, comments, commentsPropPath) {
-    var email = lima.extractUserProfileEmailFromUrl();
+    var user = lima.getAuthenticatedUserEmail();
     var targetEl = _.findEl(root, selector);
     targetEl.innerHTML = '';
     for (var index = 0; index < comments.length; index++) {
@@ -450,7 +446,7 @@
         addPaperDOMSetter(function (paper) {
           var comments = getDeepValue(paper, commentsPropPath);
           var comment = comments[index];
-          if (index === comments.length - 1 && email === comment.by) {
+          if (index === comments.length - 1 && user === comment.by) {
             _.addClass(el, '.editing-if-yours', 'yours');
             _.addClass(el, '.notediting-if-yours', 'yours');
           } else {
@@ -458,8 +454,8 @@
             _.removeClass(el, '.notediting-if-yours', 'yours');
           }
           _.fillEls(el, '.commentnumber', index+1);
-          _.fillEls(el, '.by', comment.by || email);
-          _.setProps(el, '.by', 'href', '/' + (comment.by || email) + '/');
+          _.fillEls(el, '.by', comment.by || user);
+          _.setProps(el, '.by', 'href', '/' + (comment.by || user) + '/');
           _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime || Date.now()));
           _.fillEls(el, '.text', comment.text);
 

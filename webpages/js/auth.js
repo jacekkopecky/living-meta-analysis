@@ -31,6 +31,15 @@
     })
   }
 
+  lima.getAuthenticatedUserEmail = function getAuthenticatedUserEmail() {
+    try {
+      if (window.gapi.auth2.getAuthInstance().isSignedIn.get()) {
+        return window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail();
+      }
+    } catch (e) {console.info(e);} // any errors mean no current user
+    return null;
+  }
+
   var toggleButton = _.byId('toggle-editing');
   lima.editing = localStorage.limaEditing !== 'false';
 

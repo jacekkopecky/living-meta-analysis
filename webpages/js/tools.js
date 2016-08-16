@@ -281,12 +281,7 @@
   _.setYouOrName = function setYouOrName() {
     lima.onSignInChange(setYouOrName);
 
-    var currentUser = null;
-    try {
-      if (window.gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()) {
-        currentUser = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail();
-      }
-    } catch (e) {console.info(e);} // any errors mean no current user
+    var currentUser = lima.getAuthenticatedUserEmail();
 
     if (!lima.userPageIsAbout) {
       if (lima.whenUserPageIsAboutIsKnown) {
