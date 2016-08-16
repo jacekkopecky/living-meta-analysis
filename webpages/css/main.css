@@ -915,6 +915,21 @@ body:not(.editing) #paper table.experiments td:last-child {
   background-color: #eee;
 }
 
+/* fix highlighting of the row headings which have their own background */
+body:not(.boxpinned) #paper table.experiments tr th:first-child.popupboxtrigger:hover .popupboxhighlight,
+body:not(.boxpinned) #paper table.experiments tr th:first-child.popupboxtrigger.popupboxhighlight:hover,
+#paper table.experiments tr th:first-child.popupboxtrigger.pinned .popupboxhighlight,
+#paper table.experiments tr th:first-child.popupboxtrigger.pinned.popupboxhighlight {
+  background: rgba(243,230,255,1);
+}
+body:not(.boxpinned) #paper table.experiments tr:nth-child(2n) th:first-child.popupboxtrigger:hover .popupboxhighlight,
+body:not(.boxpinned) #paper table.experiments tr:nth-child(2n) th:first-child.popupboxtrigger.popupboxhighlight:hover,
+#paper table.experiments tr:nth-child(2n) th:first-child.popupboxtrigger.pinned .popupboxhighlight,
+#paper table.experiments tr:nth-child(2n) th:first-child.popupboxtrigger.pinned.popupboxhighlight {
+  background: rgba(228,215,240,1);
+}
+
+
 body:not(.page-about-you) #paper table.experiments tr.add,
 body:not(.page-about-you) #paper table.experiments th.add,
 body:not(.editing) #paper table.experiments tr.add,
