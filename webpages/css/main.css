@@ -3,11 +3,13 @@ body {
   background: white;
   color: black;
   line-height: 125%;
-  min-height: 100vh;
   margin: 0;
-  box-sizing: border-box;
-  padding: .5em .5em 6rem .5em;
-  position: relative;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 40em;
 }
 
 body.signed-on .when-signed-out {
@@ -18,7 +20,7 @@ body:not(.signed-on) .when-signed-on {
   display: none !important;
 }
 
-body:not(.page-about-you) .only-yours {
+body:not(.page-about-you) .only-if-yours {
   display: none !important;
 }
 
@@ -26,10 +28,10 @@ body.page-about-you .only-not-yours {
   display: none !important;
 }
 
-.editing-if-yours:not(.yours),
-.notediting-if-yours.yours,
 body:not(.editing) .editing,
 body:not(.page-about-you) .editing,
+body:not(.page-about-you) .editing-if-yours,
+body.page-about-you .notediting-if-yours,
 body.editing.page-about-you .notediting {
   display: none !important;
 }
@@ -59,17 +61,32 @@ body.editing.page-about-you .notediting {
   outline: initial;
 }
 
+body > * {
+  margin: .5rem;
+}
+
+body > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin: 0;
+}
+
+body > header h1 {
+  margin-bottom: 1em;
+  line-height: 1.1em;
+  margin-left: .5em;
+}
+
 body > footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
   font-size: 85%;
   line-height: 120%;
   height: 5rem;
   background-color: #ddf;
   box-sizing: border-box;
   padding: 1em;
+  margin: 0;
+  margin-top: auto;
 }
 
 body > footer > p {
@@ -80,6 +97,19 @@ body > footer > p {
 .limaversion .value {
   font-family: monospace;
 }
+
+/* popupbox
+ *
+ *
+ *     #####   ####  #####  #    # #####  #####   ####  #    #
+ *     #    # #    # #    # #    # #    # #    # #    #  #  #
+ *     #    # #    # #    # #    # #    # #####  #    #   ##
+ *     #####  #    # #####  #    # #####  #    # #    #   ##
+ *     #      #    # #      #    # #      #    # #    #  #  #
+ *     #       ####  #       ####  #      #####   ####  #    #
+ *
+ *
+ */
 
 .popupbox {
   display: none;
@@ -96,7 +126,7 @@ body > footer > p {
   background-color: white;
   text-align: left;
   overflow: auto;
-  z-index: 1;
+  z-index: 10;
 }
 
 .popupbox > header,
@@ -186,42 +216,39 @@ body:not(.boxpinned) .popupboxtrigger.popupboxhighlight:hover,
  */
 
 .userinfo {
-  position: fixed;
-  top: 12px;
-  right: 12px;
   transition: border 1s;
   min-width: 50px;
   min-height: 50px;
   z-index: 100;
   background-color: white;
+  margin: 0;
 }
 
 .userinfo .userphoto {
   max-height: 48px;
   max-width: 48px;
+  margin: 12px;
+  margin-bottom: -1px; /* to merge the border with the list of actions */
   border-radius: 12px;
   padding: 2px;
   display: block;
-  position: absolute;
-  right: 0;
-  top: 0;
   border: 1px solid rgba(0,0,0,0);
-  border-bottom: 0px;
-  transition: 0 .2s;
+  transition: .3s;
 }
 
 .userinfo .actions {
-  margin-top: 53px;
-  display: none;
-  opacity: 0;
-  transition: 0 .2s;
+  visibility: hidden;
   padding: 0 .5em;
   border: 1px solid rgba(0,0,0,.5);
+  border-radius: 12px;
+  background: white;
+  position: absolute;
+  right: .5em;
+  transition: .3s;
 }
 
 .userinfo .actions > * {
   margin: .5em 0;
-  transition: .2s;
   display: block;
   width: 100%;
   box-shadow: 0 0 0 0 rgba(66,133,244,.3);
@@ -244,34 +271,13 @@ body:not(.boxpinned) .popupboxtrigger.popupboxhighlight:hover,
 }
 
 .userinfo:hover .actions {
-  display: block;
-  opacity: 1;
+  visibility: visible;
 }
 
 .userinfo:hover .userphoto {
   border: 1px solid rgba(0,0,0,.5);
-  border-bottom: 0px;
 }
 
-
-
-
-/* sections
- *
- *
- *          ####  ######  ####  ##### #  ####  #    #  ####
- *         #      #      #    #   #   # #    # ##   # #
- *          ####  #####  #        #   # #    # # #  #  ####
- *              # #      #        #   # #    # #  # #      #
- *         #    # #      #    #   #   # #    # #   ## #    #
- *          ####  ######  ####    #   #  ####  #    #  ####
- *
- *
- */
-section {
-  display: block;
-  margin-left: 20em;
-}
 
 
 
@@ -289,11 +295,7 @@ section {
  */
 
 section#personalinfo {
-  position: absolute;
-  top: 5em;
-  left: 1em;
-  margin-left: 0;
-  width: 18em;
+  width: 30em;
   text-align: center;
 }
 
@@ -487,7 +489,14 @@ section.list > ul > li > ul.tags > li {
  *
  */
 
-/* todo make space for all the boxes on the right-hand side of the page */
+#paper {
+  min-width: 40em;
+}
+
+/* make space for all the boxes on the right-hand side of the page */
+#paper > :not(header) {
+  margin: .3em 16em 0 0;
+}
 
 #paper .description .value {
   white-space: pre-line;
@@ -501,6 +510,9 @@ section.list > ul > li > ul.tags > li {
   margin: 0;
   padding: .5em;
   position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 #paper > header h1 {
@@ -508,13 +520,16 @@ section.list > ul > li > ul.tags > li {
   line-height: 100%;
   margin: 0;
   padding: 0;
+  flex: 1 0 auto;
 }
 
-#paper ul.tags {
+#paper > header ul.tags {
   display: inline-block;
   margin: 0 0 0 2em;
   padding: 0;
   vertical-align: bottom;
+  flex: 0 1 auto;
+  text-align: right;
 }
 
 #paper ul.tags > li {
@@ -582,10 +597,6 @@ section.list > ul > li > ul.tags > li {
   background-color: rgba(255,255,255,1);
   color: black;
 }
-
-#paper { max-width: 40em; margin-left: 0; }
-
-#paper p { margin: .3em 0; }
 
 #paper > header .savepending,
 #paper > header .saving {
@@ -668,11 +679,22 @@ section.list > ul > li > ul.tags > li {
 /* rotated headings inspired by https://css-tricks.com/rotated-table-column-headers/ */
 
 #paper table.experiments {
-  border-collapse: collapse;
   margin-top: 1em;
   text-align: center;
-  margin-right: 10em;
+  margin-right: 8em;
   margin-top: 10em;
+  border-spacing: 0;
+  position: relative;
+}
+
+#paper table.experiments:after {
+  content: ' ';
+  display: block;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  bottom: 0;
+  right: -23.5em; /* 15em for width of popupbox and 8.5em for width of overhanging column labels */
 }
 
 #paper table.experiments + .no-table {
@@ -705,6 +727,21 @@ body:not(.editing) #paper table.experiments.editing + .no-table {
 #paper table.experiments tr th:first-child {
   border-right: 2px solid black;
   position: relative;
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+#paper table.experiments tr th:first-child:hover {
+  z-index: 2;
+}
+
+#paper table.experiments tr th:first-child {
+  background: white;
 }
 
 #paper table.experiments tr th:first-child .expdescription.short {
@@ -740,7 +777,7 @@ body:not(.editing) #paper table.experiments tr:first-child th:nth-last-child(2) 
 body.page-about-you.editing #paper table.experiments tr:first-child th:not(:last-child):after,
 body:not(.page-about-you) #paper table.experiments tr:first-child th:not(:nth-last-child(-n+2)):after,
 body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-child(-n+2)):after {
-  border-bottom: 1px solid black;
+  border-top: 1px solid black;
   display: block;
   content: ' ';
   position: absolute;
@@ -753,7 +790,20 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
 
 /* thicker first column divider line */
 #paper table.experiments tr:first-child th:first-child:after {
-  border-bottom: 2px solid black !important;
+  border-top: 2px solid black !important;
+}
+
+/* give the first column white background so it hides stuff under it in case of position:sticky working */
+#paper table.experiments tr:first-child th:first-child:before {
+  border-top: 100em solid white;
+  display: block;
+  content: ' ';
+  position: absolute;
+  right: 0;
+  bottom: 1em;
+  width: 12.7em;
+  transform: rotate(135deg)skew(45deg)translateY(100em);
+  transform-origin: bottom right;
 }
 
 /* thicker line between characteristics and results columns */
@@ -796,7 +846,6 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
 #paper table.experiments td {
   padding: .3em .5em;
   vertical-align: top;
-  border-left: 1px solid black;
   border-right: 1px solid black;
   position: relative;
 }
@@ -817,7 +866,6 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   width: 0;
   border-top: .5em solid #f50;
   border-left: .5em solid transparent;
-  z-index: 1;
 }
 
 #paper table.experiments .comments .value:empty:before {
@@ -862,7 +910,8 @@ body:not(.editing) #paper table.experiments td:last-child {
   border-right: none;
 }
 
-#paper table.experiments tr:nth-child(2n) {
+#paper table.experiments tr:nth-child(2n),
+#paper table.experiments tr:nth-child(2n) th:first-child {
   background-color: #eee;
 }
 
@@ -920,22 +969,3 @@ body.page-about-you.editing #paper table.experiments.editing th.add {
   color: #a00;
   content: attr(data-validationmessage);
 }
-
-/* todo
- *
- *
- *                #####  ####  #####   ####
- *                  #   #    # #    # #    #
- *                  #   #    # #    # #    #
- *                  #   #    # #    # #    #
- *                  #   #    # #    # #    #
- *                  #    ####  #####   ####
- *
- *
- */
-
-body > h1 {
-  margin-bottom: 2em;
-}
-
-/* move to flex layouts? */

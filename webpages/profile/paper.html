@@ -6,20 +6,24 @@
 <link rel="stylesheet" href="/css/main.css">
 
 <body class="loading">
-<h1><a href="/">LiMA (Living Meta-Analysis)</a> Paper</h1>
 
-<!-- this puts a sign-in button, and a sign-out link, in the page -->
-<div class="userinfo signedoff">
-  <img src="/img/user.png" class="userphoto">
-  <div class="actions">
-    <div class="name when-signed-on">Signed in as: <span class="username"></span></div>
-    <div class="g-signin2 signin when-signed-out"></div>
-    <a href="/profile" class="profile when-signed-on">Profile</a>
-    <a id="toggle-editing" class="only-yours">Toggle editing</a>
-    <a class="signout when-signed-on">Sign out</a>
+<header>
+  <h1><a href="/">LiMA (Living Meta-Analysis)</a> Paper</h1>
+
+  <!-- this puts a sign-in button, and a sign-out link, in the page -->
+  <div class="userinfo signedoff">
+    <img src="/img/user.png" class="userphoto">
+    <div class="actions">
+      <div class="name when-signed-on">Signed in as: <span class="username"></span></div>
+      <div class="g-signin2 signin when-signed-out"></div>
+      <a href="/profile" class="profile when-signed-on">Profile</a>
+      <a id="toggle-editing" class="only-if-yours">Toggle editing</a>
+      <a class="signout when-signed-on">Sign out</a>
+    </div>
   </div>
-</div>
+</header>
 
+<p class="loadingspinner">loading&hellip;</p>
 
 <template id="paper-template">
   <section id="paper">
@@ -56,7 +60,6 @@
     <p class='no-table'>No data has been entered for this paper yet.<!-- todo instruction to clone the paper? --></p>
   </section>
 </template>
-<p class="loadingspinner">loading&hellip;</p>
 <template id="tag-template"><li><span class="tag">error</span><span class="removetag editing">&times;</span></li></template>
 <template id="new-tag-template"><li class="new"><span class="tag" contenteditable></span></li><li class="addtag editing"><span class="tag">+</span></li></template>
 <template id="experiments-table-template">
@@ -147,7 +150,7 @@
         <p><span class="commentcount"></span> comments:</p>
       </header>
       <main><!-- this is where the comments will come --></main>
-      <div class="comment new">
+      <div class="comment new when-signed-on">
         <header>
           new comment:
         </header>
