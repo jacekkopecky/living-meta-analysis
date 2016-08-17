@@ -526,6 +526,10 @@ section.list > ul > li > ul.tags > li {
   box-shadow: 0 0 3px 3px rgba(255,0,0,.5);
 }
 
+#paper > header .title.editing[contenteditable]:empty.validationerror[data-validationmessage]:after {
+  display: none !important; /* override the specific empty-title validation message */
+}
+
 #paper > header button.titlerename {
   margin-right: auto;
   opacity: 0;
@@ -542,14 +546,15 @@ section.list > ul > li > ul.tags > li {
   background: white;
   border: 1px solid black;
   border-radius: 1em;
-  /*display: flex;*/
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 3em 3em;
   z-index: 20;
+  box-shadow: 0 0 .3em .3em rgba(128,0,255,.2);
 
-  display: none;
+  visibility: hidden;
 }
 
 #paper > header .title.editing ~ .titlerenamewarning h1 {
@@ -557,7 +562,15 @@ section.list > ul > li > ul.tags > li {
 }
 
 #paper > header .title.editing.unsaved ~ .titlerenamewarning {
-  display: flex;
+  transition: visibility 0s 1s;
+}
+
+#paper > header .title.editing.unsaved:focus ~ .titlerenamewarning,
+#paper > header .title.editing.unsaved + .titlerename:hover ~ .titlerenamewarning,
+#paper > header .title.editing.unsaved + .titlerename:focus ~ .titlerenamewarning,
+#paper > header .title.editing.unsaved ~ .titlerenamewarning:hover {
+  visibility: visible;
+  transition: visibility 0s;
 }
 
 #paper > header .title.editing.unsaved:not(.validationerror):not(:focus) + button.titlerename:not(:focus):before {
@@ -1044,6 +1057,7 @@ body.page-about-you.editing #paper table.experiments.editing th.add {
   white-space: nowrap;
   padding-left: 1em;
   padding-right: 1em;
+  margin-left: .5em;
   color: #a00;
   background: rgba(255,255,255,.9);
   content: attr(data-validationmessage);

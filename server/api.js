@@ -43,6 +43,8 @@ api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile
 
 function apiPaperURL(email, title) { return `/api/papers/${email}/${title}`; }
 
+api.get('/papers/titles', listPaperTitles);
+
 api.get(`/papers/:email(${EMAIL_ADDRESS_RE})`,
         REGISTER_USER, listPapersForUser);
 api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title(${TITLE_RE})/`,
@@ -173,6 +175,18 @@ module.exports.getKindForTitle = function getKindForTitle(email, title) {
     .catch((err) => reject(err));
   });
 };
+
+function listPaperTitles(req, res, next) {
+  storage.listPaperTitles()
+  .then((titles) => {
+    const retval = [];
+    titles.forEach((t) => {
+      if (typeof t === 'string') retval.push(t);
+    });
+    res.json(retval);
+  })
+  .catch((err) => next(err));
+}
 
 function listPapersForUser(req, res, next) {
   storage.getPapersEnteredBy(req.params.email)

@@ -232,6 +232,7 @@ a column record looks like this: (see /api/columns)
  */
 
 let paperCache;
+const paperTitles = [];
 
 // get all users immediately on the start of the server
 getAllPapers();
@@ -249,6 +250,7 @@ function getAllPapers() {
     })
     .on('data', (entity) => {
       retval.push(entity.data);
+      paperTitles.push(entity.data.title);
     })
     .on('end', () => {
       console.log(`getAllPapers: ${retval.length} done`);
@@ -282,6 +284,7 @@ module.exports.getPaperByTitle = (email, title, time) => {
 };
 
 module.exports.listPapers = () => paperCache;
+module.exports.listPaperTitles = () => paperCache.then(() => paperTitles);
 
 // todo trim incoming textual values?
 
@@ -323,7 +326,7 @@ function fillByAndCtimeInComments(comments, origComments, email) {
   }
 }
 
-function checkForDisallowedChanges(paper, origPaper, papers) {
+function checkForDisallowedChanges(paper, origPaper) {
   // todo really, this should use a diff format and check that all diffs are allowed
   //   this will be a diff from the user's last version to the incoming version,
   //   not from the existing version to the incoming version,
@@ -335,15 +338,15 @@ function checkForDisallowedChanges(paper, origPaper, papers) {
   // for example, we can't really allow removing values because we don't allow removing comments
   // todo comment mtimes
 
+  origPaper = origPaper || {};
+
   // check that title hasn't changed or if it has, that it is unique
   if (paper.title !== origPaper.title) {
     if (!TITLE_REXP.test(paper.title)) {
       throw new ValidationError('paper title cannot contain spaces or special characters');
     }
-    for (let i = 0; i < papers.length; i++) {
-      if (papers[i].title === paper.title) {
-        throw new ValidationError('paper title must be unique');
-      }
+    if (paperTitles.indexOf(paper.title) !== -1) {
+      throw new ValidationError('paper title must be unique');
     }
   }
 
@@ -391,6 +394,8 @@ function checkForDisallowedChanges(paper, origPaper, papers) {
   }
 }
 
+let currentSave = Promise.resolve();
+
 module.exports.savePaper = (paper, email, origTitle) => {
   // todo multiple users' views on one paper
   // compute this user's version of this paper, as it is in the database
@@ -404,7 +409,10 @@ module.exports.savePaper = (paper, email, origTitle) => {
 
   let doAddPaperToCache;
 
-  return paperCache
+  // the following serializes this save after the previous one, whether it fails or succeeds
+  // this way we can't have two concurrent saves create papers with the same title
+
+  currentSave = currentSave.then(() => paperCache, () => paperCache)
   .then((papers) => {
     // prepare the paper for saving
     const ctime = tools.uniqueNow();
@@ -413,7 +421,7 @@ module.exports.savePaper = (paper, email, origTitle) => {
       paper.id = '/id/p/' + ctime;
       paper.enteredBy = email;
       paper.ctime = paper.mtime = ctime;
-      doAddPaperToCache = () => papers.push(paper);
+      doAddPaperToCache = () => { papers.push(paper); paperTitles.push(paper.title); };
     } else {
       let i = 0;
       for (; i < papers.length; i++) {
@@ -431,13 +439,26 @@ module.exports.savePaper = (paper, email, origTitle) => {
         throw new Error('not implemented saving someone else\'s paper');
       }
 
-      checkForDisallowedChanges(paper, origPaper, papers);
-
       paper.enteredBy = origPaper.enteredBy;
       paper.ctime = origPaper.ctime;
       paper.mtime = tools.uniqueNow();
-      doAddPaperToCache = () => { papers[i] = paper; };
+      doAddPaperToCache = () => {
+        // put the paper in the cache where the original paper was
+        papers[i] = paper;
+        // replace in paperTitles the old title of the paper with the new title
+        if (origPaper.title !== paper.title) {
+          let titleIndex = paperTitles.indexOf(origPaper.title);
+          if (titleIndex === -1) {
+            titleIndex = paperTitles.length;
+            console.warn(`for some reason, title ${origPaper.title} was missing in paperTitles`);
+          }
+          paperTitles[titleIndex] = paper.title;
+        }
+      };
     }
+
+    // validate incoming data
+    checkForDisallowedChanges(paper, origPaper);
 
     // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
     fillByAndCtimes(paper, origPaper, email);
@@ -484,6 +505,8 @@ module.exports.savePaper = (paper, email, origTitle) => {
     doAddPaperToCache();
     return paper;
   });
+
+  return currentSave;
 };
 
 

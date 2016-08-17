@@ -16,7 +16,6 @@
   function updatePageURL() {
     // the path of a page for a paper will be '/email/title/*',
     // so update the 'title' portion here from the current paper (in case the user changes the title)
-
     var start = window.location.pathname.indexOf('/', 1) + 1;
     if (start === 0) throw new Error('page url doesn\'t have a title');
 
@@ -57,7 +56,7 @@
     .catch(function (err) {
       console.error("problem getting papers");
       console.error(err);
-      _.apiFail();
+      throw _.apiFail();
     });
   }
 
@@ -119,8 +118,9 @@
     .catch(function (err) {
       console.error("problem getting paper");
       console.error(err);
-      _.apiFail();
-    });
+      throw _.apiFail();
+    })
+    .then(loadPaperTitles); // ignoring any errors here
   }
 
   function Paper() {}
@@ -137,9 +137,6 @@
     currentPaper = paper;
     if (!isSmallChange) fillPaper(paper);
     callPaperDOMSetters(paper);
-
-    // todo for testing
-    lima.currentPaper = paper;
   }
 
   var startNewTag = null;
@@ -185,6 +182,7 @@
       addOnInputUpdater("#paper .published .value", 'textContent', identity, paper, 'published');
       addOnInputUpdater("#paper .description .value", 'textContent', identity, paper, 'description');
 
+      currentPaperOrigTitle = paper.title;
       addConfirmedUpdater('#paper .title.editing', '#paper .title + .titlerename', '#paper .title ~ * .titlerenamecancel', 'textContent', checkPaperTitleUnique, paper, 'title');
 
       // events for removing a tag
@@ -502,13 +500,44 @@
 
   }
 
+  var currentPaperOrigTitle;
+
   function checkPaperTitleUnique(title) {
-    if (title === '') throw 'please fill in a title';
-    if (!title.match(/^[a-zA-Z0-9.-]+$/)) throw 'paper title cannot contain spaces or special characters';
-    // todo
+    if (title === '') throw 'please fill in a short name for the paper';
+    if (!title.match(/^[a-zA-Z0-9.-]+$/)) throw 'paper short name cannot contain spaces or special characters';
+    loadPaperTitles();
+    if (title !== currentPaperOrigTitle && paperTitles.indexOf(title) !== -1) {
+      var message = 'paper ' + title + ' already exists, please try a different short name';
+      var match = title.match(/(^[a-zA-Z0-9]*[0-9]+)([a-zA-Z]?)$/);
+      if (match) {
+        var suggestion = match[1];
+        var postfix = 97; // 'a'
+        while (paperTitles.indexOf(suggestion+String.fromCharCode(postfix)) > -1 && postfix < 123) postfix++;
+        if (postfix < 123) message = 'try ' + suggestion + String.fromCharCode(postfix) + ', ' + title + ' is already used';
+      }
+      throw message;
+    }
     return title;
   }
 
+
+  var paperTitles = [];
+  var paperTitlesNextUpdate = 0;
+
+  // now retrieve the list of all paper titles for checking uniqueness
+  function loadPaperTitles() {
+    var curtime = Date.now();
+    if (paperTitlesNextUpdate < curtime) {
+      paperTitlesNextUpdate = curtime + 5 * 60 * 1000; // update paper titles no less than 5 minutes from now
+      fetch('/api/papers/titles')
+      .then(_.fetchJson)
+      .then(function (titles) { paperTitles = titles; })
+      .catch(function (err) {
+        console.error('problem getting paper titles');
+        console.error(err);
+      });
+    }
+  }
 
 
   /* save
@@ -1034,6 +1063,8 @@
   lima.updatePaperView = updatePaperView;
   lima.assignDeepValue = assignDeepValue;
   lima.getDeepValue = getDeepValue;
+  lima.getPaperTitles = function(){return paperTitles;};
+  lima.getCurrentPaper = function(){return currentPaper;};
 
   window._ = _;
 

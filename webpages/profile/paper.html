@@ -32,10 +32,11 @@
       <h1 class="title editing oneline" contenteditable placeholder="enter short name"></h1>
       <button class="titlerename" disabled>rename</button>
       <div class="titlerenamewarning">
-        <h1>Are you sure to rename the paper?</h1>
+        <h1>Are you sure to rename the paper from <span class="title"></span>?</h1>
         <p>If others are using the paper, a change of the short name might surprise them.
           To undo, press <button class="titlerenamecancel">cancel</button>
         </p>
+        <p>Good short names have authors and year, e.g. Jones04, JonesSmyth04, JonesEtAl04, Jones04a and so on.</p>
       </div>
       <ul class="tags"></ul>
       <span class="savepending">will be saved soon&hellip;</span>
@@ -88,7 +89,7 @@
       </tr>
       <tr class="add">
         <th><button name="add">add a row</button></th>
-        <td class='no-data'>enter data by adding a row and then columns</td>
+        <td class='no-data'>enter data by adding a row and then columns</td>
       </tr>
     </tbody>
   </table>
