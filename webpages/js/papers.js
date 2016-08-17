@@ -13,6 +13,23 @@
     return window.location.pathname.substring(start, window.location.pathname.indexOf('/', start));
   }
 
+  function updatePageURL() {
+    // the path of a page for a paper will be '/email/title/*',
+    // so update the 'title' portion here from the current paper (in case the user changes the title)
+
+    var start = window.location.pathname.indexOf('/', 1) + 1;
+    if (start === 0) throw new Error('page url doesn\'t have a title');
+
+    var rest = window.location.pathname.indexOf('/', start);
+
+    var url = window.location.pathname.substring(0, start) + currentPaper.title;
+    if (rest > -1) url += window.location.pathname.substring(rest);
+
+    window.history.replaceState({}, currentPaper.title, url);
+
+    if (currentPaper.apiurl) currentPaperUrl = currentPaper.apiurl;
+  }
+
 
   /* paper list
    *
@@ -164,9 +181,11 @@
         _.addClass('#paper .enteredby', 'only-not-yours');
       }
 
-      addOnInput("#paper .authors .value", 'textContent', identity, paper, 'authors');
-      addOnInput("#paper .published .value", 'textContent', identity, paper, 'published');
-      addOnInput("#paper .description .value", 'textContent', identity, paper, 'description');
+      addOnInputUpdater("#paper .authors .value", 'textContent', identity, paper, 'authors');
+      addOnInputUpdater("#paper .published .value", 'textContent', identity, paper, 'published');
+      addOnInputUpdater("#paper .description .value", 'textContent', identity, paper, 'description');
+
+      addConfirmedUpdater('#paper .title.editing', '#paper .title + .titlerename', 'textContent', checkPaperTitleUnique, paper, 'title');
 
       // events for removing a tag
       _.findEls('#paper .tags .tag + .removetag').forEach(function (btn) {
@@ -349,7 +368,7 @@
           lima.columnTypes.forEach(function (type) {th.classList.remove(type);});
           th.classList.add(col.type);
 
-          addOnInput(th, '.coldescription', 'textContent', identity, lima.columns[col.id], ['description']);
+          addOnInputUpdater(th, '.coldescription', 'textContent', identity, lima.columns[col.id], ['description']);
 
           setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
         });
@@ -383,7 +402,7 @@
             val = experiment.data[colId];
           }
           _.fillEls(td, '.value', val.value);
-          addOnInput(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value']);
+          addOnInputUpdater(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value']);
 
           _.fillEls (td, '.valenteredby', val.enteredBy);
           _.setProps(td, '.valenteredby', 'href', '/' + val.enteredBy + '/');
@@ -459,7 +478,7 @@
           _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime || Date.now()));
           _.fillEls(el, '.text', comment.text);
 
-          addOnInput(el, '.text', 'textContent', identity, paper, commentsPropPath.concat(index, 'text'));
+          addOnInputUpdater(el, '.text', 'textContent', identity, paper, commentsPropPath.concat(index, 'text'));
         });
         targetEl.appendChild(el);
       })(index);
@@ -482,6 +501,14 @@
     });
 
   }
+
+  function checkPaperTitleUnique(title) {
+    if (title === '') throw 'please fill in a title';
+    if (!title.match(/^[a-zA-Z0-9.-]+$/)) throw 'paper title cannot contain spaces or special characters';
+    // todo
+    return title;
+  }
+
 
 
   /* save
@@ -541,6 +568,7 @@
       })
       .then(_.fetchJson)
       .then(updatePaperView)
+      .then(updatePageURL)
       .catch(function(err) {
         console.error('error saving paper');
         if (err instanceof Response) err.text().then(function (t) {console.error(t)});
@@ -685,7 +713,7 @@
 
   var identity = null; // special value to use as validatorSanitizer
 
-  function addOnInput(root, selector, property, validatorSanitizer, target, targetProp) {
+  function addOnInputUpdater(root, selector, property, validatorSanitizer, target, targetProp) {
     if (!(root instanceof Node)) {
       targetProp = target;
       target = validatorSanitizer;
@@ -720,6 +748,87 @@
         el.oninput = null;
       }
     });
+  }
+
+  function addConfirmedUpdater(root, selector, buttonselector, property, validatorSanitizer, target, targetProp) {
+    if (!(root instanceof Node)) {
+      targetProp = target;
+      target = validatorSanitizer;
+      validatorSanitizer = property;
+      property = buttonselector;
+      buttonselector = selector;
+      selector = root;
+      root = document;
+    }
+
+    var editingEl = _.findEls(root, selector);
+    var buttonEl = _.findEls(root, buttonselector);
+
+    if (editingEl.length > 1 || buttonEl.length > 1) {
+      console.error('multiple title editing elements or confirmation buttons found, user interface may not work');
+      throw _.apiFail();
+    }
+
+    editingEl = editingEl[0];
+    buttonEl = buttonEl[0];
+
+    if (!editingEl || !buttonEl ||
+        !(editingEl.classList.contains('editing') || editingEl.isContentEditable || editingEl.contentEditable === 'true')) {
+      console.error('editing element or confirmation button not found, user interface may not work');
+      throw _.apiFail();
+    }
+
+    editingEl.classList.remove('validationerror');
+    editingEl.classList.remove('unsaved');
+    buttonEl.disabled = true;
+
+    editingEl.oninput = function () {
+      var value = editingEl[property];
+      if (typeof value === 'string' && value.trim() === '') value = '';
+      try {
+        if (validatorSanitizer) value = validatorSanitizer(value, editingEl, property);
+      } catch (err) {
+        editingEl.classList.add('validationerror');
+        buttonEl.disabled = true;
+        editingEl.dataset.validationmessage = err.message || err;
+        _.addClass('#paper', 'validationerror');
+        _.cancelScheduledSave(target);
+        return;
+      }
+      editingEl.classList.remove('validationerror');
+      _.removeClass('#paper', 'validationerror');
+      if (value !== getDeepValue(target, targetProp)) {
+        buttonEl.disabled = false;
+        editingEl.classList.add('unsaved');
+      } else {
+        buttonEl.disabled = true;
+        editingEl.classList.remove('unsaved');
+      }
+    };
+
+    editingEl.onkeydown = function (ev) {
+      if (ev.keyCode === 27) {
+        editingEl[property] = getDeepValue(target, targetProp);
+        editingEl.oninput();
+        ev.target.blur();
+      }
+    }
+
+    buttonEl.onclick = function () {
+      var value = editingEl[property];
+      if (typeof value === 'string' && value.trim() === '') value = '';
+      try {
+        if (validatorSanitizer) value = validatorSanitizer(value, editingEl, property);
+      } catch (err) {
+        // any validation reporting is done above in the handler on editingEl
+        return;
+      }
+      assignDeepValue(target, targetProp, value);
+      buttonEl.disabled = true;
+      editingEl.classList.remove('unsaved');
+      updatePaperView();
+      _.scheduleSave(target);
+    };
   }
 
   function assignDeepValue(target, targetProp, value) {

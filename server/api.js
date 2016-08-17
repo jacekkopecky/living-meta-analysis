@@ -15,7 +15,8 @@ const api = module.exports = express.Router({
   caseSensitive: true,
 });
 
-const EMAIL_ADDRESS_RE = module.exports.EMAIL_ADDRESS_RE = '[a-zA-Z.+-]+@[a-zA-Z.+-]+';
+const EMAIL_ADDRESS_RE = module.exports.EMAIL_ADDRESS_RE = '[a-zA-Z0-9.+-]+@[a-zA-Z0-9.+-]+';
+const TITLE_RE = module.exports.TITLE_RE = storage.TITLE_RE;
 
 /* routes
  *
@@ -40,13 +41,15 @@ api.get('/topmetaanalyses', REGISTER_USER, listTopMetaanalyses);
 
 api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile);
 
+function apiPaperURL(email, title) { return `/api/papers/${email}/${title}`; }
+
 api.get(`/papers/:email(${EMAIL_ADDRESS_RE})`,
         REGISTER_USER, listPapersForUser);
-api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/`,
+api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title(${TITLE_RE})/`,
         REGISTER_USER, getPaperVersion);
-api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/:time([0-9]+)/`,
+api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title(${TITLE_RE})/:time([0-9]+)/`,
         REGISTER_USER, getPaperVersion);
-api.post(`/papers/:email(${EMAIL_ADDRESS_RE})/:title/`,
+api.post(`/papers/:email(${EMAIL_ADDRESS_RE})/:title(${TITLE_RE})/`,
         GUARD, SAME_USER, jsonBodyParser, savePaper);
 // todo above, a user that isn't SAME_USER should be able to submit new comments
 
@@ -178,7 +181,7 @@ function listPapersForUser(req, res, next) {
 
     const retval = [];
     papers.forEach((p) => {
-      retval.push(extractPaperForSending(p));
+      retval.push(extractPaperForSending(p, false, req.params.email));
     });
     res.json(retval);
   })
@@ -188,7 +191,7 @@ function listPapersForUser(req, res, next) {
 function getPaperVersion(req, res, next) {
   storage.getPaperByTitle(req.params.email, req.params.title, req.params.time)
   .then((p) => {
-    res.json(extractPaperForSending(p, true));
+    res.json(extractPaperForSending(p, true, req.params.email));
   })
   .catch((e) => {
     console.error(e);
@@ -198,9 +201,9 @@ function getPaperVersion(req, res, next) {
 
 function savePaper(req, res, next) {
   // extract from incoming data stuff that is allowed
-  storage.savePaper(extractReceivedPaper(req.body), req.user.emails[0].value)
+  storage.savePaper(extractReceivedPaper(req.body), req.user.emails[0].value, req.params.title)
   .then((p) => {
-    res.json(extractPaperForSending(p, true));
+    res.json(extractPaperForSending(p, true, req.params.email));
   })
   .catch((e) => {
     if (e instanceof ValidationError) {
@@ -211,7 +214,7 @@ function savePaper(req, res, next) {
   });
 }
 
-function extractPaperForSending(storagePaper, includeDataValues) {
+function extractPaperForSending(storagePaper, includeDataValues, email) {
   const retval = {
     id: storagePaper.id,
     title: storagePaper.title,
@@ -226,6 +229,8 @@ function extractPaperForSending(storagePaper, includeDataValues) {
     tags: storagePaper.tags,
     // todo comments in various places?
   };
+
+  retval.apiurl = apiPaperURL(email, retval.title);
 
   if (includeDataValues) {
     // todo this may not be how the data ends up being encoded

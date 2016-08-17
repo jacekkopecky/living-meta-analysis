@@ -17,6 +17,8 @@ const gcloud = require('gcloud')({
 
 const datastore = gcloud.datastore({ namespace: 'living-meta-analysis-v2' });
 
+const TITLE_RE = module.exports.TITLE_RE = '[a-zA-Z0-9.-]+';
+const TITLE_REXP = new RegExp(`^${TITLE_RE}$`);
 
 /* users
  *
@@ -321,7 +323,7 @@ function fillByAndCtimeInComments(comments, origComments, email) {
   }
 }
 
-function checkForDisallowedChanges(paper, origPaper) {
+function checkForDisallowedChanges(paper, origPaper, papers) {
   // todo really, this should use a diff format and check that all diffs are allowed
   //   this will be a diff from the user's last version to the incoming version,
   //   not from the existing version to the incoming version,
@@ -332,6 +334,18 @@ function checkForDisallowedChanges(paper, origPaper) {
   //   do the checks we can think of for changes that wouldn't be allowed
   // for example, we can't really allow removing values because we don't allow removing comments
   // todo comment mtimes
+
+  // check that title hasn't changed or if it has, that it is unique
+  if (paper.title !== origPaper.title) {
+    if (!TITLE_REXP.test(paper.title)) {
+      throw new ValidationError('paper title cannot contain spaces or special characters');
+    }
+    for (let i = 0; i < papers.length; i++) {
+      if (papers[i].title === paper.title) {
+        throw new ValidationError('paper title must be unique');
+      }
+    }
+  }
 
   // check that every experiment has at least the data values that were there originally
   // check that only last comment by a given user has changed, if any
@@ -377,7 +391,7 @@ function checkForDisallowedChanges(paper, origPaper) {
   }
 }
 
-module.exports.savePaper = (paper, email) => {
+module.exports.savePaper = (paper, email, origTitle) => {
   // todo multiple users' views on one paper
   // compute this user's version of this paper, as it is in the database
   // compute a diff between what's submitted and the user's version of this paper
@@ -409,14 +423,15 @@ module.exports.savePaper = (paper, email) => {
         }
       }
 
-      if (!origPaper) {
-        throw new ValidationError('failed savePaper: did not find id ' + paper.id);
+      if (!origPaper || origTitle !== origPaper.title) {
+        throw new ValidationError(
+          `failed savePaper: did not find id ${paper.id} with title ${origTitle}`);
       }
       if (email !== origPaper.enteredBy) {
         throw new Error('not implemented saving someone else\'s paper');
       }
 
-      checkForDisallowedChanges(paper, origPaper);
+      checkForDisallowedChanges(paper, origPaper, papers);
 
       paper.enteredBy = origPaper.enteredBy;
       paper.ctime = origPaper.ctime;

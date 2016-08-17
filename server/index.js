@@ -48,8 +48,8 @@ app.get(`/:email(${api.EMAIL_ADDRESS_RE})/`,
         api.checkUserExists,
         (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
 
-app.use(`/:email(${api.EMAIL_ADDRESS_RE})/:title/`, SLASH_URL);
-app.get(`/:email(${api.EMAIL_ADDRESS_RE})/:title/`,
+app.use(`/:email(${api.EMAIL_ADDRESS_RE})/:title(${api.TITLE_RE})/`, SLASH_URL);
+app.get(`/:email(${api.EMAIL_ADDRESS_RE})/:title(${api.TITLE_RE})/`,
         api.checkUserExists,
         (req, res, next) => {
           api.getKindForTitle(req.params.email, req.params.title)

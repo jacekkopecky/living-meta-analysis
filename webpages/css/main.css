@@ -512,15 +512,46 @@ section.list > ul > li > ul.tags > li {
   position: relative;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
 }
 
 #paper > header h1 {
-  display: inline-block;
   line-height: 100%;
   margin: 0;
   padding: 0;
-  flex: 1 0 auto;
+  flex: 0 0 auto;
+}
+
+#paper > header .title.editing.unsaved:not(.validationerror):not(:focus) {
+  box-shadow: 0 0 3px 3px rgba(255,0,0,.5);
+}
+
+#paper > header button.titlerename {
+  margin-right: auto;
+  opacity: 0;
+  transition: opacity .2s .2s;
+  margin-left: 1em;
+  position: relative;
+}
+
+#paper > header .title.editing.unsaved:not(.validationerror):not(:focus) + button.titlerename:not(:focus):before {
+  content: 'click \'rename\' to confirm';
+  display: block;
+  position: absolute;
+  top: -2em;
+  right: 0;
+  left: auto;
+  font-size: .6rem;
+  font-weight: normal;
+  color: #a00;
+}
+
+#paper > header h1.title:hover + button.titlerename,
+#paper > header h1.title:focus + button.titlerename,
+#paper > header h1.title + button.titlerename:enabled,
+#paper > header h1.title + button.titlerename:hover {
+  opacity: 1;
+  transition: opacity 0s;
 }
 
 #paper > header ul.tags {
@@ -554,6 +585,10 @@ section.list > ul > li > ul.tags > li {
 #paper ul.tags > li.new {
   background: white;
   color: black;
+}
+
+#paper ul.tags > li.new [contenteditable] {
+  text-align: left;
 }
 
 #paper ul.tags > li.new [contenteditable]:focus {
@@ -974,13 +1009,17 @@ body.page-about-you.editing #paper table.experiments.editing th.add {
 }
 
 [contenteditable].validationerror[data-validationmessage]:after {
+  font-size: .8rem;
+  font-weight: normal;
   display: block;
   position: absolute;
   left: 100%;
   bottom: 0;
-  font-size: 80%;
   white-space: nowrap;
   padding-left: 1em;
+  padding-right: 1em;
   color: #a00;
+  background: rgba(255,255,255,.9);
   content: attr(data-validationmessage);
+  z-index: 20;
 }
