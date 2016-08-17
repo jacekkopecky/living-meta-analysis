@@ -29,8 +29,14 @@
   <section id="paper">
     <header>
       <h1 class="title notediting"></h1>
-      <h1 class="title editing oneline" contenteditable placeholder="enter paper title"></h1>
+      <h1 class="title editing oneline" contenteditable placeholder="enter short name"></h1>
       <button class="titlerename" disabled>rename</button>
+      <div class="titlerenamewarning">
+        <h1>Are you sure to rename the paper?</h1>
+        <p>If others are using the paper, a change of the short name might surprise them.
+          To undo, press <button class="titlerenamecancel">cancel</button>
+        </p>
+      </div>
       <ul class="tags"></ul>
       <span class="savepending">will be saved soon&hellip;</span>
       <span class="saving">saving&hellip;</span>

@@ -534,6 +534,32 @@ section.list > ul > li > ul.tags > li {
   position: relative;
 }
 
+#paper > header .title.editing ~ .titlerenamewarning {
+  position: absolute;
+  left: 2em;
+  right: 2em;
+  top: 150%;
+  background: white;
+  border: 1px solid black;
+  border-radius: 1em;
+  /*display: flex;*/
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3em 3em;
+  z-index: 20;
+
+  display: none;
+}
+
+#paper > header .title.editing ~ .titlerenamewarning h1 {
+  margin-bottom: 1em;
+}
+
+#paper > header .title.editing.unsaved ~ .titlerenamewarning {
+  display: flex;
+}
+
 #paper > header .title.editing.unsaved:not(.validationerror):not(:focus) + button.titlerename:not(:focus):before {
   content: 'click \'rename\' to confirm';
   display: block;

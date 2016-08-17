@@ -185,7 +185,7 @@
       addOnInputUpdater("#paper .published .value", 'textContent', identity, paper, 'published');
       addOnInputUpdater("#paper .description .value", 'textContent', identity, paper, 'description');
 
-      addConfirmedUpdater('#paper .title.editing', '#paper .title + .titlerename', 'textContent', checkPaperTitleUnique, paper, 'title');
+      addConfirmedUpdater('#paper .title.editing', '#paper .title + .titlerename', '#paper .title ~ * .titlerenamecancel', 'textContent', checkPaperTitleUnique, paper, 'title');
 
       // events for removing a tag
       _.findEls('#paper .tags .tag + .removetag').forEach(function (btn) {
@@ -750,29 +750,31 @@
     });
   }
 
-  function addConfirmedUpdater(root, selector, buttonselector, property, validatorSanitizer, target, targetProp) {
+  function addConfirmedUpdater(root, selector, confirmselector, cancelselector, property, validatorSanitizer, target, targetProp) {
     if (!(root instanceof Node)) {
       targetProp = target;
       target = validatorSanitizer;
       validatorSanitizer = property;
-      property = buttonselector;
-      buttonselector = selector;
+      property = cancelselector;
+      cancelselector = confirmselector;
+      confirmselector = selector;
       selector = root;
       root = document;
     }
 
     var editingEl = _.findEls(root, selector);
-    var buttonEl = _.findEls(root, buttonselector);
+    var confirmEl = _.findEls(root, confirmselector);
+    var cancelEls = _.findEls(root, cancelselector);
 
-    if (editingEl.length > 1 || buttonEl.length > 1) {
+    if (editingEl.length > 1 || confirmEl.length > 1) {
       console.error('multiple title editing elements or confirmation buttons found, user interface may not work');
       throw _.apiFail();
     }
 
     editingEl = editingEl[0];
-    buttonEl = buttonEl[0];
+    confirmEl = confirmEl[0];
 
-    if (!editingEl || !buttonEl ||
+    if (!editingEl || !confirmEl ||
         !(editingEl.classList.contains('editing') || editingEl.isContentEditable || editingEl.contentEditable === 'true')) {
       console.error('editing element or confirmation button not found, user interface may not work');
       throw _.apiFail();
@@ -780,7 +782,7 @@
 
     editingEl.classList.remove('validationerror');
     editingEl.classList.remove('unsaved');
-    buttonEl.disabled = true;
+    confirmEl.disabled = true;
 
     editingEl.oninput = function () {
       var value = editingEl[property];
@@ -789,7 +791,7 @@
         if (validatorSanitizer) value = validatorSanitizer(value, editingEl, property);
       } catch (err) {
         editingEl.classList.add('validationerror');
-        buttonEl.disabled = true;
+        confirmEl.disabled = true;
         editingEl.dataset.validationmessage = err.message || err;
         _.addClass('#paper', 'validationerror');
         _.cancelScheduledSave(target);
@@ -798,23 +800,32 @@
       editingEl.classList.remove('validationerror');
       _.removeClass('#paper', 'validationerror');
       if (value !== getDeepValue(target, targetProp)) {
-        buttonEl.disabled = false;
+        confirmEl.disabled = false;
         editingEl.classList.add('unsaved');
       } else {
-        buttonEl.disabled = true;
+        confirmEl.disabled = true;
         editingEl.classList.remove('unsaved');
       }
     };
 
+    function cancel() {
+      editingEl[property] = getDeepValue(target, targetProp);
+      editingEl.oninput();
+    }
+
     editingEl.onkeydown = function (ev) {
       if (ev.keyCode === 27) {
-        editingEl[property] = getDeepValue(target, targetProp);
-        editingEl.oninput();
+        cancel();
         ev.target.blur();
+      }
+      else if (ev.keyCode == 13 && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+        ev.preventDefault();
+        ev.target.blur();
+        confirmEl.onclick();
       }
     }
 
-    buttonEl.onclick = function () {
+    confirmEl.onclick = function () {
       var value = editingEl[property];
       if (typeof value === 'string' && value.trim() === '') value = '';
       try {
@@ -824,11 +835,15 @@
         return;
       }
       assignDeepValue(target, targetProp, value);
-      buttonEl.disabled = true;
+      confirmEl.disabled = true;
       editingEl.classList.remove('unsaved');
       updatePaperView();
       _.scheduleSave(target);
     };
+
+    cancelEls.forEach(function (cancelEl) {
+      cancelEl.onclick = cancel;
+    })
   }
 
   function assignDeepValue(target, targetProp, value) {
