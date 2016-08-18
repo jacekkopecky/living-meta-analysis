@@ -353,9 +353,20 @@ function checkForDisallowedChanges(paper, origPaper) {
   // check that every experiment has at least the data values that were there originally
   // check that only last comment by a given user has changed, if any
   if (paper.experiments) {
+    const expTitles = {};
+
     for (let expIndex = 0; expIndex < paper.experiments.length; expIndex++) {
       const exp = paper.experiments[expIndex];
       const origExp = (origPaper.experiments || [])[expIndex] || {};
+
+      // check experiment titles are there and unique for this paper
+      if (!TITLE_REXP.test(exp.title)) {
+        throw new ValidationError('experiment title cannot contain spaces or special characters');
+      }
+      if (exp.title in expTitles) {
+        throw new ValidationError('experiment titles must be unique');
+      }
+      expTitles[exp.title] = true;
 
       if (origExp.data) {
         if (!exp.data) throw new ValidationError('cannot remove experiment data array');

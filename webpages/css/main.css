@@ -522,15 +522,18 @@ section.list > ul > li > ul.tags > li {
   flex: 0 0 auto;
 }
 
-#paper > header .title.editing.unsaved:not(.validationerror):not(:focus) {
+#paper > header .title.editing.unsaved:not(.validationerror):not(:focus),
+#paper .exptitle.editing.unsaved:not(.validationerror):not(:focus) {
   box-shadow: 0 0 3px 3px rgba(255,0,0,.5);
 }
 
-#paper > header .title.editing[contenteditable]:empty.validationerror[data-validationmessage]:after {
+#paper > header .title.editing[contenteditable]:empty.validationerror[data-validationmessage]:after,
+#paper .exptitle.editing[contenteditable]:empty.validationerror[data-validationmessage]:after {
   display: none !important; /* override the specific empty-title validation message */
 }
 
-#paper > header button.titlerename {
+#paper > header button.titlerename,
+#paper button.exptitlerename {
   margin-right: auto;
   opacity: 0;
   transition: opacity .2s .2s;
@@ -573,7 +576,8 @@ section.list > ul > li > ul.tags > li {
   transition: visibility 0s;
 }
 
-#paper > header .title.editing.unsaved:not(.validationerror):not(:focus) + button.titlerename:not(:focus):before {
+#paper > header .title.editing.unsaved:not(.validationerror):not(:focus) + button.titlerename:not(:focus):before,
+#paper .exptitle.editing.unsaved:not(.validationerror):not(:focus) + button.exptitlerename:not(:focus):before {
   content: 'click \'rename\' to confirm';
   display: block;
   position: absolute;
@@ -583,12 +587,25 @@ section.list > ul > li > ul.tags > li {
   font-size: .6rem;
   font-weight: normal;
   color: #a00;
+  background: white;
+}
+
+#paper .exptitle.editing.unsaved:not(.validationerror):not(:focus) + button.exptitlerename:not(:focus):before {
+  right: auto;
+  left: 100%;
+  top: auto;
+  bottom: 0;
+  margin-left: 1em;
 }
 
 #paper > header h1.title:hover + button.titlerename,
 #paper > header h1.title:focus + button.titlerename,
 #paper > header h1.title + button.titlerename:enabled,
-#paper > header h1.title + button.titlerename:hover {
+#paper > header h1.title + button.titlerename:hover,
+#paper .exptitle.editing:hover + button.exptitlerename,
+#paper .exptitle.editing:focus + button.exptitlerename,
+#paper .exptitle.editing + button.exptitlerename:enabled,
+#paper .exptitle.editing + button.exptitlerename:hover {
   opacity: 1;
   transition: opacity 0s;
 }

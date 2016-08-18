@@ -334,7 +334,7 @@
         newPaperShowColumns = null;
       });
 
-    // fill the row of headings
+    // fill column headings
     var headingsRowNode = _.findEl(table, 'tr:first-child');
     var addColumnNode = _.findEl(table, 'tr:first-child > th.add');
     showColumns.forEach(function (ignored, colIndex) {
@@ -385,7 +385,10 @@
 
         addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
 
-        setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', paper.experiments[expIndex].title);
+        _.findEl(tr, '.exptitle.editing').dataset.origTitle = paper.experiments[expIndex].title;
+        addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitleUnique, paper, ['experiments', expIndex, 'title']);
+
+        setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', expIndex);
       })
 
       showColumns.forEach(function (col, colIndex) {
@@ -518,6 +521,16 @@
         if (postfix < 123) message = 'try ' + suggestion + String.fromCharCode(postfix) + ', ' + title + ' is already used';
       }
       throw message;
+    }
+    return title;
+  }
+
+  function checkExperimentTitleUnique(title, editingEl) {
+    if (title === '') throw 'please fill in a short name for the experiment';
+    if (!title.match(/^[a-zA-Z0-9.-]+$/)) throw 'only characters and digits';
+    var titles = currentPaper.experiments.map(function (exp) { return exp.title; });
+    if (title !== editingEl.dataset.origTitle && titles.indexOf(title) !== -1) {
+      throw 'must be unique';
     }
     return title;
   }

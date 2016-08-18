@@ -23,6 +23,7 @@
       selector = root;
       root = document;
     }
+    if (!selector) return undefined;
     return root.querySelector(selector);
   }
 
@@ -34,6 +35,7 @@
       selector = root;
       root = document;
     }
+    if (!selector) return [];
     return _.array(root.querySelectorAll(selector));
   }
 
