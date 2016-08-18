@@ -383,6 +383,8 @@
         _.fillEls(tr, '.exptitle', paper.experiments[expIndex].title);
         _.fillEls(tr, '.expdescription', paper.experiments[expIndex].description);
 
+        addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
+
         setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', paper.experiments[expIndex].title);
       })
 
