@@ -364,6 +364,8 @@
 
           addOnInputUpdater(th, '.coldescription', 'textContent', identity, lima.columns[col.id], ['description']);
 
+          addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, lima.columns[col.id], 'title');
+
           setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
         });
     });
@@ -503,7 +505,7 @@
   var currentPaperOrigTitle;
 
   function checkPaperTitleUnique(title) {
-    if (title === '') throw 'please fill in a short name for the paper';
+    if (title === '') throw null; // no message necessary
     if (!title.match(/^[a-zA-Z0-9.-]+$/)) throw 'paper short name cannot contain spaces or special characters';
     loadPaperTitles();
     if (title !== currentPaperOrigTitle && paperTitles.indexOf(title) !== -1) {
@@ -521,12 +523,17 @@
   }
 
   function checkExperimentTitleUnique(title, editingEl) {
-    if (title === '') throw 'please fill in a short name for the experiment';
+    if (title === '') throw null; // no message necessary
     if (!title.match(/^[a-zA-Z0-9.-]+$/)) throw 'only characters and digits';
     var titles = currentPaper.experiments.map(function (exp) { return exp.title; });
     if (title !== editingEl.dataset.origTitle && titles.indexOf(title) !== -1) {
       throw 'must be unique';
     }
+    return title;
+  }
+
+  function checkColTitle(title) {
+    if (title === '') throw null; // no message necessary
     return title;
   }
 
@@ -831,7 +838,7 @@
       } catch (err) {
         editingEl.classList.add('validationerror');
         confirmEl.disabled = true;
-        editingEl.dataset.validationmessage = err.message || err;
+        editingEl.dataset.validationmessage = err && err.message || err || '';
         _.addClass('#paper', 'validationerror');
         _.cancelScheduledSave(target);
         return;

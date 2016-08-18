@@ -108,10 +108,17 @@
       <button class="move right most editing" title="move column to the right">»|</button>
       <header>
         <p class="coltitle notediting-or-not-yours needs-owner">error</p>
-        <p class="coltitle editing-and-yours needs-owner oneline" contenteditable placeholder="column title">error</p>
+        <p class="coltitle editing only-if-yours needs-owner oneline" contenteditable placeholder="column title">error</p>
+        <button class="coltitlerename editing only-if-yours needs-owner" disabled>rename</button>
+        <div class="colrenamewarning">
+          <h1>Are you sure to rename the column from "<span class="coltitle"></span>"?</h1>
+          <p>If others are using the column, a change of the name might surprise them.
+            To undo, press <button class="colrenamecancel">cancel</button>
+          </p>
+        </div>
       </header>
       <p class="coldescription notediting-or-not-yours needs-owner">error</p>
-      <p class="coldescription editing-and-yours needs-owner" contenteditable placeholder="add column description">error</p>
+      <p class="coldescription editing only-if-yours needs-owner" contenteditable placeholder="add column description">error</p>
       <!-- on hiding this column, store in localStorage that this column is being hidden,
       also add to the end of every row a symbol that there are hidden values,
       on hover, the symbol will list them and allow you to add some right back -->
