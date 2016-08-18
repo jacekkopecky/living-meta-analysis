@@ -174,9 +174,7 @@
       _.fillEls ('#paper .ctime .value', _.formatDateTime(paper.ctime));
       _.fillEls ('#paper .mtime .value', _.formatDateTime(paper.mtime));
 
-      if (lima.extractUserProfileEmailFromUrl() === paper.enteredBy) {
-        _.addClass('#paper .enteredby', 'only-not-yours');
-      }
+      _.setDataProps('#paper .enteredby.needs-owner', 'owner', paper.enteredBy);
 
       addOnInputUpdater("#paper .authors .value", 'textContent', identity, paper, 'authors');
       addOnInputUpdater("#paper .published .value", 'textContent', identity, paper, 'published');
@@ -283,7 +281,8 @@
     fillPaperExperimentTable(paper);
 
     _.removeClass('body', 'loading');
-    _.setYouOrName();
+
+    addPaperDOMSetter(_.setYouOrName);
 
     // now that the paper is all there, install general event listeners
     installBlurOnEnter('[contenteditable].oneline');
@@ -354,12 +353,9 @@
           _.fillEls(th, '.colmtime .value', _.formatDateTime(col.mtime));
           _.fillEls(th, '.definedby .value', col.definedBy);
           _.setProps(th, '.definedby .value', 'href', '/' + col.definedBy + '/');
-          _.removeClass(th, '.definedby', 'only-not-yours');
-          if (lima.extractUserProfileEmailFromUrl() === col.definedBy) {
-            _.addClass(th, '.definedby', 'only-not-yours');
-          } else {
-            _.removeClass(th, '.definedby', 'only-not-yours');
-          }
+
+          _.setDataProps(th, '.needs-owner', 'owner', col.definedBy);
+
           _.findEls(th, 'button.move').forEach(function (el) {
             el.dataset.id = col.id;
           });
@@ -458,7 +454,6 @@
   }
 
   function fillComments(templateId, root, selector, comments, commentsPropPath) {
-    var user = lima.getAuthenticatedUserEmail();
     var targetEl = _.findEl(root, selector);
     targetEl.innerHTML = '';
     for (var index = 0; index < comments.length; index++) {
@@ -466,14 +461,14 @@
         // inline function to save `index` and `el`
         var el = _.cloneTemplate(templateId).children[0];
         addPaperDOMSetter(function (paper) {
+          var user = lima.getAuthenticatedUserEmail();
           var comments = getDeepValue(paper, commentsPropPath);
           var comment = comments[index];
-          if (index === comments.length - 1 && user === comment.by) {
-            _.addClass(el, '.editing-if-yours', 'yours');
-            _.addClass(el, '.notediting-if-yours', 'yours');
+          if (index === comments.length - 1) {
+            _.setDataProps(el, '.needs-owner', 'owner', comment.by);
           } else {
-            _.removeClass(el, '.editing-if-yours', 'yours');
-            _.removeClass(el, '.notediting-if-yours', 'yours');
+            // this will disable editing of any comment but the last
+            _.setDataProps(el, '.needs-owner', 'owner', '');
           }
           _.fillEls(el, '.commentnumber', index+1);
           _.fillEls(el, '.by', comment.by || user);

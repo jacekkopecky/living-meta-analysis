@@ -12,27 +12,26 @@ body {
   min-width: 40em;
 }
 
-body.signed-on .when-signed-out {
-  display: none !important;
-}
-
-body:not(.signed-on) .when-signed-on {
-  display: none !important;
-}
-
-body:not(.page-about-you) .only-if-yours {
-  display: none !important;
-}
-
-body.page-about-you .only-not-yours {
-  display: none !important;
-}
-
+/* show/hide things depending on
+ * - whether anyone is logged in
+ * - who the page is about
+ * - whether editing is enabled
+ * - who is logged in and who the thing belongs to
+ */
+body.signed-on .when-signed-out,
+body:not(.signed-on) .when-signed-on,
+body:not(.page-about-you) .only-if-page-about-you,
+body.page-about-you .only-if-page-not-about-you,
 body:not(.editing) .editing,
 body:not(.page-about-you) .editing,
-body:not(.page-about-you) .editing-if-yours,
-body.page-about-you .notediting-if-yours,
-body.editing.page-about-you .notediting {
+body.editing.page-about-you .notediting,
+.only-if-yours:not(.yours),
+.only-not-yours.yours,
+body:not(.editing) .editing-and-yours,
+body:not(.page-about-you) .editing-and-yours,
+.editing-and-yours:not(.yours),
+body.editing.page-about-you .notediting-or-not-yours.yours,
+_ {
   display: none !important;
 }
 

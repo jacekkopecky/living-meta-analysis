@@ -82,6 +82,16 @@
     _.findEls(root, selector).forEach(function (el) { el[attr] = valOrFun(value, el); });
   }
 
+  _.setDataProps = function setDataProps(root, selector, name, value) {
+    if (!(root instanceof Node)) {
+      value = name;
+      name = selector;
+      selector = root;
+      root = document;
+    }
+    _.findEls(root, selector).forEach(function (el) { el.dataset[name] = valOrFun(value, el); });
+  }
+
   _.addClass = function addClass(root, selector, value) {
     if (!(root instanceof Node)) {
       value = selector;
@@ -283,17 +293,17 @@
   _.setYouOrName = function setYouOrName() {
     lima.onSignInChange(setYouOrName);
 
-    var currentUser = lima.getAuthenticatedUserEmail();
-
     if (!lima.userPageIsAbout) {
       if (lima.whenUserPageIsAboutIsKnown) {
         lima.whenUserPageIsAboutIsKnown(setYouOrName);
         return;
       } else {
-        console.error('setNameOfYou can\'t be called on a page that\'s not about a user');
+        console.error('setYouOrName can\'t be called on a page that\'s not about a user');
         return;
       }
     }
+
+    var currentUser = lima.getAuthenticatedUserEmail();
 
     var y = (currentUser == lima.userPageIsAbout.email);
     var n = lima.userPageIsAbout.name.givenName || 'User';
@@ -304,6 +314,11 @@
 
     _.fillEls('.fnOrYour', y ? 'Your' : n + "'s");
     _.fillEls('.fnOryou',  y ? 'you'  : n       );
+
+    _.findEls('.needs-owner').forEach(function (el) {
+      if (el.dataset.owner === currentUser) el.classList.add('yours');
+      else                                  el.classList.remove('yours');
+    });
   }
 
 

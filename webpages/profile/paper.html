@@ -17,7 +17,7 @@
       <div class="name when-signed-on">Signed in as: <span class="username"></span></div>
       <div class="g-signin2 signin when-signed-out"></div>
       <a href="/profile" class="profile when-signed-on">Profile</a>
-      <a id="toggle-editing" class="only-if-yours">Toggle editing</a>
+      <a id="toggle-editing" class="only-if-page-about-you">Toggle editing</a>
       <a class="signout when-signed-on">Sign out</a>
     </div>
   </div>
@@ -30,7 +30,7 @@
     <header>
       <h1 class="title notediting"></h1>
       <h1 class="title editing oneline" contenteditable placeholder="enter short name"></h1>
-      <button class="titlerename" disabled>rename</button>
+      <button class="titlerename editing" disabled>rename</button>
       <div class="titlerenamewarning">
         <h1>Are you sure to rename the paper from <span class="title"></span>?</h1>
         <p>If others are using the paper, a change of the short name might surprise them.
@@ -44,7 +44,7 @@
       <span class="savingerror" title="Sorry, something unexpected happened. Error details might be available in the browser console. Click here to try saving again.">saving error!</span>
       <span class="validationerrormessage">please correct fields highlighted below</span>
     </header>
-    <p>Entered <span class="enteredby"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
+    <p>Entered <span class="enteredby only-not-yours needs-owner"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
     <p class="authors">Authors:
       <span class="value notediting">error</span>
       <span class="value editing oneline" contenteditable placeholder="enter the authors">error</span>
@@ -107,17 +107,17 @@
       <button class="move right editing" title="move column to the right">»</button>
       <button class="move right most editing" title="move column to the right">»|</button>
       <header>
-        <p class="coltitle notediting-if-yours">error</p>
-        <p class="coltitle editing-if-yours oneline" contenteditable placeholder="column title">error</p>
+        <p class="coltitle notediting-or-not-yours needs-owner">error</p>
+        <p class="coltitle editing-and-yours needs-owner oneline" contenteditable placeholder="column title">error</p>
       </header>
-      <p class="coldescription notediting-if-yours">error</p>
-      <p class="coldescription editing-if-yours" contenteditable placeholder="add column description">error</p>
+      <p class="coldescription notediting-or-not-yours needs-owner">error</p>
+      <p class="coldescription editing-and-yours needs-owner" contenteditable placeholder="add column description">error</p>
       <!-- on hiding this column, store in localStorage that this column is being hidden,
       also add to the end of every row a symbol that there are hidden values,
       on hover, the symbol will list them and allow you to add some right back -->
       <!-- todo comments -->
       <!-- todo add a way of cloning a column -->
-      <footer class="coltype"><span class="type-characteristic">characteristic&nbsp;or&nbsp;moderator&nbsp;column</span><span class="type-result">result column</span><span class="definedby"> defined by <a class="value" href="error">error</a>,</span> last updated <span class="colmtime"> on <span class="value date">error</span></span></footer>
+      <footer class="coltype"><span class="type-characteristic">characteristic&nbsp;or&nbsp;moderator&nbsp;column</span><span class="type-result">result column</span><span class="definedby only-not-yours needs-owner"> defined by <a class="value" href="error">error</a>,</span> last updated <span class="colmtime"> on <span class="value date">error</span></span></footer>
     </div>
   </th>
 </template>
@@ -133,12 +133,12 @@
             <span class="title">error</span
               >-<span class="exptitle notediting"></span
               ><span class="exptitle editing oneline" contenteditable placeholder="short name"></span
-              ><button class="exptitlerename" disabled>rename</button>
+              ><button class="exptitlerename editing" disabled>rename</button>
           </p>
         </header>
         <!-- todo click on .exdescription.short should focus the contenteditable exptitle -->
-        <div class="expdescription editing" contenteditable placeholder="enter description"></div>
         <div class="expdescription notediting"></div>
+        <div class="expdescription editing" contenteditable placeholder="enter description"></div>
       </div>
       <div class="expdescription short"></div>
       <!-- todo comments -->
@@ -177,8 +177,8 @@
     <header>
       #<span class="commentnumber"></span>: <a class="by" href="error">error</a> wrote on <span class="ctime date"></span>:
     </header>
-    <p><span class="text editing-if-yours" contenteditable placeholder="enter your comment"></span></p>
-    <p><span class="text notediting-if-yours"></span></p>
+    <p><span class="text only-if-yours needs-owner" contenteditable placeholder="enter your comment"></span></p>
+    <p><span class="text only-not-yours needs-owner"></span></p>
   </div>
 </template>
 
