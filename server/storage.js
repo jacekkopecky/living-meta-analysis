@@ -10,7 +10,7 @@
 const tools = require('./tools');
 const ValidationError = require('./errors/ValidationError');
 
-const gcloud = require('gcloud')({
+const gcloud = require('google-cloud')({
   projectId: 'jacek-soc-port-ac-uk',
   keyFilename: 'jacek-soc-port-ac-uk-google-key.json',
 });
