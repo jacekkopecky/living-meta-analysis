@@ -489,7 +489,7 @@ section.list > ul > li > ul.tags > li {
   min-width: 40em;
 }
 
-/* make space for all the boxes on the right-hand side of the page */
+/* make space for the boxes on the right-hand side of the page */
 #paper > :not(header) {
   margin: .3em 16em 0 0;
 }
@@ -783,27 +783,27 @@ body.page-about-you.editing .fullcolinfo header {
 
 #paper.savingerror > header .savingerror { display: block; cursor: pointer; }
 
-#paper > p > a.value {
+#paper > * > a.value {
   padding-right: .5em;
 }
 
-#paper > p > a.value + .edit {
+#paper > * > a.value + .edit {
   display: none;
 }
 
-#paper > p > a.value + span.edit {
+#paper > * > a.value + span.edit {
   padding: 0 1em 0 .5em;
   font-style: italic;
   color: #444;
   cursor: pointer;
 }
 
-#paper > p > a.value + button.edit {
+#paper > * > a.value + button.edit {
   vertical-align: middle;
 }
 
-#paper > p > a.value:hover + .edit,
-#paper > p > a.value + .edit:hover {
+#paper > * > a.value:hover + .edit,
+#paper > * > a.value + .edit:hover {
   display: inline-block;
 }
 

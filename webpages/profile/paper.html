@@ -45,14 +45,21 @@
       <span class="validationerrormessage">please correct fields highlighted below</span>
     </header>
     <p>Entered <span class="enteredby only-not-yours needs-owner"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
-    <p class="authors">Authors:
+    <!-- <p class="authors">Authors:
       <span class="value notediting">error</span>
       <span class="value editing oneline" contenteditable placeholder="enter the authors">error</span>
-    </p>
-    <p class="published">Published:
+    </p> -->
+    <div class="published popupboxtrigger">
+      <span class="popupboxhighlight">Reference:</span>
       <span class="value notediting">error</span>
-      <span class="value editing oneline" contenteditable placeholder="when and where it was published">error</span>
-    </p>
+      <span class="value editing oneline" contenteditable placeholder="authors, year, title, journal etc.">error</span>
+      <div class="popupbox" data-boxid='reference'>
+        <div class="pin"></div>
+        <header><p>Reference (bibliographic information)</p></header>
+        <p class="description">Include authors, year, title, and all the usual bibliographic information.</p>
+        <!-- todo comments -->
+      </div>
+    </div>
     <p class="description">Description:
       <span class="value notediting">error</span>
       <span class="value editing" contenteditable placeholder="add description">error</span>
