@@ -532,7 +532,9 @@ section.list > ul > li > ul.tags > li {
 }
 
 #paper > header .title.editing.unsaved:not(.validationerror):not(:focus),
-#paper .exptitle.editing.unsaved:not(.validationerror):not(:focus) {
+#paper .exptitle.editing.unsaved:not(.validationerror):not(:focus),
+#paper .coltitle.editing.unsaved:not(.validationerror):not(:focus),
+#paper .linkedit .value.editing.unsaved:not(.validationerror):not(:focus) {
   box-shadow: 0 0 3px 3px rgba(255,0,0,.5);
 }
 
@@ -642,6 +644,23 @@ body.page-about-you.editing .fullcolinfo header {
   top: -2em;
   right: 0;
   left: auto;
+  font-size: .6rem;
+  font-weight: normal;
+  color: #a00;
+  background: white;
+}
+
+#paper .linkedit button.confirm {
+  position: relative;
+}
+
+#paper .linkedit span.editing.unsaved:not(.validationerror):not(:focus) ~ button.confirm:not(:focus):before {
+  content: 'click \'confirm\' to save';
+  display: block;
+  position: absolute;
+  top: -1.2em;
+  left: 0;
+  right: auto;
   font-size: .6rem;
   font-weight: normal;
   color: #a00;
@@ -796,27 +815,15 @@ body.page-about-you.editing .fullcolinfo header {
 
 #paper.savingerror > header .savingerror { display: block; cursor: pointer; }
 
-#paper > * > a.value {
-  padding-right: .5em;
-}
-
-#paper > * > a.value + .edit {
+#paper .linkedit > a.value ~ button.editing {
   display: none;
-}
-
-#paper > * > a.value + span.edit {
-  padding: 0 1em 0 .5em;
-  font-style: italic;
-  color: #444;
-  cursor: pointer;
-}
-
-#paper > * > a.value + button.edit {
   vertical-align: middle;
+  margin-left: .3em;
 }
 
-#paper > * > a.value:hover + .edit,
-#paper > * > a.value + .edit:hover {
+#paper .linkedit > a.value ~ button.test,
+#paper .linkedit > a.value ~ span.editing.unsaved ~ button.editing,
+#paper .linkedit > a.value ~ span.editing:focus ~ button.test {
   display: inline-block;
 }
 

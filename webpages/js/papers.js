@@ -157,6 +157,9 @@
     var paperEl = _.cloneTemplate(paperTemplate);
     paperTemplate.parentElement.insertBefore(paperEl, paperTemplate);
 
+    _.addEventListener('#paper .linkedit button.test', 'click', linkEditTest);
+    _.addEventListener('#paper .linkedit button.test', 'mousedown', preventLinkEditBlur);
+
     addPaperChangeVerifier(function (newPaper) { return paper.id === newPaper.id; });
     addPaperDOMSetter(function(paper) {
       _.fillEls('#paper .title', paper.title);
@@ -167,15 +170,18 @@
       _.fillEls ('#paper .reference .value', paper.reference);
       _.fillEls ('#paper .description .value', paper.description);
       _.fillEls ('#paper .link .value', paper.link);
-      _.setProps('#paper .link .value', 'href', paper.link);
+      _.setProps('#paper .link a.value', 'href', paper.link);
       _.fillEls ('#paper .doi .value', paper.doi);
-      _.setProps('#paper .doi .value', 'href', function(el){return el.dataset.base + paper.doi});
+      _.setProps('#paper .doi a.value', 'href', function(el){return el.dataset.base + paper.doi});
       _.fillEls ('#paper .enteredby .value', paper.enteredBy);
       _.setProps('#paper .enteredby .value', 'href', '/' + paper.enteredBy + '/');
       _.fillEls ('#paper .ctime .value', _.formatDateTime(paper.ctime));
       _.fillEls ('#paper .mtime .value', _.formatDateTime(paper.mtime));
 
       _.setDataProps('#paper .enteredby.needs-owner', 'owner', paper.enteredBy);
+
+      addConfirmedUpdater('#paper .link span.editing', '#paper .link button.confirm', '#paper .link button.cancel', 'textContent', identity, paper, 'link');
+      addConfirmedUpdater('#paper .doi span.editing', '#paper .doi button.confirm', '#paper .doi button.cancel', 'textContent', identity, paper, 'doi');
 
       addOnInputUpdater("#paper .authors .value", 'textContent', identity, paper, 'authors');
       addOnInputUpdater("#paper .reference .value", 'textContent', identity, paper, 'reference');
@@ -536,6 +542,48 @@
   function checkColTitle(title) {
     if (title === '') throw null; // no message necessary
     return title;
+  }
+
+  function linkEditTest(ev) {
+    var btn = ev.target;
+    if (!btn) return;
+
+    var linkEl = null;
+    var editEl = null;
+    _.array(btn.parentElement.children).forEach(function (el) {
+      if (el.classList.contains('value')) {
+        if (el.nodeName === 'A') linkEl = el;
+        else if (el.isContentEditable || el.contentEditable === 'true') editEl = el;
+      }
+    })
+
+    if (!linkEl || !editEl) {
+      console.error('linkEditTest cannot find linkEl or editEl');
+      return;
+    }
+
+    var link = editEl.textContent;
+    if (linkEl.dataset.base) link = linkEl.dataset.base + link;
+
+    window.open(link, "linkedittest");
+  }
+
+  function preventLinkEditBlur(ev) {
+    var btn = ev.target;
+    if (!btn) return;
+
+    var editEl = null;
+    _.array(btn.parentElement.children).forEach(function (el) {
+      if (el.classList.contains('value') && (el.isContentEditable || el.contentEditable === 'true')) editEl = el;
+    })
+
+    if (!editEl) {
+      console.error('preventLinkEditBlur cannot find editEl');
+      return;
+    }
+
+    // clicking the 'test' button should not cause blur on the editing field
+    if (document.activeElement === editEl) ev.preventDefault();
   }
 
 

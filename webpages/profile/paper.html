@@ -65,8 +65,20 @@
       <span class="value editing" contenteditable placeholder="add description">error</span>
     </p>
     <!-- todo link and doi editing -->
-    <p class="link">Link: <a class="value" href="error">error</a><button class="edit editing">edit</button></p>
-    <p class="doi">DOI: <a class="value" href="error" data-base="https://dx.doi.org/">error</a><button class="edit editing">edit</button></p>
+    <p class="link linkedit">
+      Link: <a class="value notediting" href="error">error</a>
+      <span class="value editing" contenteditable placeholder="url">error</span>
+      <button class="test editing" title="opens the link in a new window">test</button>
+      <button class="confirm editing">confirm</button>
+      <button class="cancel editing">cancel</button>
+    </p>
+    <p class="doi linkedit">
+      DOI: <a class="value notediting" href="error" data-base="https://dx.doi.org/">error</a>
+      <span class="value editing" contenteditable placeholder="doi">error</span>
+      <button class="test editing" title="opens the link in a new window">test</button>
+      <button class="confirm editing">confirm</button>
+      <button class="cancel editing">cancel</button>
+    </p>
     <p class="mtime">Last modified: <span class="value date">error</span></p>
     <!-- todo show "other contributors" or "forks" or "clones" ... -->
     <!-- todo show meta-analyses that use this paper -->
