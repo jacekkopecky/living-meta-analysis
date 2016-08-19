@@ -157,9 +157,6 @@
     var paperEl = _.cloneTemplate(paperTemplate);
     paperTemplate.parentElement.insertBefore(paperEl, paperTemplate);
 
-    _.addEventListener('#paper .linkedit button.test', 'click', linkEditTest);
-    _.addEventListener('#paper .linkedit button.test', 'mousedown', preventLinkEditBlur);
-
     addPaperChangeVerifier(function (newPaper) { return paper.id === newPaper.id; });
     addPaperDOMSetter(function(paper) {
       _.fillEls('#paper .title', paper.title);
@@ -291,14 +288,13 @@
 
     addPaperDOMSetter(_.setYouOrName);
 
-    // now that the paper is all there, install general event listeners
-    installBlurOnEnter('[contenteditable].oneline');
-    function installBlurOnEnter(root, selector) {
-      _.findEls(root, selector).forEach(function (el) {
-        el.addEventListener('keydown', blurOnEnter);
-      });
-    }
+    // now that the paper is all there, install various general and specific event listeners
+    _.addEventListener('[contenteditable].oneline', 'keydown', blurOnEnter);
 
+    _.addEventListener('#paper .linkedit button.test', 'click', linkEditTest);
+    _.addEventListener('#paper .linkedit button.test', 'mousedown', preventLinkEditBlur);
+
+    _.addEventListener('#paper [data-focuses]', 'click', focusAnotherElementOnClick);
 
     _.addEventListener('#paper .savingerror', 'click', _.manualSave);
 
@@ -509,6 +505,24 @@
 
   }
 
+  var paperTitles = [];
+  var paperTitlesNextUpdate = 0;
+
+  // now retrieve the list of all paper titles for checking uniqueness
+  function loadPaperTitles() {
+    var curtime = Date.now();
+    if (paperTitlesNextUpdate < curtime) {
+      paperTitlesNextUpdate = curtime + 5 * 60 * 1000; // update paper titles no less than 5 minutes from now
+      fetch('/api/papers/titles')
+      .then(_.fetchJson)
+      .then(function (titles) { paperTitles = titles; })
+      .catch(function (err) {
+        console.error('problem getting paper titles');
+        console.error(err);
+      });
+    }
+  }
+
   var currentPaperOrigTitle;
 
   function checkPaperTitleUnique(title) {
@@ -584,25 +598,6 @@
 
     // clicking the 'test' button should not cause blur on the editing field
     if (document.activeElement === editEl) ev.preventDefault();
-  }
-
-
-  var paperTitles = [];
-  var paperTitlesNextUpdate = 0;
-
-  // now retrieve the list of all paper titles for checking uniqueness
-  function loadPaperTitles() {
-    var curtime = Date.now();
-    if (paperTitlesNextUpdate < curtime) {
-      paperTitlesNextUpdate = curtime + 5 * 60 * 1000; // update paper titles no less than 5 minutes from now
-      fetch('/api/papers/titles')
-      .then(_.fetchJson)
-      .then(function (titles) { paperTitles = titles; })
-      .catch(function (err) {
-        console.error('problem getting paper titles');
-        console.error(err);
-      });
-    }
   }
 
 
@@ -1020,11 +1015,18 @@
     return box;
   }
 
+  function findPopupBoxTrigger(el) {
+    var trigger = el;
+    while (trigger && !trigger.classList.contains('popupboxtrigger')) trigger = trigger.parentElement;
+    return trigger;
+  }
+
   var pinnedBox = null;
   function pinPopupBox(el) {
-    unpinPopupBox();
-
     var box = findPopupBox(el);
+    if (box && pinnedBox === box.dataset.boxid) return; // already pinned
+
+    unpinPopupBox();
 
     if (box) {
       pinnedBox = box.dataset.boxid;
@@ -1032,10 +1034,11 @@
       box.classList.add('pinned');
 
       // find nearest parent-or-self that is '.popupboxtrigger' so it can be raised above others when pinned
-      var trigger = box;
-      while (trigger && !trigger.classList.contains('popupboxtrigger')) trigger = trigger.parentElement;
+      var trigger = findPopupBoxTrigger(box);
       if (trigger) trigger.classList.add('pinned');
     }
+
+    return box;
   }
 
   function unpinPopupBox() {
@@ -1102,6 +1105,22 @@
       ev.target.blur();
     }
   }
+
+  function focusAnotherElementOnClick(ev) {
+    var el = ev.currentTarget;
+
+    // if the event happens inside a popup box trigger, pin that box in case the element to focus is there
+    var popupBoxTrigger = findPopupBoxTrigger(el);
+    if (popupBoxTrigger) pinPopupBox(popupBoxTrigger);
+
+    // now focus the right element - trying to find it inside the event target element, or progressively inside its ancestor elements
+    var focusingSelector = el.dataset.focuses;
+    var toFocus = null;
+
+    while (el && !(toFocus = _.findEl(el, focusingSelector))) el = el.parentElement;
+    if (toFocus) toFocus.focus();
+  }
+
 
   /* api
    *

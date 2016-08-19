@@ -49,6 +49,7 @@ _ {
   min-width: 1em;
 }
 
+.edithighlight:hover [contenteditable]:not(.validationerror),
 [contenteditable]:hover:not(.validationerror) {
   box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
 }
