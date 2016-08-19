@@ -1034,41 +1034,45 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   border-left: .5em solid transparent;
 }
 
-#paper table.experiments .comments .value:empty:before {
-  content: 'empty value';
+#paper table.experiments .datum.popupbox .value:empty:before {
+  content: 'no value';
   color: #aaa;
   font-style: italic;
   display: inline-block;
 }
 
-#paper table.experiments .comments .by {
+#paper table.experiments .datum.popupbox .by {
   font-size: 90%;
   font-weight: normal;
 }
 
-#paper table.experiments .comments .comment {
+#paper table.experiments .datum.popupbox .comment {
   display: block;
   border-top: 1px solid black;
   margin: .5em 0;
   padding: .5em 0 0 0;
 }
 
-#paper table.experiments td:not(.hascomments) .comments .comment.new {
+#paper table.experiments td:not(.hascomments) .datum.popupbox .comment.new {
   border-top: none;
 }
 
-#paper table.experiments .comments .comment header {
+#paper table.experiments .datum.popupbox .comment header {
   font-size: 90%;
   line-height: 120%;
   margin-bottom: .5em;
 }
 
-#paper table.experiments .comments .comment .text {
+#paper table.experiments .datum.popupbox .comment .text {
   display: block;
 }
 
-#paper table.experiments .comments .comment .ctime {
+#paper table.experiments .datum.popupbox .comment .ctime {
   white-space: nowrap;
+}
+
+#paper table.experiments td.empty .datum.popupbox .by {
+  display: none;
 }
 
 body:not(.page-about-you) #paper table.experiments td:last-child,

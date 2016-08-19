@@ -399,23 +399,33 @@
         var comments = [];
         var commentsLength = 0;
 
+        // populate the value
         addPaperDOMSetter(function (paper) {
-          var val = { value: ' ' };
+          var val = null;
           var experiment = paper.experiments[expIndex];
           if (experiment.data && experiment.data[colId]) {
             val = experiment.data[colId];
           }
-          _.fillEls(td, '.value', val.value);
+
+          if (val && val.value != null) {
+            td.classList.remove('empty');
+          } else {
+            td.classList.add('empty');
+            val = {};
+          }
+
+          _.fillEls(td, '.value', val.value || '');
           addOnInputUpdater(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value']);
 
-          _.fillEls (td, '.valenteredby', val.enteredBy);
-          _.setProps(td, '.valenteredby', 'href', '/' + val.enteredBy + '/');
-          _.fillEls (td, '.valctime', _.formatDateTime(val.ctime));
+          var user = lima.getAuthenticatedUserEmail();
+          _.fillEls (td, '.valenteredby', val.enteredBy || user);
+          _.setProps(td, '.valenteredby', 'href', '/' + (val.enteredBy || user) + '/');
+          _.fillEls (td, '.valctime', _.formatDateTime(val.ctime || Date.now()));
 
           lima.columnTypes.forEach(function (type) {td.classList.remove(type);});
           td.classList.add(newPaperShowColumns[colIndex].type);
 
-          setupPopupBoxPinning(td, '.comments.popupbox', paper.experiments[expIndex].title + '$' + colId);
+          setupPopupBoxPinning(td, '.datum.popupbox', expIndex + '$' + colId);
         });
 
         // populate comments
@@ -439,7 +449,7 @@
           td.classList.remove('hascomments');
         }
         _.fillEls(td, '.commentcount', comments.length);
-        fillComments('comment-template', td, '.comments main', comments, ['experiments', expIndex, 'data', colId, 'comments']);
+        fillComments('comment-template', td, '.datum.popupbox main', comments, ['experiments', expIndex, 'data', colId, 'comments']);
       });
 
     });
@@ -940,7 +950,7 @@
     if (Array.isArray(targetProp)) {
       while (targetProp.length > 1) {
         var prop = targetProp.shift();
-        if (!(prop in target)) {
+        if (!(prop in target) || target[prop] == null) {
           if (Number.isInteger(targetProp[0])) target[prop] = [];
           else target[prop] = {};
         }
@@ -962,7 +972,7 @@
 
     while (targetProp.length > 0) {
       var prop = targetProp.shift();
-      if (!(prop in target)) {
+      if (!(prop in target) || target[prop] == null) {
         if (addDefaultValue != null) {
           if (targetProp.length == 0) target[prop] = addDefaultValue;
           else if (Number.isInteger(targetProp[0])) target[prop] = [];
@@ -1024,11 +1034,10 @@
   var pinnedBox = null;
   function pinPopupBox(el) {
     var box = findPopupBox(el);
-    if (box && pinnedBox === box.dataset.boxid) return; // already pinned
-
-    unpinPopupBox();
 
     if (box) {
+      if (pinnedBox !== box.dataset.boxid) unpinPopupBox();
+
       pinnedBox = box.dataset.boxid;
       document.body.classList.add('boxpinned');
       box.classList.add('pinned');
