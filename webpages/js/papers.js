@@ -69,7 +69,8 @@
       papers.forEach(function (paper) {
         var li = _.cloneTemplate('paper-list-item-template');
         _.fillEls(li, '.name', paper.title);
-        _.fillEls(li, '.date', paper.published);
+        _.fillEls(li, '.reference', paper.reference);
+        _.setProps(li, '.reference', 'title', paper.reference);
         _.fillEls(li, '.description', paper.description);
         _.setProps(li, '.description', 'title', paper.description);
         _.setProps(li, 'a.mainlink', 'href', paper.title);
@@ -163,7 +164,7 @@
       _.fillTags('#paper .tags', paper.tags, flashTag); flashTag = null;
       fillingTags = false;
       _.fillEls ('#paper .authors .value', paper.authors);
-      _.fillEls ('#paper .published .value', paper.published);
+      _.fillEls ('#paper .reference .value', paper.reference);
       _.fillEls ('#paper .description .value', paper.description);
       _.fillEls ('#paper .link .value', paper.link);
       _.setProps('#paper .link .value', 'href', paper.link);
@@ -177,7 +178,7 @@
       _.setDataProps('#paper .enteredby.needs-owner', 'owner', paper.enteredBy);
 
       addOnInputUpdater("#paper .authors .value", 'textContent', identity, paper, 'authors');
-      addOnInputUpdater("#paper .published .value", 'textContent', identity, paper, 'published');
+      addOnInputUpdater("#paper .reference .value", 'textContent', identity, paper, 'reference');
       addOnInputUpdater("#paper .description .value", 'textContent', identity, paper, 'description');
 
       currentPaperOrigTitle = paper.title;

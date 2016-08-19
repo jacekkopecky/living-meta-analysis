@@ -149,9 +149,8 @@ module.exports.addUser = (email, user) => {
   enteredBy: "example@example.com",
   ctime: 0,
   mtime: 5,
-  published: "1996-08, Intl J of Psy 40(4):7",
+  reference: "J. Smith, J. Doe, 1996-08, Intl J of Psy 40(4):7",
   description: "brief description lorem ipsum",
-  authors: "J. Smith, J. Doe",
   link: "http:...",
   doi: "3409/465",
   tags: [
@@ -206,7 +205,7 @@ a column record looks like this: (see /api/columns)
   //   one approach: keep a stream of timestamped and attributed updates that led to this state?
   //      versions: [
   //        { col: "title", newValue: "Smith96a", ctime: 1},
-  //        { col: "published", newValue: "1996-08-00", ctime: 2},
+  //        { col: "reference", newValue: "1996-08-00", ctime: 2},
   //        { col: "tags", addedValue: "memory", ctime: 3},
   //        { col: "tags", removedValue: "testing", ctime: 4},
   //        // both entries have an implied enteredBy: the same as in the parent object
@@ -249,7 +248,7 @@ function getAllPapers() {
       reject(err);
     })
     .on('data', (entity) => {
-      retval.push(entity.data);
+      retval.push(migratePaper(entity.data));
       paperTitles.push(entity.data.title);
     })
     .on('end', () => {
@@ -257,6 +256,21 @@ function getAllPapers() {
       resolve(retval);
     });
   });
+}
+
+/*
+ * change paper from an old format to the new one, if need be
+ */
+function migratePaper(paper) {
+  // 2016-08-19: remove authors and published fields in favor of a textual reference field
+  if (!paper.reference && (paper.authors || paper.published)) {
+    paper.reference = paper.authors || '';
+    if (paper.authors && paper.published) paper.reference += ', ';
+    paper.reference += paper.published || '';
+    delete paper.authors;
+    delete paper.published;
+  }
+  return paper;
 }
 
 

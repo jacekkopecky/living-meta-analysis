@@ -330,7 +330,7 @@ section.list {
   z-index: 0;
 }
 
-section.list header {
+section.list > header {
   display: block;
   margin: 0;
   padding: 0 0 0 .5em;
@@ -339,13 +339,13 @@ section.list header {
   background: #eee;
 }
 
-section.list header h2 {
+section.list > header h2 {
   font-size: 1.5em;
   line-height: 130%;
   margin: 0;
 }
 
-section.list header .filter {
+section.list > header .filter {
   display: block;
   position: absolute;
   top: 0;
@@ -358,23 +358,23 @@ section.list header .filter {
   z-index: 1;
 }
 
-section.list header .filter .options {
+section.list > header .filter .options {
   display: none;
   text-align: left;
   margin: .5em;
   padding: 0;
 }
 
-section.list header .filter .options + .options {
+section.list > header .filter .options + .options {
   border-top: 1px solid #eee;
 }
 
 
-section.list header .filter:hover .options {
+section.list > header .filter:hover .options {
   display: block;
 }
 
-section.list header .filter .options li {
+section.list > header .filter .options li {
   display: block;
   padding: 0;
   margin: .5em 0;
@@ -430,11 +430,11 @@ section.list > ul > li:last-of-type {
   border-bottom: 0;
 }
 
-section.list > ul > li > .name {
+section.list > ul > li .name {
   display: inline-block;
 }
 
-section.list > ul > li > .mainlink {
+section.list > ul > li .mainlink {
   text-decoration: none;
   color: inherit;
 }
@@ -443,6 +443,19 @@ section.list > ul > li > .date {
   display: inline-block;
   margin-left: 2em;
   float: right;
+}
+
+section.list > ul > li .reference {
+  font-size: .8em;
+  margin-left: 4em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+section.list > ul > li > header {
+  display: flex;
+  justify-content: space-between;
 }
 
 section.list > ul > li > .description {

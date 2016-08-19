@@ -235,9 +235,8 @@ function extractPaperForSending(storagePaper, includeDataValues, email) {
     enteredBy: storagePaper.enteredBy,
     ctime: storagePaper.ctime,
     mtime: storagePaper.mtime,
-    published: storagePaper.published,
+    reference: storagePaper.reference,
     description: storagePaper.description,
-    authors: storagePaper.authors,
     link: storagePaper.link,
     doi: storagePaper.doi,
     tags: storagePaper.tags,
@@ -263,9 +262,8 @@ function extractReceivedPaper(receivedPaper) {
     CHECKenteredBy: tools.string(receivedPaper.enteredBy), // can't be changed but should be checked
     CHECKctime: tools.number(receivedPaper.ctime),         // can't be changed but should be checked
     // mtime: tools.number(receivedPaper.mtime),         // will be updated
-    published: tools.string(receivedPaper.published),
+    reference: tools.string(receivedPaper.reference),
     description: tools.string(receivedPaper.description),
-    authors: tools.string(receivedPaper.authors),
     link: tools.string(receivedPaper.link),
     doi: tools.string(receivedPaper.doi),
     tags: tools.array(receivedPaper.tags, tools.string),
