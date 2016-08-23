@@ -185,6 +185,19 @@
       currentPaperOrigTitle = paper.title;
       addConfirmedUpdater('#paper .title.editing', '#paper .title + .titlerename', '#paper .title ~ * .titlerenamecancel', 'textContent', checkPaperTitleUnique, paper, 'title');
 
+      /* editTags
+       *
+       *                         #######
+       *   ###### #####  # #####    #      ##    ####   ####
+       *   #      #    # #   #      #     #  #  #    # #
+       *   #####  #    # #   #      #    #    # #       ####
+       *   #      #    # #   #      #    ###### #  ###      #
+       *   #      #    # #   #      #    #    # #    # #    #
+       *   ###### #####  #   #      #    #    #  ####   ####
+       *
+       *
+       */
+
       // events for removing a tag
       _.findEls('#paper .tags .tag + .removetag').forEach(function (btn) {
         btn.onclick = function () {
@@ -336,6 +349,19 @@
         newPaperShowColumns = null;
       });
 
+    /* column headings
+     *
+     *
+     *    ####   ####  #      #    # #    # #    #    #    # ######   ##   #####  # #    #  ####   ####
+     *   #    # #    # #      #    # ##  ## ##   #    #    # #       #  #  #    # # ##   # #    # #
+     *   #      #    # #      #    # # ## # # #  #    ###### #####  #    # #    # # # #  # #       ####
+     *   #      #    # #      #    # #    # #  # #    #    # #      ###### #    # # #  # # #  ###      #
+     *   #    # #    # #      #    # #    # #   ##    #    # #      #    # #    # # #   ## #    # #    #
+     *    ####   ####  ######  ####  #    # #    #    #    # ###### #    # #####  # #    #  ####   ####
+     *
+     *
+     */
+
     // fill column headings
     var headingsRowNode = _.findEl(table, 'tr:first-child');
     var addColumnNode = _.findEl(table, 'tr:first-child > th.add');
@@ -372,6 +398,19 @@
           setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
         });
     });
+
+    /* experiment rows
+     *
+     *
+     *   ###### #    # #####  ###### #####  # #    # ###### #    # #####    #####   ####  #    #  ####
+     *   #       #  #  #    # #      #    # # ##  ## #      ##   #   #      #    # #    # #    # #
+     *   #####    ##   #    # #####  #    # # # ## # #####  # #  #   #      #    # #    # #    #  ####
+     *   #        ##   #####  #      #####  # #    # #      #  # #   #      #####  #    # # ## #      #
+     *   #       #  #  #      #      #   #  # #    # #      #   ##   #      #   #  #    # ##  ## #    #
+     *   ###### #    # #      ###### #    # # #    # ###### #    #   #      #    #  ####  #    #  ####
+     *
+     *
+     */
 
     // fill rows with experiment data
     var tableBodyNode = _.findEl(table, 'tbody');
@@ -467,6 +506,19 @@
     var noTableMarker = _.findEl('#paper .no-table');
     noTableMarker.parentElement.insertBefore(table, noTableMarker);
   }
+
+  /* comments
+   *
+   *
+   *    ####   ####  #    # #    # ###### #    # #####  ####
+   *   #    # #    # ##  ## ##  ## #      ##   #   #   #
+   *   #      #    # # ## # # ## # #####  # #  #   #    ####
+   *   #      #    # #    # #    # #      #  # #   #        #
+   *   #    # #    # #    # #    # #      #   ##   #   #    #
+   *    ####   ####  #    # #    # ###### #    #   #    ####
+   *
+   *
+   */
 
   function fillComments(templateId, root, selector, comments, commentsPropPath) {
     var targetEl = _.findEl(root, selector);
