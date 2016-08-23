@@ -505,7 +505,7 @@ section.list > ul > li > ul.tags > li {
 
 /* make space for the boxes on the right-hand side of the page */
 #paper > :not(header) {
-  margin: .3em 16em 0 0;
+  margin: .5em 16em 0 0;
 }
 
 #paper .description .value {
@@ -786,6 +786,7 @@ body.page-about-you.editing .fullcolinfo header {
   display: none;
 }
 
+#paper > header .unsavedmessage,
 #paper > header .validationerrormessage {
   font-style: italic;
   color: #a00;
@@ -793,6 +794,7 @@ body.page-about-you.editing .fullcolinfo header {
   right: 0;
   bottom: 120%;
   display: none;
+  cursor: pointer;
 }
 
 #paper > header .savingerror {
@@ -809,7 +811,8 @@ body.page-about-you.editing .fullcolinfo header {
 
 #paper.saving > header .saving,
 #paper.savepending:not(.saving) > header .savepending,
-#paper.validationerror > header .validationerrormessage {
+#paper.validationerror > header .validationerrormessage,
+#paper:not(.validationerror):not(.saving):not(.savepending).unsaved > header .unsavedmessage {
   display: block;
 }
 
@@ -916,6 +919,8 @@ body:not(.editing) #paper table.experiments.editing + .no-table {
   text-overflow: ellipsis;
   max-width: 8em;
   max-height: 1em;
+  line-height: 1em;
+  font-size: 90%;
 }
 
 #paper table.experiments .fullrowinfo .expdescription:not([contenteditable]):empty:before {

@@ -147,8 +147,6 @@
   function fillPaper(paper) {
     resetDOMSetters();
 
-    addPaperDOMSetter(removeValidationErrorClass);
-
     // cleanup
     var oldPaperEl = _.byId('paper');
     if (oldPaperEl) oldPaperEl.parentElement.removeChild(oldPaperEl);
@@ -159,16 +157,16 @@
 
     addPaperChangeVerifier(function (newPaper) { return paper.id === newPaper.id; });
     addPaperDOMSetter(function(paper) {
-      _.fillEls('#paper .title', paper.title);
+      _.fillEls('#paper .title:not(.unsaved):not(.validationerror)', paper.title);
       fillingTags = true; // because that causes onBlur on a new tag and that mustn't be a save
       _.fillTags('#paper .tags', paper.tags, flashTag); flashTag = null;
       fillingTags = false;
       _.fillEls ('#paper .authors .value', paper.authors);
       _.fillEls ('#paper .reference .value', paper.reference);
       _.fillEls ('#paper .description .value', paper.description);
-      _.fillEls ('#paper .link .value', paper.link);
+      _.fillEls ('#paper .link .value:not(.unsaved):not(.validationerror)', paper.link);
       _.setProps('#paper .link a.value', 'href', paper.link);
-      _.fillEls ('#paper .doi .value', paper.doi);
+      _.fillEls ('#paper .doi .value:not(.unsaved):not(.validationerror)', paper.doi);
       _.setProps('#paper .doi a.value', 'href', function(el){return el.dataset.base + paper.doi});
       _.fillEls ('#paper .enteredby .value', paper.enteredBy);
       _.setProps('#paper .enteredby .value', 'href', '/' + paper.enteredBy + '/');
@@ -297,6 +295,8 @@
     _.addEventListener('#paper [data-focuses]', 'click', focusAnotherElementOnClick);
 
     _.addEventListener('#paper .savingerror', 'click', _.manualSave);
+    _.addEventListener('#paper .validationerrormessage', 'click', focusFirstValidationError);
+    _.addEventListener('#paper .unsavedmessage', 'click', focusFirstUnsaved);
 
     addPaperDOMSetter(function () {
       if (pinnedBox) pinPopupBox(pinnedBox);
@@ -348,7 +348,7 @@
       addPaperDOMSetter(
         function () {
           var col = newPaperShowColumns[colIndex];
-          _.fillEls(th, '.coltitle', col.title);
+          _.fillEls(th, '.coltitle:not(.unsaved):not(.validationerror)', col.title);
           lima.columnTypes.forEach(function (type) {_.removeClass(th, '.coltype', type);});
           _.addClass(th, '.coltype', col.type);
           _.fillEls(th, '.coldescription', col.description);
@@ -381,7 +381,7 @@
       tableBodyNode.insertBefore(tr, addRowNode);
 
       addPaperDOMSetter(function (paper) {
-        _.fillEls(tr, '.exptitle', paper.experiments[expIndex].title);
+        _.fillEls(tr, '.exptitle:not(.unsaved):not(.validationerror)', paper.experiments[expIndex].title);
         _.fillEls(tr, '.expdescription', paper.experiments[expIndex].description);
 
         addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
@@ -626,12 +626,12 @@
 
   // don't save automatically after an error
   lima.checkToPreventSaving = function checkToPreventSaving() {
-    return _.findEl('#paper.savingerror') || _.findEl('#paper.validationerror');
+    return _.findEl('#paper.savingerror') || _.findEl('#paper.validationerror') || _.findEl('#paper.unsaved');
   }
 
   // don't save at all when a validation error is there
   lima.checkToPreventForcedSaving = function checkToPreventForcedSaving() {
-    return _.findEl('#paper.validationerror');
+    return _.findEl('#paper.validationerror') || _.findEl('#paper.unsaved');
   }
 
   lima.savePendingStarted = function savePendingStarted() {
@@ -826,6 +826,7 @@
     _.findEls(root, selector).forEach(function (el) {
       if (el.classList.contains('editing') || el.isContentEditable || el.contentEditable === 'true') {
         el.classList.remove('validationerror');
+        setValidationErrorClass();
         el.addEventListener('keydown', _.deferScheduledSave);
         el.oninput = function () {
           var value = el[property];
@@ -836,7 +837,7 @@
             // this class will be removed by updatePaperView when validation succeeds again
             el.classList.add('validationerror');
             el.dataset.validationmessage = err.message || err;
-            _.addClass('#paper', 'validationerror');
+            setValidationErrorClass();
             _.cancelScheduledSave(target);
             return;
           }
@@ -880,11 +881,7 @@
       throw _.apiFail();
     }
 
-    editingEl.classList.remove('validationerror');
-    editingEl.classList.remove('unsaved');
-    confirmEl.disabled = true;
-
-    editingEl.oninput = function () {
+    editingEl.oninput = editingEl.onblur = function () {
       var value = editingEl[property];
       if (typeof value === 'string' && value.trim() === '') value = '';
       try {
@@ -893,12 +890,12 @@
         editingEl.classList.add('validationerror');
         confirmEl.disabled = true;
         editingEl.dataset.validationmessage = err && err.message || err || '';
-        _.addClass('#paper', 'validationerror');
+        setValidationErrorClass();
         _.cancelScheduledSave(target);
         return;
       }
       editingEl.classList.remove('validationerror');
-      _.removeClass('#paper', 'validationerror');
+      setValidationErrorClass();
       if (value !== getDeepValue(target, targetProp)) {
         confirmEl.disabled = false;
         editingEl.classList.add('unsaved');
@@ -906,7 +903,10 @@
         confirmEl.disabled = true;
         editingEl.classList.remove('unsaved');
       }
+      setUnsavedClass();
     };
+
+    editingEl.oninput();
 
     function cancel() {
       editingEl[property] = getDeepValue(target, targetProp);
@@ -937,6 +937,7 @@
       assignDeepValue(target, targetProp, value);
       confirmEl.disabled = true;
       editingEl.classList.remove('unsaved');
+      setUnsavedClass();
       updatePaperView();
       _.scheduleSave(target);
     };
@@ -987,8 +988,14 @@
     return target;
   }
 
-  function removeValidationErrorClass() {
-    _.removeClass('#paper', 'validationerror');
+  function setValidationErrorClass() {
+    if (_.findEl('#paper .validationerror')) _.addClass('#paper', 'validationerror');
+    else _.removeClass('#paper', 'validationerror');
+  }
+
+  function setUnsavedClass() {
+    if (_.findEl('#paper .unsaved')) _.addClass('#paper', 'unsaved');
+    else _.removeClass('#paper', 'unsaved');
   }
 
 
@@ -1099,6 +1106,7 @@
 
   function popupOnClick(ev) {
     var el = ev.target;
+    if (el.classList.contains('notunpin')) return;
     // check if we've clicked on the 'pin' button or otherwise in a popupboxtrigger
     while (el && !el.classList.contains('pin') && !el.classList.contains('popupboxtrigger')) el = el.parentElement;
     if (!el || el.classList.contains('pin') && pinnedBox) {
@@ -1118,16 +1126,28 @@
   function focusAnotherElementOnClick(ev) {
     var el = ev.currentTarget;
 
-    // if the event happens inside a popup box trigger, pin that box in case the element to focus is there
-    var popupBoxTrigger = findPopupBoxTrigger(el);
-    if (popupBoxTrigger) pinPopupBox(popupBoxTrigger);
-
-    // now focus the right element - trying to find it inside the event target element, or progressively inside its ancestor elements
+    // focus the right element - trying to find it inside the event target element, or progressively inside its ancestor elements
     var focusingSelector = el.dataset.focuses;
     var toFocus = null;
-
     while (el && !(toFocus = _.findEl(el, focusingSelector))) el = el.parentElement;
-    if (toFocus) toFocus.focus();
+
+    focusElement(toFocus);
+  }
+
+  function focusFirstUnsaved() {
+    focusElement(_.findEl('#paper .unsaved'));
+  }
+
+  function focusFirstValidationError() {
+    focusElement(_.findEl('#paper .validationerror'));
+  }
+
+  function focusElement(el) {
+    if (el) {
+      // if the element is inside a popup box, pin that box so the element is visible
+      pinPopupBox(el);
+      el.focus();
+    }
   }
 
 
