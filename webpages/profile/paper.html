@@ -29,7 +29,7 @@
   <section id="paper">
     <header>
       <h1 class="title notediting"></h1>
-      <h1 class="title editing oneline" contenteditable placeholder="enter short name"></h1>
+      <h1 class="title editing oneline" contenteditable placeholder="enter a short name"></h1>
       <button class="titlerename editing" disabled>rename</button>
       <div class="titlerenamewarning">
         <h1>Are you sure to rename the paper from <span class="title"></span>?</h1>
@@ -110,10 +110,12 @@
             <!-- todo comments -->
           </div>
         </th>
-        <th class="add"><div><span><button name="add">add a column</button></span></div></th>
+        <th class="add"><div><span><button class="add notunpin">add a column</button>
+                                   <button class="notadd" disabled title="can't add a column with unsaved changes">add a column</button></span></div></th>
       </tr>
       <tr class="add">
-        <th><button name="add">add a row</button></th>
+        <th><button class="add notunpin">add a row</button>
+            <button class="notadd" disabled title="can't add a row with unsaved changes">add a row</button></th>
         <td class='no-data'>enter data by adding a row and then columns</td>
       </tr>
     </tbody>
@@ -133,7 +135,7 @@
       <button class="move right most editing" title="move column to the right">»|</button>
       <header>
         <p class="coltitle notediting-or-not-yours needs-owner">error</p>
-        <p class="coltitle editing only-if-yours needs-owner oneline" contenteditable placeholder="column title">error</p>
+        <p class="coltitle editing only-if-yours needs-owner oneline" contenteditable placeholder="enter a column title">error</p>
         <button class="coltitlerename editing only-if-yours needs-owner" disabled>rename</button>
         <div class="colrenamewarning">
           <h1>Are you sure to rename the column from "<span class="coltitle"></span>"?</h1>
@@ -163,11 +165,17 @@
       <div class="fullrowinfo popupbox" data-boxtype='fullrowinfo'>
         <div class="pin"></div>
         <header>
-          <p class="edithighlight" data-focuses=".exptitle.editing">Study/experiment:
+          <span class="edithighlight" data-focuses=".exptitle.editing">Study/experiment:
             <span class="title">error</span
-              >-<span class="exptitle notediting"></span
-              ><span class="exptitle editing oneline" contenteditable placeholder="short name"></span
-              ><button class="exptitlerename editing" disabled>rename</button>
+              >-<span class="exptitle notediting"></span></span
+          ><p class="exptitle editing oneline" contenteditable placeholder="enter a short name"></p>
+          <button class="exptitlerename editing" disabled>rename</button>
+          <div class="exprenamewarning">
+            <h1>Are you sure to rename the experiment from "<span class="exptitle"></span>"?</h1>
+            <p>If others are using the paper, a change of an experiment name might surprise them.
+              To undo, press <button class="exprenamecancel">cancel</button>
+            </p>
+          </div>
           </p>
         </header>
         <!-- todo click on .exdescription.short should focus the contenteditable exptitle -->

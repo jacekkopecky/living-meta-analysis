@@ -47,9 +47,11 @@ _ {
 [contenteditable] {
   white-space: pre-line; /* to use \n instead of <br> as newlines */
   min-width: 1em;
+  min-height: 1em;
 }
 
 .edithighlight:hover [contenteditable]:not(.validationerror),
+.edithighlight:hover ~ [contenteditable]:not(.validationerror),
 [contenteditable]:hover:not(.validationerror) {
   box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
 }
@@ -532,6 +534,11 @@ section.list > ul > li > ul.tags > li {
   flex: 0 0 auto;
 }
 
+#paper .exptitle.editing,
+#paper .coltitle.editing {
+  display: inline-block;
+}
+
 #paper > header .title.editing.unsaved:not(.validationerror):not(:focus),
 #paper .exptitle.editing.unsaved:not(.validationerror):not(:focus),
 #paper .coltitle.editing.unsaved:not(.validationerror):not(:focus),
@@ -553,6 +560,7 @@ section.list > ul > li > ul.tags > li {
   display: none;
 }
 
+#paper .fullrowinfo header,
 #paper .fullcolinfo header {
   padding-top: 1em;
   position: relative;
@@ -562,8 +570,10 @@ body.page-about-you.editing .fullcolinfo header {
   margin-right: 0;
 }
 
-#paper .fullcolinfo header p {
-  display: inline;
+#paper .fullcolinfo header p,
+#paper .fullrowinfo header p {
+  display: inline-block;
+  margin: 0;
 }
 
 #paper .titlerenamewarning {
@@ -585,10 +595,11 @@ body.page-about-you.editing .fullcolinfo header {
   visibility: hidden;
 }
 
+#paper .exprenamewarning,
 #paper .colrenamewarning {
   position: absolute;
   left: 1em;
-  right: 1em;
+  right: -.875em; /* to offset the header's 1.5em right margin due to the pin button */
   top: 100%;
   margin-top: 1em;
   background: white;
@@ -608,16 +619,19 @@ body.page-about-you.editing .fullcolinfo header {
 }
 
 #paper .titlerenamewarning h1,
+#paper .exprenamewarning h1,
 #paper .colrenamewarning h1 {
   margin-bottom: 1em;
 }
 
+#paper .exprenamewarning h1,
 #paper .colrenamewarning h1 {
   font-size: 1.2em;
   font-weight: normal;
 }
 
 #paper > header .title.editing.unsaved ~ .titlerenamewarning,
+#paper .coltitle.editing.unsaved ~ .exprenamewarning,
 #paper .coltitle.editing.unsaved ~ .colrenamewarning {
   transition: visibility 0s 1s;
 }
@@ -627,6 +641,11 @@ body.page-about-you.editing .fullcolinfo header {
 #paper > header .title.editing.unsaved + .titlerename:hover ~ .titlerenamewarning,
 #paper > header .title.editing.unsaved + .titlerename:focus ~ .titlerenamewarning,
 #paper > header .title.editing.unsaved ~ .titlerenamewarning:hover,
+#paper .exptitle.editing:not(.new).unsaved:focus ~ .exprenamewarning,
+#paper .exptitle.editing:not(.new).unsaved:hover ~ .exprenamewarning,
+#paper .exptitle.editing:not(.new).unsaved + .exptitlerename:hover ~ .exprenamewarning,
+#paper .exptitle.editing:not(.new).unsaved + .exptitlerename:focus ~ .exprenamewarning,
+#paper .exptitle.editing:not(.new).unsaved ~ .exprenamewarning:hover,
 #paper .coltitle.editing.unsaved:focus ~ .colrenamewarning,
 #paper .coltitle.editing.unsaved:hover ~ .colrenamewarning,
 #paper .coltitle.editing.unsaved + .coltitlerename:hover ~ .colrenamewarning,
@@ -639,7 +658,7 @@ body.page-about-you.editing .fullcolinfo header {
 #paper > header .title.editing.unsaved:not(.validationerror):not(:focus) + button.titlerename:not(:focus):before,
 #paper .coltitle.editing.unsaved:not(.validationerror):not(:focus) + button.coltitlerename:not(:focus):before,
 #paper .exptitle.editing.unsaved:not(.validationerror):not(:focus) + button.exptitlerename:not(:focus):before {
-  content: 'click \'rename\' to confirm';
+  content: 'click the button to confirm';
   display: block;
   position: absolute;
   top: -2em;
@@ -656,7 +675,7 @@ body.page-about-you.editing .fullcolinfo header {
 }
 
 #paper .linkedit span.editing.unsaved:not(.validationerror):not(:focus) ~ button.confirm:not(:focus):before {
-  content: 'click \'confirm\' to save';
+  content: 'click the button to save';
   display: block;
   position: absolute;
   top: -1.2em;
@@ -815,6 +834,14 @@ body.page-about-you.editing .fullcolinfo header {
 #paper:not(.validationerror):not(.saving):not(.savepending).unsaved > header .unsavedmessage {
   display: block;
 }
+
+#paper:not(.unsaved):not(.validationerror) table.experiments button.notadd { display: none; }
+
+#paper.unsaved table.experiments button.add,
+#paper.validationerror table.experiments button.add {
+  display: none;
+}
+
 
 
 #paper.savingerror > header .savingerror { display: block; cursor: pointer; }

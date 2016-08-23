@@ -423,10 +423,18 @@
         _.fillEls(tr, '.exptitle:not(.unsaved):not(.validationerror)', paper.experiments[expIndex].title);
         _.fillEls(tr, '.expdescription', paper.experiments[expIndex].description);
 
+        if (!paper.experiments[expIndex].title) {
+          _.addClass(tr, '.exptitle.editing:not(.unsaved):not(.validationerror)', 'new');
+          _.fillEls(tr, '.exptitle + .exptitlerename', 'confirm');
+        } else {
+          _.removeClass(tr, '.exptitle.editing:not(.unsaved):not(.validationerror)', 'new');
+          _.fillEls(tr, '.exptitle + .exptitlerename', 'rename');
+        }
+
         addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
 
         _.findEl(tr, '.exptitle.editing').dataset.origTitle = paper.experiments[expIndex].title;
-        addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitleUnique, paper, ['experiments', expIndex, 'title']);
+        addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitleUnique, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
 
         setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', expIndex);
       })
@@ -503,8 +511,36 @@
       });
     });
 
+    _.addEventListener(table, 'tr.add button', 'click', addExperimentRow);
+
     var noTableMarker = _.findEl('#paper .no-table');
     noTableMarker.parentElement.insertBefore(table, noTableMarker);
+  }
+
+  function addExperimentRow() {
+    // if there are no pending changes, add a new experiment
+    if (!lima.checkToPreventForcedSaving()) {
+      if (!Array.isArray(currentPaper.experiments)) currentPaper.experiments = [];
+      currentPaper.experiments.push({});
+      updatePaperView();
+      // focus the empty title of the new experiment
+      focusFirstValidationError();
+    } else {
+      console.warn('cannot add a row with some edited values pending');
+    }
+  }
+
+  function deleteNewExperiment() {
+    if (!lima.checkToPreventForcedSaving()) {
+      if (!Array.isArray(currentPaper.experiments)) return;
+      var lastExp = currentPaper.experiments[currentPaper.experiments.length - 1];
+      if (lastExp && Object.keys(lastExp).length === 0) {
+        currentPaper.experiments.pop();
+      }
+      unpinPopupBox();
+      updatePaperView();
+      focusFirstValidationError();
+    }
   }
 
   /* comments
@@ -903,8 +939,9 @@
     });
   }
 
-  function addConfirmedUpdater(root, selector, confirmselector, cancelselector, property, validatorSanitizer, target, targetProp) {
+  function addConfirmedUpdater(root, selector, confirmselector, cancelselector, property, validatorSanitizer, target, targetProp, deleteFunction) {
     if (!(root instanceof Node)) {
+      deleteFunction = targetProp;
       targetProp = target;
       target = validatorSanitizer;
       validatorSanitizer = property;
@@ -967,8 +1004,17 @@
 
     editingEl.onkeydown = function (ev) {
       if (ev.keyCode === 27) {
-        cancel();
-        ev.target.blur();
+        if (editingEl.classList.contains('new') && deleteFunction) {
+          editingEl.classList.remove('unsaved');
+          editingEl.classList.remove('validationerror');
+          setUnsavedClass();
+          setValidationErrorClass();
+          deleteFunction();
+        } else {
+          cancel();
+          ev.target.blur();
+        }
+        ev.preventDefault();
       }
       else if (ev.keyCode == 13 && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
         ev.preventDefault();
@@ -1112,11 +1158,13 @@
   function unpinPopupBox() {
     if (pinnedBox) {
       var pinned = _.findEl('[data-boxid="' + pinnedBox + '"]')
-      pinned.classList.remove('pinned');
+      if (pinned) {
+        pinned.classList.remove('pinned');
 
-      var trigger = pinned;
-      while (trigger && !trigger.classList.contains('popupboxtrigger')) trigger = trigger.parentElement;
-      if (trigger) trigger.classList.remove('pinned');
+        var trigger = pinned;
+        while (trigger && !trigger.classList.contains('popupboxtrigger')) trigger = trigger.parentElement;
+        if (trigger) trigger.classList.remove('pinned');
+      }
     }
     pinnedBox = null;
     document.body.classList.remove('boxpinned');
