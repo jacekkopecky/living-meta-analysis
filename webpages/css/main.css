@@ -836,7 +836,7 @@ body.page-about-you.editing .fullcolinfo header {
   border-radius: .4em;
   position: absolute;
   right: 0;
-  bottom: 120%;
+  bottom: 100%;
   display: none;
 }
 

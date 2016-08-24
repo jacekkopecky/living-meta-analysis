@@ -69,7 +69,7 @@
       selector = root;
       root = document;
     }
-    _.findEls(root, selector).forEach(function (el) { el.textContent = valOrFun(value, el); });
+    _.findEls(root, selector).forEach(function (el) { el.textContent = valOrFun(value, el) || ''; });
   }
 
   _.setProps = function setProps(root, selector, attr, value) {
