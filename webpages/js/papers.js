@@ -331,9 +331,9 @@
     // show the table if it's not empty or
     // hide the empty experiment data table if the user can't edit it
     if (experiments.length) {
-      table.children[0].classList.remove('editing');
+      _.removeClass('#paper', 'no-data');
     } else {
-      table.children[0].classList.add('editing');
+      _.addClass('#paper', 'no-data');
     }
 
     var showColumns = findColumnsInPaper(paper);
@@ -512,8 +512,8 @@
 
     _.addEventListener(table, 'tr.add button', 'click', addExperimentRow);
 
-    var noTableMarker = _.findEl('#paper .no-table');
-    noTableMarker.parentElement.insertBefore(table, noTableMarker);
+    var experimentsContainer = _.findEl('#paper .experiments');
+    experimentsContainer.appendChild(table);
   }
 
   function addExperimentRow() {

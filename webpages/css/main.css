@@ -113,8 +113,7 @@ body > footer > p {
 .popupbox {
   display: none;
   position: fixed;
-  top: 72px;
-  top: 10em; /* todo better positioning, this is here to put it under the paper title */
+  top: 12em; /* todo better positioning, this is here to put it under the paper title */
   bottom: 0;
   right: 0;
   width: 15em;
@@ -149,8 +148,17 @@ body > footer > p {
 }
 
 
-body:not(.boxpinned) .popupboxtrigger:hover .popupbox {
+body:not(.boxpinned) .popupboxtrigger:hover .popupbox,
+.popupbox.default {
   display: block;
+}
+
+.popupbox.default {
+  font-style: italic;
+  z-index: 1;
+  color: #888;
+  border-left: 1px solid #888;
+  border-top: 1px solid #888;
 }
 
 /* highlight the field whose popupbox is showing */
@@ -599,7 +607,7 @@ body.page-about-you.editing .fullcolinfo header {
 #paper .colrenamewarning {
   position: absolute;
   left: 1em;
-  right: -.875em; /* to offset the header's 1.5em right margin due to the pin button */
+  right: 1em;
   top: 100%;
   margin-top: 1em;
   background: white;
@@ -616,6 +624,10 @@ body.page-about-you.editing .fullcolinfo header {
   font-size: 80%;
 
   visibility: hidden;
+}
+
+#paper .exprenamewarning {
+  right: -.875em; /* to offset the header's 1.5em right margin due to the pin button */
 }
 
 #paper .titlerenamewarning h1,
@@ -875,30 +887,19 @@ body.page-about-you.editing .fullcolinfo header {
 /* rotated headings inspired by https://css-tricks.com/rotated-table-column-headers/ */
 
 #paper table.experiments {
-  margin-top: 1em;
   text-align: center;
-  margin-right: 8em;
+  margin-right: 0em;
   margin-top: 10em;
   border-spacing: 0;
-  position: relative;
+  padding-right: 23em; /* 15em for width of popupbox and 8em for width of overhanging column labels */
 }
 
-#paper table.experiments:after {
-  content: ' ';
-  display: block;
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  bottom: 0;
-  right: -23.5em; /* 15em for width of popupbox and 8.5em for width of overhanging column labels */
-}
-
-#paper table.experiments + .no-table {
+#paper .no-table {
   display: none;
 }
 
-body:not(.page-about-you) #paper table.experiments.editing + .no-table,
-body:not(.editing) #paper table.experiments.editing + .no-table {
+body:not(.page-about-you) #paper.no-data .no-table,
+body:not(.editing) #paper.no-data .no-table {
   display: block;
   padding: .5em;
   border: 1px solid black;
@@ -930,10 +931,6 @@ body:not(.editing) #paper table.experiments.editing + .no-table {
   position: sticky;
   left: 0;
   z-index: 1;
-}
-
-#paper table.experiments tr th:first-child:hover {
-  z-index: 2;
 }
 
 #paper table.experiments tr th:first-child {
@@ -1136,7 +1133,7 @@ body:not(.page-about-you) #paper table.experiments tr.add,
 body:not(.page-about-you) #paper table.experiments th.add,
 body:not(.editing) #paper table.experiments tr.add,
 body:not(.editing) #paper table.experiments th.add,
-body.page-about-you.editing #paper table.experiments.editing th.add {
+body.page-about-you.editing #paper.no-data table.experiments th.add {
   display: none;
 }
 
@@ -1148,12 +1145,15 @@ body.page-about-you.editing #paper table.experiments.editing th.add {
   margin: .3em 0;
 }
 
-/* editing on experiments table means it's empty */
-#paper table.experiments:not(.editing) tr.add .no-data {
+body:not(.editing) #paper.no-data table.experiments {
   display: none;
 }
 
-#paper table.experiments.editing tr.add .no-data {
+#paper:not(.no-data) table.experiments tr.add .no-data {
+  display: none;
+}
+
+#paper.no-data table.experiments tr.add .no-data {
   position: absolute;
   border: none;
 }
