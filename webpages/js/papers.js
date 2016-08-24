@@ -458,16 +458,15 @@
             td.classList.remove('empty');
           } else {
             td.classList.add('empty');
-            val = {};
           }
 
-          _.fillEls(td, '.value', val.value || '');
+          _.fillEls(td, '.value', val && val.value || '');
           addOnInputUpdater(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value']);
 
           var user = lima.getAuthenticatedUserEmail();
-          _.fillEls (td, '.valenteredby', val.enteredBy || user);
-          _.setProps(td, '.valenteredby', 'href', '/' + (val.enteredBy || user) + '/');
-          _.fillEls (td, '.valctime', _.formatDateTime(val.ctime || Date.now()));
+          _.fillEls (td, '.valenteredby', val && val.enteredBy || user);
+          _.setProps(td, '.valenteredby', 'href', '/' + (val && val.enteredBy || user) + '/');
+          _.fillEls (td, '.valctime', _.formatDateTime(val && val.ctime || Date.now()));
 
           lima.columnTypes.forEach(function (type) {td.classList.remove(type);});
           td.classList.add(newPaperShowColumns[colIndex].type);
