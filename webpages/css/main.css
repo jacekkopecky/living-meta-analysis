@@ -139,7 +139,7 @@ body > footer > p {
 
 .popupbox > footer {
   font-size: 80%;
-  line-height: 120%;
+  line-height: 120%; /* coltype styling depends on this */
   margin-top: .5em;
   border-top: 1px solid #888;
   padding-top: .3em;
@@ -1033,9 +1033,66 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   font-weight: bold;
 }
 
+#paper table.experiments .fullcolinfo .coltype {
+  position: relative;
+}
+
 #paper table.experiments .fullcolinfo .coltype.result .type-characteristic,
 #paper table.experiments .fullcolinfo .coltype.characteristic .type-result {
   display: none;
+}
+
+body.editing #paper table.experiments .fullcolinfo .coltype.yours .type-characteristic,
+body.editing #paper table.experiments .fullcolinfo .coltype.yours .type-result {
+  border: 1px solid transparent;
+  border-radius: .5em;
+  background: none;
+  padding: .5em;
+  position: relative;
+  top: 0px;
+  left: calc(-.5em - 1px);
+}
+
+body.editing #paper table.experiments .fullcolinfo .coltype.yours .aftertype {
+  background: none;
+  margin-left: calc(-.5em - .5em - 1px - 1px); /* moving towards the type text which is laid out to have .5em horizontal padding and 1px border */
+}
+
+body.editing #paper table.experiments .fullcolinfo .coltype.yours:hover .type-result,
+body.editing #paper table.experiments .fullcolinfo .coltype.yours:hover .type-characteristic {
+  border: 1px solid black;
+  background: white;
+  z-index: 2;
+  box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
+}
+
+body.editing #paper table.experiments .fullcolinfo .coltype.yours.result:hover .type-characteristic,
+body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic:hover .type-result {
+  position: absolute;
+  top: calc(-2.2em - .5em - 1px);
+  display: inline;
+  z-index: 1;
+}
+
+body.editing #paper table.experiments .fullcolinfo .coltype.yours.result .type-result,
+body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic .type-characteristic {
+  border-top-left-radius: 0;
+}
+body.editing #paper table.experiments .fullcolinfo .coltype.yours.result .type-result {
+  border-top-right-radius: 0;
+}
+body.editing #paper table.experiments .fullcolinfo .coltype.yours.result .type-characteristic,
+body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic .type-result {
+  border-bottom-left-radius: 0;
+}
+body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic .type-result {
+  border-bottom-right-radius: 0 0;
+}
+
+body.editing #paper table.experiments .fullcolinfo .coltype.yours.result .type-characteristic:hover,
+body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic .type-result:hover {
+  background: rgba(243,230,255,1);
+  z-index: 3;
 }
 
 #paper table.experiments .fullcolinfo .value {
