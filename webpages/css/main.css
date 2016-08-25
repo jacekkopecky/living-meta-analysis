@@ -156,9 +156,13 @@ body:not(.boxpinned) .popupboxtrigger:hover .popupbox,
 .popupbox.default {
   font-style: italic;
   z-index: 1;
-  color: #888;
+  color: #444;
   border-left: 1px solid #888;
   border-top: 1px solid #888;
+}
+
+.popupbox.default > * {
+  font-size: 80%;
 }
 
 /* highlight the field whose popupbox is showing */
