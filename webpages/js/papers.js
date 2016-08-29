@@ -371,32 +371,31 @@
         el.addEventListener('click', moveColumn);
       });
       headingsRowNode.insertBefore(th, addColumnNode);
-      addPaperDOMSetter(
-        function () {
-          var col = newPaperShowColumns[colIndex];
-          _.fillEls(th, '.coltitle:not(.unsaved):not(.validationerror)', col.title);
-          lima.columnTypes.forEach(function (type) {_.removeClass(th, '.coltype', type);});
-          _.addClass(th, '.coltype', col.type);
-          _.fillEls(th, '.coldescription', col.description);
-          _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime));
-          _.fillEls(th, '.colmtime .value', _.formatDateTime(col.mtime));
-          _.fillEls(th, '.definedby .value', col.definedBy);
-          _.setProps(th, '.definedby .value', 'href', '/' + col.definedBy + '/');
+      addPaperDOMSetter(function () {
+        var col = newPaperShowColumns[colIndex];
+        _.fillEls(th, '.coltitle:not(.unsaved):not(.validationerror)', col.title);
+        lima.columnTypes.forEach(function (type) {_.removeClass(th, '.coltype', type);});
+        _.addClass(th, '.coltype', col.type);
+        _.fillEls(th, '.coldescription', col.description);
+        _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime));
+        _.fillEls(th, '.colmtime .value', _.formatDateTime(col.mtime));
+        _.fillEls(th, '.definedby .value', col.definedBy);
+        _.setProps(th, '.definedby .value', 'href', '/' + col.definedBy + '/');
 
-          _.setDataProps(th, '.needs-owner', 'owner', col.definedBy);
+        _.setDataProps(th, '.needs-owner', 'owner', col.definedBy);
 
-          _.findEls(th, 'button.move').forEach(function (el) {
-            el.dataset.id = col.id;
-          });
-          lima.columnTypes.forEach(function (type) {th.classList.remove(type);});
-          th.classList.add(col.type);
-
-          addOnInputUpdater(th, '.coldescription', 'textContent', identity, lima.columns[col.id], ['description']);
-
-          addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, lima.columns[col.id], 'title');
-
-          setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
+        _.findEls(th, 'button.move').forEach(function (el) {
+          el.dataset.id = col.id;
         });
+        lima.columnTypes.forEach(function (type) {th.classList.remove(type);});
+        th.classList.add(col.type);
+
+        addOnInputUpdater(th, '.coldescription', 'textContent', identity, lima.columns[col.id], ['description']);
+
+        addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, lima.columns[col.id], 'title');
+
+        setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
+      });
     });
 
     /* experiment rows
