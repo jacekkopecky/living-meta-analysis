@@ -744,7 +744,6 @@
   }
 
   function savePaper() {
-    console.log('saving paper');
     return lima.getGapiIDToken()
       .then(function(idToken) {
         return fetch(currentPaperUrl, {
@@ -781,7 +780,7 @@
 
   function findColumnsInPaper(paper) {
     // find the columns used in the experiments
-    var showColumnsHash= {};
+    var showColumnsHash = {};
     var showCharacteristicColumns = [];
     var showResultColumns = [];
     paper.experiments.forEach(function (experiment) {
