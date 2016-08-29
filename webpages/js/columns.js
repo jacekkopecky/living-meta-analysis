@@ -20,7 +20,7 @@
     .catch(function (err) {
       console.error("problem getting columns");
       console.error(err);
-      _.apiFail();
+      throw _.apiFail();
     });
 
     return columnsPromise;
