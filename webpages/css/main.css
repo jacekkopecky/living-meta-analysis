@@ -1033,12 +1033,18 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   font-weight: bold;
 }
 
+#paper table.experiments .fullcolinfo footer {
+  position: relative;
+}
+
 #paper table.experiments .fullcolinfo .coltype {
   position: relative;
 }
 
 #paper table.experiments .fullcolinfo .coltype.result .type-characteristic,
-#paper table.experiments .fullcolinfo .coltype.characteristic .type-result {
+#paper table.experiments .fullcolinfo .coltype.result ~ * .type-characteristic,
+#paper table.experiments .fullcolinfo .coltype.characteristic .type-result,
+#paper table.experiments .fullcolinfo .coltype.characteristic ~ * .type-result {
   display: none;
 }
 
@@ -1072,6 +1078,7 @@ body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic
   top: calc(-2.2em - .5em - 1px);
   display: inline;
   z-index: 1;
+  cursor: pointer;
 }
 
 body.editing #paper table.experiments .fullcolinfo .coltype.yours.result .type-result,
@@ -1093,6 +1100,30 @@ body.editing #paper table.experiments .fullcolinfo .coltype.yours.result .type-c
 body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic .type-result:hover {
   background: rgba(243,230,255,1);
   z-index: 3;
+}
+
+#paper table.experiments .fullcolinfo .coltypeconfirm {
+  position: absolute;
+  left: 1em;
+  right: 1em;
+  top: 100%;
+  margin-top: 1em;
+  background: white;
+  border: 1px solid black;
+  border-radius: .5em;
+  box-shadow: 0 0 .3em .3em rgba(128,0,255,.2);
+  padding: 0 1em 1em 1em;
+
+  display: none;
+}
+
+#paper table.experiments .fullcolinfo .coltypeconfirm .type-characteristic,
+#paper table.experiments .fullcolinfo .coltypeconfirm .type-result {
+  font-weight: bold;
+}
+
+#paper table.experiments .fullcolinfo .coltype.unsaved ~ .coltypeconfirm {
+  display: block;
 }
 
 #paper table.experiments .fullcolinfo .value {

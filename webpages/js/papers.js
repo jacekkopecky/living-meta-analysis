@@ -367,15 +367,11 @@
     var addColumnNode = _.findEl(table, 'tr:first-child > th.add');
     showColumns.forEach(function (ignored, colIndex) {
       var th = _.cloneTemplate('col-heading-template').children[0];
-      _.findEls(th, 'button.move').forEach(function (el) {
-        el.addEventListener('click', moveColumn);
-      });
+      _.addEventListener(th, 'button.move', 'click', moveColumn);
       headingsRowNode.insertBefore(th, addColumnNode);
       addPaperDOMSetter(function () {
         var col = newPaperShowColumns[colIndex];
         _.fillEls(th, '.coltitle:not(.unsaved):not(.validationerror)', col.title);
-        lima.columnTypes.forEach(function (type) {_.removeClass(th, '.coltype', type);});
-        _.addClass(th, '.coltype', col.type);
         _.fillEls(th, '.coldescription', col.description);
         _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime));
         _.fillEls(th, '.colmtime .value', _.formatDateTime(col.mtime));
@@ -384,18 +380,28 @@
 
         _.setDataProps(th, '.needs-owner', 'owner', col.definedBy);
 
-        _.findEls(th, 'button.move').forEach(function (el) {
-          el.dataset.id = col.id;
+        _.setDataProps(th, 'button', 'id', col.id);
+
+        lima.columnTypes.forEach(function (type) {
+          _.removeClass(th, '.coltype', type);
+          th.classList.remove(type);
         });
-        lima.columnTypes.forEach(function (type) {th.classList.remove(type);});
         th.classList.add(col.type);
+        _.addClass(th, '.coltype', col.type);
 
         addOnInputUpdater(th, '.coldescription', 'textContent', identity, lima.columns[col.id], ['description']);
 
         addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, lima.columns[col.id], 'title');
 
+        lima.columnTypes.forEach(function (type) {
+          _.setDataProps(th, '.coltype .switch.type-' + type, 'newType', type);
+        });
+
         setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
       });
+
+      _.addEventListener(th, '.coltype .switch', 'click', changeColumnType);
+      _.addEventListener(th, '.coltypeconfirm button', 'click', changeColumnTypeConfirmOrCancel);
     });
 
     /* experiment rows
@@ -432,7 +438,7 @@
 
         addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
 
-        _.findEl(tr, '.exptitle.editing').dataset.origTitle = paper.experiments[expIndex].title;
+        _.setDataProps(tr, '.exptitle.editing', 'origTitle', paper.experiments[expIndex].title);
         addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitleUnique, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
 
         setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', expIndex);
@@ -764,15 +770,15 @@
 
 
 
-  /* moving cols
+  /* changing cols
    *
    *
-   *         #    #  ####  #    # # #    #  ####      ####   ####  #       ####
-   *         ##  ## #    # #    # # ##   # #    #    #    # #    # #      #
-   *         # ## # #    # #    # # # #  # #         #      #    # #       ####
-   *         #    # #    # #    # # #  # # #  ###    #      #    # #           #
-   *         #    # #    #  #  #  # #   ## #    #    #    # #    # #      #    #
-   *         #    #  ####    ##   # #    #  ####      ####   ####  ######  ####
+   *    ####  #    #   ##   #    #  ####  # #    #  ####      ####   ####  #       ####
+   *   #    # #    #  #  #  ##   # #    # # ##   # #    #    #    # #    # #      #
+   *   #      ###### #    # # #  # #      # # #  # #         #      #    # #       ####
+   *   #      #    # ###### #  # # #  ### # #  # # #  ###    #      #    # #           #
+   *   #    # #    # #    # #   ## #    # # #   ## #    #    #    # #    # #      #    #
+   *    ####  #    # #    # #    #  ####  # #    #  ####      ####   ####  ######  ####
    *
    *
    */
@@ -854,7 +860,66 @@
         firstResult++;
       }
     }
+  }
 
+  function changeColumnType(ev) {
+    var newTypeEl = ev.target;
+
+    // find the element with the class 'coltype' before the button
+    var coltypeEl = newTypeEl;
+    while (coltypeEl && !coltypeEl.classList.contains('coltype')) coltypeEl = coltypeEl.previousElementSibling || coltypeEl.parentElement;
+
+    if (!coltypeEl) {
+      console.warn('changeColumnType called on a button before which there is no .coltype');
+      return;
+    }
+
+    if (lima.columnTypes.indexOf(newTypeEl.dataset.newType) === -1) {
+      console.warn('changeColumnType called on an element with no (or unknown) dataset.newType');
+      return;
+    }
+
+    // if the oldtype is already the same as newtype, do nothing
+    if (coltypeEl.classList.contains(newTypeEl.dataset.newType)) return;
+
+    coltypeEl.classList.add('unsaved');
+    coltypeEl.dataset.newType = newTypeEl.dataset.newType;
+  }
+
+  function changeColumnTypeConfirmOrCancel(ev) {
+    // a click will pin the box,
+    // this timout makes sure the click gets processed first and then we do the change
+    setTimeout(doChangeColumnTypeConfirmOrCancel, 0, ev.target);
+  }
+
+  function doChangeColumnTypeConfirmOrCancel(btn) {
+    // find the element with the class 'coltype' before the button
+    var coltypeEl = btn;
+    while (coltypeEl && !coltypeEl.classList.contains('coltype')) coltypeEl = coltypeEl.previousElementSibling || coltypeEl.parentElement;
+
+    if (!coltypeEl) {
+      console.warn('changeColumnTypeConfirmOrCancel called on a button before which there is no .coltype');
+      return;
+    }
+
+    var col = lima.columns[btn.dataset.id];
+    if (!col) {
+      console.warn('changeColumnTypeConfirmOrCancel couldn\'t find column for id ' + btn.dataset.id);
+      return;
+    }
+
+    if (lima.columnTypes.indexOf(coltypeEl.dataset.newType) === -1) {
+      console.warn('changeColumnTypeConfirmOrCancel called while coltype element has no (or unknown) dataset.newType');
+      return;
+    }
+
+    coltypeEl.classList.remove('unsaved');
+
+    if (btn.classList.contains('confirm')) {
+      col.type = coltypeEl.dataset.newType;
+      updatePaperView();
+      _.scheduleSave(col);
+    }
   }
 
   /* DOM updates
@@ -1171,6 +1236,10 @@
     _.findEls(el, selector).forEach(function (box) {
       if (box.dataset.boxtype) box.dataset.boxid = box.dataset.boxtype + "@" + localid;
       box.classList.remove('pinned');
+
+      var trigger = box;
+      while (trigger && !trigger.classList.contains('popupboxtrigger')) trigger = trigger.parentElement;
+      if (trigger) trigger.classList.remove('pinned');
     })
   }
 

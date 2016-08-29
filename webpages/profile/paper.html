@@ -138,7 +138,7 @@
 <template id="col-heading-template">
   <th class="popupboxtrigger">
     <div class="popupboxhighlight">
-      <span class="coltitle" data-focuses=".coltitle.editing">error</span>
+      <span class="coltitle">error</span>
     </div>
     <div class="fullcolinfo popupbox" data-boxtype='fullcolinfo'>
       <div class="pin"></div>
@@ -166,9 +166,20 @@
       <!-- todo comments -->
       <!-- todo add a way of cloning a column -->
       <footer>
-        <span class="coltype needs-owner"><span class="type-characteristic">characteristic/moderator</span><span class="type-result">result</span><span class="aftertype"> column</span></span>
+        <span class="coltype needs-owner"><span class="type-characteristic switch">characteristic/moderator</span><span class="type-result switch">result</span><span class="aftertype"> column</span></span>
         <span class="definedby only-not-yours needs-owner"> defined by <a class="value" href="error">error</a>,</span>
         last updated <span class="colmtime"> on <span class="value date">error</span></span>
+        <div class="coltypeconfirm">
+          <p>
+            Are you sure to change column
+            "<span class="coltitle">error</span>" to be a
+            <span class="type-characteristic">result</span><span class="type-result">characteristic/moderator</span>
+            column?
+          </p>
+          <p>If others are using the column, a change of its type might surprise them.</p>
+          <button class="confirm">confirm</button>
+          <button class="cancel">cancel</button>
+        </div>
       </footer>
     </div>
   </th>
@@ -177,9 +188,7 @@
   <tr class="row">
     <th class="popupboxtrigger popupboxhighlight">
       <!-- todo click on title or exptitle should focus the contenteditable exptitle -->
-      <span data-focuses=".exptitle.editing">
-        <span class="title">error</span>-<span class="exptitle"></span>
-      </span>
+      <span class="title">error</span>-<span class="exptitle"></span>
       <div class="fullrowinfo popupbox" data-boxtype='fullrowinfo'>
         <div class="pin"></div>
         <header>
