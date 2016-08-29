@@ -1369,6 +1369,7 @@ body.page-about-you.editing #paper.no-data table.experiments th.add {
 
 #paper table.experiments .add button {
   margin: .3em 0;
+  white-space: nowrap;
 }
 
 body:not(.editing) #paper.no-data table.experiments {
