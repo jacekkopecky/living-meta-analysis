@@ -4,24 +4,28 @@
   var _ = lima._;
 
   var columnsPromise;
+  var columnsNextUpdate = 0;
 
   // predefined possible column types
   lima.columnTypes = ['characteristic', 'result'];
 
   lima.getColumns = function() {
-    if (columnsPromise) return columnsPromise;
+    var curtime = Date.now();
+    if (!columnsPromise || columnsNextUpdate < curtime) {
+      columnsNextUpdate = curtime + 5 * 60 * 1000; // update paper titles no less than 5 minutes from now
 
-    columnsPromise = lima.getGapiIDToken()
-    .then(function (idToken) {
-      return fetch('/api/columns', _.idTokenToFetchOptions(idToken));
-    })
-    .then(_.fetchJson)
-    .then(storeColumns)
-    .catch(function (err) {
-      console.error("problem getting columns");
-      console.error(err);
-      throw _.apiFail();
-    });
+      columnsPromise = lima.getGapiIDToken()
+      .then(function (idToken) {
+        return fetch('/api/columns', _.idTokenToFetchOptions(idToken));
+      })
+      .then(_.fetchJson)
+      .then(storeColumns)
+      .catch(function (err) {
+        console.error("problem getting columns");
+        console.error(err);
+        throw _.apiFail();
+      });
+    }
 
     return columnsPromise;
   }
