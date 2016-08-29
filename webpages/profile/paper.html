@@ -124,8 +124,38 @@
             <!-- todo comments -->
           </div>
         </th>
-        <th class="add"><div><span><button class="add notunpin">add a column</button>
-                                   <button class="notadd" disabled title="can't add a column with unsaved changes">add a column</button></span></div></th>
+        <th class="add popupboxtrigger">
+          <div><span><button class="add notunpin">add a column</button>
+                     <button class="notadd" disabled title="can't add a column with unsaved changes">add a column</button></span></div>
+          <div class="addcolumnbox loading">
+            <header>
+              <h1>Click column to add</h1>
+              <!-- todo search -->
+              <!-- <span class="search"><input type="search" placeholder="search" class="search"></span> -->
+            </header>
+            <div class="loadingspinner">loading&hellip;</div>
+            <ul></ul><!-- this will contain the columns to add -->
+            <footer>
+              <button class="addnew">+ new column type</button>
+              <button class="cancel">cancel</button>
+            </footer>
+          </div>
+          <div class="colinfo popupbox unpopulated" data-boxid='colinfo'>
+            <header>
+              <p class="coltitle">error</p>
+              <p class="alreadythere">(included in the paper)<p>
+              <p class="unpopulated">Select a column to add</p>
+            </header>
+            <p class="coldescription">error</p>
+            <p class="unpopulated">To see details of a column, move over it with your mouse.</p>
+            <!-- todo comments -->
+            <footer>
+              <span class="coltype"><span class="type-characteristic">characteristic/moderator</span><span class="type-result">result</span> column</span>
+              <span class="definedby only-not-yours needs-owner"> defined by <a class="value" href="error">error</a>,</span>
+              last updated <span class="colmtime"> on <span class="value date">error</span></span>
+            </footer>
+          </div>
+        </th>
       </tr>
       <tr class="add">
         <th><button class="add notunpin">add a row</button>
@@ -134,6 +164,9 @@
       </tr>
     </tbody>
   </table>
+</template>
+<template id="column-list-item-template">
+  <li><span class="coltitle">foo</span><span class="definedby only-not-yours needs-owner">(by <a class="value" href="error">error</a>)</span>
 </template>
 <template id="col-heading-template">
   <th class="popupboxtrigger">

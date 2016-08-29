@@ -135,6 +135,7 @@
     }
 
     var isSmallChange = currentPaper != null && paperChangeVerifiers.every(function (verifier) { return verifier(paper); });
+    if (currentPaper !== paper) regenerateColumnOrder(paper);
     currentPaper = paper;
     if (!isSmallChange) fillPaper(paper);
     callPaperDOMSetters(paper);
@@ -515,11 +516,180 @@
       });
     });
 
-    _.addEventListener(table, 'tr.add button', 'click', addExperimentRow);
+    _.addEventListener(table, 'tr.add button.add', 'click', addExperimentRow);
+
+    _.addEventListener(table, 'th.add button.add', 'click', addExperimentColumn);
+    _.addEventListener(table, 'th.add button.cancel', 'click', cancelAddExperimentColumn);
 
     var experimentsContainer = _.findEl('#paper .experiments');
     experimentsContainer.appendChild(table);
   }
+
+  /* adding cols
+   *
+   *
+   *     ##   #####  #####  # #    #  ####      ####   ####  #       ####
+   *    #  #  #    # #    # # ##   # #    #    #    # #    # #      #
+   *   #    # #    # #    # # # #  # #         #      #    # #       ####
+   *   ###### #    # #    # # #  # # #  ###    #      #    # #           #
+   *   #    # #    # #    # # #   ## #    #    #    # #    # #      #    #
+   *   #    # #####  #####  # #    #  ####      ####   ####  ######  ####
+   *
+   *
+   */
+
+  function addExperimentColumn() {
+    // if there are no pending changes and if the paper has any data, add a new column to the paper
+    if (lima.checkToPreventForcedSaving()) {
+      console.warn('cannot add a column with some edited values pending');
+      return;
+    }
+
+    if (!Array.isArray(currentPaper.experiments) || currentPaper.experiments.length < 1) {
+      console.warn('cannot add a column when the paper has no data');
+      return;
+    }
+
+    // show the add column box
+    _.addClass('#paper table.experiments tr:first-child th.add', 'adding');
+
+    lima.getColumns()
+    .then(populateAddColumnsList);
+  }
+
+  function cancelAddExperimentColumn() {
+    _.removeClass('#paper table.experiments tr:first-child th.add', 'adding');
+  }
+
+  function populateAddColumnsList(columns) {
+    var list = _.findEl('#paper table.experiments tr:first-child th.add .addcolumnbox > ul');
+    list.innerHTML='';
+    var user = lima.getAuthenticatedUserEmail();
+    var ordered = {yours: { result: [], characteristic: []},
+                   other: { result: [], characteristic: []},
+                   already: { result: [], characteristic: []}};
+    Object.keys(columns).forEach(function(colid) {
+      var col = columns[colid];
+      var bucket = (col.definedBy === user) ? 'yours' : 'other';
+      if (currentPaper.columnOrder.indexOf(colid) > -1) bucket = 'already';
+      ordered[bucket][col.type].push(col);
+    })
+    ordered.yours.result.sort(compareColumnsByAuthorAndTitle);
+    ordered.yours.characteristic.sort(compareColumnsByAuthorAndTitle);
+    ordered.other.result.sort(compareColumnsByAuthorAndTitle);
+    ordered.other.characteristic.sort(compareColumnsByAuthorAndTitle);
+    ordered.already.result.sort(compareColumnsByAuthorAndTitle);
+    ordered.already.characteristic.sort(compareColumnsByAuthorAndTitle);
+    // todo add collapsing of these blocks on clicking the header
+    addColumnsBlock(list, 'your characteristic/moderator columns:', ordered.yours.characteristic);
+    addColumnsBlock(list, 'your result columns:', ordered.yours.result);
+    addColumnsBlock(list, 'characteristic/moderator columns:', ordered.other.characteristic);
+    addColumnsBlock(list, 'result columns:', ordered.other.result);
+    addColumnsBlock(list, 'columns used in the paper:', ordered.already.characteristic.concat(ordered.already.result));
+    _.removeClass('#paper table.experiments tr:first-child th.add .addcolumnbox.loading', 'loading');
+    _.setYouOrName();
+
+    emptyColInfo();
+    pinPopupBox('colinfo');
+  }
+
+  function compareColumnsByAuthorAndTitle(a, b) {
+    if (a.definedBy < b.definedBy) return -1;
+    if (a.definedBy > b.definedBy) return 1;
+    if (a.title < b.title) return -1;
+    if (a.title > b.title) return 1;
+    return 0;
+  }
+
+  function addColumnsBlock(list, headingText, columns) {
+    if (!columns.length) return; // do nothing if we have no columns in the block
+    var heading = document.createElement('li');
+    heading.classList.add('heading');
+    heading.textContent = headingText;
+    list.appendChild(heading);
+    columns.forEach(function (col) {
+      var li = _.cloneTemplate('column-list-item-template').children[0];
+      _.fillEls(li, '.coltitle', col.title);
+      _.fillEls(li, '.definedby .value', col.definedBy);
+      _.setProps(li, '.definedby .value', 'href', '/' + col.definedBy + '/');
+      _.setDataProps(li, '.needs-owner', 'owner', col.definedBy);
+      li.dataset.colid = col.id;
+
+      if (currentPaper.columnOrder.indexOf(col.id) > -1) {
+        li.classList.add('alreadythere');
+      }
+
+      li.addEventListener('mouseenter', fillColInfo);
+      _.addEventListener(li, '.coltitle', 'click', selectNewColumn);
+      list.addEventListener('mouseleave', emptyColInfo);
+
+      list.appendChild(li);
+    })
+  }
+
+  function fillColInfo(ev) {
+    var col = lima.columns[ev.target.dataset.colid];
+    if (!col) {
+      console.warn('fillColInfo on element that doesn\'t have a valid column ID: ' + ev.target.dataset.colid);
+      return;
+    }
+    _.fillEls('#paper th.add .colinfo .coltitle', col.title);
+    _.fillEls('#paper th.add .colinfo .coldescription', col.description);
+    _.fillEls('#paper th.add .colinfo .colctime .value', _.formatDateTime(col.ctime));
+    _.fillEls('#paper th.add .colinfo .colmtime .value', _.formatDateTime(col.mtime));
+    _.fillEls('#paper th.add .colinfo .definedby .value', col.definedBy);
+    _.setProps('#paper th.add .colinfo .definedby .value', 'href', '/' + col.definedBy + '/');
+    _.setDataProps('#paper th.add .colinfo .needs-owner', 'owner', col.definedBy);
+
+    lima.columnTypes.forEach(function (type) {
+      _.removeClass('#paper th.add .colinfo .coltype', type);
+    });
+    _.addClass('#paper th.add .colinfo .coltype', col.type);
+
+    _.removeClass('#paper th.add .colinfo', 'unpopulated');
+
+    if (currentPaper.columnOrder.indexOf(col.id) > -1) {
+      _.addClass('#paper th.add .colinfo', 'alreadythere');
+    } else {
+      _.removeClass('#paper th.add .colinfo', 'alreadythere');
+    }
+
+    _.setYouOrName();
+  }
+
+  function emptyColInfo() {
+    _.addClass('#paper th.add .colinfo', 'unpopulated');
+  }
+
+  function selectNewColumn(ev) {
+    var el = ev.target;
+    while (el && !el.dataset.colid) el = el.parentElement;
+    var col = lima.columns[el.dataset.colid];
+    if (!col) {
+      console.warn('selectNewColumn on element that doesn\'t have a valid column ID: ' + ev.target.dataset.colid);
+      return;
+    }
+    if (currentPaper.columnOrder.indexOf(col.id) > -1) return; // do nothing on columns that are already there
+
+    currentPaper.columnOrder.push(col.id);
+    updatePaperView();
+
+    // the click will popup the wrong box, so delay popping up the right one until after the click is fully handled
+    setTimeout(pinPopupBox, 0, 'fullcolinfo@' + col.id);
+  }
+
+  /* adding rows
+   *
+   *
+   *     ##   #####  #####  # #    #  ####     #####   ####  #    #  ####
+   *    #  #  #    # #    # # ##   # #    #    #    # #    # #    # #
+   *   #    # #    # #    # # # #  # #         #    # #    # #    #  ####
+   *   ###### #    # #    # # #  # # #  ###    #####  #    # # ## #      #
+   *   #    # #    # #    # # #   ## #    #    #   #  #    # ##  ## #    #
+   *   #    # #####  #####  # #    #  ####     #    #  ####  #    #  ####
+   *
+   *
+   */
 
   function addExperimentRow() {
     // if there are no pending changes, add a new experiment
@@ -788,18 +958,23 @@
     var showColumnsHash = {};
     var showCharacteristicColumns = [];
     var showResultColumns = [];
+
     paper.experiments.forEach(function (experiment) {
-      if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
-        if (!(key in showColumnsHash)) {
-          var col = lima.columns[key];
-          showColumnsHash[key] = col;
-          switch (col.type) {
-            case 'characteristic': showCharacteristicColumns.push(col); break;
-            case 'result':         showResultColumns.push(col); break;
-          }
-        }
-      });
+      if (experiment.data) Object.keys(experiment.data).forEach(addColumn);
     });
+
+    if (Array.isArray(paper.columnOrder)) paper.columnOrder.forEach(addColumn);
+
+    function addColumn(key) {
+      if (!(key in showColumnsHash)) {
+        var col = lima.columns[key];
+        showColumnsHash[key] = col;
+        switch (col.type) {
+          case 'characteristic': showCharacteristicColumns.push(col); break;
+          case 'result':         showResultColumns.push(col); break;
+        }
+      }
+    }
 
     showCharacteristicColumns.sort(compareColsByOrder);
     showResultColumns.sort(compareColsByOrder);
@@ -1277,6 +1452,7 @@
     while (el && !el.classList.contains('pin') && !el.classList.contains('popupboxtrigger')) el = el.parentElement;
     if (!el || el.classList.contains('pin') && pinnedBox) {
       unpinPopupBox();
+      cancelAddExperimentColumn();
     }
     else pinPopupBox(el);
   }

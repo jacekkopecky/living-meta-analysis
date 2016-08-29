@@ -32,9 +32,9 @@ _ {
   display: none !important;
 }
 
-.loadingspinner { display: none; }
+.loadingspinner { display: none !important; }
 
-.loading .loadingspinner { display: block; }
+.loading .loadingspinner { display: block !important; }
 
 /* from https://codepen.io/flesler/pen/AEIFc */
 [contenteditable]:empty:before {
@@ -573,7 +573,8 @@ section.list > ul > li > ul.tags > li {
 }
 
 #paper .fullrowinfo header,
-#paper .fullcolinfo header {
+#paper .fullcolinfo header,
+#paper .colinfo header {
   padding-top: 1em;
   position: relative;
 }
@@ -583,6 +584,7 @@ body.page-about-you.editing .fullcolinfo header {
 }
 
 #paper .fullcolinfo header p,
+#paper .colinfo header p,
 #paper .fullrowinfo header p {
   display: inline-block;
   margin: 0;
@@ -1044,7 +1046,9 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
 #paper table.experiments .fullcolinfo .coltype.result .type-characteristic,
 #paper table.experiments .fullcolinfo .coltype.result ~ * .type-characteristic,
 #paper table.experiments .fullcolinfo .coltype.characteristic .type-result,
-#paper table.experiments .fullcolinfo .coltype.characteristic ~ * .type-result {
+#paper table.experiments .fullcolinfo .coltype.characteristic ~ * .type-result,
+#paper table.experiments .colinfo .coltype.result .type-characteristic,
+#paper table.experiments .colinfo .coltype.characteristic .type-result {
   display: none;
 }
 
@@ -1126,8 +1130,138 @@ body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic
   display: block;
 }
 
-#paper table.experiments .fullcolinfo .value {
+#paper table.experiments .fullcolinfo .value,
+#paper table.experiments .colinfo .value {
   white-space: nowrap;
+}
+
+#paper table.experiments .colinfo:not(.unpopulated) .unpopulated,
+#paper table.experiments .colinfo.unpopulated :not(.unpopulated):not(header) {
+  display: none;
+}
+
+#paper table.experiments .colinfo:not(.alreadythere) .alreadythere {
+  display: none;
+}
+
+#paper table.experiments .colinfo .alreadythere {
+  font-style: italic;
+  font-weight: normal;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox {
+  transform: none;
+  position: absolute;
+  top: -10em;
+  left: -1em;
+  z-index: 10;
+  height: 20em;
+  width: 25em;
+  background: white;
+  border: 1px solid black;
+  border-radius: .5em;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  font-size: 80%;
+  padding: 1em;
+  text-align: left;
+}
+
+#paper table.experiments tr:first-child th.add:not(.adding) .addcolumnbox,
+#paper table.experiments tr:first-child th.add:not(.adding) .colinfo {
+  display: none;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox header,
+#paper table.experiments tr:first-child th.add .addcolumnbox footer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  flex: 0 0 auto;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox header span.search {
+  flex: 1 0 5em;
+  margin-left: auto;
+  padding-left: 1em;
+  max-width: 10em;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox header input.search {
+  width: 100%;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox h1 {
+  font-size: 120%;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox > ul {
+  overflow: auto;
+  margin: .5em 0;
+  padding: 0;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox > ul > li {
+  overflow: auto;
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: .2em .3em .2em 2em;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox > ul > li:last-child {
+  border-bottom: 1px solid #888;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox > ul > li:hover:not(.heading):not(.alreadythere) {
+  background: rgba(243,230,255,1);
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox > ul > li.alreadythere {
+  background-color: #eee;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox > ul > li.alreadythere:hover {
+  background: rgba(228,215,240,1);
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox > ul > li.heading {
+  padding: .3em;
+  /*font-weight: bold;*/
+  background: rgba(128,0,255,.05);
+  border-top: 1px solid black;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox > ul > li > .coltitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 auto;
+  white-space: nowrap;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox > ul > li.alreadythere > .coltitle {
+  color: #444;
+  font-style: italic;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox > ul > li:not(.alreadythere) > .coltitle {
+  cursor: pointer;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox > ul > li > .definedby {
+  display: block;
+  flex: 0 0 auto;
+  font-size: 67%;
+}
+
+#paper table.experiments tr:first-child th.add .addcolumnbox:not(.loading) > ul:empty:after {
+  display: block;
+  content: 'error: no columns available';
 }
 
 #paper table.experiments td {
