@@ -96,3 +96,9 @@ module.exports.deleteCHECKvalues = function deleteCHECKvalues(obj) {
     }
   }
 };
+
+module.exports.waitForPromise = function waitForPromise(p) {
+  return new Promise((resolve /* ignoring the reject function */) => {
+    Promise.resolve(p).then(() => resolve(), () => resolve());
+  });
+};

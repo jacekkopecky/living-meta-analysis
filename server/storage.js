@@ -340,7 +340,7 @@ function fillByAndCtimeInComments(comments, origComments, email) {
   }
 }
 
-function checkForDisallowedChanges(paper, origPaper) {
+function checkForDisallowedChanges(paper, origPaper, columns) {
   // todo really, this should use a diff format and check that all diffs are allowed
   //   this will be a diff from the user's last version to the incoming version,
   //   not from the existing version to the incoming version,
@@ -415,6 +415,13 @@ function checkForDisallowedChanges(paper, origPaper) {
           }
         }
       }
+      if (exp.data) {
+        for (const dataKey of Object.keys(exp.data)) {
+          if (!(dataKey in columns)) {
+            throw new ValidationError('cannot include data with unknown column ID ' + dataKey);
+          }
+        }
+      }
     }
   }
 }
@@ -437,7 +444,12 @@ module.exports.savePaper = (paper, email, origTitle) => {
   // the following serializes this save after the previous one, whether it fails or succeeds
   // this way we can't have two concurrent saves create papers with the same title
 
-  currentSave = currentSave.then(() => paperCache, () => paperCache)
+  let columns;
+
+  currentSave = tools.waitForPromise(currentSave)
+  .then(() => columnCache)
+  .then((cols) => { columns = cols; })
+  .then(() => paperCache)
   .then((papers) => {
     // prepare the paper for saving
     const ctime = tools.uniqueNow();
@@ -483,7 +495,7 @@ module.exports.savePaper = (paper, email, origTitle) => {
     }
 
     // validate incoming data
-    checkForDisallowedChanges(paper, origPaper);
+    checkForDisallowedChanges(paper, origPaper, columns);
 
     // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
     fillByAndCtimes(paper, origPaper, email);
@@ -673,12 +685,12 @@ module.exports.saveColumn = (recvCol, email) => {
   // todo identify the columns to be saved and actually save them
   return columnCache
   .then((columns) => {
-    const origCol = columns[recvCol.id];
-
     // first validate title and type
-    if (!recvCol.title.trim() || COLUMN_TYPES.indexOf(recvCol.type) === -1) {
+    if (!recvCol.title || !recvCol.title.trim() || COLUMN_TYPES.indexOf(recvCol.type) === -1) {
       throw new ValidationError('column invalid: must have title and allowed type');
     }
+
+    const origCol = columns[recvCol.id];
 
     if (!origCol) {
       // recvCol is a new column
