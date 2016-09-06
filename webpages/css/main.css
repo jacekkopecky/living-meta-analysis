@@ -419,7 +419,8 @@ section.list footer .add {
   font-size: 1.65em;
   line-height: 100%;
   margin: .0606em;
-  cursor: default;
+  text-decoration: none;
+  color: black;
 }
 
 section.list > ul {
