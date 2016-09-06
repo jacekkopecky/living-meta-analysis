@@ -289,6 +289,9 @@ body:not(.boxpinned) .popupboxtrigger.popupboxhighlight:hover,
   border: 1px solid rgba(0,0,0,.5);
 }
 
+body.new .userinfo #toggle-editing {
+  display: none;
+}
 
 
 

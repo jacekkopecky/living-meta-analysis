@@ -43,17 +43,17 @@
   var toggleButton = _.byId('toggle-editing');
   lima.editing = localStorage.limaEditing !== 'false';
 
-  function toggleEditing(val) {
+  lima.toggleEditing = function (val, skipSave) {
     lima.editing = val;
-    localStorage.limaEditing = lima.editing;
+    if (!skipSave) localStorage.limaEditing = lima.editing;
     toggleButton.textContent = lima.editing ? 'Turn editing off' : 'Turn editing on';
     document.body.classList[lima.editing ? 'add' : 'remove']('editing');
   }
 
   if (toggleButton) {
-    toggleEditing(lima.editing);
+    lima.toggleEditing(lima.editing);
     toggleButton.addEventListener('click', function () {
-      toggleEditing(!lima.editing);
+      lima.toggleEditing(!lima.editing);
     })
   }
 

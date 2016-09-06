@@ -158,6 +158,12 @@
 
     addPaperChangeVerifier(function (newPaper) { return paper.id === newPaper.id; });
     addPaperDOMSetter(function(paper) {
+      if (!paper.id) {
+        _.addClass('body', 'new');
+        lima.toggleEditing(true, true);
+      } else {
+        _.removeClass('body', 'new');
+      }
       _.fillEls('#paper .title:not(.unsaved):not(.validationerror)', paper.title);
       fillingTags = true; // because that causes onBlur on a new tag and that mustn't be a save
       _.fillTags('#paper .tags', paper.tags, flashTag); flashTag = null;
