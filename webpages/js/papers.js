@@ -185,6 +185,11 @@
       addConfirmedUpdater('#paper .link span.editing', '#paper .link button.confirm', '#paper .link button.cancel', 'textContent', identity, paper, 'link');
       addConfirmedUpdater('#paper .doi span.editing', '#paper .doi button.confirm', '#paper .doi button.cancel', 'textContent', identity, paper, 'doi');
 
+      // workaround for chrome not focusing right
+      // clicking on the placeholder 'doi' of an empty editable doi value focuses the element but doesn't react to subsequent key strokes
+      _.addEventListener('#paper .link .value.editing', 'click', blurAndFocus);
+      _.addEventListener('#paper .doi .value.editing', 'click', blurAndFocus);
+
       addOnInputUpdater("#paper .authors .value", 'textContent', identity, paper, 'authors');
       addOnInputUpdater("#paper .reference .value", 'textContent', identity, paper, 'reference');
       addOnInputUpdater("#paper .description .value", 'textContent', identity, paper, 'description');
@@ -1328,7 +1333,8 @@
       }
       editingEl.classList.remove('validationerror');
       setValidationErrorClass();
-      if (value !== getDeepValue(target, targetProp)) {
+      var origValue = getDeepValue(target, targetProp) || '';
+      if (value !== origValue) {
         confirmEl.disabled = false;
         editingEl.classList.add('unsaved');
       } else {
@@ -1459,6 +1465,7 @@
   // - or an event whose target is such an element
   // - or a box ID by which we can find the element
   function findPopupBox(box) {
+    var origBox = box;
     if (box instanceof Event) box = box.target;
     if (box instanceof Node) {
       // find the popupbox, first inside el, then outside it
@@ -1469,7 +1476,7 @@
     } else {
       box = _.findEl('.popupbox[data-boxid="' + box + '"]')
     }
-    if (!box) console.warn('cannot find element for popup box');
+    if (!box && !(origBox instanceof Element)) console.warn('cannot find element for popup box ' + origBox);
     return box;
   }
 
@@ -1603,6 +1610,12 @@
       el.focus();
       return el;
     }
+  }
+
+  // a workaround for strange chrome behaviour
+  function blurAndFocus(ev) {
+    ev.target.blur();
+    ev.target.focus();
   }
 
 
