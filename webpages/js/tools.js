@@ -136,6 +136,7 @@
     var newTagTemplate = _.byId('new-tag-template');
     _.findEls(root, selector).forEach(function (el) {
       el.innerHTML = '';
+      el.classList[tags.length ? 'remove' : 'add']('empty');
       tags.forEach(function (tag) {
         var tagEl = _.cloneTemplate(tagTemplate).children[0];
         _.fillEls(tagEl, '.tag', tag);

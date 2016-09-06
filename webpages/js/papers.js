@@ -199,6 +199,8 @@
        *
        */
 
+      if (!paper.tags) paper.tags = [];
+
       // events for removing a tag
       _.findEls('#paper .tags .tag + .removetag').forEach(function (btn) {
         btn.onclick = function () {

@@ -815,6 +815,11 @@ body.page-about-you.editing .fullcolinfo header {
   display: none;
 }
 
+#paper ul.tags.empty > li.addtag .notempty,
+#paper ul.tags:not(.empty) > li.addtag .empty {
+  display: none;
+}
+
 #paper ul.tags .addtag:hover {
   background-color: rgba(255,255,255,1);
   color: black;
