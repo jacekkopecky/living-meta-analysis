@@ -30,6 +30,10 @@
     return columnsPromise;
   }
 
+  lima.newColumn = function() {
+    return storeColumn({id: 'new_' + Date.now(), type: lima.columnTypes[0], new: true});
+  }
+
   function storeColumns(columns) {
     lima.columns = {};
     Object.keys(columns).forEach(function (id) {
@@ -41,23 +45,31 @@
   function storeColumn(column) {
     if (!(column instanceof Column)) column = Object.assign(new Column(), column);
     lima.columns[column.id] = column;
+    return column;
   }
 
   function Column() {}
   Column.prototype.save = function saveColumn() {
     var col = this;
+    var oldId = col.id;
     console.info('saving column');
     return lima.getGapiIDToken()
       .then(function(idToken) {
+        var toSend = JSON.stringify(col);
+        if (col.new) {
+          delete col.id;
+          toSend = JSON.stringify(col);
+          col.id = oldId;
+        }
         return fetch('/api/columns', {
           method: 'POST',
           headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
-          body: JSON.stringify(col),
+          body: toSend,
         });
       })
       .then(_.fetchJson)
       .then(function(json) {
-        storeColumn(json);
+        lima.columns[oldId] = storeColumn(json);
         col.id = json.id; // this allows us to get a new ID for a new column from the server
         if (lima.updateView) lima.updateView();
       })

@@ -338,17 +338,20 @@
     }
 
     var showColumns = findColumnsInPaper(paper);
-    var newPaperShowColumns = showColumns;
+    // when accessing showColumns members, need to do a lookup through lima.columns
+    // because showColumns[i] may be a temporary ID of a new column, which gets renamed on save
+
+    // a small change doesn't add/remove or change columns
     addPaperChangeVerifier(function (newPaper) {
-      return findColumnsInPaper(newPaper).length === showColumns.length;
+      var newPaperShowColumns = findColumnsInPaper(newPaper);
+      if (newPaperShowColumns.length !== showColumns.length) return false;
+
+      for (var i = 0; i < showColumns.length; i++) {
+        if (lima.columns[showColumns[i]].id !== newPaperShowColumns[i]) return false;
+      }
+
+      return true;
     });
-    addPaperDOMSetter(
-      function (newPaper) {
-        if (!newPaperShowColumns) newPaperShowColumns = findColumnsInPaper(newPaper);
-      },
-      function cleanup() {
-        newPaperShowColumns = null;
-      });
 
     /* column headings
      *
@@ -366,20 +369,25 @@
     // fill column headings
     var headingsRowNode = _.findEl(table, 'tr:first-child');
     var addColumnNode = _.findEl(table, 'tr:first-child > th.add');
-    showColumns.forEach(function (ignored, colIndex) {
+    showColumns.forEach(function (colId) {
       var th = _.cloneTemplate('col-heading-template').children[0];
       _.addEventListener(th, 'button.move', 'click', moveColumn);
       headingsRowNode.insertBefore(th, addColumnNode);
       addPaperDOMSetter(function () {
-        var col = newPaperShowColumns[colIndex];
+        var col = lima.columns[colId];
+        // fix up colId in case it got updated by saving a new column
+        colId = col.id;
+
+        var user = lima.getAuthenticatedUserEmail();
+        var curtime = Date.now();
         _.fillEls(th, '.coltitle:not(.unsaved):not(.validationerror)', col.title);
         _.fillEls(th, '.coldescription', col.description);
-        _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime));
-        _.fillEls(th, '.colmtime .value', _.formatDateTime(col.mtime));
-        _.fillEls(th, '.definedby .value', col.definedBy);
-        _.setProps(th, '.definedby .value', 'href', '/' + col.definedBy + '/');
+        _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime || curtime));
+        _.fillEls(th, '.colmtime .value', _.formatDateTime(col.mtime || curtime));
+        _.fillEls(th, '.definedby .value', col.definedBy || user);
+        _.setProps(th, '.definedby .value', 'href', '/' + (col.definedBy || user) + '/');
 
-        _.setDataProps(th, '.needs-owner', 'owner', col.definedBy);
+        _.setDataProps(th, '.needs-owner', 'owner', col.definedBy || user);
 
         _.setDataProps(th, 'button', 'id', col.id);
 
@@ -390,9 +398,22 @@
         th.classList.add(col.type);
         _.addClass(th, '.coltype', col.type);
 
-        addOnInputUpdater(th, '.coldescription', 'textContent', identity, lima.columns[col.id], ['description']);
+        if (col.new) {
+          th.classList.add('newcol');
+          _.addClass(th, '.coltype', 'newcol');
+          _.setDataProps(th, '.coltype', 'id', col.id);
+          _.fillEls(th, '.coltitle + .coltitlerename', 'confirm');
+          _.addClass(th, '.coltitle.editing:not(.unsaved):not(.validationerror)', 'new');
+        } else {
+          th.classList.remove('newcol');
+          _.removeClass(th, '.coltype', 'newcol');
+          _.fillEls(th, '.coltitle + .coltitlerename', 'rename');
+          _.removeClass(th, '.coltitle.editing:not(.unsaved):not(.validationerror)', 'new');
+        }
 
-        addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, lima.columns[col.id], 'title');
+        addOnInputUpdater(th, '.coldescription', 'textContent', identity, col, ['description']);
+
+        addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, col, 'title', deleteNewColumn);
 
         lima.columnTypes.forEach(function (type) {
           _.setDataProps(th, '.coltype .switch.type-' + type, 'newType', type);
@@ -445,15 +466,16 @@
         setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', expIndex);
       })
 
-      showColumns.forEach(function (col, colIndex) {
+      showColumns.forEach(function (colId) {
         var td = _.cloneTemplate('experiment-datum-template').children[0];
         tr.appendChild(td);
-        var colId = newPaperShowColumns[colIndex].id;
-        var comments = [];
-        var commentsLength = 0;
 
         // populate the value
         addPaperDOMSetter(function (paper) {
+          var col = lima.columns[colId];
+          // fix up colId in case it got updated by saving a new column
+          colId = col.id;
+
           var val = null;
           var experiment = paper.experiments[expIndex];
           if (experiment.data && experiment.data[colId]) {
@@ -475,51 +497,73 @@
           _.fillEls (td, '.valctime', _.formatDateTime(val && val.ctime || Date.now()));
 
           lima.columnTypes.forEach(function (type) {td.classList.remove(type);});
-          td.classList.add(newPaperShowColumns[colIndex].type);
+          td.classList.add(col.type);
 
           setupPopupBoxPinning(td, '.datum.popupbox', expIndex + '$' + colId);
         });
 
-        // populate comments
-        if (experiment.data && experiment.data[colId]) {
-          comments = experiment.data[colId].comments || [];
-          // commentsLength is a static snapshot of the size in case `comments` changes underneath us by adding a comment
-          commentsLength = comments.length;
+        // oldCommentsLength is a static snapshot of the size in case comments change underneath us by adding a comment
+        var oldCommentsLength = 0;
+        if (experiment.data && experiment.data[colId] && experiment.data[colId].comments) {
+          oldCommentsLength = experiment.data[colId].comments.length;
         }
-
         addPaperChangeVerifier(function (newPaper) {
+          // fix up colId in case it got updated by saving a new column
+          colId = lima.columns[colId].id;
+
           var newComments = [];
           if (newPaper.experiments[expIndex].data && newPaper.experiments[expIndex].data[colId]) {
             newComments = newPaper.experiments[expIndex].data[colId].comments || [];
           }
-          return commentsLength === newComments.length;
+          return oldCommentsLength === newComments.length;
         });
 
-        if (comments.length > 0) {
-          td.classList.add('hascomments');
-        } else {
-          td.classList.remove('hascomments');
-        }
-        _.fillEls(td, '.commentcount', comments.length);
-        fillComments('comment-template', td, '.datum.popupbox main', comments, ['experiments', expIndex, 'data', colId, 'comments']);
+        // populate comments
+        addPaperDOMSetter(function (newPaper) {
+          var col = lima.columns[colId];
+          // fix up colId in case it got updated by saving a new column
+          colId = col.id;
+
+          var newComments = [];
+          if (newPaper.experiments[expIndex].data && newPaper.experiments[expIndex].data[colId]) {
+            newComments = newPaper.experiments[expIndex].data[colId].comments || [];
+          }
+
+          if (newComments.length > 0) {
+            td.classList.add('hascomments');
+          } else {
+            td.classList.remove('hascomments');
+          }
+
+          if (col.new) {
+            td.classList.add('newcol');
+          } else {
+            td.classList.remove('newcol');
+          }
+          _.fillEls(td, '.commentcount', newComments.length);
+        });
+
+        fillComments('comment-template', td, '.datum.popupbox main', paper, ['experiments', expIndex, 'data', colId, 'comments']);
       });
 
     });
 
-    showColumns.forEach(function (col, colIndex) {
+    // fill in the empty last row of the table
+    showColumns.forEach(function (colId) {
       var td = document.createElement('td');
       addRowNode.appendChild(td);
 
       addPaperDOMSetter(function () {
         lima.columnTypes.forEach(function (type) {td.classList.remove(type);});
-        td.classList.add(newPaperShowColumns[colIndex].type);
+        td.classList.add(lima.columns[colId].type);
       });
     });
 
     _.addEventListener(table, 'tr.add button.add', 'click', addExperimentRow);
 
     _.addEventListener(table, 'th.add button.add', 'click', addExperimentColumn);
-    _.addEventListener(table, 'th.add button.cancel', 'click', cancelAddExperimentColumn);
+    _.addEventListener(table, 'th.add button.cancel', 'click', dismissAddExperimentColumn);
+    _.addEventListener(table, 'th.add button.addnew', 'click', addNewExperimentColumn);
 
     var experimentsContainer = _.findEl('#paper .experiments');
     experimentsContainer.appendChild(table);
@@ -552,13 +596,15 @@
 
     // show the add column box
     _.addClass('#paper table.experiments tr:first-child th.add', 'adding');
+    _.addClass('body', 'addnewcolumn');
 
     lima.getColumns()
     .then(populateAddColumnsList);
   }
 
-  function cancelAddExperimentColumn() {
+  function dismissAddExperimentColumn() {
     _.removeClass('#paper table.experiments tr:first-child th.add', 'adding');
+    _.removeClass('body', 'addnewcolumn');
   }
 
   function populateAddColumnsList(columns) {
@@ -568,10 +614,10 @@
     var ordered = {yours: { result: [], characteristic: []},
                    other: { result: [], characteristic: []},
                    already: { result: [], characteristic: []}};
-    Object.keys(columns).forEach(function(colid) {
-      var col = columns[colid];
-      var bucket = (col.definedBy === user) ? 'yours' : 'other';
-      if (currentPaper.columnOrder.indexOf(colid) > -1) bucket = 'already';
+    Object.keys(columns).forEach(function(colId) {
+      var col = columns[colId];
+      var bucket = (col.definedBy === user || !col.definedBy) ? 'yours' : 'other';
+      if (currentPaper.columnOrder.indexOf(colId) > -1) bucket = 'already';
       ordered[bucket][col.type].push(col);
     })
     ordered.yours.result.sort(compareColumnsByAuthorAndTitle);
@@ -602,6 +648,7 @@
   }
 
   function addColumnsBlock(list, headingText, columns) {
+    var user = lima.getAuthenticatedUserEmail();
     if (!columns.length) return; // do nothing if we have no columns in the block
     var heading = document.createElement('li');
     heading.classList.add('heading');
@@ -610,9 +657,9 @@
     columns.forEach(function (col) {
       var li = _.cloneTemplate('column-list-item-template').children[0];
       _.fillEls(li, '.coltitle', col.title);
-      _.fillEls(li, '.definedby .value', col.definedBy);
-      _.setProps(li, '.definedby .value', 'href', '/' + col.definedBy + '/');
-      _.setDataProps(li, '.needs-owner', 'owner', col.definedBy);
+      _.fillEls(li, '.definedby .value', col.definedBy || user);
+      _.setProps(li, '.definedby .value', 'href', '/' + (col.definedBy || user) + '/');
+      _.setDataProps(li, '.needs-owner', 'owner', col.definedBy || user);
       li.dataset.colid = col.id;
 
       if (currentPaper.columnOrder.indexOf(col.id) > -1) {
@@ -672,10 +719,35 @@
     if (currentPaper.columnOrder.indexOf(col.id) > -1) return; // do nothing on columns that are already there
 
     currentPaper.columnOrder.push(col.id);
+    moveResultsAfterCharacteristics(currentPaper);
     updatePaperView();
 
     // the click will popup the wrong box, so delay popping up the right one until after the click is fully handled
-    setTimeout(pinPopupBox, 0, 'fullcolinfo@' + col.id);
+    setTimeout(pinPopupBox, 0, 'fullcolinfo@' + el.dataset.colid);
+  }
+
+  function addNewExperimentColumn() {
+    dismissAddExperimentColumn();
+    var col = lima.newColumn();
+    currentPaper.columnOrder.push(col.id);
+    moveResultsAfterCharacteristics(currentPaper);
+    updatePaperView();
+    setTimeout(focusFirstValidationError, 0);
+  }
+
+  function deleteNewColumn() {
+    unpinPopupBox();
+    for (var i = 0; i < currentPaper.columnOrder.length; i++) {
+      var colId = currentPaper.columnOrder[i];
+      var col = lima.columns[colId];
+      if (col.new && !col.title) {
+        currentPaper.columnOrder.splice(i, 1);
+        moveResultsAfterCharacteristics(currentPaper);
+        break;
+      }
+    }
+    updatePaperView();
+    setTimeout(focusFirstValidationError, 0);
   }
 
   /* adding rows
@@ -730,10 +802,11 @@
    *
    */
 
-  function fillComments(templateId, root, selector, comments, commentsPropPath) {
+  function fillComments(templateId, root, selector, oldPaper, commentsPropPath) {
     var targetEl = _.findEl(root, selector);
     targetEl.innerHTML = '';
-    for (var index = 0; index < comments.length; index++) {
+    var oldComments = getDeepValue(oldPaper, commentsPropPath) || [];
+    for (var index = 0; index < oldComments.length; index++) {
       (function (index) {
         // inline function to save `index` and `el`
         var el = _.cloneTemplate(templateId).children[0];
@@ -774,7 +847,6 @@
         }
       });
     });
-
   }
 
   var paperTitles = [];
@@ -959,6 +1031,25 @@
     var showCharacteristicColumns = [];
     var showResultColumns = [];
 
+    // clean experiment data and columnOrder of new columns that got new ID when they were saved
+    paper.experiments.forEach(function (experiment) {
+      if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
+        var col = lima.columns[key];
+        if (col && col.id !== key) {
+          experiment.data[col.id] = experiment.data[key];
+          delete experiment.data[key];
+        }
+      });
+    });
+
+    if (Array.isArray(paper.columnOrder)) paper.columnOrder.forEach(function (key, index) {
+      var col = lima.columns[key];
+      if (col && col.id !== key) {
+        paper.columnOrder[index] = col.id;
+      }
+    });
+
+    // now gather columns in the paper, then sort the columns by type and order
     paper.experiments.forEach(function (experiment) {
       if (experiment.data) Object.keys(experiment.data).forEach(addColumn);
     });
@@ -970,8 +1061,8 @@
         var col = lima.columns[key];
         showColumnsHash[key] = col;
         switch (col.type) {
-          case 'characteristic': showCharacteristicColumns.push(col); break;
-          case 'result':         showResultColumns.push(col); break;
+          case 'characteristic': showCharacteristicColumns.push(col.id); break;
+          case 'result':         showResultColumns.push(col.id); break;
         }
       }
     }
@@ -983,8 +1074,8 @@
 
     function compareColsByOrder(c1, c2) {
       if (!Array.isArray(paper.columnOrder)) return 0;
-      var i1 = paper.columnOrder.indexOf(c1.id);
-      var i2 = paper.columnOrder.indexOf(c2.id);
+      var i1 = paper.columnOrder.indexOf(c1);
+      var i2 = paper.columnOrder.indexOf(c2);
       if (i1 === i2) return 0;
       if (i1 === -1) return 1;
       if (i2 === -1) return -1;
@@ -1017,9 +1108,9 @@
     if (!Array.isArray(paper.columnOrder)) paper.columnOrder = [];
 
     var columns = findColumnsInPaper(paper);
-    columns.forEach(function (col) {
-      if (paper.columnOrder.indexOf(col.id) === -1) {
-        paper.columnOrder.push(col.id);
+    columns.forEach(function (colId) {
+      if (paper.columnOrder.indexOf(colId) === -1) {
+        paper.columnOrder.push(colId);
       }
     })
 
@@ -1057,8 +1148,13 @@
     // if the oldtype is already the same as newtype, do nothing
     if (coltypeEl.classList.contains(newTypeEl.dataset.newType)) return;
 
-    coltypeEl.classList.add('unsaved');
     coltypeEl.dataset.newType = newTypeEl.dataset.newType;
+    if (coltypeEl.classList.contains('newcol')) {
+      setTimeout(doChangeColumnTypeConfirmOrCancel, 0, coltypeEl);
+    } else {
+      coltypeEl.classList.add('unsaved');
+      setUnsavedClass();
+    }
   }
 
   function changeColumnTypeConfirmOrCancel(ev) {
@@ -1089,8 +1185,9 @@
     }
 
     coltypeEl.classList.remove('unsaved');
+    setUnsavedClass();
 
-    if (btn.classList.contains('confirm')) {
+    if (!btn.classList.contains('cancel')) {
       col.type = coltypeEl.dataset.newType;
       updatePaperView();
       _.scheduleSave(col);
@@ -1111,20 +1208,17 @@
    *
    */
   var paperDOMSetters;
-  var paperDOMCleanups;
   var paperChangeVerifiers;
 
   resetDOMSetters();
 
   function resetDOMSetters() {
     paperDOMSetters = [];
-    paperDOMCleanups = [];
     paperChangeVerifiers = [];
   }
 
-  function addPaperDOMSetter (f, cleanup) {
+  function addPaperDOMSetter (f) {
     if (f && paperDOMSetters.indexOf(f) === -1) paperDOMSetters.push(f);
-    if (cleanup && paperDOMCleanups.indexOf(cleanup) === -1) paperDOMCleanups.push(cleanup);
   }
 
   function addPaperChangeVerifier (f) {
@@ -1133,7 +1227,6 @@
 
   function callPaperDOMSetters(paper) {
     paperDOMSetters.forEach(function (setter) { setter(paper); });
-    paperDOMCleanups.forEach(function (cleanup) { cleanup(paper); });
   }
 
   var identity = null; // special value to use as validatorSanitizer
@@ -1409,7 +1502,12 @@
 
   function setupPopupBoxPinning(el, selector, localid) {
     _.findEls(el, selector).forEach(function (box) {
+      var oldId = box.dataset.boxid;
       if (box.dataset.boxtype) box.dataset.boxid = box.dataset.boxtype + "@" + localid;
+      // in case a new column was saved and got a new ID, and the box was previously pinned, update the pinned box's ID here
+      if (oldId && pinnedBox === oldId) {
+        pinnedBox = box.dataset.boxid;
+      }
       box.classList.remove('pinned');
 
       var trigger = box;
@@ -1437,9 +1535,10 @@
   // dismiss pinned popup boxes with Escape or with a click outside them
   function dismissOrBlurOnEscape(ev) {
     if (ev.keyCode === 27) {
-      if (ev.target === document.activeElement && document.activeElement !== document.body) {
+      if (ev.target === document.activeElement && document.activeElement !== document.body && document.activeElement.nodeName !== 'BUTTON') {
         ev.target.blur();
       } else if (pinnedBox) {
+        dismissAddExperimentColumn();
         unpinPopupBox();
       }
     }
@@ -1452,7 +1551,7 @@
     while (el && !el.classList.contains('pin') && !el.classList.contains('popupboxtrigger')) el = el.parentElement;
     if (!el || el.classList.contains('pin') && pinnedBox) {
       unpinPopupBox();
-      cancelAddExperimentColumn();
+      dismissAddExperimentColumn();
     }
     else pinPopupBox(el);
   }
@@ -1477,11 +1576,11 @@
   }
 
   function focusFirstUnsaved() {
-    focusElement(_.findEl('#paper .unsaved'));
+    return focusElement(_.findEl('#paper .unsaved'));
   }
 
   function focusFirstValidationError() {
-    focusElement(_.findEl('#paper .validationerror'));
+    return focusElement(_.findEl('#paper .validationerror'));
   }
 
   function focusElement(el) {
@@ -1489,6 +1588,7 @@
       // if the element is inside a popup box, pin that box so the element is visible
       pinPopupBox(el);
       el.focus();
+      return el;
     }
   }
 
@@ -1521,6 +1621,7 @@
   lima.getDeepValue = getDeepValue;
   lima.getPaperTitles = function(){return paperTitles;};
   lima.getCurrentPaper = function(){return currentPaper;};
+  lima.findColumnsInPaper = findColumnsInPaper;
 
   window._ = _;
 

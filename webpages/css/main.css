@@ -551,6 +551,13 @@ section.list > ul > li > ul.tags > li {
   display: inline-block;
 }
 
+#paper .popupboxhighlight .coltitle:empty:before {
+  content: 'enter title';
+  color: #aaa;
+  font-style: italic;
+  display: inline-block;
+}
+
 #paper > header .title.editing.unsaved:not(.validationerror):not(:focus),
 #paper .exptitle.editing.unsaved:not(.validationerror):not(:focus),
 #paper .coltitle.editing.unsaved:not(.validationerror):not(:focus),
@@ -650,7 +657,7 @@ body.page-about-you.editing .fullcolinfo header {
 
 #paper > header .title.editing.unsaved ~ .titlerenamewarning,
 #paper .coltitle.editing.unsaved ~ .exprenamewarning,
-#paper .coltitle.editing.unsaved ~ .colrenamewarning {
+#paper th:not(.newcol) .coltitle.editing.unsaved ~ .colrenamewarning {
   transition: visibility 0s 1s;
 }
 
@@ -664,11 +671,11 @@ body.page-about-you.editing .fullcolinfo header {
 #paper .exptitle.editing:not(.new).unsaved + .exptitlerename:hover ~ .exprenamewarning,
 #paper .exptitle.editing:not(.new).unsaved + .exptitlerename:focus ~ .exprenamewarning,
 #paper .exptitle.editing:not(.new).unsaved ~ .exprenamewarning:hover,
-#paper .coltitle.editing.unsaved:focus ~ .colrenamewarning,
-#paper .coltitle.editing.unsaved:hover ~ .colrenamewarning,
-#paper .coltitle.editing.unsaved + .coltitlerename:hover ~ .colrenamewarning,
-#paper .coltitle.editing.unsaved + .coltitlerename:focus ~ .colrenamewarning,
-#paper .coltitle.editing.unsaved ~ .colrenamewarning:hover {
+#paper th:not(.newcol) .coltitle.editing.unsaved:focus ~ .colrenamewarning,
+#paper th:not(.newcol) .coltitle.editing.unsaved:hover ~ .colrenamewarning,
+#paper th:not(.newcol) .coltitle.editing.unsaved + .coltitlerename:hover ~ .colrenamewarning,
+#paper th:not(.newcol) .coltitle.editing.unsaved + .coltitlerename:focus ~ .colrenamewarning,
+#paper th:not(.newcol) .coltitle.editing.unsaved ~ .colrenamewarning:hover {
   visibility: visible;
   transition: visibility 0s;
 }
@@ -853,14 +860,11 @@ body.page-about-you.editing .fullcolinfo header {
   display: block;
 }
 
-#paper:not(.unsaved):not(.validationerror) table.experiments button.notadd { display: none; }
-
-#paper.unsaved table.experiments button.add,
-#paper.validationerror table.experiments button.add {
+#paper:not(.unsaved):not(.validationerror) .when-unsaved,
+#paper.unsaved .not-unsaved,
+#paper.validationerror .not-unsaved {
   display: none;
 }
-
-
 
 #paper.savingerror > header .savingerror { display: block; cursor: pointer; }
 
@@ -897,7 +901,11 @@ body.page-about-you.editing .fullcolinfo header {
   margin-right: 0em;
   margin-top: 10em;
   border-spacing: 0;
-  padding-right: 23em; /* 15em for width of popupbox and 8em for width of overhanging column labels */
+  padding-right: 23em; /* 15em for width of popupbox and 8em for width of overhanging column labels and new column box */
+}
+
+body.addnewcolumn #paper table.experiments {
+  padding-right: 35em; /* 15em for width of popupbox and 22em for width of new column box */
 }
 
 #paper .no-table {
@@ -1052,6 +1060,11 @@ body:not(.editing) #paper table.experiments tr:first-child th:not(:nth-last-chil
   display: none;
 }
 
+#paper table.experiments th.newcol .fullcolinfo .type-characteristic,
+#paper table.experiments th.newcol .fullcolinfo .type-result {
+  font-weight: bold;
+}
+
 body.editing #paper table.experiments .fullcolinfo .coltype.yours .type-characteristic,
 body.editing #paper table.experiments .fullcolinfo .coltype.yours .type-result {
   border: 1px solid transparent;
@@ -1082,7 +1095,25 @@ body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic
   top: calc(-2.2em - .5em - 1px);
   display: inline;
   z-index: 1;
+}
+
+body.editing #paper:not(.unsaved):not(.validationerror) table.experiments .fullcolinfo .coltype.newcol.when-unsaved,
+body.editing #paper.unsaved table.experiments .fullcolinfo .coltype.newcol.not-unsaved,
+body.editing #paper.validationerror table.experiments .fullcolinfo .coltype.newcol.not-unsaved {
+  display: initial;
+}
+
+body.editing #paper:not(.unsaved):not(.validationerror) table.experiments .fullcolinfo .coltype.newcol.not-unsaved,
+body.editing #paper.unsaved table.experiments .fullcolinfo .coltype.newcol.when-unsaved,
+body.editing #paper.validationerror table.experiments .fullcolinfo .coltype.newcol.when-unsaved {
+  display: none;
+}
+
+body.editing #paper table.experiments .fullcolinfo .coltype:not(.when-unsaved).yours.result .type-characteristic:hover,
+body.editing #paper table.experiments .fullcolinfo .coltype:not(.when-unsaved).yours.characteristic .type-result:hover {
+  background: rgba(243,230,255,1);
   cursor: pointer;
+  z-index: 3;
 }
 
 body.editing #paper table.experiments .fullcolinfo .coltype.yours.result .type-result,
@@ -1098,12 +1129,6 @@ body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic
 }
 body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic .type-result {
   border-bottom-right-radius: 0 0;
-}
-
-body.editing #paper table.experiments .fullcolinfo .coltype.yours.result .type-characteristic:hover,
-body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic .type-result:hover {
-  background: rgba(243,230,255,1);
-  z-index: 3;
 }
 
 #paper table.experiments .fullcolinfo .coltypeconfirm {
@@ -1269,6 +1294,27 @@ body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic
   vertical-align: top;
   border-right: 1px solid black;
   position: relative;
+}
+
+#paper table.experiments td.newcol {
+  background-color: #ddd;
+}
+
+#paper table.experiments td.newcol > *:not(.newcol) {
+  display: none !important;
+}
+
+#paper table.experiments td.newcol > .newcol {
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#paper table.experiments td:not(.newcol) > .newcol {
+  display: none;
 }
 
 #paper table.experiments td span[contenteditable] {

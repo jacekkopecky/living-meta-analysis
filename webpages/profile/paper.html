@@ -44,6 +44,8 @@
       <h1 class="title notediting"></h1>
       <h1 class="title editing oneline" contenteditable placeholder="enter a short name"></h1>
       <button class="titlerename editing" disabled>rename</button>
+      <!-- rename and change type warnings should only show up if the server confirms
+           that there are actually other users of the thing (paper, column) -->
       <div class="titlerenamewarning">
         <h1>Are you sure to rename the paper from <span class="title"></span>?</h1>
         <p>If others are using the paper, a change of the short name might surprise them.
@@ -125,8 +127,8 @@
           </div>
         </th>
         <th class="add popupboxtrigger">
-          <div><span><button class="add notunpin">add a column</button>
-                     <button class="notadd" disabled title="can't add a column with unsaved changes">add a column</button></span></div>
+          <div><span><button class="add notunpin not-unsaved">add a column</button>
+                     <button class="when-unsaved" disabled title="can't add a column when some changes are unsaved">add a column</button></span></div>
           <div class="addcolumnbox loading">
             <header>
               <h1>Click column to add</h1>
@@ -158,8 +160,8 @@
         </th>
       </tr>
       <tr class="add">
-        <th><button class="add notunpin">add a row</button>
-            <button class="notadd" disabled title="can't add a row with unsaved changes">add a row</button></th>
+        <th><button class="add notunpin not-unsaved">add a row</button>
+            <button class="when-unsaved" disabled title="can't add a row when some changes are unsaved">add a row</button></th>
         <td class='no-data'>enter data by adding a row and then columns</td>
       </tr>
     </tbody>
@@ -175,11 +177,16 @@
     </div>
     <div class="fullcolinfo popupbox" data-boxtype='fullcolinfo'>
       <div class="pin"></div>
-      <button class="move left most editing" title="move column to the left">|«</button>
-      <button class="move left editing" title="move column to the left">«</button>
+      <button class="not-unsaved move left most editing" title="move column to the left">|«</button>
+      <button class="not-unsaved move left editing" title="move column to the left">«</button>
       <!-- <button class="hide editing">hide</button> -->
-      <button class="move right editing" title="move column to the right">»</button>
-      <button class="move right most editing" title="move column to the right">»|</button>
+      <button class="not-unsaved move right editing" title="move column to the right">»</button>
+      <button class="not-unsaved move right most editing" title="move column to the right">»|</button>
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">|«</button>
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">«</button>
+      <!-- <button class="hide editing">hide</button> -->
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">»</button>
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">»|</button>
       <header>
         <p class="coltitle notediting-or-not-yours needs-owner">error</p>
         <p class="coltitle editing only-if-yours needs-owner oneline" contenteditable placeholder="enter a column title">error</p>
@@ -199,7 +206,8 @@
       <!-- todo comments -->
       <!-- todo add a way of cloning a column -->
       <footer>
-        <span class="coltype needs-owner"><span class="type-characteristic switch">characteristic/moderator</span><span class="type-result switch">result</span><span class="aftertype"> column</span></span>
+        <span class="coltype needs-owner when-unsaved" title="can't change the type of a column when some changes are unsaved"><span class="type-characteristic">characteristic/moderator</span><span class="type-result">result</span><span class="aftertype"> column</span></span>
+        <span class="coltype needs-owner not-unsaved"><span class="type-characteristic switch">characteristic/moderator</span><span class="type-result switch">result</span><span class="aftertype"> column</span></span>
         <span class="definedby only-not-yours needs-owner"> defined by <a class="value" href="error">error</a>,</span>
         last updated <span class="colmtime"> on <span class="value date">error</span></span>
         <div class="coltypeconfirm">
@@ -252,6 +260,7 @@
   <td class="popupboxtrigger popupboxhighlight">
     <span class="value notediting"></span>
     <span class="value editing oneline" contenteditable></span>
+    <span class="newcol" title="cannot add values/comments for a new column until the column is saved with a title and a type"> </span>
     <div class="datum popupbox" data-boxtype='datumpopupbox'>
       <div class="pin"></div>
       <header>
@@ -285,7 +294,7 @@
 </template>
 
 <footer>
-  <p>LiMA (Living Meta-Analysis) by Jacek Kopecky et al. at University of Portsmouth, 2016</p>
+  <p>LiMA (Living Meta-Analysis) by <a href="mailto:jacek.kopecky@port.ac.uk">Jacek Kopecky</a> et al. at <a href="http://port.ac.uk/">University of Portsmouth</a>, 2016</p>
 </footer>
 
 
@@ -298,6 +307,12 @@
 <script src="/js/papers.js"></script>
 <script src="/js/version.js"></script>
 <script>
+function timeoutLoading() {
+  if (document.body.classList.contains('loading')) {
+    document.querySelector('.loadingspinner').textContent = 'sorry, there may be a problem (or a very slow connection), please feel free to contact us and tell us about it';
+  }
+}
+setTimeout(timeoutLoading, 5000);
 window.lima.initPage = function () {
   window.lima.requestAndFillUserProfile();
   window.lima.requestAndFillPaper();
