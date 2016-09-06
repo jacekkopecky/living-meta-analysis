@@ -286,6 +286,7 @@ module.exports.getPaperByTitle = (email, title, time) => {
   if (time) return Promise.reject('getPaperByTitle with time not implemented');
 
   // todo different users can use different titles for the same thing
+  if (title === 'new') return Promise.resolve(newPaper(email));
   return paperCache
   .then((papers) => {
     for (const p of papers) {
@@ -296,6 +297,15 @@ module.exports.getPaperByTitle = (email, title, time) => {
     return Promise.reject();
   });
 };
+
+function newPaper(email) {
+  const time = tools.uniqueNow();
+  return {
+    enteredBy: email,
+    ctime: time,
+    mtime: time,
+  };
+}
 
 module.exports.listPapers = () => paperCache;
 module.exports.listPaperTitles = () => paperCache.then(() => paperTitles);
