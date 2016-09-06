@@ -871,18 +871,21 @@
 
   function checkPaperTitleUnique(title) {
     if (title === '') throw null; // no message necessary
+    if (title === 'new') throw '"new" is a reserved paper name';
     if (!title.match(/^[a-zA-Z0-9.-]+$/)) throw 'paper short name cannot contain spaces or special characters';
     loadPaperTitles();
     if (title !== currentPaperOrigTitle && paperTitles.indexOf(title) !== -1) {
-      var message = 'paper ' + title + ' already exists, please try a different short name';
+      // try to give a useful suggestion for common names like Juliet94a
       var match = title.match(/(^[a-zA-Z0-9]*[0-9]+)([a-zA-Z]?)$/);
       if (match) {
         var suggestion = match[1];
-        var postfix = 97; // 'a'
+        var postfix = 97; // 97 is 'a'; 123 is beyond 'z'
         while (paperTitles.indexOf(suggestion+String.fromCharCode(postfix)) > -1 && postfix < 123) postfix++;
-        if (postfix < 123) message = 'try ' + suggestion + String.fromCharCode(postfix) + ', ' + title + ' is already used';
+        if (postfix < 123) throw 'try ' + suggestion + String.fromCharCode(postfix) + ', "' + title + '" is already used';
       }
-      throw message;
+
+      // otherwise just say this
+      throw 'paper "' + title + '" already exists, please try a different short name';
     }
     return title;
   }
@@ -1026,6 +1029,8 @@
    */
 
   function findColumnsInPaper(paper) {
+    if (!paper.experiments) return [];
+
     // find the columns used in the experiments
     var showColumnsHash = {};
     var showCharacteristicColumns = [];

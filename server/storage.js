@@ -362,6 +362,9 @@ function checkForDisallowedChanges(paper, origPaper, columns) {
     if (paperTitles.indexOf(paper.title) !== -1) {
       throw new ValidationError('paper title must be unique');
     }
+    if (paper.title === 'new') {
+      throw new ValidationError('"new" is a reserved paper name');
+    }
   }
 
   // check that every experiment has at least the data values that were there originally
