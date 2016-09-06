@@ -364,6 +364,13 @@
     return retval;
   }
 
+  // for testing purposes - simulating a delay before a promise is resolved
+  _.delayPromise = function delayPromise(x) {
+    return new Promise(function (resolve) {
+      setTimeout(resolve, 1000, x);
+    })
+  }
+
 
   /* save
    *
