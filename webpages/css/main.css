@@ -916,6 +916,10 @@ body.page-about-you.editing .fullcolinfo header {
   padding-right: 23em; /* 15em for width of popupbox and 8em for width of overhanging column labels and new column box */
 }
 
+#paper.no-data table.experiments {
+  padding-right: 17em; /* 15em for width of popupbox and 2em for extra gap */
+}
+
 body.addnewcolumn #paper table.experiments {
   padding-right: 35em; /* 15em for width of popupbox and 22em for width of new column box */
 }
@@ -1440,7 +1444,6 @@ body:not(.page-about-you) #paper.no-data table.experiments {
 }
 
 #paper.no-data table.experiments tr.add .no-data {
-  position: absolute;
   border: none;
 }
 

@@ -139,6 +139,8 @@
     currentPaper = paper;
     if (!isSmallChange) fillPaper(paper);
     callPaperDOMSetters(paper);
+
+    if (!isSmallChange && !paper.id) focusFirstValidationError(); // go to editing the title
   }
 
   var startNewTag = null;
