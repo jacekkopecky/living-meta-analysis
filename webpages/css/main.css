@@ -1418,7 +1418,8 @@ body.page-about-you.editing #paper.no-data table.experiments th.add {
   white-space: nowrap;
 }
 
-body:not(.editing) #paper.no-data table.experiments {
+body:not(.editing) #paper.no-data table.experiments,
+body:not(.page-about-you) #paper.no-data table.experiments {
   display: none;
 }
 
