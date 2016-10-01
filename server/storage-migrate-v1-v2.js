@@ -4,17 +4,14 @@
 
 'use strict';
 
-const gcloud = require('google-cloud')({
-  projectId: 'jacek-soc-port-ac-uk',
-  keyFilename: 'jacek-soc-port-ac-uk-google-key.json',
-});
+const google = require('./google');
+const gcloud = google.project();
 
 const v1 = 'living-meta-analysis-v1';
 const v2 = 'living-meta-analysis-v2';
 
-const datastorev1 = gcloud.datastore({ namespace: v1 });
-const datastorev2 = gcloud.datastore({ namespace: v2 });
-
+const datastore = google.datastore(gcloud, v1);
+const datastore = google.datastore(gcloud, v2);
 
 // get all users immediately on the start of the server
 migrateAllUsers();
