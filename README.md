@@ -1,7 +1,10 @@
 # living-meta-analysis
 A tool for supporting living and collaborative meta-analysis.
 
+## installation and running
 
-## TO DO
-
- * there is no rate-limiting for the API, which may translates into an issue with google storage quotas
+ 1 clone the repo
+ 1 `npm install`
+ 1 fill in google-datastore-specific settings in `server/config.js`
+   * the above needs an authentication key pointed at by `config.gcloudProject.keyFilename` – this is generated for you by the Google developer console
+ 1 `npm start`
