@@ -10,12 +10,11 @@
 const tools = require('./tools');
 const ValidationError = require('./errors/ValidationError');
 
-const gcloud = require('google-cloud')({
-  projectId: 'jacek-soc-port-ac-uk',
-  keyFilename: 'jacek-soc-port-ac-uk-google-key.json',
-});
+const config = require('./config');
 
-const datastore = gcloud.datastore({ namespace: 'living-meta-analysis-v2' });
+const gcloud = require('google-cloud')(config.gcloudProject);
+
+const datastore = gcloud.datastore({ namespace: config.gcloudDatastoreNamespace });
 
 const TITLE_RE = module.exports.TITLE_RE = '[a-zA-Z0-9.-]+';
 const TITLE_REXP = new RegExp(`^${TITLE_RE}$`);
