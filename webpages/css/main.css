@@ -533,6 +533,21 @@ section.list > ul > li > ul.tags > li {
   max-width: 30em;
 }
 
+#paper .link .value {
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: top;
+  max-width: 30em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#paper .link .editing:focus {
+  white-space: pre-line;
+  overflow: visible;
+  text-overflow: unset;
+}
+
 #paper > header {
   background: #ddf;
   margin: 0;
