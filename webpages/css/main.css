@@ -526,6 +526,7 @@ section.list > ul > li > ul.tags > li {
   margin: .5em 16em 0 0;
 }
 
+#paper .reference .value,
 #paper .description .value {
   white-space: pre-line;
   display: inline-block;
