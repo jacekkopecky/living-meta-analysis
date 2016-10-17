@@ -319,6 +319,10 @@
     _.fillEls('.fnOrYour', y ? 'Your' : n + "'s");
     _.fillEls('.fnOryou',  y ? 'you'  : n       );
 
+    // Used on profile page, prefixes 'Your ' if you're signed in and the page
+    // is about you. The space is needed for formatting.
+    _.fillEls('.blankOrYour', y ? 'Your ' : '' );
+
     _.findEls('.needs-owner').forEach(function (el) {
       if (el.dataset.owner === currentUser) el.classList.add('yours');
       else                                  el.classList.remove('yours');
