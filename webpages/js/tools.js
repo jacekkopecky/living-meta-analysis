@@ -52,6 +52,7 @@
 
   _.array = function array(arr) {
       return [].slice.call(arr);
+      // todo NodeList returned by document.querySelectorAll is soon getting .forEach so this function may soon no longer be needed
   }
 
   function valOrFun(val, param) {
