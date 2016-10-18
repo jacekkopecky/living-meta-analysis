@@ -391,32 +391,29 @@
    */
 
   var pendingSaveTimeout = null;
-  var pendingSaveForceTime = null;
   var pendingSaveFunctions = [];
   var currentSavingFunction = null;
 
   var SAVE_PENDING_TIMEOUT = 3000;
-  var SAVE_MAX_TIMEOUT = 10000;
 
   _.scheduleSave = function scheduleSave(saveFunction) {
     if (typeof saveFunction !== 'function' && typeof saveFunction.save !== 'function') throw new Error('saveFunction not a function or an object with save()');
 
     if (lima.checkToPreventSaving && lima.checkToPreventSaving()) return;
 
-    if (lima.savePendingStarted) lima.savePendingStarted();
+    if (!pendingSaveTimeout && lima.savePendingStarted) lima.savePendingStarted();
 
     if (pendingSaveFunctions.indexOf(saveFunction) === -1) pendingSaveFunctions.push(saveFunction);
 
     _.deferScheduledSave();
     if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(doSave, SAVE_PENDING_TIMEOUT);
-    if (!pendingSaveForceTime) pendingSaveForceTime = Date.now() + SAVE_MAX_TIMEOUT;
   }
 
   // setTimeout for save in 3s
   // if already set, cancel the old one and set a new one
   // but only replace the old one if the pending save started less than 10s ago
   _.deferScheduledSave = function deferScheduledSave() {
-    if (pendingSaveTimeout && pendingSaveForceTime > Date.now()) {
+    if (pendingSaveTimeout) {
       clearTimeout(pendingSaveTimeout);
       pendingSaveTimeout = setTimeout(doSave, SAVE_PENDING_TIMEOUT);
     }
@@ -428,11 +425,10 @@
 
     if (pendingSaveFunctions.length !== 0) return;
 
+    if (pendingSaveTimeout && lima.savePendingStopped) lima.savePendingStopped();
+
     if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
     pendingSaveTimeout = null;
-    pendingSaveForceTime = null;
-
-    if (lima.savePendingStopped) lima.savePendingStopped();
   }
 
   _.manualSave = doSave;
@@ -440,10 +436,10 @@
   function doSave() {
     if (currentSavingFunction) return;
 
+    if (pendingSaveTimeout && lima.savePendingStopped) lima.savePendingStopped();
+
     if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
     pendingSaveTimeout = null;
-    pendingSaveForceTime = null;
-    if (lima.savePendingStopped) lima.savePendingStopped();
 
     if (lima.checkToPreventForcedSaving && lima.checkToPreventForcedSaving()) return;
 
@@ -481,7 +477,6 @@
 
         if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
         pendingSaveTimeout = null;
-        pendingSaveForceTime = null;
         if (lima.saveError) lima.saveError();
       }
     );

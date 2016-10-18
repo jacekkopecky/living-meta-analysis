@@ -994,12 +994,33 @@
     return _.findEl('#paper.validationerror') || _.findEl('#paper.unsaved');
   }
 
+  var savePendingInterval = null;
+  var savePendingStart = 0;
+
   lima.savePendingStarted = function savePendingStarted() {
     _.addClass('#paper', 'savepending');
+
+    // every 60s update the screen to say something like "it's been minutes without saving, take a break!"
+    savePendingStart = Date.now();
+    savePendingInterval = setInterval(savePendingTick, 60000);
+  }
+
+  function savePendingTick() {
+    // todo put a message in the page somewhere - like "will be saved soon... (3m without saving)"
+    // console.log('save pending since ' + Math.round((Date.now()-savePendingStart)/1000) + 's');
   }
 
   lima.savePendingStopped = function savePendingStopped() {
     _.removeClass('#paper', 'savepending');
+
+    var saveDelay = Math.round((Date.now() - savePendingStart)/1000);
+    if (saveDelay > lima.savePendingMax) {
+      lima.savePendingMax = saveDelay;
+      console.log('maximum time with a pending save: ' + lima.savePendingMax + 's');
+    }
+    savePendingStart = 0;
+    clearInterval(savePendingInterval);
+    savePendingInterval = null;
   }
 
   lima.saveStarted = function saveStarted() {
@@ -1658,6 +1679,8 @@
   lima.getPaperTitles = function(){return paperTitles;};
   lima.getCurrentPaper = function(){return currentPaper;};
   lima.findColumnsInPaper = findColumnsInPaper;
+  lima.savePendingMax = 0;
+
 
   window._ = _;
 
