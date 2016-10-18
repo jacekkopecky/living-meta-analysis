@@ -434,6 +434,10 @@
 
   _.manualSave = doSave;
 
+  _.isSaving = function isSaving() {
+    return !!currentSavingFunction;
+  };
+
   function doSave() {
     if (currentSavingFunction) return;
 
