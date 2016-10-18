@@ -29,6 +29,10 @@
     if (currentPaper.apiurl) currentPaperUrl = currentPaper.apiurl;
   }
 
+  function createPageURL(email, title) {
+    return '/' + email + '/' + title;
+  }
+
 
   /* paper list
    *
@@ -166,6 +170,10 @@
       } else {
         _.removeClass('body', 'new');
       }
+
+      var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), paper.title);
+      _.setProps('#paper .edityourcopy a', 'href', ownURL);
+
       _.fillEls('#paper .title:not(.unsaved):not(.validationerror)', paper.title);
       fillingTags = true; // because that causes onBlur on a new tag and that mustn't be a save
       _.fillTags('#paper .tags', paper.tags, flashTag); flashTag = null;

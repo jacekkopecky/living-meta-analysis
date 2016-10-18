@@ -878,6 +878,34 @@ body.page-about-you.editing .fullcolinfo header {
   display: none;
 }
 
+#paper > header .edityourcopy {
+  color: black;
+  font-style: italic;
+  padding: .5em .8em;
+  margin: .5em 0 0 0;
+  border-radius: .4em;
+  background: white;
+  border: 2px solid #ddf;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  font-size: 80%;
+  display: none;
+}
+
+#paper > header .edityourcopy a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#paper > header .edityourcopy:hover {
+  background: #ddf;
+}
+
+body:not(.page-about-you).signed-on #paper > header .edityourcopy {
+  display: block;
+}
+
 #paper.saving > header .saving,
 #paper.savepending:not(.saving) > header .savepending,
 #paper.validationerror > header .validationerrormessage,
