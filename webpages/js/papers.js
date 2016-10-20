@@ -1030,6 +1030,7 @@
 
   lima.saveStopped = function saveStopped() {
     _.removeClass('#paper', 'saving');
+    _.removeClass('#paper', 'editing-disabled-by-saving');
   }
 
   lima.saveError = function saveError() {
@@ -1580,8 +1581,19 @@
    *
    *
    */
+  document.addEventListener('keydown', blockWhenSaving, true);
   document.addEventListener('keydown', dismissOrBlurOnEscape);
   document.addEventListener('click', popupOnClick);
+
+  // a keystroke when saving will trigger the "saving..." spinner, and otherwise be ignored
+  function blockWhenSaving(ev) {
+    if (_.isSaving()) {
+      ev.stopImmediatePropagation();
+      ev.stopPropagation();
+      ev.preventDefault();
+      _.addClass('#paper', 'editing-disabled-by-saving');
+    }
+  }
 
   // dismiss pinned popup boxes with Escape or with a click outside them
   function dismissOrBlurOnEscape(ev) {
