@@ -41,19 +41,22 @@
   }
 
   var toggleButton = _.byId('toggle-editing');
-  lima.editing = localStorage.limaEditing !== 'false';
 
-  lima.toggleEditing = function (val, skipSave) {
-    lima.editing = val;
-    if (!skipSave) localStorage.limaEditing = lima.editing;
-    toggleButton.textContent = lima.editing ? 'Turn editing off' : 'Turn editing on';
+  lima.toggleEditing = function (val) {
+    if (val == null) {
+      lima.editing = localStorage.limaEditing !== 'false';
+    } else {
+      localStorage.limaEditing = lima.editing = val;
+    }
+
     document.body.classList[lima.editing ? 'add' : 'remove']('editing');
   }
 
   if (toggleButton) {
-    lima.toggleEditing(lima.editing);
+    lima.toggleEditing();
     toggleButton.addEventListener('click', function () {
       lima.toggleEditing(!lima.editing);
+      if (lima.updateView) lima.updateView();
     })
   }
 

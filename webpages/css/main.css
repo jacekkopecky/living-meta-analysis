@@ -293,6 +293,11 @@ body.new .userinfo #toggle-editing {
   display: none;
 }
 
+body.editing #toggle-editing .ifoff,
+body:not(.editing) #toggle-editing .ifon {
+  display: none;
+}
+
 
 
 /* personalinfo
