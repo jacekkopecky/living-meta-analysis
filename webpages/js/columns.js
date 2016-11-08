@@ -71,7 +71,7 @@
       .then(function(json) {
         lima.columns[oldId] = storeColumn(json);
         col.id = json.id; // this allows us to get a new ID for a new column from the server
-        if (lima.updateView) lima.updateView();
+        if (lima.updateAfterColumnSave) lima.updateAfterColumnSave();
       })
       .catch(function(err) {
         console.error('error saving column');

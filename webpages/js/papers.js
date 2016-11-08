@@ -109,7 +109,7 @@
     var title = lima.extractPaperTitleFromUrl();
     _.fillEls('#paper .title', title);
 
-    lima.getColumns() // todo getColumns could run in parallel with everything before fillPaper
+    lima.getColumns() // todo getColumns could run in parallel with everything before updatePaperView
     .then(lima.getGapiIDToken)
     .then(function (idToken) {
       currentPaperUrl = '/api/papers/' + email + '/' + title;
@@ -120,6 +120,10 @@
       else return _.fetchJson(response);
     })
     .then(updatePaperView)
+    .then(function() {
+      _.removeClass('body', 'loading');
+      lima.onSignInChange(updatePaperView);
+    })
     .catch(function (err) {
       console.error("problem getting paper");
       console.error(err);
@@ -131,250 +135,271 @@
   function Paper() {}
   Paper.prototype.save = savePaper;
 
+  function updateAfterColumnSave() {
+    // clean experiment data of new columns that got new ID when they were saved
+    currentPaper.experiments.forEach(function (experiment) {
+      if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
+        var col = lima.columns[key];
+        if (col && col.id !== key) {
+          experiment.data[col.id] = experiment.data[key];
+          delete experiment.data[key];
+        }
+      });
+    });
+
+    // clean columnOrder the same way
+    if (Array.isArray(currentPaper.columnOrder)) currentPaper.columnOrder.forEach(function (key, index) {
+      var col = lima.columns[key];
+      if (col && col.id !== key) {
+        currentPaper.columnOrder[index] = col.id;
+      }
+    });
+
+    updatePaperView();
+  }
+
   function updatePaperView(paper) {
     if (!paper) paper = currentPaper;
 
     if (!(paper instanceof Paper)) {
       paper = Object.assign(new Paper(), paper);
+
+      // if paper doesn't have experiments or column order, add empty arrays for ease of handling
+      if (!Array.isArray(paper.experiments)) paper.experiments = [];
+      if (!Array.isArray(paper.columnOrder)) paper.columnOrder = [];
+
+      // if some column type has changed, make sure the paper reflects that
+      moveResultsAfterCharacteristics(paper);
     }
 
-    var isSmallChange = currentPaper != null && paperChangeVerifiers.every(function (verifier) { return verifier(paper); });
-    if (currentPaper !== paper) regenerateColumnOrder(paper);
     currentPaper = paper;
-    if (!isSmallChange) fillPaper(paper);
-    callPaperDOMSetters(paper);
 
-    if (!isSmallChange && !paper.id) focusFirstValidationError(); // go to editing the title
+    fillPaper(paper);
+
+    // for a new paper, go to editing the title
+    if (!paper.id) focusFirstValidationError();
   }
+
+  // todo this would be useful for testing
+  // function assertAllColumnsAreInColumnOrder(paper) {
+  //   if (!paper.experiments) return;
+  //
+  //   // now gather columns in the paper, then sort the columns by type and order
+  //   paper.experiments.forEach(function (experiment) {
+  //     if (experiment.data) Object.keys(experiment.data).forEach(checkColumn);
+  //   });
+  //
+  //   function checkColumn(key) {
+  //     if (paper.columnOrder.indexOf(key) === -1) throw new Error('column ' + key + ' is in the data but not in columnOrder!');
+  //   }
+  // }
+  // also should check that in columnOrder all characteristics precede all results
 
   var startNewTag = null;
   var flashTag = null;
-  var fillingTags = false;
+  var rebuildingDOM = false;
 
   function fillPaper(paper) {
-    resetDOMSetters();
-
     // cleanup
     var oldPaperEl = _.byId('paper');
+    rebuildingDOM = true;
     if (oldPaperEl) oldPaperEl.parentElement.removeChild(oldPaperEl);
+    rebuildingDOM = false;
+
+    if (!paper.id) {
+      _.addClass('body', 'new');
+      lima.toggleEditing(true);
+    } else {
+      _.removeClass('body', 'new');
+    }
 
     var paperTemplate = _.byId('paper-template');
-    var paperEl = _.cloneTemplate(paperTemplate);
+    var paperEl = _.cloneTemplate(paperTemplate).children[0];
     paperTemplate.parentElement.insertBefore(paperEl, paperTemplate);
 
-    addPaperChangeVerifier(function (newPaper) { return paper.id === newPaper.id; });
-    addPaperDOMSetter(function(paper) {
-      if (!paper.id) {
-        _.addClass('body', 'new');
-        lima.toggleEditing(true, true);
-      } else {
-        _.removeClass('body', 'new');
-      }
-
-      var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), paper.title);
-      _.setProps('#paper .edityourcopy a', 'href', ownURL);
-
-      _.fillEls('#paper .title:not(.unsaved):not(.validationerror)', paper.title);
-      fillingTags = true; // because that causes onBlur on a new tag and that mustn't be a save
-      _.fillTags('#paper .tags', paper.tags, flashTag); flashTag = null;
-      fillingTags = false;
-      _.fillEls ('#paper .authors .value', paper.authors);
-      _.fillEls ('#paper .reference .value', paper.reference);
-      _.fillEls ('#paper .description .value', paper.description);
-      _.fillEls ('#paper .link .value:not(.unsaved):not(.validationerror)', paper.link);
-      _.setProps('#paper .link a.value', 'href', paper.link);
-      _.fillEls ('#paper .doi .value:not(.unsaved):not(.validationerror)', paper.doi);
-      _.setProps('#paper .doi a.value', 'href', function(el){return el.dataset.base + paper.doi});
-      _.fillEls ('#paper .enteredby .value', paper.enteredBy);
-      _.setProps('#paper .enteredby .value', 'href', '/' + paper.enteredBy + '/');
-      _.fillEls ('#paper .ctime .value', _.formatDateTime(paper.ctime));
-      _.fillEls ('#paper .mtime .value', _.formatDateTime(paper.mtime));
-
-      _.setDataProps('#paper .enteredby.needs-owner', 'owner', paper.enteredBy);
-
-      addConfirmedUpdater('#paper .link span.editing', '#paper .link button.confirm', '#paper .link button.cancel', 'textContent', identity, paper, 'link');
-      addConfirmedUpdater('#paper .doi span.editing', '#paper .doi button.confirm', '#paper .doi button.cancel', 'textContent', identity, paper, 'doi');
-
-      // workaround for chrome not focusing right
-      // clicking on the placeholder 'doi' of an empty editable doi value focuses the element but doesn't react to subsequent key strokes
-      _.addEventListener('#paper .link .value.editing', 'click', blurAndFocus);
-      _.addEventListener('#paper .doi .value.editing', 'click', blurAndFocus);
-
-      addOnInputUpdater("#paper .authors .value", 'textContent', identity, paper, 'authors');
-      addOnInputUpdater("#paper .reference .value", 'textContent', identity, paper, 'reference');
-      addOnInputUpdater("#paper .description .value", 'textContent', identity, paper, 'description');
-
-      currentPaperOrigTitle = paper.title;
-      addConfirmedUpdater('#paper .title.editing', '#paper .title + .titlerename', '#paper .title ~ * .titlerenamecancel', 'textContent', checkPaperTitleUnique, paper, 'title');
-
-      /* editTags
-       *
-       *                         #######
-       *   ###### #####  # #####    #      ##    ####   ####
-       *   #      #    # #   #      #     #  #  #    # #
-       *   #####  #    # #   #      #    #    # #       ####
-       *   #      #    # #   #      #    ###### #  ###      #
-       *   #      #    # #   #      #    #    # #    # #    #
-       *   ###### #####  #   #      #    #    #  ####   ####
-       *
-       *
-       */
-
-      if (!paper.tags) paper.tags = [];
-
-      // events for removing a tag
-      _.findEls('#paper .tags .tag + .removetag').forEach(function (btn) {
-        btn.onclick = function () {
-          var el = btn;
-          while (el && !el.classList.contains('tag')) el = el.previousElementSibling;
-          while (el && !el.classList.contains('tag')) el = el.parentElement;
-          if (el) {
-            var text = el.textContent;
-            var i = paper.tags.indexOf(text);
-            if (i !== -1) {
-              paper.tags.splice(i, 1);
-              updatePaperView();
-              _.scheduleSave(paper);
-            } else {
-              console.error('removing tag but can\'t find it: ' + text);
-            }
-          }
-        }
-      })
-      // events for starting to add a tag
-      _.findEls('#paper .tags .new + .addtag').forEach(function (btn) {
-        btn.onclick = function () {
-          var el = btn.previousElementSibling;
-          el.classList.add('editing');
-          _.findEl(el, '.tag').focus();
-        }
-        if (startNewTag !== null) {
-          btn.onclick();
-          var el = _.findEl('#paper .tags .new .tag');
-          el.textContent = startNewTag;
-          if (startNewTag) {
-            // put cursor at the end of the text
-            var selection = window.getSelection();
-            var range = document.createRange();
-            range.setStartAfter(el.childNodes[el.childNodes.length-1]);
-            range.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(range);
-          }
-          startNewTag = null;
-        }
-      })
-      // events for adding a tag
-      _.findEls('#paper .tags .new .tag').forEach(function (el) {
-        el.onblur = function () {
-          if (fillingTags) {
-            startNewTag = el.textContent;
-            return;
-          }
-          var text = el.textContent;
-          if (!text) {
-            if (startNewTag !== null) {
-              setTimeout(function() {el.focus()}, 0); // focus() inside the blur event may not work
-              el.textContent = startNewTag;
-              startNewTag = null;
-            } else {
-              _.removeClass('#paper .tags .new', 'editing');
-            }
-          } else {
-            var add = paper.tags.indexOf(text) === -1;
-            if (add) {
-              paper.tags.push(text);
-            }
-            flashTag = text;
-            updatePaperView();
-            if (add) {
-              _.scheduleSave(paper);
-            }
-          }
-        }
-        el.onkeydown = function (ev) {
-          // enter
-          if (ev.keyCode === 13 && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
-            startNewTag = null;
-            ev.preventDefault();
-            el.blur();
-          }
-          // escape
-          else if (ev.keyCode === 27) {
-            startNewTag = null;
-            _.removeClass('#paper .tags .new', 'editing');
-            el.textContent = '';
-          }
-          // tab or comma starts a new tag
-          else if ((ev.keyCode === 9 || ev.keyCode === 188) && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
-            startNewTag = '';
-            ev.preventDefault();
-            el.blur();
-          }
-          else _.deferScheduledSave();
-        }
-      })
-
-    });
-
+    fillTags(paperEl, paper);
     fillPaperExperimentTable(paper);
 
-    _.removeClass('body', 'loading');
+    var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), paper.title);
+    _.setProps(paperEl, '.edityourcopy a', 'href', ownURL);
 
-    addPaperDOMSetter(_.setYouOrName);
+    _.fillEls(paperEl, '.title', paper.title);
+    _.fillEls (paperEl, '.authors .value', paper.authors);
+    _.fillEls (paperEl, '.reference .value', paper.reference);
+    _.fillEls (paperEl, '.description .value', paper.description);
+    _.fillEls (paperEl, '.link .value', paper.link);
+    _.setProps(paperEl, '.link a.value', 'href', paper.link);
+    _.fillEls (paperEl, '.doi .value', paper.doi);
+    _.setProps(paperEl, '.doi a.value', 'href', function(el){return el.dataset.base + paper.doi});
+    _.fillEls (paperEl, '.enteredby .value', paper.enteredBy);
+    _.setProps(paperEl, '.enteredby .value', 'href', '/' + paper.enteredBy + '/');
+    _.fillEls (paperEl, '.ctime .value', _.formatDateTime(paper.ctime));
+    _.fillEls (paperEl, '.mtime .value', _.formatDateTime(paper.mtime));
+
+    _.setDataProps(paperEl, '.enteredby.needs-owner', 'owner', paper.enteredBy);
+
+    addConfirmedUpdater('#paper .link span.editing', '#paper .link button.confirm', '#paper .link button.cancel', 'textContent', identity, paper, 'link');
+    addConfirmedUpdater('#paper .doi span.editing', '#paper .doi button.confirm', '#paper .doi button.cancel', 'textContent', identity, paper, 'doi');
+
+    // workaround for chrome not focusing right
+    // clicking on the placeholder 'doi' of an empty editable doi value focuses the element but doesn't react to subsequent key strokes
+    _.addEventListener(paperEl, '.link .value.editing', 'click', blurAndFocus);
+    _.addEventListener(paperEl, '.doi .value.editing', 'click', blurAndFocus);
+
+    addOnInputUpdater(paperEl, ".authors .value", 'textContent', identity, paper, 'authors');
+    addOnInputUpdater(paperEl, ".reference .value", 'textContent', identity, paper, 'reference');
+    addOnInputUpdater(paperEl, ".description .value", 'textContent', identity, paper, 'description');
+
+    currentPaperOrigTitle = paper.title;
+    addConfirmedUpdater('#paper .title.editing', '#paper .title + .titlerename', '#paper .title ~ * .titlerenamecancel', 'textContent', checkPaperTitleUnique, paper, 'title');
+
+    if (!paper.tags) paper.tags = [];
+
+    _.setYouOrName();
 
     // now that the paper is all there, install various general and specific event listeners
-    _.addEventListener('[contenteditable].oneline', 'keydown', blurOnEnter);
+    _.addEventListener(paperEl, '[contenteditable].oneline', 'keydown', blurOnEnter);
 
-    _.addEventListener('#paper .linkedit button.test', 'click', linkEditTest);
-    _.addEventListener('#paper .linkedit button.test', 'mousedown', preventLinkEditBlur);
+    _.addEventListener(paperEl, '.linkedit button.test', 'click', linkEditTest);
+    _.addEventListener(paperEl, '.linkedit button.test', 'mousedown', preventLinkEditBlur);
 
-    _.addEventListener('#paper [data-focuses]', 'click', focusAnotherElementOnClick);
+    _.addEventListener(paperEl, '[data-focuses]', 'click', focusAnotherElementOnClick);
 
-    _.addEventListener('#paper .savingerror', 'click', _.manualSave);
-    _.addEventListener('#paper .validationerrormessage', 'click', focusFirstValidationError);
-    _.addEventListener('#paper .unsavedmessage', 'click', focusFirstUnsaved);
+    _.addEventListener(paperEl, '.savingerror', 'click', _.manualSave);
+    _.addEventListener(paperEl, '.validationerrormessage', 'click', focusFirstValidationError);
+    _.addEventListener(paperEl, '.unsavedmessage', 'click', focusFirstUnsaved);
 
-    addPaperDOMSetter(function () {
-      if (pinnedBox) pinPopupBox(pinnedBox);
-    });
+    if (pinnedBox) pinPopupBox(pinnedBox);
+
+    setValidationErrorClass();
+    setUnsavedClass();
   }
 
+  /* editTags
+   *
+   *                         #######
+   *   ###### #####  # #####    #      ##    ####   ####
+   *   #      #    # #   #      #     #  #  #    # #
+   *   #####  #    # #   #      #    #    # #       ####
+   *   #      #    # #   #      #    ###### #  ###      #
+   *   #      #    # #   #      #    #    # #    # #    #
+   *   ###### #####  #   #      #    #    #  ####   ####
+   *
+   *
+   */
+  function fillTags(paperEl, paper) {
+    _.fillTags(paperEl, '.tags', paper.tags, flashTag); flashTag = null;
+
+    // events for removing a tag
+    _.findEls(paperEl, '.tags .tag + .removetag').forEach(function (btn) {
+      btn.onclick = function () {
+        // the .tag can be a previous sibling or an ancestor of the button, find it:
+        var el = _.findPrecedingEl(btn, '.tag');
+        if (el) {
+          var text = el.textContent;
+          var i = paper.tags.indexOf(text);
+          if (i !== -1) {
+            paper.tags.splice(i, 1);
+            fillTags(paperEl, paper);
+            _.scheduleSave(paper);
+          } else {
+            console.error('removing tag but can\'t find it: ' + text);
+          }
+        }
+      }
+    })
+    // events for starting to add a tag
+    var btn = _.findEl(paperEl, '.tags .new + .addtag');
+    var newTagContainer = _.findEl(paperEl, '.tags .new');
+    var newTag = _.findEl(paperEl, '.tags .new .tag');
+
+    btn.onclick = function () {
+      newTagContainer.classList.add('editing');
+      newTag.focus();
+    }
+    if (startNewTag != null) {
+      btn.onclick();
+      newTag.textContent = startNewTag;
+
+      if (startNewTag != '') {
+        // put cursor at the end of the text
+        // todo we could remember the old selection and replicate it
+        var selection = window.getSelection();
+        var range = document.createRange();
+        range.setStartAfter(newTag.childNodes[newTag.childNodes.length-1]);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+
+      startNewTag = null;
+    }
+
+    // events for adding a tag
+    newTag.onblur = function () {
+      if (rebuildingDOM) {
+        // the blur has happened because a DOM rebuild (e.g. after save) is destroying the element we were editing
+        startNewTag = newTag.textContent;
+      } else {
+        var text = newTag.textContent.trim();
+        if (!text) {
+          newTagContainer.classList.remove('editing');
+        } else {
+          if (paper.tags.indexOf(text) === -1) {
+            paper.tags.push(text);
+            _.scheduleSave(paper);
+          }
+          flashTag = text;
+          fillTags(paperEl, paper);
+        }
+      }
+    }
+    newTag.onkeydown = function (ev) {
+      _.deferScheduledSave();
+      // enter
+      if (ev.keyCode === 13 && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+        startNewTag = null;
+        ev.preventDefault();
+        newTag.blur();
+      }
+      // escape
+      else if (ev.keyCode === 27) {
+        startNewTag = null;
+        newTagContainer.classList.remove('editing');
+        newTag.textContent = '';
+      }
+      // tab or comma starts a new tag
+      else if ((ev.keyCode === 9 || ev.keyCode === 188) && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+        ev.preventDefault();
+        if (newTag.textContent.trim()) {
+          startNewTag = '';
+          newTag.blur();
+        }
+      }
+    }
+  }
+
+  /* fill Exp table
+   *
+   *                             #######
+   *   ###### # #      #         #       #    # #####     #####   ##   #####  #      ######
+   *   #      # #      #         #        #  #  #    #      #    #  #  #    # #      #
+   *   #####  # #      #         #####     ##   #    #      #   #    # #####  #      #####
+   *   #      # #      #         #         ##   #####       #   ###### #    # #      #
+   *   #      # #      #         #        #  #  #           #   #    # #    # #      #
+   *   #      # ###### ######    ####### #    # #           #   #    # #####  ###### ######
+   *
+   *
+   */
   function fillPaperExperimentTable(paper) {
     var experiments = paper.experiments;
-    if (!Array.isArray(experiments)) experiments = paper.experiments = [];
 
-    var table = _.cloneTemplate('experiments-table-template');
-
-    // will do a rebuild of the page if number of experiments has changed
-    var experimentsLength = experiments.length;
-    addPaperChangeVerifier(function (newPaper) {
-      return newPaper.experiments && newPaper.experiments.length === experimentsLength;
-    });
-
-    // show the table if it's not empty or
     // hide the empty experiment data table if the user can't edit it
-    if (experiments.length) {
-      _.removeClass('#paper', 'no-data');
-    } else {
+    if (!experiments.length) {
       _.addClass('#paper', 'no-data');
     }
 
-    var showColumns = findColumnsInPaper(paper);
-    // when accessing showColumns members, need to do a lookup through lima.columns
-    // because showColumns[i] may be a temporary ID of a new column, which gets renamed on save
-
-    // a small change doesn't add/remove or change columns
-    addPaperChangeVerifier(function (newPaper) {
-      var newPaperShowColumns = findColumnsInPaper(newPaper);
-      if (newPaperShowColumns.length !== showColumns.length) return false;
-
-      for (var i = 0; i < showColumns.length; i++) {
-        if (lima.columns[showColumns[i]].id !== newPaperShowColumns[i]) return false;
-      }
-
-      return true;
-    });
+    var table = _.cloneTemplate('experiments-table-template');
 
     /* column headings
      *
@@ -389,61 +414,47 @@
      *
      */
 
-    // fill column headings
+
     var headingsRowNode = _.findEl(table, 'tr:first-child');
     var addColumnNode = _.findEl(table, 'tr:first-child > th.add');
-    showColumns.forEach(function (colId) {
+
+    var curtime = Date.now();
+    var user = lima.getAuthenticatedUserEmail();
+
+    paper.columnOrder.forEach(function (colId) {
+      var col = lima.columns[colId];
       var th = _.cloneTemplate('col-heading-template').children[0];
-      _.addEventListener(th, 'button.move', 'click', moveColumn);
       headingsRowNode.insertBefore(th, addColumnNode);
-      addPaperDOMSetter(function () {
-        var col = lima.columns[colId];
-        // fix up colId in case it got updated by saving a new column
-        colId = col.id;
 
-        var user = lima.getAuthenticatedUserEmail();
-        var curtime = Date.now();
-        _.fillEls(th, '.coltitle:not(.unsaved):not(.validationerror)', col.title);
-        _.fillEls(th, '.coldescription', col.description);
-        _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime || curtime));
-        _.fillEls(th, '.colmtime .value', _.formatDateTime(col.mtime || curtime));
-        _.fillEls(th, '.definedby .value', col.definedBy || user);
-        _.setProps(th, '.definedby .value', 'href', '/' + (col.definedBy || user) + '/');
+      _.fillEls(th, '.coltitle', col.title);
+      _.fillEls(th, '.coldescription', col.description);
+      _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime || curtime));
+      _.fillEls(th, '.colmtime .value', _.formatDateTime(col.mtime || curtime));
+      _.fillEls(th, '.definedby .value', col.definedBy || user);
+      _.setProps(th, '.definedby .value', 'href', '/' + (col.definedBy || user) + '/');
 
-        _.setDataProps(th, '.needs-owner', 'owner', col.definedBy || user);
+      _.setDataProps(th, '.needs-owner', 'owner', col.definedBy || user);
 
-        _.setDataProps(th, 'button', 'id', col.id);
+      _.addEventListener(th, 'button.move', 'click', moveColumn);
+      _.setDataProps(th, 'button', 'id', col.id);
 
-        lima.columnTypes.forEach(function (type) {
-          _.removeClass(th, '.coltype', type);
-          th.classList.remove(type);
-        });
-        th.classList.add(col.type);
-        _.addClass(th, '.coltype', col.type);
+      th.classList.add(col.type);
+      _.addClass(th, '.coltype', col.type);
 
-        if (col.new) {
-          th.classList.add('newcol');
-          _.addClass(th, '.coltype', 'newcol');
-          _.setDataProps(th, '.coltype', 'id', col.id);
-          _.fillEls(th, '.coltitle + .coltitlerename', 'confirm');
-          _.addClass(th, '.coltitle.editing:not(.unsaved):not(.validationerror)', 'new');
-        } else {
-          th.classList.remove('newcol');
-          _.removeClass(th, '.coltype', 'newcol');
-          _.fillEls(th, '.coltitle + .coltitlerename', 'rename');
-          _.removeClass(th, '.coltitle.editing:not(.unsaved):not(.validationerror)', 'new');
-        }
+      if (col.new) {
+        th.classList.add('newcol');
+        _.addClass(th, '.coltype', 'newcol');
+        _.setDataProps(th, '.coltype', 'id', col.id);
+        _.addClass(th, '.coltitle.editing', 'new');
+        // todo move the confirm/rename difference into html, but that means we have multiple confirm buttons and addConfirmedUpdater might be unhappy
+        _.fillEls(th, '.coltitle + .coltitlerename', 'confirm');
+      }
 
-        addOnInputUpdater(th, '.coldescription', 'textContent', identity, col, ['description']);
+      addOnInputUpdater(th, '.coldescription', 'textContent', identity, col, ['description']);
 
-        addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, col, 'title', deleteNewColumn);
+      addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, col, 'title', deleteNewColumn);
 
-        lima.columnTypes.forEach(function (type) {
-          _.setDataProps(th, '.coltype .switch.type-' + type, 'newType', type);
-        });
-
-        setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
-      });
+      setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
 
       _.addEventListener(th, '.coltype .switch', 'click', changeColumnType);
       _.addEventListener(th, '.coltypeconfirm button', 'click', changeColumnTypeConfirmOrCancel);
@@ -465,120 +476,62 @@
     // fill rows with experiment data
     var tableBodyNode = _.findEl(table, 'tbody');
     var addRowNode = _.findEl(table, 'tbody > tr.add');
+
     experiments.forEach(function (experiment, expIndex) {
       var tr = _.cloneTemplate('experiment-row-template').children[0];
       tableBodyNode.insertBefore(tr, addRowNode);
 
-      addPaperDOMSetter(function (paper) {
-        _.fillEls(tr, '.exptitle:not(.unsaved):not(.validationerror)', paper.experiments[expIndex].title);
-        _.fillEls(tr, '.expdescription', paper.experiments[expIndex].description);
+      _.fillEls(tr, '.exptitle', experiment.title);
+      _.fillEls(tr, '.expdescription', experiment.description);
 
-        if (!paper.experiments[expIndex].title) {
-          _.addClass(tr, '.exptitle.editing:not(.unsaved):not(.validationerror)', 'new');
-          _.fillEls(tr, '.exptitle + .exptitlerename', 'confirm');
-        } else {
-          _.removeClass(tr, '.exptitle.editing:not(.unsaved):not(.validationerror)', 'new');
-          _.fillEls(tr, '.exptitle + .exptitlerename', 'rename');
-        }
+      if (!experiment.title) {
+        _.addClass(tr, '.exptitle.editing', 'new');
+        _.fillEls(tr, '.exptitle + .exptitlerename', 'confirm');
+      } else {
+        _.fillEls(tr, '.exptitle + .exptitlerename', 'rename');
+      }
 
-        addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
+      addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
 
-        _.setDataProps(tr, '.exptitle.editing', 'origTitle', paper.experiments[expIndex].title);
-        addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitleUnique, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
+      _.setDataProps(tr, '.exptitle.editing', 'origTitle', experiment.title);
+      addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitleUnique, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
 
-        setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', expIndex);
-      })
+      setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', expIndex);
 
-      showColumns.forEach(function (colId) {
+      paper.columnOrder.forEach(function (colId) {
+        var col = lima.columns[colId];
         var td = _.cloneTemplate('experiment-datum-template').children[0];
         tr.appendChild(td);
 
-        // populate the value
-        addPaperDOMSetter(function (paper) {
-          var col = lima.columns[colId];
-          // fix up colId in case it got updated by saving a new column
-          colId = col.id;
-
-          var val = null;
-          var experiment = paper.experiments[expIndex];
-          if (experiment.data && experiment.data[colId]) {
-            val = experiment.data[colId];
-          }
-
-          if (val && val.value != null) {
-            td.classList.remove('empty');
-          } else {
-            td.classList.add('empty');
-          }
-
-          _.fillEls(td, '.value', val && val.value || '');
-          addOnInputUpdater(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value']);
-
-          var user = lima.getAuthenticatedUserEmail();
-          _.fillEls (td, '.valenteredby', val && val.enteredBy || user);
-          _.setProps(td, '.valenteredby', 'href', '/' + (val && val.enteredBy || user) + '/');
-          _.fillEls (td, '.valctime', _.formatDateTime(val && val.ctime || Date.now()));
-
-          lima.columnTypes.forEach(function (type) {td.classList.remove(type);});
-          td.classList.add(col.type);
-
-          setupPopupBoxPinning(td, '.datum.popupbox', expIndex + '$' + colId);
-        });
-
-        // oldCommentsLength is a static snapshot of the size in case comments change underneath us by adding a comment
-        var oldCommentsLength = 0;
-        if (experiment.data && experiment.data[colId] && experiment.data[colId].comments) {
-          oldCommentsLength = experiment.data[colId].comments.length;
+        var val = null;
+        if (experiment.data && experiment.data[colId]) {
+          val = experiment.data[colId];
         }
-        addPaperChangeVerifier(function (newPaper) {
-          // fix up colId in case it got updated by saving a new column
-          colId = lima.columns[colId].id;
 
-          var newComments = [];
-          if (newPaper.experiments[expIndex].data && newPaper.experiments[expIndex].data[colId]) {
-            newComments = newPaper.experiments[expIndex].data[colId].comments || [];
-          }
-          return oldCommentsLength === newComments.length;
-        });
+        if (!val || val.value == null) {
+          td.classList.add('empty');
+        } else {
+          _.fillEls(td, '.value', val.value);
+        }
+
+        addOnInputUpdater(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value']);
+
+        var user = lima.getAuthenticatedUserEmail();
+        _.fillEls (td, '.valenteredby', val && val.enteredBy || user);
+        _.setProps(td, '.valenteredby', 'href', '/' + (val && val.enteredBy || user) + '/');
+        _.fillEls (td, '.valctime', _.formatDateTime(val && val.ctime || Date.now()));
+
+        td.classList.add(col.type);
+
+        if (col.new) {
+          td.classList.add('newcol');
+        }
+
+        setupPopupBoxPinning(td, '.datum.popupbox', expIndex + '$' + colId);
+
 
         // populate comments
-        addPaperDOMSetter(function (newPaper) {
-          var col = lima.columns[colId];
-          // fix up colId in case it got updated by saving a new column
-          colId = col.id;
-
-          var newComments = [];
-          if (newPaper.experiments[expIndex].data && newPaper.experiments[expIndex].data[colId]) {
-            newComments = newPaper.experiments[expIndex].data[colId].comments || [];
-          }
-
-          if (newComments.length > 0) {
-            td.classList.add('hascomments');
-          } else {
-            td.classList.remove('hascomments');
-          }
-
-          if (col.new) {
-            td.classList.add('newcol');
-          } else {
-            td.classList.remove('newcol');
-          }
-          _.fillEls(td, '.commentcount', newComments.length);
-        });
-
-        fillComments('comment-template', td, '.datum.popupbox main', paper, ['experiments', expIndex, 'data', colId, 'comments']);
-      });
-
-    });
-
-    // fill in the empty last row of the table
-    showColumns.forEach(function (colId) {
-      var td = document.createElement('td');
-      addRowNode.appendChild(td);
-
-      addPaperDOMSetter(function () {
-        lima.columnTypes.forEach(function (type) {td.classList.remove(type);});
-        td.classList.add(lima.columns[colId].type);
+        fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', paper, ['experiments', expIndex, 'data', colId, 'comments']);
       });
     });
 
@@ -740,6 +693,7 @@
       return;
     }
     if (currentPaper.columnOrder.indexOf(col.id) > -1) return; // do nothing on columns that are already there
+    // todo this will change when un-hiding a column
 
     currentPaper.columnOrder.push(col.id);
     moveResultsAfterCharacteristics(currentPaper);
@@ -825,50 +779,53 @@
    *
    */
 
-  function fillComments(templateId, root, selector, oldPaper, commentsPropPath) {
-    var targetEl = _.findEl(root, selector);
-    targetEl.innerHTML = '';
-    var oldComments = getDeepValue(oldPaper, commentsPropPath) || [];
-    for (var index = 0; index < oldComments.length; index++) {
-      (function (index) {
-        // inline function to save `index` and `el`
-        var el = _.cloneTemplate(templateId).children[0];
-        addPaperDOMSetter(function (paper) {
-          var user = lima.getAuthenticatedUserEmail();
-          var comments = getDeepValue(paper, commentsPropPath);
-          var comment = comments[index];
-          if (index === comments.length - 1) {
-            _.setDataProps(el, '.needs-owner', 'owner', comment.by);
-          } else {
-            // this will disable editing of any comment but the last
-            _.setDataProps(el, '.needs-owner', 'owner', '');
-          }
-          _.fillEls(el, '.commentnumber', index+1);
-          _.fillEls(el, '.by', comment.by || user);
-          _.setProps(el, '.by', 'href', '/' + (comment.by || user) + '/');
-          _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime || Date.now()));
-          _.fillEls(el, '.text', comment.text);
+  function fillComments(templateId, root, countSelector, textSelector, paper, commentsPropPath) {
+    var comments = getDeepValue(paper, commentsPropPath) || [];
 
-          addOnInputUpdater(el, '.text', 'textContent', identity, paper, commentsPropPath.concat(index, 'text'));
-        });
-        targetEl.appendChild(el);
-      })(index);
+    if (comments.length > 0) {
+      root.classList.add('hascomments');
+    }
+    _.fillEls(root, countSelector, comments.length);
+
+    var user = lima.getAuthenticatedUserEmail();
+
+    var textTargetEl = _.findEl(root, textSelector);
+    textTargetEl.innerHTML = '';
+
+    for (var i = 0; i < comments.length; i++) {
+      var el = _.cloneTemplate(templateId).children[0];
+
+      var comment = comments[i];
+      if (i === comments.length - 1) {
+        _.setDataProps(el, '.needs-owner', 'owner', comment.by || user);
+      } else {
+        // this will disable editing of any comment but the last
+        _.setDataProps(el, '.needs-owner', 'owner', '');
+      }
+
+      _.fillEls(el, '.commentnumber', i+1);
+      _.fillEls(el, '.by', comment.by || user);
+      _.setProps(el, '.by', 'href', '/' + (comment.by || user) + '/');
+      _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime || Date.now()));
+      _.fillEls(el, '.text', comment.text);
+
+      addOnInputUpdater(el, '.text', 'textContent', identity, paper, commentsPropPath.concat(i, 'text'));
+      textTargetEl.appendChild(el);
     }
 
-    addPaperDOMSetter(function (paper) {
-      // events for adding a comment
-      _.findEls(root, '.comment.new .text').forEach(function (el) {
-        el.onblur = function () {
-          var text = el.textContent;
-          el.textContent = '';
-          if (text.trim()) {
-            var comments = getDeepValue(paper, commentsPropPath, []);
-            comments.push({ text: text });
-            updatePaperView();
-            _.scheduleSave(paper);
-          }
+    // events for adding a comment
+    _.findEls(root, '.comment.new .text').forEach(function (el) {
+      el.onblur = function () {
+        var text = el.textContent;
+        el.textContent = '';
+        if (text.trim()) {
+          var comments = getDeepValue(paper, commentsPropPath, []);
+          comments.push({ text: text });
+          fillComments(templateId, root, countSelector, textSelector, paper, commentsPropPath);
+          _.setYouOrName(); // the new comment needs to be marked as "yours" so you can edit it
+          _.scheduleSave(paper);
         }
-      });
+      }
     });
   }
 
@@ -1073,66 +1030,6 @@
    *
    */
 
-  function findColumnsInPaper(paper) {
-    if (!paper.experiments) return [];
-
-    // find the columns used in the experiments
-    var showColumnsHash = {};
-    var showCharacteristicColumns = [];
-    var showResultColumns = [];
-
-    // clean experiment data and columnOrder of new columns that got new ID when they were saved
-    paper.experiments.forEach(function (experiment) {
-      if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
-        var col = lima.columns[key];
-        if (col && col.id !== key) {
-          experiment.data[col.id] = experiment.data[key];
-          delete experiment.data[key];
-        }
-      });
-    });
-
-    if (Array.isArray(paper.columnOrder)) paper.columnOrder.forEach(function (key, index) {
-      var col = lima.columns[key];
-      if (col && col.id !== key) {
-        paper.columnOrder[index] = col.id;
-      }
-    });
-
-    // now gather columns in the paper, then sort the columns by type and order
-    paper.experiments.forEach(function (experiment) {
-      if (experiment.data) Object.keys(experiment.data).forEach(addColumn);
-    });
-
-    if (Array.isArray(paper.columnOrder)) paper.columnOrder.forEach(addColumn);
-
-    function addColumn(key) {
-      if (!(key in showColumnsHash)) {
-        var col = lima.columns[key];
-        showColumnsHash[key] = col;
-        switch (col.type) {
-          case 'characteristic': showCharacteristicColumns.push(col.id); break;
-          case 'result':         showResultColumns.push(col.id); break;
-        }
-      }
-    }
-
-    showCharacteristicColumns.sort(compareColsByOrder);
-    showResultColumns.sort(compareColsByOrder);
-
-    return showCharacteristicColumns.concat(showResultColumns);
-
-    function compareColsByOrder(c1, c2) {
-      if (!Array.isArray(paper.columnOrder)) return 0;
-      var i1 = paper.columnOrder.indexOf(c1);
-      var i2 = paper.columnOrder.indexOf(c2);
-      if (i1 === i2) return 0;
-      if (i1 === -1) return 1;
-      if (i2 === -1) return -1;
-      return i1 - i2;
-    }
-  }
-
   function moveColumn() {
     // a click will pin the box,
     // this timout makes sure the click gets processed first and then we do the moving
@@ -1145,26 +1042,12 @@
     var colId = el.dataset.id;
     if (!colId) return; // we don't know what to move
 
-    regenerateColumnOrder(currentPaper);
     var i = currentPaper.columnOrder.indexOf(colId);
     if (i === -1) return console.error('column ' + colId + ' not found in newly regenerated order!');
     _.moveInArray(currentPaper.columnOrder, i, left, most);
     moveResultsAfterCharacteristics(currentPaper);
     updatePaperView();
     _.scheduleSave(currentPaper);
-  }
-
-  function regenerateColumnOrder(paper) {
-    if (!Array.isArray(paper.columnOrder)) paper.columnOrder = [];
-
-    var columns = findColumnsInPaper(paper);
-    columns.forEach(function (colId) {
-      if (paper.columnOrder.indexOf(colId) === -1) {
-        paper.columnOrder.push(colId);
-      }
-    })
-
-    moveResultsAfterCharacteristics(paper);
   }
 
   function moveResultsAfterCharacteristics(paper) {
@@ -1182,8 +1065,7 @@
     var newTypeEl = ev.target;
 
     // find the element with the class 'coltype' before the button
-    var coltypeEl = newTypeEl;
-    while (coltypeEl && !coltypeEl.classList.contains('coltype')) coltypeEl = coltypeEl.previousElementSibling || coltypeEl.parentElement;
+    var coltypeEl = _.findPrecedingEl(newTypeEl, '.coltype');
 
     if (!coltypeEl) {
       console.warn('changeColumnType called on a button before which there is no .coltype');
@@ -1215,8 +1097,7 @@
 
   function doChangeColumnTypeConfirmOrCancel(btn) {
     // find the element with the class 'coltype' before the button
-    var coltypeEl = btn;
-    while (coltypeEl && !coltypeEl.classList.contains('coltype')) coltypeEl = coltypeEl.previousElementSibling || coltypeEl.parentElement;
+    var coltypeEl = _.findPrecedingEl(btn, '.coltype');
 
     if (!coltypeEl) {
       console.warn('changeColumnTypeConfirmOrCancel called on a button before which there is no .coltype');
@@ -1239,6 +1120,7 @@
 
     if (!btn.classList.contains('cancel')) {
       col.type = coltypeEl.dataset.newType;
+      moveResultsAfterCharacteristics(currentPaper);
       updatePaperView();
       _.scheduleSave(col);
     }
@@ -1257,28 +1139,6 @@
    *
    *
    */
-  var paperDOMSetters;
-  var paperChangeVerifiers;
-
-  resetDOMSetters();
-
-  function resetDOMSetters() {
-    paperDOMSetters = [];
-    paperChangeVerifiers = [];
-  }
-
-  function addPaperDOMSetter (f) {
-    if (f && paperDOMSetters.indexOf(f) === -1) paperDOMSetters.push(f);
-  }
-
-  function addPaperChangeVerifier (f) {
-    if (paperChangeVerifiers.indexOf(f) === -1) paperChangeVerifiers.push(f);
-  }
-
-  function callPaperDOMSetters(paper) {
-    paperDOMSetters.forEach(function (setter) { setter(paper); });
-  }
-
   var identity = null; // special value to use as validatorSanitizer
 
   function addOnInputUpdater(root, selector, property, validatorSanitizer, target, targetProp) {
@@ -1293,8 +1153,6 @@
 
     _.findEls(root, selector).forEach(function (el) {
       if (el.classList.contains('editing') || el.isContentEditable || el.contentEditable === 'true') {
-        el.classList.remove('validationerror');
-        setValidationErrorClass();
         el.addEventListener('keydown', _.deferScheduledSave);
         el.oninput = function () {
           var value = el[property];
@@ -1302,15 +1160,15 @@
           try {
             if (validatorSanitizer) value = validatorSanitizer(value, el, property);
           } catch (err) {
-            // this class will be removed by updatePaperView when validation succeeds again
             el.classList.add('validationerror');
             el.dataset.validationmessage = err.message || err;
             setValidationErrorClass();
             _.cancelScheduledSave(target);
             return;
           }
+          el.classList.remove('validationerror');
+          setValidationErrorClass();
           assignDeepValue(target, targetProp, value);
-          updatePaperView();
           _.scheduleSave(target);
         };
       } else {
@@ -1350,21 +1208,19 @@
       throw _.apiFail();
     }
 
-    editingEl.oninput = editingEl.onblur = function () {
+    editingEl.oninput = editingEl.onblur = function (ev) {
       var value = editingEl[property];
       if (typeof value === 'string' && value.trim() === '') value = '';
       try {
         if (validatorSanitizer) value = validatorSanitizer(value, editingEl, property);
       } catch (err) {
         editingEl.classList.add('validationerror');
-        confirmEl.disabled = true;
         editingEl.dataset.validationmessage = err && err.message || err || '';
-        setValidationErrorClass();
+        if (ev) setValidationErrorClass();
+        confirmEl.disabled = true;
         _.cancelScheduledSave(target);
         return;
       }
-      editingEl.classList.remove('validationerror');
-      setValidationErrorClass();
       var origValue = getDeepValue(target, targetProp) || '';
       if (value !== origValue) {
         confirmEl.disabled = false;
@@ -1373,7 +1229,14 @@
         confirmEl.disabled = true;
         editingEl.classList.remove('unsaved');
       }
-      setUnsavedClass();
+      editingEl.classList.remove('validationerror');
+
+      // the following calls are expensive and unnecessary when building the dom
+      // but when building the dom, we don't have `ev`
+      if (ev) {
+        setValidationErrorClass();
+        setUnsavedClass();
+      }
     };
 
     editingEl.oninput();
@@ -1428,6 +1291,8 @@
 
   function assignDeepValue(target, targetProp, value) {
     if (Array.isArray(targetProp)) {
+      // copy targetProp so we can manipulate it
+      targetProp = targetProp.slice();
       while (targetProp.length > 1) {
         var prop = targetProp.shift();
         if (!(prop in target) || target[prop] == null) {
@@ -1681,6 +1546,7 @@
   lima.requestAndFillPaper = requestAndFillPaper;
 
   lima.updateView = updatePaperView;
+  lima.updateAfterColumnSave = updateAfterColumnSave;
 
   // for testing
   lima.pinPopupBox = pinPopupBox;
@@ -1690,7 +1556,6 @@
   lima.getDeepValue = getDeepValue;
   lima.getPaperTitles = function(){return paperTitles;};
   lima.getCurrentPaper = function(){return currentPaper;};
-  lima.findColumnsInPaper = findColumnsInPaper;
   lima.savePendingMax = 0;
 
 
