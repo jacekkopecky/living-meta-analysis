@@ -80,7 +80,7 @@
     }
     _.findEls(root, selector).forEach(function (el) {
       var newVal = valOrFun(value, el);
-      if (el.textContent != newVal) el.textContent = newVal || '';
+      if (el.textContent != newVal) el.textContent = newVal == null ? '' : newVal;
     });
   }
 
