@@ -39,6 +39,14 @@
     return _.array(root.querySelectorAll(selector));
   }
 
+  /*
+   * finds the preceding sibling or ancestor that matches a selector, or returns null if not found
+   */
+  _.findPrecedingEl = function findPrecedingEl(el, selector) {
+    while (el && !el.matches(selector)) el = el.previousElementSibling || el.parentElement;
+    return el;
+  }
+
   _.byId = function byId(id) {
     return document.getElementById(id);
   }
