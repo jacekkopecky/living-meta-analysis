@@ -1519,6 +1519,20 @@ body:not(.page-about-you) #paper.no-data table.experiments {
   border: none;
 }
 
+#paper .option-not-checked {
+  display: none;
+}
+
+#paper .colformulacolumnsselection label,
+#paper .colformulacolumnsselection label > select {
+  display: block;
+}
+
+#paper td.datum.computed .notcomputed,
+#paper td.datum:not(.computed) .computed {
+  display: none;
+}
+
 /* validation
  *
  *

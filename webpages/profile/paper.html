@@ -155,6 +155,13 @@
               <p class="unpopulated">Select a column to add</p>
             </header>
             <p class="coldescription">error</p>
+            <div class="colcomputedcolumns">
+              <p>Computed column</p>
+              <p>Formula: <span class="colformula">error</span></p>
+              <div class="colformulacolumns">
+                <!-- gets populated in the code -->
+              </div>
+            </div>
             <p class="unpopulated">To see details of a column, move over it with your mouse.</p>
             <!-- todo comments -->
             <footer>
@@ -206,6 +213,20 @@
       </header>
       <p class="coldescription notediting-or-not-yours needs-owner">error</p>
       <p class="coldescription editing only-if-yours needs-owner" contenteditable placeholder="add column description">error</p>
+      <label class="editing only-if-yours needs-owner"><input type="checkbox" class="colcomputed">Show options for computed column</label>
+      <div class="colcomputedcolumns option-not-checked">
+        <select class="colformulas editing only-if-yours needs-owner">
+          <option value=''>Select formula</option>
+          <!-- gets populated in the code, in which case the option above goes away -->
+        </select>
+        <div class="colformulacolumnsselection editing only-if-yours needs-owner">
+          <!-- gets populated in the code -->
+        </div>
+        <p class="notediting-or-not-yours needs-owner">Formula: <span class="colformula">error</span></p>
+        <div class="notediting-or-not-yours needs-owner colformulacolumns">
+          <!-- gets populated in the code -->
+        </div>
+      </div>
       <!-- on hiding this column, store in localStorage that this column is being hidden,
       also add to the end of every row a symbol that there are hidden values,
       on hover, the symbol will list them and allow you to add some right back -->
@@ -263,20 +284,22 @@
   </tr>
 </template>
 <template id="experiment-datum-template">
-  <td class="popupboxtrigger popupboxhighlight">
-    <span class="value notediting"></span>
-    <span class="value editing oneline" contenteditable></span>
-    <span class="newcol" title="cannot add values/comments for a new column until the column is saved with a title and a type"> </span>
+  <td class="datum popupboxtrigger popupboxhighlight">
+    <span class="value notcomputed notediting"></span>
+    <span class="value computed"></span>
+    <span class="value notcomputed editing oneline" contenteditable></span>
+    <span class="notcomputed newcol" title="cannot add values/comments for a new column until the column is saved with a title and a type"> </span>
     <div class="datum popupbox" data-boxtype='datumpopupbox'>
       <div class="pin"></div>
       <header>
         <p class="value" placeholder="no value"></p>
-        <p class="by">
+        <p class="by notcomputed">
           entered on
           <span class="valctime date">error</span>
           by
           <a class="valenteredby" href="error">error</a>
         </p>
+        <!-- TODO: Computed from column x & column y -->
         <p><span class="commentcount"></span> comments:</p>
       </header>
       <main><!-- this is where the comments will come --></main>
@@ -312,6 +335,7 @@
 <script src="/js/auth.js"></script>
 <script src="/js/userprofile.js"></script>
 <script src="/js/columns.js"></script>
+<script src="/js/formulas.js"></script>
 <script src="/js/papers.js"></script>
 <script src="/js/version.js"></script>
 <script>

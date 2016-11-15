@@ -410,6 +410,8 @@ function extractColumnForSending(storageColumn) {
     title: storageColumn.title,
     type: storageColumn.type,
     description: storageColumn.description,
+    formula: storageColumn.formula,
+    formulaColumns: storageColumn.formulaColumns,
     definedBy: storageColumn.definedBy,
     ctime: storageColumn.ctime,
     mtime: storageColumn.mtime,
@@ -440,6 +442,8 @@ function extractReceivedColumn(recCol) {
     title: tools.string(recCol.title),
     type: tools.string(recCol.type),
     description: tools.string(recCol.description),
+    formula: tools.string(recCol.formula),
+    formulaColumns: tools.array(recCol.formulaColumns, tools.string),
     CHECKdefinedBy: tools.string(recCol.definedBy), // can't be changed but should be checked
     CHECKctime: tools.number(recCol.ctime),         // can't be changed but should be checked
     // mtime: tools.number(recCol.mtime),           // will be updated

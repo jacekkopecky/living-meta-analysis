@@ -719,7 +719,9 @@ module.exports.saveColumn = (recvCol, email) => {
       recvCol.definedBy = origCol.definedBy;
       if (recvCol.title !== origCol.title ||
           recvCol.type !== origCol.type ||
-          recvCol.description !== origCol.description) {
+          recvCol.description !== origCol.description ||
+          recvCol.formula !== origCol.formula ||
+          JSON.stringify(recvCol.formulaColumns) !== JSON.stringify(origCol.formulaColumns)) {
         if (origCol.definedBy !== email) {
           throw new ValidationError(`only ${origCol.definedBy} can edit column ${recvCol.id}`);
         }
