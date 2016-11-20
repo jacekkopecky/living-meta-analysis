@@ -207,7 +207,19 @@
     return arr;
   }
 
+  /* Array manipulation
+  */
+  _.existsInArray = function existsInArray(array, element) {
+    if (array.indexOf(element) != -1) return true;
+    return false;
+  }
 
+  _.removeFromArray = function removeFromArray(array, element) {
+    if (_.existsInArray(array, element)) {
+      console.log(element, " exists in ", array);
+      array.splice(array.indexOf(element), 1);
+    }
+  }
 
   /* error handling
    *
@@ -550,7 +562,6 @@
       (e || window.event).returnValue = confirmationMessage; //Gecko + IE
       return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
     }
-});
-
+  });
 
 })(document, window);

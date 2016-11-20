@@ -576,6 +576,21 @@ section.list > ul > li > ul.tags > li {
   display: inline-block;
 }
 
+#paper .unhide {
+  font-size: 24px;
+  position: fixed;
+  right: 20px;
+  bottom: 15px;
+  letter-spacing: 3px;
+  color: rgba(0, 0, 0, 0.26);
+  transform: rotate(45deg);
+}
+
+#paper .unhide:hover {
+  color: rgba(0, 0, 0, 1);
+  cursor: pointer;
+}
+
 #paper .popupboxhighlight .coltitle:empty:before {
   content: 'enter title';
   color: #aaa;

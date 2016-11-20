@@ -423,6 +423,10 @@
      *
      */
 
+    // Hidden columns (initialise if missing)..
+    if (!paper.hiddenCols) {
+      paper.hiddenCols = []
+    }
 
     var headingsRowNode = _.findEl(table, 'tr:first-child');
     var addColumnNode = _.findEl(table, 'tr:first-child > th.add');
@@ -430,10 +434,28 @@
     var curtime = Date.now();
     var user = lima.getAuthenticatedUserEmail();
 
+    var lastColumnHidden;
+
     paper.columnOrder.forEach(function (colId) {
+      if (isHiddenCol(colId)) {
+        // Save the fact that we just hid a column, so the next non-hidden
+        // column can behave differently (i.e show a arrow).
+        lastColumnHidden = true;
+        // early return
+        return;
+      }
+
       var col = lima.columns[colId];
       var th = _.cloneTemplate('col-heading-template').children[0];
       headingsRowNode.insertBefore(th, addColumnNode);
+
+      if (lastColumnHidden) {
+        // We know that there should be a "unhide" button on this column
+        addUnhideButton(th);
+
+        // Clear out lastColumnHidden.
+        lastColumnHidden = false;
+      }
 
       _.fillEls(th, '.coltitle', col.title);
       _.fillEls(th, '.coldescription', col.description);
@@ -443,7 +465,18 @@
       _.setProps(th, '.definedby .value', 'href', '/' + (col.definedBy || user) + '/');
 
       _.addEventListener(th, 'button.move', 'click', moveColumn);
+
       th.dataset.colid = col.id;
+
+      _.addEventListener(th, 'button.hide', 'click', function () {
+          // TODO: Check if this is the last column, if it is don't add it and
+          // display an error!
+          paper.hiddenCols.push(th.dataset.colid);
+          // pinnedBox would have been this column now hidden, so clear
+          unpinPopupBox();
+          updatePaperView();
+          _.scheduleSave(currentPaper);
+        });
 
       th.classList.add(col.type);
       _.addClass(th, '.coltype', col.type);
@@ -523,6 +556,12 @@
       _.setDataProps(th, '.needs-owner', 'owner', col.definedBy || user);
     });
 
+    // Check to see if the last column was hidden.
+    if (lastColumnHidden) {
+        addUnhideButton(addColumnNode);
+        lastColumnHidden = false;
+    }
+
     /* experiment rows
      *
      *
@@ -562,6 +601,11 @@
       setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', expIndex);
 
       paper.columnOrder.forEach(function (colId) {
+        if (isHiddenCol(colId,paper)) {
+          // early return
+          return;
+        }
+
         var col = lima.columns[colId];
         var val = null;
         var td = _.cloneTemplate('experiment-datum-template').children[0];
@@ -619,7 +663,6 @@
         }
 
         setupPopupBoxPinning(td, '.datum.popupbox', expIndex + '$' + colId);
-
 
         // populate comments
         fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', paper, ['experiments', expIndex, 'data', colId, 'comments']);
@@ -1419,6 +1462,46 @@
       moveResultsAfterCharacteristics(currentPaper);
       updatePaperView();
       _.scheduleSave(col);
+    }
+  }
+
+  function isHiddenCol(colid) {
+    if (typeof currentPaper.hiddenCols === 'undefined' || !(_.existsInArray(currentPaper.hiddenCols, colid)) ) {
+      return false;
+    }
+    return true;
+  }
+
+  function addUnhideButton(colNode) {
+    _.fillEls(colNode, '.unhide', '\u25C2 \u25B8'); // left arrow right arrow
+    _.addEventListener(colNode, '.unhide', 'click', function (e) {
+      unhidePreviousHiddenColumns(colNode.dataset.colid);
+      updatePaperView();
+      _.scheduleSave(currentPaper);
+    });
+  }
+
+  // This function takes a colid to start counting back from (paper.columnOrder).
+  // It will continue to unhide columns until a non-hidden column is found.
+  // e.g. ['hidden0', 'col1', 'hidden2', 'hidden3', 'col4'].
+  // Passing col1 will unhide hidden0, and col4 will unhide 2 and 3.
+  function unhidePreviousHiddenColumns(colid) {
+    var index;
+    var last;
+    // If we don't have a colid, it's the 'add column' button, so start at the end.
+    if (!colid) {
+      index = currentPaper.columnOrder.length-1;
+    } else {
+      index = currentPaper.columnOrder.indexOf(colid);
+    }
+
+    for (var i = index; i >= 0; i--) {
+      if (currentPaper.columnOrder[i] == colid) continue;
+      if (isHiddenCol(currentPaper.columnOrder[i])) {
+        _.removeFromArray(currentPaper.hiddenCols, currentPaper.columnOrder[i]);
+      } else {
+        break;
+      }
     }
   }
 
