@@ -97,6 +97,10 @@ body > footer > p {
   font-family: monospace;
 }
 
+.hidden {
+  display: none;
+}
+
 /* popupbox
  *
  *

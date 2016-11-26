@@ -14,7 +14,7 @@ const config = require('./config');
 
 const gcloud = require('google-cloud')(config.gcloudProject);
 
-const datastore = gcloud.datastore({ namespace: config.gcloudDatastoreNamespace });
+const datastore = gcloud.datastore({ namespace: config.gcloudDatastoreNamespace, apiEndpoint: 'http://localhost:8876'});
 
 const TITLE_RE = module.exports.TITLE_RE = '[a-zA-Z0-9.-]+';
 const TITLE_REXP = new RegExp(`^${TITLE_RE}$`);
