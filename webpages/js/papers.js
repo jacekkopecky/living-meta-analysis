@@ -239,7 +239,7 @@
     _.setDataProps(paperEl, '.enteredby.needs-owner', 'owner', paper.enteredBy);
 
     addConfirmedUpdater('#paper .link span.editing', '#paper .link button.confirm', '#paper .link button.cancel', 'textContent', identity, paper, 'link');
-    addConfirmedUpdater('#paper .doi span.editing', '#paper .doi button.confirm', '#paper .doi button.cancel', 'textContent', identity, paper, 'doi');
+    addConfirmedUpdater('#paper .doi span.editing', '#paper .doi button.confirm', '#paper .doi button.cancel', 'textContent', identity, paper, 'doi', null, 'doi:' );
 
     // workaround for chrome not focusing right
     // clicking on the placeholder 'doi' of an empty editable doi value focuses the element but doesn't react to subsequent key strokes
@@ -1177,8 +1177,9 @@
     });
   }
 
-  function addConfirmedUpdater(root, selector, confirmselector, cancelselector, property, validatorSanitizer, target, targetProp, deleteFunction) {
+  function addConfirmedUpdater(root, selector, confirmselector, cancelselector, property, validatorSanitizer, target, targetProp, deleteFunction, substringToTrim) {
     if (!(root instanceof Node)) {
+      substringToTrim = deleteFunction;
       deleteFunction = targetProp;
       targetProp = target;
       target = validatorSanitizer;
@@ -1269,6 +1270,8 @@
 
     confirmEl.onclick = function () {
       var value = editingEl[property];
+      // if we're given a substringToTrim, lets do that..
+      value = value.replace(substringToTrim, '');
       if (typeof value === 'string' && value.trim() === '') value = '';
       try {
         if (validatorSanitizer) value = validatorSanitizer(value, editingEl, property);

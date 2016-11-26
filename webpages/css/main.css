@@ -539,6 +539,17 @@ section.list > ul > li > ul.tags > li {
   max-width: 30em;
 }
 
+#paper .doi {
+  position: relative;
+  font-style: italic;
+}
+
+#paper .doi .value {
+  margin-left: -25px;
+  padding-left: 25px;
+  font-style: normal;
+}
+
 #paper .link .value {
   white-space: nowrap;
   display: inline-block;
