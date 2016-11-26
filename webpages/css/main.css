@@ -548,6 +548,7 @@ section.list > ul > li > ul.tags > li {
   margin-left: -25px;
   padding-left: 25px;
   font-style: normal;
+  display: inline-block;
 }
 
 #paper .link .value {
