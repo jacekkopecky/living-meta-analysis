@@ -809,6 +809,8 @@
       _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime || Date.now()));
       _.fillEls(el, '.text', comment.text);
 
+      _.addEventListener(el, '.edit-icon', 'click', focusAnotherElementOnClick);
+
       addOnInputUpdater(el, '.text', 'textContent', identity, paper, commentsPropPath.concat(i, 'text'));
       textTargetEl.appendChild(el);
     }

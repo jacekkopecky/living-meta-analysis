@@ -101,6 +101,15 @@ body > footer > p {
   display: none;
 }
 
+/* Material icons: */
+.material-icons.md-18 {
+  font-size: 18px;
+}
+
+.material-icons {
+  cursor: pointer;
+}
+
 /* popupbox
  *
  *
