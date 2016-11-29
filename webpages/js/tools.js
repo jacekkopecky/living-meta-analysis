@@ -412,13 +412,13 @@
    *   lima.saveStarted
    *   lima.saveStopped
    *   lima.saveError
-  */
+   */
 
   var pendingSaveTimeout = null;
   var pendingSaveFunctions = [];
   var currentSavingFunction = null;
 
-  var SAVE_PENDING_TIMEOUT = 3000;
+  var SAVE_PENDING_TIMEOUT = 10000;
 
   _.scheduleSave = function scheduleSave(saveFunction) {
     if (typeof saveFunction !== 'function' && typeof saveFunction.save !== 'function') throw new Error('saveFunction not a function or an object with save()');
@@ -457,7 +457,8 @@
 
   _.manualSave = doSave;
 
-  _.isSaving = function isSaving() {
+  _.isSaving = function isSaving(includePending) {
+    if (includePending && pendingSaveFunctions.length !== 0) return true;
     return !!currentSavingFunction;
   };
 
@@ -509,5 +510,37 @@
       }
     );
   }
+
+  /* page leave
+   *
+   *
+   *   #####    ##    ####  ######    #      ######   ##   #    # ######
+   *   #    #  #  #  #    # #         #      #       #  #  #    # #
+   *   #    # #    # #      #####     #      #####  #    # #    # #####
+   *   #####  ###### #  ### #         #      #      ###### #    # #
+   *   #      #    # #    # #         #      #      #    #  #  #  #
+   *   #      #    #  ####  ######    ###### ###### #    #   ##   ######
+   *
+   *
+   */
+
+  /* the API to the generic page-leave-warning functionality includes the following page-specific functions:
+   *
+   * check to see if the page should warn about leaving
+   *   lima.checkToPreventLeaving
+   *
+   * with thanks to stack overflow http://stackoverflow.com/a/7317311/6482703
+   */
+
+  window.addEventListener("beforeunload", function (e) {
+    if (_.isSaving(true) || lima.checkToPreventLeaving && lima.checkToPreventLeaving()) {
+      var confirmationMessage = 'The page contains unsaved changes. '
+                              + 'If you leave before saving, your changes will be lost.';
+
+      (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+      return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+    }
+});
+
 
 })(document, window);

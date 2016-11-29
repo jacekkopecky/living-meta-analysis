@@ -1221,6 +1221,9 @@
     return _.findEl('#paper.savingerror') || _.findEl('#paper.validationerror') || _.findEl('#paper.unsaved');
   }
 
+  // the page should warn about leaving if it has unsaved changes
+  lima.checkToPreventLeaving = lima.checkToPreventSaving;
+
   // don't save at all when a validation error is there
   lima.checkToPreventForcedSaving = function checkToPreventForcedSaving() {
     return _.findEl('#paper.validationerror') || _.findEl('#paper.unsaved');
