@@ -18,6 +18,18 @@
         func: logOddsRatioPercent,
         parameters: [ 'experimental (%)', 'control (%)' ]
       },
+      {
+        id: 'weight',
+        label: 'Weight',
+        func: weight,
+        parameters: [ 'experimental outcome', 'experimental N', 'control outcome', 'control N' ]
+      },
+      {
+        id: 'weightPercent',
+        label: 'Weight (percentages)',
+        func: weightPercent,
+        parameters: [ 'experimental outcome (%)', 'experimental N', 'control outcome (%)', 'control N' ]
+      },
     ];
   }
 
@@ -59,4 +71,29 @@
     // may return NaN or infinities
     return logOddsRatio(experimental/100, control/100);
   }
+
+  function weight (Me, Ne, Mc, Nc) {
+    // validate the input
+    Me = strictToNumber(Me);
+    Ne = strictToNumber(Ne);
+    Mc = strictToNumber(Mc);
+    Nc = strictToNumber(Nc);
+
+    // perform the calculation
+    // may return NaN or infinities
+    return 1 / ( 1/(Me*Ne) + 1/((1-Me)*Ne) + 1/(Mc*Nc) + 1/((1-Mc)*Nc) );
+  }
+
+  function weightPercent (Me, Ne, Mc, Nc) {
+    // validate the input
+    Me = strictToNumber(Me);
+    Ne = strictToNumber(Ne);
+    Mc = strictToNumber(Mc);
+    Nc = strictToNumber(Nc);
+
+    // perform the calculation
+    // may return NaN or infinities
+    return weight(Me/100, Ne, Mc/100, Nc);
+  }
+
 })(window, document);
