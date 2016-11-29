@@ -763,17 +763,20 @@
       // computed column
       var inputs = [];
       var formula = lima.getFormulaById(col.formula);
-      var columnCompletelyDefined = false;
+      var columnNotCompletelyDefined = false;
 
       // compute the value
       // if anything here throws an exception, value cannot be computed
       for (var i=0; i<col.formulaColumns.length; i++) {
-        if (!(col.formulaColumns[i] in lima.columns)) break; // the computed column's input columns are not all defined
-        columnCompletelyDefined = true;
+        if (!(col.formulaColumns[i] in lima.columns)) {
+          // the computed column's input columns are not all defined
+          columnNotCompletelyDefined = true;
+          break;
+        }
         inputs.push(getDatumValue(col.formulaColumns[i], expIndex));
       }
 
-      if (columnCompletelyDefined) val = formula.func.apply(null, inputs);
+      if (!columnNotCompletelyDefined) val = formula.func.apply(null, inputs);
 
       // if the result is NaN but some of the inputs were empty, change the result to empty.
       if (typeof val == 'number' && isNaN(val)) {
