@@ -454,7 +454,7 @@
 
       addOnInputUpdater(th, '.coldescription', 'textContent', identity, col, ['description']);
 
-      addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, col, 'title', deleteNewColumn);
+      addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, col, 'title', deleteNewColumn, function(){_.scheduleSave(paper);});
 
       setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
 
@@ -972,6 +972,7 @@
     currentPaper.columnOrder.push(col.id);
     moveResultsAfterCharacteristics(currentPaper);
     updatePaperView();
+    _.scheduleSave(currentPaper);
 
     // the click will popup the wrong box, so delay popping up the right one until after the click is fully handled
     setTimeout(pinPopupBox, 0, 'fullcolinfo@' + el.dataset.colid);
@@ -1453,8 +1454,9 @@
     });
   }
 
-  function addConfirmedUpdater(root, selector, confirmselector, cancelselector, property, validatorSanitizer, target, targetProp, deleteFunction) {
+  function addConfirmedUpdater(root, selector, confirmselector, cancelselector, property, validatorSanitizer, target, targetProp, deleteFunction, onconfirm) {
     if (!(root instanceof Node)) {
+      onconfirm = deleteFunction;
       deleteFunction = targetProp;
       targetProp = target;
       target = validatorSanitizer;
@@ -1558,6 +1560,7 @@
       setUnsavedClass();
       updatePaperView();
       _.scheduleSave(target);
+      if (onconfirm) onconfirm();
     };
 
     cancelEls.forEach(function (cancelEl) {
