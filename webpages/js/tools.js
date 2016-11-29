@@ -399,6 +399,21 @@
    *
    */
 
+
+  /* the API to the generic saving functionality includes the following page-specific functions:
+   *
+   * checks that can prevent actually saving
+   *   lima.checkToPreventSaving
+   *   lima.checkToPreventForcedSaving
+   *
+   * events during saving
+   *   lima.savePendingStarted
+   *   lima.savePendingStopped
+   *   lima.saveStarted
+   *   lima.saveStopped
+   *   lima.saveError
+  */
+
   var pendingSaveTimeout = null;
   var pendingSaveFunctions = [];
   var currentSavingFunction = null;
