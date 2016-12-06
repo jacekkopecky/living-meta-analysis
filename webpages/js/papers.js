@@ -271,6 +271,8 @@
     _.addEventListener(paperEl, '.validationerrormessage', 'click', focusFirstValidationError);
     _.addEventListener(paperEl, '.unsavedmessage', 'click', focusFirstUnsaved);
 
+    document.addEventListener('keydown', moveBetweenDataCells, true);
+
     if (pinnedBox) pinPopupBox(pinnedBox);
 
     setValidationErrorClass();
@@ -1648,7 +1650,7 @@
         while (box && !box.classList.contains('popupbox')) box = box.nextElementSibling || box.parentElement;
       }
     } else {
-      box = _.findEl('.popupbox[data-boxid="' + box + '"]')
+      box = getPopupBoxEl(box);
     }
     if (!box && !(origBox instanceof Element)) console.warn('cannot find element for popup box ' + origBox);
     return box;
@@ -1681,7 +1683,7 @@
 
   function unpinPopupBox() {
     if (pinnedBox) {
-      var pinned = _.findEl('[data-boxid="' + pinnedBox + '"]')
+      var pinned = getPopupBoxEl();
       if (pinned) {
         pinned.classList.remove('pinned');
 
@@ -1692,6 +1694,13 @@
     }
     pinnedBox = null;
     document.body.classList.remove('boxpinned');
+  }
+
+  // returns the popup box element for the popup box with the specified ID,
+  // or if no ID is given, the currently pinned popup box element
+  function getPopupBoxEl(id) {
+    if (!id) id = pinnedBox;
+    return _.findEl('[data-boxid="' + id + '"]')
   }
 
   function setupPopupBoxPinning(el, selector, localid) {
@@ -1803,6 +1812,88 @@
     ev.target.focus();
   }
 
+  // moving between cells (esp. when editing) should work like excel: tab and enter, maybe with shift
+  function moveBetweenDataCells(e) {
+    var currentCell = getCurrentlyFocusedDataCell();
+    if (!currentCell) return;
+
+    if (e.keyCode == 9){ // tab
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.shiftKey) {
+        changeCurrentDataCell(currentCell, 'left');
+      } else {
+        changeCurrentDataCell(currentCell, 'right');
+      }
+    }
+    if (e.keyCode == 13) { // enter
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.shiftKey) {
+        changeCurrentDataCell(currentCell, 'up');
+      } else {
+        changeCurrentDataCell(currentCell, 'down');
+      }
+    }
+  }
+
+  function getCurrentlyFocusedDataCell() {
+    // the currently focused cell either has the popup box pinned, or it has the editing field focused
+    var focusedEl = document.activeElement;
+    if (!focusedEl.classList.contains('value') ||
+        !focusedEl.classList.contains('editing')) {
+      focusedEl = getPopupBoxEl();
+    }
+
+    var currentTD = _.findPrecedingEl(focusedEl, 'td');
+
+    // check that we are in a table cell in the experiments table
+    if (currentTD && _.findPrecedingEl(currentTD, 'table.experiments')) return currentTD;
+
+    return null;
+  }
+
+
+  function changeCurrentDataCell(currentCell, direction) {
+    if (!currentCell) return;
+
+    var row;
+    var index;
+    switch (direction) {
+      case 'up':
+        row = currentCell.parentNode.previousElementSibling;
+        index = currentCell.cellIndex;
+        break;
+
+      case 'down':
+        row = currentCell.parentNode.nextElementSibling;
+        index = currentCell.cellIndex;
+        break;
+
+      case 'left':
+        row = currentCell.parentNode;
+        index = currentCell.cellIndex-1;
+        break;
+
+      case 'right':
+        row = currentCell.parentNode;
+        index = currentCell.cellIndex+1;
+        break;
+    }
+    focusDataCell(row, index);
+  }
+
+  function focusDataCell(rowEl, cellIndex) {
+    var cell = rowEl.cells[cellIndex];
+    if (cell) {
+      var toFocus = _.findEl(cell, '.value.editing');
+      if (toFocus) {
+        if (document.activeElement) document.activeElement.blur();
+        focusElement(toFocus);
+        _.putCursorAtEnd(document.activeElement);
+      }
+    }
+  }
 
   /* api
    *
