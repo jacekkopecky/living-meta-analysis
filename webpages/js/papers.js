@@ -241,7 +241,7 @@
     _.setDataProps(paperEl, '.enteredby.needs-owner', 'owner', paper.enteredBy);
 
     addConfirmedUpdater('#paper .link span.editing', '#paper .link button.confirm', '#paper .link button.cancel', 'textContent', identity, paper, 'link');
-    addConfirmedUpdater('#paper .doi span.editing', '#paper .doi button.confirm', '#paper .doi button.cancel', 'textContent', identity, paper, 'doi');
+    addConfirmedUpdater('#paper .doi span.editing', '#paper .doi button.confirm', '#paper .doi button.cancel', 'textContent', stripDOIPrefix, paper, 'doi');
 
     // workaround for chrome not focusing right
     // clicking on the placeholder 'doi' of an empty editable doi value focuses the element but doesn't react to subsequent key strokes
@@ -280,6 +280,14 @@
 
     recalculateComputedData();
   }
+
+  function stripDOIPrefix(doi) {
+    if (doi.toLowerCase().startsWith('doi:')) {
+      doi = doi.substring(4);
+    }
+    return doi;
+  }
+
 
   /* editTags
    *
