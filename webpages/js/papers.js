@@ -443,7 +443,7 @@
       _.setProps(th, '.definedby .value', 'href', '/' + (col.definedBy || user) + '/');
 
       _.addEventListener(th, 'button.move', 'click', moveColumn);
-      _.setDataProps(th, 'button', 'id', col.id);
+      th.dataset.colid = col.id;
 
       th.classList.add(col.type);
       _.addClass(th, '.coltype', col.type);
@@ -451,7 +451,6 @@
       if (col.new) {
         th.classList.add('newcol');
         _.addClass(th, '.coltype', 'newcol');
-        _.setDataProps(th, '.coltype', 'id', col.id);
         _.addClass(th, '.coltitle.editing', 'new');
         // todo move the confirm/rename difference into html, but that means we have multiple confirm buttons and addConfirmedUpdater might be unhappy
         _.fillEls(th, '.coltitle + .coltitlerename', 'confirm');
@@ -1335,7 +1334,7 @@
   function doMoveColumn(el) {
     var left = el.classList.contains('left');
     var most = el.classList.contains('most');
-    var colId = el.dataset.id;
+    var colId = _.findPrecedingEl(el, 'th').dataset.colid;
     if (!colId) return; // we don't know what to move
 
     var i = currentPaper.columnOrder.indexOf(colId);
@@ -1400,9 +1399,10 @@
       return;
     }
 
-    var col = lima.columns[btn.dataset.id];
+    var colId = _.findPrecedingEl(btn, 'th').dataset.colid;
+    var col = lima.columns[colId];
     if (!col) {
-      console.warn('changeColumnTypeConfirmOrCancel couldn\'t find column for id ' + btn.dataset.id);
+      console.warn('changeColumnTypeConfirmOrCancel couldn\'t find column for id ' + colId);
       return;
     }
 
