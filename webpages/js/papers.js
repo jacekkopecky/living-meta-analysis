@@ -1081,23 +1081,50 @@
       _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime || Date.now()));
       _.fillEls(el, '.text', comment.text);
 
+      _.addEventListener(el, '.edit-icon', 'click', focusAnotherElementOnClick);
+
       addOnInputUpdater(el, '.text', 'textContent', identity, paper, commentsPropPath.concat(i, 'text'));
       textTargetEl.appendChild(el);
     }
 
     // events for adding a comment
-    _.findEls(root, '.comment.new .text').forEach(function (el) {
-      el.onblur = function () {
-        var text = el.textContent;
-        el.textContent = '';
-        if (text.trim()) {
-          var comments = getDeepValue(paper, commentsPropPath, []);
-          comments.push({ text: text });
-          fillComments(templateId, root, countSelector, textSelector, paper, commentsPropPath);
-          _.setYouOrName(); // the new comment needs to be marked as "yours" so you can edit it
-          _.scheduleSave(paper);
-        }
+    var buttons = _.findEls(root, '.comment.new .buttons');
+    var newComment = _.findEls(root, '.comment.new .text');
+    newComment = newComment[0];
+
+    // show buttons on focus
+    newComment.onfocus = function () {
+      buttons[0].classList.remove('hidden');
+    }
+
+    // enable/disable the add button based on content
+    newComment.oninput = function () {
+      var text = newComment.textContent;
+      if (text.trim() != ''){
+        buttons[0].lastElementChild.disabled = false;
+      } else {
+        buttons[0].lastElementChild.disabled = true;
       }
+    }
+
+    // add
+    _.addEventListener(root, '.comment.new .add', 'click', function() {
+      var text = newComment.textContent;
+      newComment.textContent = '';
+      if (text.trim()) {
+        var comments = getDeepValue(paper, commentsPropPath, []);
+        comments.push({ text: text });
+        fillComments(templateId, root, countSelector, textSelector, paper, commentsPropPath);
+        _.setYouOrName(); // the new comment needs to be marked as "yours" so you can edit it
+        _.scheduleSave(paper);
+      }
+      buttons[0].classList.add('hidden');
+    });
+
+    // cancel
+    _.addEventListener(root, '.comment.new .cancel', 'click', function() {
+      newComment.textContent = '';
+      buttons[0].classList.add('hidden');
     });
   }
 
