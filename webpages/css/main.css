@@ -1460,6 +1460,20 @@ body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic
   white-space: nowrap;
 }
 
+#paper table.experiments .datum.popupbox .comment button.edit-button {
+  float: right;
+  visibility: hidden;
+}
+
+#paper table.experiments .datum.popupbox .comment:hover button.edit-button {
+  visibility: visible;
+}
+
+#paper table.experiments .datum.popupbox .comment.new .text:not(:focus):empty + .buttons {
+  display: none;
+}
+
+
 #paper table.experiments td.empty .datum.popupbox .by {
   display: none;
 }

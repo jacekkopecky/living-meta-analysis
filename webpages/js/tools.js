@@ -160,7 +160,7 @@
   }
 
   _.putCursorAtEnd = function putCursorAtEnd(el) {
-    if (el.childNodes.length) {
+    if (el && el.childNodes.length) {
       var selection = window.getSelection();
       var range = document.createRange();
       range.setStartAfter(el.childNodes[el.childNodes.length-1]);

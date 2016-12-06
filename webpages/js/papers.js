@@ -1086,18 +1086,31 @@
     }
 
     // events for adding a comment
-    _.findEls(root, '.comment.new .text').forEach(function (el) {
-      el.onblur = function () {
-        var text = el.textContent;
-        el.textContent = '';
-        if (text.trim()) {
-          var comments = getDeepValue(paper, commentsPropPath, []);
-          comments.push({ text: text });
-          fillComments(templateId, root, countSelector, textSelector, paper, commentsPropPath);
-          _.setYouOrName(); // the new comment needs to be marked as "yours" so you can edit it
-          _.scheduleSave(paper);
-        }
+    var buttons = _.findEl(root, '.comment.new .buttons');
+    var newComment = _.findEl(root, '.comment.new .text');
+
+    // enable/disable the add button based on content
+    newComment.oninput = function () {
+      _.setProps(buttons, '.confirm', 'disabled', newComment.textContent.trim() == '');
+    }
+
+    // add
+    _.addEventListener(root, '.comment.new .buttons .add', 'click', function() {
+      var text = newComment.textContent;
+      newComment.textContent = '';
+      if (text.trim()) {
+        var comments = getDeepValue(paper, commentsPropPath, []);
+        comments.push({ text: text });
+        fillComments(templateId, root, countSelector, textSelector, paper, commentsPropPath);
+        _.setYouOrName(); // the new comment needs to be marked as "yours" so you can edit it
+        _.scheduleSave(paper);
       }
+    });
+
+    // cancel
+    _.addEventListener(root, '.comment.new .buttons .cancel', 'click', function() {
+      newComment.textContent = '';
+      newComment.oninput();
     });
   }
 
@@ -1787,6 +1800,7 @@
     while (el && !(toFocus = _.findEl(el, focusingSelector))) el = el.parentElement;
 
     focusElement(toFocus);
+    _.putCursorAtEnd(toFocus);
   }
 
   function focusFirstUnsaved() {
