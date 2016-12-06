@@ -159,6 +159,16 @@
     });
   }
 
+  _.putCursorAtEnd = function putCursorAtEnd(el) {
+    if (el.childNodes.length) {
+      var selection = window.getSelection();
+      var range = document.createRange();
+      range.setStartAfter(el.childNodes[el.childNodes.length-1]);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  }
 
 
   /* move array

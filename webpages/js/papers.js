@@ -328,12 +328,7 @@
       if (startNewTag != '') {
         // put cursor at the end of the text
         // todo we could remember the old selection and replicate it
-        var selection = window.getSelection();
-        var range = document.createRange();
-        range.setStartAfter(newTag.childNodes[newTag.childNodes.length-1]);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
+        _.putCursorAtEnd(newTag);
       }
 
       startNewTag = null;
