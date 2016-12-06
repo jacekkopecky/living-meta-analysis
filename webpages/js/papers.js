@@ -1840,7 +1840,10 @@
   function getCurrentlyFocusedDataCell() {
     // the currently focused cell either has the popup box pinned, or it has the editing field focused
     var focusedEl = document.activeElement;
-    if (!focusedEl.classList.contains('value') ||
+    if (focusedEl && _.findPrecedingEl(focusedEl, '.popupbox')) return null;
+
+    if (!focusedEl ||
+        !focusedEl.classList.contains('value') ||
         !focusedEl.classList.contains('editing')) {
       focusedEl = getPopupBoxEl();
     }
