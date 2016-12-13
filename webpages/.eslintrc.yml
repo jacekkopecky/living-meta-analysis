@@ -12,6 +12,9 @@ rules:
   comma-dangle:
     - error
     - only-multiline
+  indent:
+    - error
+    - 2
 
 globals:
   Promise: true

@@ -1952,25 +1952,25 @@
     var row;
     var index;
     switch (direction) {
-      case 'up':
-        row = currentCell.parentNode.previousElementSibling;
-        index = currentCell.cellIndex;
-        break;
+    case 'up':
+      row = currentCell.parentNode.previousElementSibling;
+      index = currentCell.cellIndex;
+      break;
 
-      case 'down':
-        row = currentCell.parentNode.nextElementSibling;
-        index = currentCell.cellIndex;
-        break;
+    case 'down':
+      row = currentCell.parentNode.nextElementSibling;
+      index = currentCell.cellIndex;
+      break;
 
-      case 'left':
-        row = currentCell.parentNode;
-        index = currentCell.cellIndex-1;
-        break;
+    case 'left':
+      row = currentCell.parentNode;
+      index = currentCell.cellIndex-1;
+      break;
 
-      case 'right':
-        row = currentCell.parentNode;
-        index = currentCell.cellIndex+1;
-        break;
+    case 'right':
+      row = currentCell.parentNode;
+      index = currentCell.cellIndex+1;
+      break;
     }
     focusDataCell(row, index);
   }
