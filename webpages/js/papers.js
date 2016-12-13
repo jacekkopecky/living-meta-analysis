@@ -167,6 +167,7 @@
       // if paper doesn't have experiments or column order, add empty arrays for ease of handling
       if (!Array.isArray(paper.experiments)) paper.experiments = [];
       if (!Array.isArray(paper.columnOrder)) paper.columnOrder = [];
+      if (!Array.isArray(paper.hiddenCols)) paper.hiddenCols = [];
 
       // if some column type has changed, make sure the paper reflects that
       moveResultsAfterCharacteristics(paper);
@@ -423,25 +424,19 @@
      *
      */
 
-    // Hidden columns (initialise if missing)..
-    if (!paper.hiddenCols) {
-      paper.hiddenCols = []
-    }
-
     var headingsRowNode = _.findEl(table, 'tr:first-child');
     var addColumnNode = _.findEl(table, 'tr:first-child > th.add');
 
     var curtime = Date.now();
     var user = lima.getAuthenticatedUserEmail();
 
-    var lastColumnHidden;
+    var lastColumnHidden = false;
 
     paper.columnOrder.forEach(function (colId) {
       if (isHiddenCol(colId)) {
         // Save the fact that we just hid a column, so the next non-hidden
         // column can behave differently (i.e show a arrow).
         lastColumnHidden = true;
-        // early return
         return;
       }
 
@@ -450,10 +445,8 @@
       headingsRowNode.insertBefore(th, addColumnNode);
 
       if (lastColumnHidden) {
-        // We know that there should be a "unhide" button on this column
+        // We know that there should be an "unhide" button on this column
         addUnhideButton(th);
-
-        // Clear out lastColumnHidden.
         lastColumnHidden = false;
       }
 
@@ -469,14 +462,11 @@
       th.dataset.colid = col.id;
 
       _.addEventListener(th, 'button.hide', 'click', function () {
-          // TODO: Check if this is the last column, if it is don't add it and
-          // display an error!
-          paper.hiddenCols.push(th.dataset.colid);
-          // pinnedBox would have been this column now hidden, so clear
-          unpinPopupBox();
-          updatePaperView();
-          _.scheduleSave(currentPaper);
-        });
+        paper.hiddenCols.push(th.dataset.colid);
+        unpinPopupBox();
+        updatePaperView();
+        _.scheduleSave(currentPaper);
+      });
 
       th.classList.add(col.type);
       _.addClass(th, '.coltype', col.type);
@@ -558,8 +548,8 @@
 
     // Check to see if the last column was hidden.
     if (lastColumnHidden) {
-        addUnhideButton(addColumnNode);
-        lastColumnHidden = false;
+      addUnhideButton(addColumnNode);
+      lastColumnHidden = false;
     }
 
     /* experiment rows
@@ -601,10 +591,8 @@
       setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', expIndex);
 
       paper.columnOrder.forEach(function (colId) {
-        if (isHiddenCol(colId,paper)) {
-          // early return
-          return;
-        }
+        // early return - ignore this column
+        if (isHiddenCol(colId)) return;
 
         var col = lima.columns[colId];
         var val = null;
@@ -1466,43 +1454,39 @@
   }
 
   function isHiddenCol(colid) {
-    if (typeof currentPaper.hiddenCols === 'undefined' || !(_.existsInArray(currentPaper.hiddenCols, colid)) ) {
-      return false;
-    }
-    return true;
+    return currentPaper.hiddenCols.indexOf(colid) !== -1;
   }
 
   function addUnhideButton(colNode) {
-    _.fillEls(colNode, '.unhide', '\u25C2 \u25B8'); // left arrow right arrow
-    _.addEventListener(colNode, '.unhide', 'click', function (e) {
-      unhidePreviousHiddenColumns(colNode.dataset.colid);
-      updatePaperView();
-      _.scheduleSave(currentPaper);
-    });
+    colNode.classList.add('lastcolumnhidden');
+    _.addEventListener(colNode, '.unhide', 'click', unhideColumns);
   }
 
-  // This function takes a colid to start counting back from (paper.columnOrder).
-  // It will continue to unhide columns until a non-hidden column is found.
+  // This function takes a colid to start counting back from in paper.columnOrder.
+  // It will unhide columns until a non-hidden column is found.
   // e.g. ['hidden0', 'col1', 'hidden2', 'hidden3', 'col4'].
-  // Passing col1 will unhide hidden0, and col4 will unhide 2 and 3.
-  function unhidePreviousHiddenColumns(colid) {
+  // Passing col1 will unhide hidden0, and passing col4 will unhide 2 and 3.
+  function unhideColumns (e) {
+    var colId = _.findPrecedingEl(e.target, 'th').dataset.colid;
+
     var index;
-    var last;
-    // If we don't have a colid, it's the 'add column' button, so start at the end.
-    if (!colid) {
+    // If we don't have a colId, it's the 'add column' button, so start at the end.
+    if (!colId) {
       index = currentPaper.columnOrder.length-1;
     } else {
-      index = currentPaper.columnOrder.indexOf(colid);
+      index = currentPaper.columnOrder.indexOf(colId) - 1;
     }
 
     for (var i = index; i >= 0; i--) {
-      if (currentPaper.columnOrder[i] == colid) continue;
       if (isHiddenCol(currentPaper.columnOrder[i])) {
         _.removeFromArray(currentPaper.hiddenCols, currentPaper.columnOrder[i]);
       } else {
         break;
       }
     }
+
+    updatePaperView();
+    _.scheduleSave(currentPaper);
   }
 
   /* DOM updates

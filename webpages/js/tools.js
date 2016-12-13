@@ -171,17 +171,20 @@
   }
 
 
-  /* move array
+  /* array manipulation
    *
    *
-   *    #    #  ####  #    # ######      ##   #####  #####    ##   #   #
-   *    ##  ## #    # #    # #          #  #  #    # #    #  #  #   # #
-   *    # ## # #    # #    # #####     #    # #    # #    # #    #   #
-   *    #    # #    # #    # #         ###### #####  #####  ######   #
-   *    #    # #    #  #  #  #         #    # #   #  #   #  #    #   #
-   *    #    #  ####    ##   ######    #    # #    # #    # #    #   #
+   *     ##   #####  #####    ##   #   #    #    #   ##   #    # # #####  #    # #        ##   ##### #  ####  #    #
+   *    #  #  #    # #    #  #  #   # #     ##  ##  #  #  ##   # # #    # #    # #       #  #    #   # #    # ##   #
+   *   #    # #    # #    # #    #   #      # ## # #    # # #  # # #    # #    # #      #    #   #   # #    # # #  #
+   *   ###### #####  #####  ######   #      #    # ###### #  # # # #####  #    # #      ######   #   # #    # #  # #
+   *   #    # #   #  #   #  #    #   #      #    # #    # #   ## # #      #    # #      #    #   #   # #    # #   ##
+   *   #    # #    # #    # #    #   #      #    # #    # #    # # #       ####  ###### #    #   #   #  ####  #    #
    *
    *
+   */
+
+  /*
    * Move item `i` in array `arr` to the left or right.
    * `left` indicates direction; if `most`, move to the beginning (left) or end (right) of the array.
    */
@@ -207,17 +210,11 @@
     return arr;
   }
 
-  /* Array manipulation
-  */
-  _.existsInArray = function existsInArray(array, element) {
-    if (array.indexOf(element) != -1) return true;
-    return false;
-  }
-
+  // remove an element by its index from the array in-place
   _.removeFromArray = function removeFromArray(array, element) {
-    if (_.existsInArray(array, element)) {
-      console.log(element, " exists in ", array);
-      array.splice(array.indexOf(element), 1);
+    var index = array.indexOf(element);
+    if (index !== -1) {
+      array.splice(index, 1);
     }
   }
 

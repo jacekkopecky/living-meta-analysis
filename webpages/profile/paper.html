@@ -133,9 +133,9 @@
           </div>
         </th>
         <th class="add popupboxtrigger">
+          <div class="unhide editing">&#x25C4; &#x25BA;</div>
           <div><span><button class="add notunpin not-unsaved">add a column</button>
-                    <div class="unhide"></div>
-                    <button class="when-unsaved" disabled title="can't add a column when some changes are unsaved">add a column</button></span></div>
+                     <button class="when-unsaved" disabled title="can't add a column when some changes are unsaved">add a column</button></span></div>
           <div class="addcolumnbox loading">
             <header>
               <h1>Click column to add</h1>
@@ -186,20 +186,20 @@
 </template>
 <template id="col-heading-template">
   <th class="popupboxtrigger">
+    <div class="unhide editing">&#x25C4; &#x25BA;</div>
     <div class="popupboxhighlight">
       <span class="coltitle">error</span>
-      <div class="unhide"></div>
     </div>
     <div class="fullcolinfo popupbox" data-boxtype='fullcolinfo'>
       <div class="pin"></div>
       <button class="not-unsaved move left most editing" title="move column to the left">|«</button>
       <button class="not-unsaved move left editing" title="move column to the left">«</button>
-      <button class="hide editing">Hide</button>
+      <button class="not-unsaved hide editing">hide</button>
       <button class="not-unsaved move right editing" title="move column to the right">»</button>
       <button class="not-unsaved move right most editing" title="move column to the right">»|</button>
       <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">|«</button>
       <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">«</button>
-      <!-- <button class="hide editing">hide</button> -->
+      <button class="when-unsaved" disabled title="can't hide columns when some changes are unsaved">hide</button>
       <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">»</button>
       <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">»|</button>
       <header>
