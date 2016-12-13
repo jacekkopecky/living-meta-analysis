@@ -173,6 +173,11 @@ body:not(.boxpinned) .popupboxtrigger.popupboxhighlight:hover,
   background: rgba(128,0,255,.1);
 }
 
+/* don't highlight if we're hovering over the 'unhide' button */
+body:not(.boxpinned) .popupboxtrigger:hover .unhide:hover + .popupboxhighlight {
+  background: none;
+}
+
 
 .popupbox.pinned {
   box-shadow: 0 0 .3em .3em rgba(128,0,255,.2);
@@ -574,6 +579,35 @@ section.list > ul > li > ul.tags > li {
 #paper .exptitle.editing,
 #paper .coltitle.editing {
   display: inline-block;
+}
+
+#paper .unhide {
+  display: none;
+}
+
+#paper .lastcolumnhidden .unhide {
+  color: rgba(0, 0, 0, 0.26);
+  border: 1px solid rgba(0,0,0,0);
+  display: inline-block;
+  position: absolute;
+  left: -.7px;
+  top: 0;
+  transform: translate(-50%,-50%)translate(9.5em,-9.5em)rotate(45deg);
+  font-size: 80%;
+  z-index: 1;
+}
+
+#paper th.characteristic + th.result .unhide {
+  left: -1.4px;
+}
+
+
+#paper .lastcolumnhidden .unhide:hover {
+  color: rgba(0, 0, 0, 1);
+  cursor: pointer;
+  background: rgba(255,255,255,.7);
+  border: 1px solid rgba(0,0,0,.7);
+  border-radius: .2em;
 }
 
 #paper .popupboxhighlight .coltitle:empty:before {
@@ -1063,7 +1097,7 @@ body:not(.editing) #paper table.experiments tr:first-child th:nth-last-child(2) 
   border-right: none;
 }
 
-#paper table.experiments tr:first-child th > div:not(.popupbox) {
+#paper table.experiments tr:first-child th > div:not(.popupbox):not(.unhide) {
   transform: translate(-.5em,.8em) rotate(-45deg);
   transform-origin: top left;
   display: inline-block;

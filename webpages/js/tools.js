@@ -171,17 +171,20 @@
   }
 
 
-  /* move array
+  /* array manipulation
    *
    *
-   *    #    #  ####  #    # ######      ##   #####  #####    ##   #   #
-   *    ##  ## #    # #    # #          #  #  #    # #    #  #  #   # #
-   *    # ## # #    # #    # #####     #    # #    # #    # #    #   #
-   *    #    # #    # #    # #         ###### #####  #####  ######   #
-   *    #    # #    #  #  #  #         #    # #   #  #   #  #    #   #
-   *    #    #  ####    ##   ######    #    # #    # #    # #    #   #
+   *     ##   #####  #####    ##   #   #    #    #   ##   #    # # #####  #    # #        ##   ##### #  ####  #    #
+   *    #  #  #    # #    #  #  #   # #     ##  ##  #  #  ##   # # #    # #    # #       #  #    #   # #    # ##   #
+   *   #    # #    # #    # #    #   #      # ## # #    # # #  # # #    # #    # #      #    #   #   # #    # # #  #
+   *   ###### #####  #####  ######   #      #    # ###### #  # # # #####  #    # #      ######   #   # #    # #  # #
+   *   #    # #   #  #   #  #    #   #      #    # #    # #   ## # #      #    # #      #    #   #   # #    # #   ##
+   *   #    # #    # #    # #    #   #      #    # #    # #    # # #       ####  ###### #    #   #   #  ####  #    #
    *
    *
+   */
+
+  /*
    * Move item `i` in array `arr` to the left or right.
    * `left` indicates direction; if `most`, move to the beginning (left) or end (right) of the array.
    */
@@ -207,7 +210,13 @@
     return arr;
   }
 
-
+  // remove an element by its index from the array in-place
+  _.removeFromArray = function removeFromArray(array, element) {
+    var index = array.indexOf(element);
+    if (index !== -1) {
+      array.splice(index, 1);
+    }
+  }
 
   /* error handling
    *
@@ -550,7 +559,6 @@
       (e || window.event).returnValue = confirmationMessage; //Gecko + IE
       return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
     }
-});
-
+  });
 
 })(document, window);
