@@ -1464,9 +1464,16 @@ body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic
   display: inline-block;
 }
 
-#paper table.experiments .datum.popupbox .by {
+#paper table.experiments .datum.popupbox .by,
+#paper table.experiments .datum.popupbox .computed {
   font-size: 90%;
   font-weight: normal;
+}
+
+#paper table.experiments .datum.popupbox .computedFrom,
+#paper table.experiments .datum.popupbox .formula {
+  font-size: 90%;
+  font-weight: bold;
 }
 
 #paper table.experiments .datum.popupbox .comment {
@@ -1520,6 +1527,10 @@ body:not(.editing) #paper table.experiments td:last-child {
 #paper table.experiments tr:nth-child(2n),
 #paper table.experiments tr:nth-child(2n) th:first-child {
   background-color: #eee;
+}
+
+#paper table.experiments tr td.computed {
+  background-color: rgba(135, 175, 245, 0.5);
 }
 
 /* fix highlighting of the row headings which have their own background */

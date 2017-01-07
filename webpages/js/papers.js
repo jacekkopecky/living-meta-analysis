@@ -641,6 +641,21 @@
             if (typeof val == 'number') val = val.toPrecision(3);
 
             _.fillEls(td, '.value', val);
+            var computedFrom ="";
+            for (var i = 0; i < col.formulaColumns.length; i++) {
+              var column = lima.columns[col.formulaColumns[i]];
+              computedFrom += column.title;
+              // More than one left
+              if (col.formulaColumns[i+2]) {
+                computedFrom += ", ";
+              }
+              // One more left..
+              else if (col.formulaColumns[i+1]) {
+                computedFrom += " and ";
+              }
+            }
+            _.fillEls(td,  '.computedFrom', computedFrom);
+            _.fillEls(td, '.formula', lima.getFormulaById(col.formula).label);
           });
         }
 
