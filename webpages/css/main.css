@@ -1097,7 +1097,7 @@ body:not(.editing) #paper table.experiments tr:first-child th:nth-last-child(2) 
   border-right: none;
 }
 
-#paper table.experiments tr:first-child th > div:not(.popupbox):not(.unhide) {
+#paper table.experiments tr:first-child th > div:not(.popupbox):not(.unhide):not(.addcolumnbox) {
   transform: translate(-.5em,.8em) rotate(-45deg);
   transform-origin: top left;
   display: inline-block;
