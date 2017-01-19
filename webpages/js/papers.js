@@ -1370,7 +1370,8 @@
 
     var i = currentPaper.columnOrder.indexOf(colId);
     if (i === -1) return console.error('column ' + colId + ' not found in newly regenerated order!');
-    _.moveInArray(currentPaper.columnOrder, i, left, most);
+    var nextNonHidden = findNextNonHiddenCol(i, left);
+    _.moveInArray(currentPaper.columnOrder, i, nextNonHidden, left, most);
     moveResultsAfterCharacteristics(currentPaper);
     updatePaperView();
     _.scheduleSave(currentPaper);
@@ -1385,6 +1386,43 @@
         firstResult++;
       }
     }
+  }
+
+  function findNextNonHiddenCol(currentIndex, left) {
+    var found = false;
+    var nextColIndex = currentIndex;
+    if (left) {
+      nextColIndex -= 1;
+      while (!found) {
+        if (typeof currentPaper.columnOrder[nextColIndex] === 'undefined') {
+          // We've hit the end, return 0
+          nextColIndex = 0;
+          break;
+        }
+        if (isHiddenCol(currentPaper.columnOrder[nextColIndex])) {
+          nextColIndex -= 1;
+          continue;
+        } else {
+          break;
+        }
+      }
+    } else {
+      nextColIndex += 1;
+      while (!found) {
+        if (typeof currentPaper.columnOrder[nextColIndex] === 'undefined') {
+          // We've hit the end, return .length-1
+          nextColIndex = currentPaper.columnOrder.length-1;
+          break;
+        }
+        if (isHiddenCol(currentPaper.columnOrder[nextColIndex])) {
+          nextColIndex += 1;
+          continue;
+        } else {
+          break;
+        }
+      }
+    }
+    return nextColIndex;
   }
 
   function changeColumnType(ev) {
