@@ -1470,9 +1470,8 @@ body.editing #paper table.experiments .fullcolinfo .coltype.yours.characteristic
   font-weight: normal;
 }
 
-#paper table.experiments .datum.popupbox .computedFrom,
-#paper table.experiments .datum.popupbox .formula {
-  font-size: 90%;
+#paper table.experiments .datum.popupbox .computed .computedfrom,
+#paper table.experiments .datum.popupbox .computed .formula {
   font-weight: bold;
 }
 
@@ -1530,7 +1529,7 @@ body:not(.editing) #paper table.experiments td:last-child {
 }
 
 #paper table.experiments tr td.computed {
-  background-color: rgba(135, 175, 245, 0.5);
+  background-color: rgba(135, 175, 245, .25);
 }
 
 /* fix highlighting of the row headings which have their own background */
