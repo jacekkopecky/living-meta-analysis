@@ -19,6 +19,138 @@ const datastore = gcloud.datastore({ namespace: config.gcloudDatastoreNamespace 
 const TITLE_RE = module.exports.TITLE_RE = '[a-zA-Z0-9.-]+';
 const TITLE_REXP = new RegExp(`^${TITLE_RE}$`);
 
+const NEW_PAPER_TITLE = "new-paper";
+const NEW_META_TITLE = "new-metaanalysis";
+
+/*ADD MACRO FOR 'shared' HERE*/
+
+function fillByAndCtimes(current, original, email) {
+  const orig = original || {};
+  if (!current.enteredBy) current.enteredBy = orig.enteredBy || email;
+  if (!current.ctime) current.ctime = orig.ctime || tools.uniqueNow();
+  fillByAndCtimeInComments(current.comments, orig.comments, email);
+  if (current.experiments) {
+    for (let expIndex = 0; expIndex < current.experiments.length; expIndex++) {
+      const exp = current.experiments[expIndex];
+      const origExp = (orig.experiments || [])[expIndex] || {};
+      // todo these values should allow us to construct better patches
+      // (e.g. removal of the first experiment)
+      if (!exp.enteredBy) exp.enteredBy = origExp.enteredBy || email;
+      if (!exp.ctime) exp.ctime = origExp.ctime || tools.uniqueNow();
+      fillByAndCtimeInComments(exp.comments, origExp.comments, email);
+      for (const col of Object.keys(exp.data || {})) {
+        const expCol = exp.data[col];
+        const origCol = (origExp.data || {})[col] || {};
+        const origColIfSameVal = expCol.value === origCol.value ? origCol : {};
+        if (!expCol.enteredBy) expCol.enteredBy = origColIfSameVal.enteredBy || email;
+        if (!expCol.ctime) expCol.ctime = origColIfSameVal.ctime || tools.uniqueNow();
+        fillByAndCtimeInComments(expCol.comments, origCol.comments, email);
+      }
+    }
+  }
+}
+
+function fillByAndCtimeInComments(comments, origComments, email) {
+  origComments = origComments || [];
+  if (!Array.isArray(comments)) return;
+  for (let i = 0; i < comments.length; i++) {
+    const com = comments[i];
+    const origCom = origComments[i] || {};
+    const origComIfSameText = origCom.text === com.text ? origCom : {};
+    if (!com.by) com.by = origComIfSameText.by || email;
+    if (!com.ctime) com.ctime = origComIfSameText.ctime || tools.uniqueNow();
+  }
+}
+
+function checkForDisallowedChanges(current, original, columns) {
+  // todo really, this should use a diff format and check that all diffs are allowed
+  //   this will be a diff from the user's last version to the incoming version,
+  //   not from the existing version to the incoming version,
+  //   so that collaborative concurrent updates are allowed
+  //   so for example adding a comment number 9 will become adding a comment
+  //   and if comments 9 and 10 were already added by other users, we will add comment 11
+  // but for now we don't have the diffs, so
+  //   do the checks we can think of for changes that wouldn't be allowed
+  // for example, we can't really allow removing values because we don't allow removing comments
+  // todo comment mtimes
+
+  original = original || {};
+
+  // check that title hasn't changed or if it has, that it is unique
+  if (current.title !== original.title) {
+    if (!TITLE_REXP.test(current.title)) {
+      throw new ValidationError('title cannot contain spaces or special characters');
+    }
+    if (paperTitles.indexOf(current.title) !== -1 || metaanalysisTitles.indexOf(current.title) !== -1) {
+      throw new ValidationError('title must be unique');
+    }
+    if (current.title === NEW_PAPER_TITLE || current.title  === NEW_META_TITLE) {
+      throw new ValidationError('cannot use a reserved name');
+    }
+  }
+
+  // check that every experiment has at least the data values that were there originally
+  // check that only last comment by a given user has changed, if any
+  if (current.experiments) {
+    const expTitles = {};
+
+    for (let expIndex = 0; expIndex < current.experiments.length; expIndex++) {
+      const exp = current.experiments[expIndex];
+      const origExp = (original.experiments || [])[expIndex] || {};
+
+      // check experiment titles are there and unique for this current
+      if (!TITLE_REXP.test(exp.title)) {
+        throw new ValidationError('experiment title cannot contain spaces or special characters');
+      }
+      if (exp.title in expTitles) {
+        throw new ValidationError('experiment titles must be unique');
+      }
+      expTitles[exp.title] = true;
+
+      if (origExp.data) {
+        if (!exp.data) throw new ValidationError('cannot remove experiment data array');
+
+        for (const origDataKey of Object.keys(origExp.data)) {
+          if (!(origDataKey in exp.data)) {
+            throw new ValidationError('cannot remove experiment data');
+          }
+
+          const comments = exp.data[origDataKey].comments;
+          const origComments = origExp.data[origDataKey].comments;
+
+          if (origComments) {
+            if (!comments || comments.length < origComments.length) {
+              throw new ValidationError('cannot remove comments');
+            }
+
+            const changedCommentByOwner = {};
+            for (let i = 0; i < origComments.length; i++) {
+              const comment = comments[i];
+              const origComment = origComments[i];
+              if (comment.CHECKby !== origComment.by) {
+                throw new ValidationError('cannot change comment owner');
+              }
+              if (comment.CHECKby in changedCommentByOwner) {
+                throw new ValidationError('cannot edit comment before the last by a given owner');
+              }
+              if (comment.text !== origComment.text) {
+                changedCommentByOwner[comment.CHECKby] = 1;
+              }
+            }
+          }
+        }
+      }
+      if (exp.data) {
+        for (const dataKey of Object.keys(exp.data)) {
+          if (!(dataKey in columns)) {
+            throw new ValidationError('cannot include data with unknown column ID ' + dataKey);
+          }
+        }
+      }
+    }
+  }
+}
+
 /* users
  *
  *
@@ -285,7 +417,7 @@ module.exports.getPaperByTitle = (email, title, time) => {
   if (time) return Promise.reject('getPaperByTitle with time not implemented');
 
   // todo different users can use different titles for the same thing
-  if (title === 'new') return Promise.resolve(newPaper(email));
+  if (title === NEW_PAPER_TITLE) return Promise.resolve(newPaper(email));
   return paperCache
   .then((papers) => {
     for (const p of papers) {
@@ -309,136 +441,7 @@ function newPaper(email) {
 module.exports.listPapers = () => paperCache;
 module.exports.listPaperTitles = () => paperCache.then(() => paperTitles);
 
-// todo trim incoming textual values?
-
-function fillByAndCtimes(paper, origPaper, email) {
-  const orig = origPaper || {};
-  if (!paper.enteredBy) paper.enteredBy = orig.enteredBy || email;
-  if (!paper.ctime) paper.ctime = orig.ctime || tools.uniqueNow();
-  fillByAndCtimeInComments(paper.comments, orig.comments, email);
-  if (paper.experiments) {
-    for (let expIndex = 0; expIndex < paper.experiments.length; expIndex++) {
-      const exp = paper.experiments[expIndex];
-      const origExp = (orig.experiments || [])[expIndex] || {};
-      // todo these values should allow us to construct better patches
-      // (e.g. removal of the first experiment)
-      if (!exp.enteredBy) exp.enteredBy = origExp.enteredBy || email;
-      if (!exp.ctime) exp.ctime = origExp.ctime || tools.uniqueNow();
-      fillByAndCtimeInComments(exp.comments, origExp.comments, email);
-      for (const col of Object.keys(exp.data || {})) {
-        const expCol = exp.data[col];
-        const origCol = (origExp.data || {})[col] || {};
-        const origColIfSameVal = expCol.value === origCol.value ? origCol : {};
-        if (!expCol.enteredBy) expCol.enteredBy = origColIfSameVal.enteredBy || email;
-        if (!expCol.ctime) expCol.ctime = origColIfSameVal.ctime || tools.uniqueNow();
-        fillByAndCtimeInComments(expCol.comments, origCol.comments, email);
-      }
-    }
-  }
-}
-
-function fillByAndCtimeInComments(comments, origComments, email) {
-  origComments = origComments || [];
-  if (!Array.isArray(comments)) return;
-  for (let i = 0; i < comments.length; i++) {
-    const com = comments[i];
-    const origCom = origComments[i] || {};
-    const origComIfSameText = origCom.text === com.text ? origCom : {};
-    if (!com.by) com.by = origComIfSameText.by || email;
-    if (!com.ctime) com.ctime = origComIfSameText.ctime || tools.uniqueNow();
-  }
-}
-
-function checkForDisallowedChanges(paper, origPaper, columns) {
-  // todo really, this should use a diff format and check that all diffs are allowed
-  //   this will be a diff from the user's last version to the incoming version,
-  //   not from the existing version to the incoming version,
-  //   so that collaborative concurrent updates are allowed
-  //   so for example adding a comment number 9 will become adding a comment
-  //   and if comments 9 and 10 were already added by other users, we will add comment 11
-  // but for now we don't have the diffs, so
-  //   do the checks we can think of for changes that wouldn't be allowed
-  // for example, we can't really allow removing values because we don't allow removing comments
-  // todo comment mtimes
-
-  origPaper = origPaper || {};
-
-  // check that title hasn't changed or if it has, that it is unique
-  if (paper.title !== origPaper.title) {
-    if (!TITLE_REXP.test(paper.title)) {
-      throw new ValidationError('paper title cannot contain spaces or special characters');
-    }
-    if (paperTitles.indexOf(paper.title) !== -1) {
-      throw new ValidationError('paper title must be unique');
-    }
-    if (paper.title === 'new') {
-      throw new ValidationError('"new" is a reserved paper name');
-    }
-  }
-
-  // check that every experiment has at least the data values that were there originally
-  // check that only last comment by a given user has changed, if any
-  if (paper.experiments) {
-    const expTitles = {};
-
-    for (let expIndex = 0; expIndex < paper.experiments.length; expIndex++) {
-      const exp = paper.experiments[expIndex];
-      const origExp = (origPaper.experiments || [])[expIndex] || {};
-
-      // check experiment titles are there and unique for this paper
-      if (!TITLE_REXP.test(exp.title)) {
-        throw new ValidationError('experiment title cannot contain spaces or special characters');
-      }
-      if (exp.title in expTitles) {
-        throw new ValidationError('experiment titles must be unique');
-      }
-      expTitles[exp.title] = true;
-
-      if (origExp.data) {
-        if (!exp.data) throw new ValidationError('cannot remove experiment data array');
-
-        for (const origDataKey of Object.keys(origExp.data)) {
-          if (!(origDataKey in exp.data)) {
-            throw new ValidationError('cannot remove experiment data');
-          }
-
-          const comments = exp.data[origDataKey].comments;
-          const origComments = origExp.data[origDataKey].comments;
-
-          if (origComments) {
-            if (!comments || comments.length < origComments.length) {
-              throw new ValidationError('cannot remove comments');
-            }
-
-            const changedCommentByOwner = {};
-            for (let i = 0; i < origComments.length; i++) {
-              const comment = comments[i];
-              const origComment = origComments[i];
-              if (comment.CHECKby !== origComment.by) {
-                throw new ValidationError('cannot change comment owner');
-              }
-              if (comment.CHECKby in changedCommentByOwner) {
-                throw new ValidationError('cannot edit comment before the last by a given owner');
-              }
-              if (comment.text !== origComment.text) {
-                changedCommentByOwner[comment.CHECKby] = 1;
-              }
-            }
-          }
-        }
-      }
-      if (exp.data) {
-        for (const dataKey of Object.keys(exp.data)) {
-          if (!(dataKey in columns)) {
-            throw new ValidationError('cannot include data with unknown column ID ' + dataKey);
-          }
-        }
-      }
-    }
-  }
-}
-
-let currentSave = Promise.resolve();
+let currentPaperSave = Promise.resolve();
 
 module.exports.savePaper = (paper, email, origTitle) => {
   // todo multiple users' views on one paper
@@ -458,14 +461,14 @@ module.exports.savePaper = (paper, email, origTitle) => {
 
   let columns;
 
-  currentSave = tools.waitForPromise(currentSave)
+  currentPaperSave = tools.waitForPromise(currentPaperSave)
   .then(() => columnCache)
   .then((cols) => { columns = cols; })
   .then(() => paperCache)
   .then((papers) => {
     // prepare the paper for saving
     const ctime = tools.uniqueNow();
-    let origPaper = null;
+    let original = null;
     if (!paper.id) {
       paper.id = '/id/p/' + ctime;
       paper.enteredBy = email;
@@ -475,31 +478,31 @@ module.exports.savePaper = (paper, email, origTitle) => {
       let i = 0;
       for (; i < papers.length; i++) {
         if (papers[i].id === paper.id) { // todo change paperCache to be indexed by id?
-          origPaper = papers[i];
+          original = papers[i];
           break;
         }
       }
 
-      if (!origPaper || origTitle !== origPaper.title) {
+      if (!original || origTitle !== original.title) {
         throw new ValidationError(
           `failed savePaper: did not find id ${paper.id} with title ${origTitle}`);
       }
-      if (email !== origPaper.enteredBy) {
+      if (email !== original.enteredBy) {
         throw new Error('not implemented saving someone else\'s paper');
       }
 
-      paper.enteredBy = origPaper.enteredBy;
-      paper.ctime = origPaper.ctime;
+      paper.enteredBy = original.enteredBy;
+      paper.ctime = original.ctime;
       paper.mtime = tools.uniqueNow();
       doAddPaperToCache = () => {
         // put the paper in the cache where the original paper was
         papers[i] = paper;
         // replace in paperTitles the old title of the paper with the new title
-        if (origPaper.title !== paper.title) {
-          let titleIndex = paperTitles.indexOf(origPaper.title);
+        if (original.title !== paper.title) {
+          let titleIndex = paperTitles.indexOf(original.title);
           if (titleIndex === -1) {
             titleIndex = paperTitles.length;
-            console.warn(`for some reason, title ${origPaper.title} was missing in paperTitles`);
+            console.warn(`for some reason, title ${original.title} was missing in paperTitles`);
           }
           paperTitles[titleIndex] = paper.title;
         }
@@ -507,10 +510,10 @@ module.exports.savePaper = (paper, email, origTitle) => {
     }
 
     // validate incoming data
-    checkForDisallowedChanges(paper, origPaper, columns);
+    checkForDisallowedChanges(paper, original, columns);
 
     // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
-    fillByAndCtimes(paper, origPaper, email);
+    fillByAndCtimes(paper, original, email);
 
     // for now, we choose to ignore if the incoming paper specifies the wrong immutable values here
     // do not save any of the validation values
@@ -555,7 +558,7 @@ module.exports.savePaper = (paper, email, origTitle) => {
     return paper;
   });
 
-  return currentSave;
+  return currentPaperSave;
 };
 
 
@@ -572,6 +575,7 @@ module.exports.savePaper = (paper, email, origTitle) => {
  *
  */
 
+/* TODO: This below is now probably not quite correct
 /* a meta-analysis record looks like this:
 {
   id: "/id/m/4904",
@@ -587,62 +591,201 @@ module.exports.savePaper = (paper, email, origTitle) => {
     "misinformation",
   ],
   // todo various extra things
-  // todo versioning of the above data can be like for papers
+  // todo versioning of the above data can be like for metaanalyses
 }
  */
 
-const metaanalyses = [
-  {
-    id: '/id/m/4904',
-    title: 'memory96',
-    enteredBy: 'jacek.kopecky@port.ac.uk',
-    ctime: 0,
-    mtime: 5,
-    published: '1997-08-00', // for simply august, precise date unspecified
-    description: 'brief description lorem ipsum',
-    extraAuthors: 'J. Smith, J. Doe',
-    tags: [
-      'memory',
-    ],
-  },
-  {
-    id: '/id/m/4905',
-    title: 'misinformation04',
-    enteredBy: 'jacek.kopecky@port.ac.uk',
-    ctime: 0,
-    mtime: 5,
-    published: '2005-01-17', // for simply august, precise date unspecified
-    description: `brief description lorem ipsum brief
-description lorem ipsum brief description lorem ipsum
-brief description lorem ipsum`,
-    extraAuthors: 'J. Doe, J. Smith',
-  },
-];
+let metaanalysisCache;
+const metaanalysisTitles = [];
 
+// get all immediately on the start of the server
+getAllMetaanalyses();
+
+function getAllMetaanalyses() {
+  metaanalysisCache = new Promise((resolve, reject) => {
+    console.log('getAllMetaanalyses: making a datastore request');
+    const retval = [];
+    datastore.createQuery('Metaanalysis').run()
+    .on('error', (err) => {
+      console.error('error retrieving metaanalyses');
+      console.error(err);
+      setTimeout(getAllMetaanalyses, 60 * 1000); // try loading again in a minute
+      reject(err);
+    })
+    .on('data', (entity) => {
+      retval.push(migrateMetaanalysis(entity.data));
+      metaanalysisTitles.push(entity.data.title);
+    })
+    .on('end', () => {
+      console.log(`getAllMetaanalyses(): ${retval.length} done`);
+      resolve(retval);
+    });
+  });
+}
+
+/*
+ * change metaanalysis from an old format to the new one, if need be
+ */
+function migrateMetaanalysis(metaanalysis) {
+  // do nothing for now
+  return metaanalysis;
+}
 
 module.exports.getMetaanalysesEnteredBy = (email) => {
   // todo also return metaanalyses contributed to by `email`
-  return Promise.resolve(metaanalyses.filter((ma) => ma.enteredBy === email));
+  return metaanalysisCache.then(
+    (metaanalyses) => metaanalyses.filter((ma) => ma.enteredBy === email)
+  );
 };
 
+module.exports.getMetaanalysisByTitle = (email, title, time) => {
+  // todo if time is specified, compute a version as of that time
+  if (time) return Promise.reject('getMetaanalysisByTitle with time not implemented');
 
-module.exports.getMetaanalysisByTitle = (email, title) => {
-  return new Promise((resolve, reject) => {
-    // todo different users can use different titles for the same thing
+  // todo different users can use different titles for the same thing
+  if (title === NEW_META_TITLE) return Promise.resolve(newMetaanalysis(email));
+  return metaanalysisCache
+  .then((metaanalyses) => {
     for (const ma of metaanalyses) {
       if (ma.title === title) {
-        resolve(ma);
-        return;
+        return ma;
       }
     }
-    reject();
+    return Promise.reject();
   });
 };
 
-module.exports.listMetaanalyses = () => {
-  return Promise.resolve(metaanalyses);
-};
+function newMetaanalysis(email) {
+  const time = tools.uniqueNow();
+  return {
+    enteredBy: email,
+    ctime: time,
+    mtime: time,
+  };
+}
 
+module.exports.listMetaanalyses = () => metaanalysisCache;
+module.exports.listMetaanalysisTitles = () => metaanalysisCache.then(() => metaanalysisTitles);
+
+let currentMetaanalysisSave = Promise.resolve();
+
+module.exports.saveMetaanalysis = (metaanalysis, email, origTitle) => {
+  // todo multiple users' views on one metaanalysis
+  // compute this user's version of this metaanalysis, as it is in the database
+  // compute a diff between what's submitted and the user's version of this metaanalysis
+  // detect any update conflicts (how?)
+  // add the diff to the metaanalysis as a changeset
+  // update the metaanalysis data only if the user is the one who it's enteredBy
+  // only allow editing a comment if it's the last one by this user
+  //   (must allow editing the last comment by this user in case in the meantime another user
+  //    has added another comment)
+
+  let doAddMetaanalysisToCache;
+
+  // the following serializes this save after the previous one, whether it fails or succeeds
+  // this way we can't have two concurrent saves create metaanalyses with the same title
+
+  let columns;
+
+  currentMetaanalysisSave = tools.waitForPromise(currentMetaanalysisSave)
+  .then(() => columnCache)
+  .then((cols) => { columns = cols; })
+  .then(() => metaanalysisCache)
+  .then((metaanalyses) => {
+    // prepare the metaanalysis for saving
+    const ctime = tools.uniqueNow();
+    let original = null;
+    if (!metaanalysis.id) {
+      metaanalysis.id = '/id/p/' + ctime;
+      metaanalysis.enteredBy = email;
+      metaanalysis.ctime = metaanalysis.mtime = ctime;
+      doAddMetaanalysisToCache = () => { metaanalyses.push(metaanalysis); metaanalysisTitles.push(metaanalysis.title); };
+    } else {
+      let i = 0;
+      for (; i < metaanalyses.length; i++) {
+        if (metaanalyses[i].id === metaanalysis.id) { // todo change metaanalysisCache to be indexed by id?
+          original = metaanalyses[i];
+          break;
+        }
+      }
+
+      if (!original || origTitle !== original.title) {
+        throw new ValidationError(
+          `failed saveMetaanalysis: did not find id ${metaanalysis.id} with title ${origTitle}`);
+      }
+      if (email !== original.enteredBy) {
+        throw new Error('not implemented saving someone else\'s metaanalysis');
+      }
+
+      metaanalysis.enteredBy = original.enteredBy;
+      metaanalysis.ctime = original.ctime;
+      metaanalysis.mtime = tools.uniqueNow();
+      doAddMetaanalysisToCache = () => {
+        // put the metaanalysis in the cache where the original metaanalysis was
+        metaanalyses[i] = metaanalysis;
+        // replace in metaanalysisTitles the old title of the metaanalysis with the new title
+        if (original.title !== metaanalysis.title) {
+          let titleIndex = metaanalysisTitles.indexOf(original.title);
+          if (titleIndex === -1) {
+            titleIndex = metaanalysisTitles.length;
+            console.warn(`for some reason, title ${original.title} was missing in metaanalysisTitles`);
+          }
+          metaanalysisTitles[titleIndex] = metaanalysis.title;
+        }
+      };
+    }
+
+    // validate incoming data
+    checkForDisallowedChanges(metaanalysis, original, columns);
+
+    // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
+    fillByAndCtimes(metaanalysis, original, email);
+
+    // for now, we choose to ignore if the incoming metaanalysis specifies the wrong immutable values here
+    // do not save any of the validation values
+    tools.deleteCHECKvalues(metaanalysis);
+
+    // save tha metaanalysis in the data store
+    const key = datastore.key(['Metaanalysis', metaanalysis.id]);
+    // this is here until we add versioning on the metaanalyses themselves
+    const logKey = datastore.key(['Metaanalysis', metaanalysis.id,
+                                  'MetaanalysisLog', metaanalysis.id + '/' + metaanalysis.mtime]);
+    console.log('saveMetaanalysis saving (into Metaanalysis and MetaanalysisLog)');
+    return new Promise((resolve, reject) => {
+      datastore.save(
+        [
+          { key, data: metaanalysis },
+          { key: logKey,
+            data:
+            [
+              { name: 'mtime',
+                value: metaanalysis.mtime },
+              { name: 'enteredBy',
+                value: email },
+              { name: 'metaanalysis',
+                value: metaanalysis,
+                excludeFromIndexes: true },
+            ] },
+        ],
+        (err) => {
+          if (err) {
+            console.error('error saving metaanalysis');
+            console.error(err);
+            reject(err);
+          } else {
+            resolve();
+          }
+        }
+      );
+    });
+  })
+  .then(() => {
+    doAddMetaanalysisToCache();
+    return metaanalysis;
+  });
+
+  return currentMetaanalysisSave;
+};
 
 /* columns
  *
@@ -732,9 +875,9 @@ module.exports.saveColumn = (recvCol, email) => {
 
     tools.deleteCHECKvalues(recvCol);
 
-    // save tha paper in the data store
+    // save tha metaanalysis in the data store
     const key = datastore.key(['Column', recvCol.id]);
-    // this is here until we add versioning on the papers themselves
+    // this is here until we add versioning on the metaanalyses themselves
     const logKey = datastore.key(['Column', recvCol.id,
                                   'ColumnLog', recvCol.id + '/' + recvCol.mtime]);
     console.log('saveColumn saving (into Column and ColumnLog)');
