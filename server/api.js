@@ -8,6 +8,7 @@ const NotFoundError = require('./errors/NotFoundError');
 const UnauthorizedError = require('./errors/UnauthorizedError');
 const InternalError = require('./errors/InternalError');
 const ValidationError = require('./errors/ValidationError');
+const config = require('./config');
 const storage = require('./storage');
 const tools = require('./tools');
 
@@ -15,8 +16,6 @@ const api = module.exports = express.Router({
   caseSensitive: true,
 });
 
-const EMAIL_ADDRESS_RE = module.exports.EMAIL_ADDRESS_RE = '[a-zA-Z0-9.+-]+@[a-zA-Z0-9.+-]+';
-const TITLE_RE = module.exports.TITLE_RE = storage.TITLE_RE;
 
 /* routes
  *
@@ -35,43 +34,78 @@ api.get('/', (req, res) => res.redirect('/docs/api'));
 
 api.post('/register', GUARD, REGISTER_USER, (req, res) => res.sendStatus(200));
 
-api.get('/topusers', REGISTER_USER, listTopUsers);
-api.get('/toppapers', REGISTER_USER, listTopPapers);
-api.get('/topmetaanalyses', REGISTER_USER, listTopMetaanalyses);
+api.get('/topusers', listTopUsers);
+api.get('/toppapers', listTopPapers);
+api.get('/topmetaanalyses', listTopMetaanalyses);
+api.get('/titles', listTitles);
 
-api.get(`/profile/:email(${EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile);
+// todo drop this when client-side is migrated
+api.get('/papers/titles', listTitles);
 
-function apiPaperURL(email, title) { return `/api/papers/${email}/${title}`; }
+api.get(`/profile/:email(${config.EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile);
 
-api.get('/papers/titles', listPaperTitles);
 api.get('/papers', listPapers);
 
-api.get(`/papers/:email(${EMAIL_ADDRESS_RE})`,
+api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})`,
         REGISTER_USER, listPapersForUser);
-api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title(${TITLE_RE})/`,
+api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
         REGISTER_USER, getPaperVersion);
-api.get(`/papers/:email(${EMAIL_ADDRESS_RE})/:title(${TITLE_RE})/:time([0-9]+)/`,
+api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/:time([0-9]+)/`,
         REGISTER_USER, getPaperVersion);
-api.post(`/papers/:email(${EMAIL_ADDRESS_RE})/:title(${TITLE_RE})/`,
+api.post(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
         GUARD, SAME_USER, jsonBodyParser, savePaper);
 // todo above, a user that isn't SAME_USER should be able to submit new comments
 
-api.get('/columns', REGISTER_USER, listColumns);
+api.get('/columns', listColumns);
 api.post('/columns', GUARD, REGISTER_USER, jsonBodyParser, saveColumn);
 
+api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})`,
+        REGISTER_USER, listMetaanalysesForUser);
+api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
+        REGISTER_USER, getMetaanalysisVersion);
+api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/:time([0-9]+)/`,
+        REGISTER_USER, getMetaanalysisVersion);
+api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
+        GUARD, SAME_USER, jsonBodyParser, saveMetaanalysis);
+
+
+/* shared
+ *
+ *
+ *    ####  #    #   ##   #####  ###### #####
+ *   #      #    #  #  #  #    # #      #    #
+ *    ####  ###### #    # #    # #####  #    #
+ *        # #    # ###### #####  #      #    #
+ *   #    # #    # #    # #   #  #      #    #
+ *    ####  #    # #    # #    # ###### #####
+ *
+ *
+ */
+
+function apiPaperURL(email, title) { return `/api/papers/${email}/${title}`; }
 function apiMetaanalysisURL(email, title) { return `/api/metanalyses/${email}/${title}`; }
 
-api.get('/metaanalyses/titles', listMetaanalysisTitles);
+module.exports.getKindForTitle = function getKindForTitle(email, title) {
+  return new Promise((resolve, reject) => {
+    storage.getMetaanalysisByTitle(email, title)
+    .then(() => resolve('metaanalysis'))
+    .catch(() => storage.getPaperByTitle(email, title))
+    .then(() => resolve('paper'))
+    .catch((err) => reject(err));
+  });
+};
 
-api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})`,
-        REGISTER_USER, listMetaanalysesForUser);
-
-api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})/:title(${TITLE_RE})/`,
-        REGISTER_USER, getMetaanalysisVersion);
-api.get(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})/:title(${TITLE_RE})/:time([0-9]+)/`,
-        REGISTER_USER, getMetaanalysisVersion);
-api.post(`/metaanalyses/:email(${EMAIL_ADDRESS_RE})/:title(${TITLE_RE})/`,
-        GUARD, SAME_USER, jsonBodyParser, saveMetaanalysis);
+function listTitles(req, res, next) {
+  storage.listTitles()
+  .then((titles) => {
+    const retval = [];
+    titles.forEach((t) => {
+      if (typeof t === 'string') retval.push(t);
+    });
+    res.json(retval);
+  })
+  .catch((err) => next(err));
+}
 
 /* users
  *
@@ -181,31 +215,9 @@ module.exports.checkUserExists = function (req, res, next) {
 function listPapers(req, res, next) {
   storage.listPapers()
   .then((papers) => {
-    const retval = {};
-    for (const key of Object.keys(papers)) {
-      retval[key] = extractPaperForSending(papers[key]);
-    }
-    res.json(retval);
-  })
-  .catch(() => next(new InternalError('cannot get papers, why?!?')));
-}
-
-module.exports.getKindForTitle = function getKindForTitle(email, title) {
-  return new Promise((resolve, reject) => {
-    storage.getMetaanalysisByTitle(email, title)
-    .then(() => resolve('metaanalysis'))
-    .catch(() => storage.getPaperByTitle(email, title))
-    .then(() => resolve('paper'))
-    .catch((err) => reject(err));
-  });
-};
-
-function listPaperTitles(req, res, next) {
-  storage.listPaperTitles()
-  .then((titles) => {
     const retval = [];
-    titles.forEach((t) => {
-      if (typeof t === 'string') retval.push(t);
+    papers.forEach((p) => {
+      retval.push(extractPaperForSending(p, false, null));
     });
     res.json(retval);
   })
@@ -215,7 +227,7 @@ function listPaperTitles(req, res, next) {
 function listPapersForUser(req, res, next) {
   storage.getPapersEnteredBy(req.params.email)
   .then((papers) => {
-    if (papers.length === 0) throw new Error('no metaanalyses found');
+    if (papers.length === 0) throw new Error('no papers found');
 
     const retval = [];
     papers.forEach((p) => {
@@ -239,7 +251,10 @@ function getPaperVersion(req, res, next) {
 
 function savePaper(req, res, next) {
   // extract from incoming data stuff that is allowed
-  storage.savePaper(extractReceivedPaper(req.body), req.user.emails[0].value, req.params.title)
+  storage.savePaper(
+    extractReceivedPaper(req.body),
+    req.user.emails[0].value,
+    req.params.title)
   .then((p) => {
     res.json(extractPaperForSending(p, true, req.params.email));
   })
@@ -267,10 +282,9 @@ function extractPaperForSending(storagePaper, includeDataValues, email) {
     // todo comments in various places?
   };
 
-  retval.apiurl = apiPaperURL(email, retval.title);
+  if (email) retval.apiurl = apiPaperURL(email, retval.title);
 
   if (includeDataValues) {
-    // todo this may not be how the data ends up being encoded
     retval.experiments = storagePaper.experiments;
     retval.columnOrder = storagePaper.columnOrder;
     retval.hiddenCols = storagePaper.hiddenCols;
@@ -282,20 +296,19 @@ function extractPaperForSending(storagePaper, includeDataValues, email) {
 function extractReceivedPaper(receivedPaper) {
   // expecting receivedPaper to come from JSON.parse()
   const retval = {
-    id: tools.string(receivedPaper.id),                  // identifies the paper to be changed
-    title: tools.string(receivedPaper.title),
+    id:             tools.string(receivedPaper.id),        // identifies the paper to be changed
+    title:          tools.string(receivedPaper.title),
     CHECKenteredBy: tools.string(receivedPaper.enteredBy), // can't be changed but should be checked
-    CHECKctime: tools.number(receivedPaper.ctime),         // can't be changed but should be checked
-    // mtime: tools.number(receivedPaper.mtime),         // will be updated
-    reference: tools.string(receivedPaper.reference),
-    description: tools.string(receivedPaper.description),
-    link: tools.string(receivedPaper.link),
-    doi: tools.string(receivedPaper.doi),
-    tags: tools.array(receivedPaper.tags, tools.string),
-    experiments: tools.array(receivedPaper.experiments, extractReceivedExperiment),
-    comments: tools.array(receivedPaper.comments, extractReceivedComment),
-    columnOrder: tools.array(receivedPaper.columnOrder, tools.string),
-    hiddenCols: tools.array(receivedPaper.hiddenCols, tools.string),
+    CHECKctime:     tools.number(receivedPaper.ctime),     // can't be changed but should be checked
+    // mtime: tools.number(receivedPaper.mtime),           // will be updated
+    reference:      tools.string(receivedPaper.reference),
+    description:    tools.string(receivedPaper.description),
+    link:           tools.string(receivedPaper.link),
+    doi:            tools.string(receivedPaper.doi),
+    tags:           tools.array(receivedPaper.tags, tools.string),
+    experiments:    tools.array(receivedPaper.experiments, extractReceivedExperiment),
+    columnOrder:    tools.array(receivedPaper.columnOrder, tools.string),
+    hiddenCols:     tools.array(receivedPaper.hiddenCols, tools.string),
   };
 
   // todo anything else recently added to the data
@@ -364,18 +377,6 @@ function listTopPapers(req, res, next) {
  *
  *
  */
-function listMetaanalysisTitles(req, res, next) {
-  storage.listMetaanalysisTitles()
-  .then((titles) => {
-    const retval = [];
-    titles.forEach((t) => {
-      if (typeof t === 'string') retval.push(t);
-    });
-    res.json(retval);
-  })
-  .catch((err) => next(err));
-}
-
 function listMetaanalysesForUser(req, res, next) {
   storage.getMetaanalysesEnteredBy(req.params.email)
   .then((mas) => {
@@ -383,7 +384,7 @@ function listMetaanalysesForUser(req, res, next) {
 
     const retval = [];
     mas.forEach((m) => {
-      retval.push(extractMetaanalysisForSending(m, false, req.params.email));
+      retval.push(extractMetaanalysisForSending(m, req.params.email));
     });
     res.json(retval);
   })
@@ -393,7 +394,7 @@ function listMetaanalysesForUser(req, res, next) {
 function getMetaanalysisVersion(req, res, next) {
   storage.getMetaanalysisByTitle(req.params.email, req.params.title, req.params.time)
   .then((ma) => {
-    res.json(extractMetaanalysisForSending(ma, true, req.params.email));
+    res.json(extractMetaanalysisForSending(ma, req.params.email));
   })
   .catch((e) => {
     console.error(e);
@@ -403,9 +404,12 @@ function getMetaanalysisVersion(req, res, next) {
 
 function saveMetaanalysis(req, res, next) {
   // extract from incoming data stuff that is allowed
-  storage.saveMetaanalysis(extractReceivedMetaanalysis(req.body), req.user.emails[0].value, req.params.title)
+  storage.saveMetaanalysis(
+    extractReceivedMetaanalysis(req.body),
+    req.user.emails[0].value,
+    req.params.title)
   .then((ma) => {
-    res.json(extractMetaanalysisForSending(ma, true, req.params.email));
+    res.json(extractMetaanalysisForSending(ma, req.params.email));
   })
   .catch((e) => {
     if (e instanceof ValidationError) {
@@ -416,29 +420,25 @@ function saveMetaanalysis(req, res, next) {
   });
 }
 
-function extractMetaanalysisForSending(storageMetaanalysis, includeDataValues, email) {
+function extractMetaanalysisForSending(storageMetaanalysis, email) {
   const retval = {
     id: storageMetaanalysis.id,
     title: storageMetaanalysis.title,
     enteredBy: storageMetaanalysis.enteredBy,
     ctime: storageMetaanalysis.ctime,
     mtime: storageMetaanalysis.mtime,
-    reference: storageMetaanalysis.reference,
+    published: storageMetaanalysis.published,
     description: storageMetaanalysis.description,
-    link: storageMetaanalysis.link,
-    doi: storageMetaanalysis.doi,
     tags: storageMetaanalysis.tags,
+    columnOrder: storageMetaanalysis.columnOrder,
+    paperOrder: storageMetaanalysis.paperOrder,
+    hiddenCols: storageMetaanalysis.hiddenCols,
+    hiddenExperiments: storageMetaanalysis.hiddenExperiments,
+    papers: storageMetaanalysis.papers,
     // todo comments in various places?
   };
 
-  retval.apiurl = apiMetaanalysisURL(email, retval.title);
-
-  // TODO: This will need to be .papers, hiddenExperiments, hiddenPapers etc...
-  if (includeDataValues) {
-  //   // todo this may not be how the data ends up being encoded
-    retval.columnOrder = storageMetaanalysis.columnOrder;
-    retval.hiddenCols = storageMetaanalysis.hiddenCols;
-  }
+  if (email) retval.apiurl = apiMetaanalysisURL(email, retval.title);
 
   return retval;
 }
@@ -446,19 +446,19 @@ function extractMetaanalysisForSending(storageMetaanalysis, includeDataValues, e
 function extractReceivedMetaanalysis(receivedMetaanalysis) {
   // expecting receivedMetaanalysis to come from JSON.parse()
   const retval = {
-    id: tools.string(receivedMetaanalysis.id),                  // identifies the paper to be changed
-    title: tools.string(receivedMetaanalysis.title),
-    CHECKenteredBy: tools.string(receivedMetaanalysis.enteredBy), // can't be changed but should be checked
-    CHECKctime: tools.number(receivedMetaanalysis.ctime),         // can't be changed but should be checked
-    // mtime: tools.number(receivedMetaanalysis.mtime),         // will be updated
-    reference: tools.string(receivedMetaanalysis.reference),
-    description: tools.string(receivedMetaanalysis.description),
-    link: tools.string(receivedMetaanalysis.link),
-    doi: tools.string(receivedMetaanalysis.doi),
-    tags: tools.array(receivedMetaanalysis.tags, tools.string),
-    comments: tools.array(receivedMetaanalysis.comments, extractReceivedComment),
-    columnOrder: tools.array(receivedMetaanalysis.columnOrder, tools.string),
-    hiddenCols: tools.array(receivedMetaanalysis.hiddenCols, tools.string),
+    id:                tools.string(receivedMetaanalysis.id),        // identifies the MA to be changed
+    title:             tools.string(receivedMetaanalysis.title),
+    CHECKenteredBy:    tools.string(receivedMetaanalysis.enteredBy), // can't be changed but should be checked
+    CHECKctime:        tools.number(receivedMetaanalysis.ctime),     // can't be changed but should be checked
+    // mtime: tools.number(receivedMetaanalysis.mtime),              // will be updated
+    published:         tools.string(receivedMetaanalysis.published),
+    description:       tools.string(receivedMetaanalysis.description),
+    tags:              tools.array(receivedMetaanalysis.tags, tools.string),
+    columnOrder:       tools.array(receivedMetaanalysis.columnOrder, tools.string),
+    paperOrder:        tools.array(receivedMetaanalysis.paperOrder, tools.string),
+    hiddenCols:        tools.array(receivedMetaanalysis.hiddenCols, tools.string),
+    hiddenExperiments: tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
+    papers:            tools.array(receivedMetaanalysis.papers, tools.string),
   };
 
   return retval;
@@ -501,7 +501,7 @@ function listColumns(req, res, next) {
     }
     res.json(retval);
   })
-  .catch(() => next(new InternalError('cannot get columns, why?!?')));
+  .catch((err) => next(err));
 }
 
 function extractColumnForSending(storageColumn) {

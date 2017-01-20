@@ -17,3 +17,8 @@ rules:
   prefer-rest-params: off
   no-trailing-spaces: off
   arrow-body-style: off
+  key-spacing: off
+  max-len:
+    - "error"
+    - 110
+    - ignoreTrailingComments: true

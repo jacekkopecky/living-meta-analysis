@@ -22,6 +22,9 @@ app.set('strict routing', true);
 
 app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
 
+// simple logging when debugging
+// app.use((req, resp, next) => { console.log(req.path); next(); });
+
 /* routes
  *
  *
@@ -36,26 +39,27 @@ app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
  */
 
 app.get('/version', oneLineVersion);
-app.get('/version/log', (req, res) => res.redirect('https://github.com/jacekkopecky/living-meta-analysis/commits/master'));
+app.get('/version/log',
+        (req, res) => res.redirect('https://github.com/jacekkopecky/living-meta-analysis/commits/master'));
 
 app.get(['/profile', '/profile/*'],
         (req, res) => res.sendFile('profileRedirect.html', { root: './webpages/' }));
 
 app.use('/', express.static('webpages', { extensions: ['html'] }));
 
-app.use(`/:email(${api.EMAIL_ADDRESS_RE})/`, SLASH_URL);
-app.get(`/:email(${api.EMAIL_ADDRESS_RE})/`,
+app.use(`/:email(${config.EMAIL_ADDRESS_RE})/`, SLASH_URL);
+app.get(`/:email(${config.EMAIL_ADDRESS_RE})/`,
         api.checkUserExists,
         (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
 
-app.use(`/:email(${api.EMAIL_ADDRESS_RE})/:title(${api.TITLE_RE})/`, SLASH_URL);
-app.get(`/:email(${api.EMAIL_ADDRESS_RE})/new-paper/`,
+app.use(`/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`, SLASH_URL);
+app.get(`/:email(${config.EMAIL_ADDRESS_RE})/new-paper/`,
         api.checkUserExists,
         (req, res) => res.sendFile('profile/paper.html', { root: './webpages/' }));
-app.get(`/:email(${api.EMAIL_ADDRESS_RE})/new-metaanalysis/`,
+app.get(`/:email(${config.EMAIL_ADDRESS_RE})/new-metaanalysis/`,
         api.checkUserExists,
         (req, res) => res.sendFile('profile/metaanalysis.html', { root: './webpages/' }));
-app.get(`/:email(${api.EMAIL_ADDRESS_RE})/:title(${api.TITLE_RE})/`,
+app.get(`/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
         api.checkUserExists,
         (req, res, next) => {
           api.getKindForTitle(req.params.email, req.params.title)
