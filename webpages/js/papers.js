@@ -1387,8 +1387,8 @@
 
     var i = currentPaper.columnOrder.indexOf(colId);
     if (i === -1) return console.error('column ' + colId + ' not found in newly regenerated order!');
-    var nextNonHidden = findNextNonHiddenCol(i, left);
-    _.moveInArray(currentPaper.columnOrder, i, nextNonHidden, left, most);
+    var newPosition = findNextNonHiddenCol(i, left, most);
+    _.moveArrayElement(currentPaper.columnOrder, i, newPosition);
     moveResultsAfterCharacteristics(currentPaper);
     updatePaperView();
     _.scheduleSave(currentPaper);
@@ -1405,41 +1405,25 @@
     }
   }
 
-  function findNextNonHiddenCol(currentIndex, left) {
-    var found = false;
-    var nextColIndex = currentIndex;
+  /*
+   * find where to move a columns from its current index;
+   * `left` indicates direction; if `most`, move to the beginning (left) or end (right) of the columns list.
+   */
+  function findNextNonHiddenCol(currentIndex, left, most) {
     if (left) {
-      nextColIndex -= 1;
-      while (!found) {
-        if (typeof currentPaper.columnOrder[nextColIndex] === 'undefined') {
-          // We've hit the end, return 0
-          nextColIndex = 0;
-          break;
-        }
-        if (isHiddenCol(currentPaper.columnOrder[nextColIndex])) {
-          nextColIndex -= 1;
-          continue;
-        } else {
-          break;
-        }
+      if (most || currentIndex <= 0) return 0;
+      currentIndex -= 1;
+      while (isHiddenCol(currentPaper.columnOrder[currentIndex]) && currentIndex > 0) {
+        currentIndex -= 1;
       }
     } else {
-      nextColIndex += 1;
-      while (!found) {
-        if (typeof currentPaper.columnOrder[nextColIndex] === 'undefined') {
-          // We've hit the end, return .length-1
-          nextColIndex = currentPaper.columnOrder.length-1;
-          break;
-        }
-        if (isHiddenCol(currentPaper.columnOrder[nextColIndex])) {
-          nextColIndex += 1;
-          continue;
-        } else {
-          break;
-        }
+      if (most) return currentPaper.columnOrder.length - 1;
+      currentIndex += 1;
+      while (isHiddenCol(currentPaper.columnOrder[currentIndex]) && currentIndex < currentPaper.columnOrder.length - 1) {
+        currentIndex += 1;
       }
     }
-    return nextColIndex;
+    return currentIndex;
   }
 
   function changeColumnType(ev) {
