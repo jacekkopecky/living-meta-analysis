@@ -1037,8 +1037,13 @@ body:not(.page-about-you).signed-on #paper > header .edityourcopy {
 }
 
 #metaanalysis .exptitle.editing,
+#metaanalysis .papertitle.editing,
 #metaanalysis .coltitle.editing {
   display: inline-block;
+}
+
+#metaanalysis .papertitleth.hidden {
+  display: none;
 }
 
 #metaanalysis .unhide {
@@ -1079,13 +1084,15 @@ body:not(.page-about-you).signed-on #paper > header .edityourcopy {
 
 #metaanalysis > header .title.editing.unsaved:not(.validationerror):not(:focus),
 #metaanalysis .exptitle.editing.unsaved:not(.validationerror):not(:focus),
+#metaanalysis .papertitle.editing.unsaved:not(.validationerror):not(:focus),
 #metaanalysis .coltitle.editing.unsaved:not(.validationerror):not(:focus) {
   box-shadow: 0 0 3px 3px rgba(255,0,0,.5);
 }
 
 #metaanalysis > header button.titlerename,
 #metaanalysis button.coltitlerename,
-#metaanalysis button.exptitlerename {
+#metaanalysis button.exptitlerename,
+#metaanalysis button.papertitlerename {
   margin-right: auto;
   opacity: 0;
   transition: opacity .2s .2s;
@@ -1097,7 +1104,8 @@ body:not(.page-about-you).signed-on #paper > header .edityourcopy {
   display: none;
 }
 
-#metaanalysis .fullrowinfo header,
+#metaanalysis .paperinfo header,
+#metaanalysis .experimentinfo header,
 #metaanalysis .fullcolinfo header,
 #metaanalysis .colinfo header {
   padding-top: 1em;
@@ -1110,7 +1118,8 @@ body.page-about-you.editing .fullcolinfo header {
 
 #metaanalysis .fullcolinfo header p,
 #metaanalysis .colinfo header p,
-#metaanalysis .fullrowinfo header p {
+#metaanalysis .paperinfo header p,
+#metaanalysis .experimentinfo header p {
   display: inline-block;
   margin: 0;
 }
@@ -1135,6 +1144,7 @@ body.page-about-you.editing .fullcolinfo header {
 }
 
 #metaanalysis .exprenamewarning,
+#metaanalysis .paperrenamewarning,
 #metaanalysis .colrenamewarning {
   position: absolute;
   left: 1em;
@@ -1157,17 +1167,20 @@ body.page-about-you.editing .fullcolinfo header {
   visibility: hidden;
 }
 
-#metaanalysis .exprenamewarning {
+#metaanalysis .exprenamewarning,
+#metaanalysis .paperrenamewarning {
   right: -.875em; /* to offset the header's 1.5em right margin due to the pin button */
 }
 
 #metaanalysis .titlerenamewarning h1,
 #metaanalysis .exprenamewarning h1,
+#metaanalysis .paperrenamewarning h1,
 #metaanalysis .colrenamewarning h1 {
   margin-bottom: 1em;
 }
 
 #metaanalysis .exprenamewarning h1,
+#metaanalysis .paperrenamewarning h1,
 #metaanalysis .colrenamewarning h1 {
   font-size: 1.2em;
   font-weight: normal;
@@ -1175,6 +1188,7 @@ body.page-about-you.editing .fullcolinfo header {
 
 #metaanalysis > header .title.editing.unsaved ~ .titlerenamewarning,
 #metaanalysis .coltitle.editing.unsaved ~ .exprenamewarning,
+#metaanalysis .coltitle.editing.unsaved ~ .paperrenamewarning,
 #metaanalysis th:not(.newcol) .coltitle.editing.unsaved ~ .colrenamewarning {
   transition: visibility 0s 1s;
 }
@@ -1189,6 +1203,21 @@ body.page-about-you.editing .fullcolinfo header {
 #metaanalysis .exptitle.editing:not(.new).unsaved + .exptitlerename:hover ~ .exprenamewarning,
 #metaanalysis .exptitle.editing:not(.new).unsaved + .exptitlerename:focus ~ .exprenamewarning,
 #metaanalysis .exptitle.editing:not(.new).unsaved ~ .exprenamewarning:hover,
+#metaanalysis .papertitle.editing:not(.new).unsaved:focus ~ .exprenamewarning,
+#metaanalysis .papertitle.editing:not(.new).unsaved:hover ~ .exprenamewarning,
+#metaanalysis .papertitle.editing:not(.new).unsaved + .papertitlerename:hover ~ .exprenamewarning,
+#metaanalysis .papertitle.editing:not(.new).unsaved + .papertitlerename:focus ~ .exprenamewarning,
+#metaanalysis .papertitle.editing:not(.new).unsaved ~ .exprenamewarning:hover,
+#metaanalysis .exptitle.editing:not(.new).unsaved:focus ~ .paperrenamewarning,
+#metaanalysis .exptitle.editing:not(.new).unsaved:hover ~ .paperrenamewarning,
+#metaanalysis .exptitle.editing:not(.new).unsaved + .exptitlerename:hover ~ .paperrenamewarning,
+#metaanalysis .exptitle.editing:not(.new).unsaved + .exptitlerename:focus ~ .paperrenamewarning,
+#metaanalysis .exptitle.editing:not(.new).unsaved ~ .paperrenamewarning:hover,
+#metaanalysis .papertitle.editing:not(.new).unsaved:focus ~ .paperrenamewarning,
+#metaanalysis .papertitle.editing:not(.new).unsaved:hover ~ .paperrenamewarning,
+#metaanalysis .papertitle.editing:not(.new).unsaved + .papertitlerename:hover ~ .paperrenamewarning,
+#metaanalysis .papertitle.editing:not(.new).unsaved + .papertitlerename:focus ~ .paperrenamewarning,
+#metaanalysis .papertitle.editing:not(.new).unsaved ~ .paperrenamewarning:hover,
 #metaanalysis th:not(.newcol) .coltitle.editing.unsaved:focus ~ .colrenamewarning,
 #metaanalysis th:not(.newcol) .coltitle.editing.unsaved:hover ~ .colrenamewarning,
 #metaanalysis th:not(.newcol) .coltitle.editing.unsaved + .coltitlerename:hover ~ .colrenamewarning,
@@ -1200,7 +1229,8 @@ body.page-about-you.editing .fullcolinfo header {
 
 #metaanalysis > header .title.editing.unsaved:not(.validationerror):not(:focus) + button.titlerename:not(:focus):before,
 #metaanalysis .coltitle.editing.unsaved:not(.validationerror):not(:focus) + button.coltitlerename:not(:focus):before,
-#metaanalysis .exptitle.editing.unsaved:not(.validationerror):not(:focus) + button.exptitlerename:not(:focus):before {
+#metaanalysis .exptitle.editing.unsaved:not(.validationerror):not(:focus) + button.exptitlerename:not(:focus):before,
+#metaanalysis .papertitle.editing.unsaved:not(.validationerror):not(:focus) + button.papertitlerename:not(:focus):before {
   content: 'click the button to confirm';
   display: block;
   position: absolute;
@@ -1214,7 +1244,8 @@ body.page-about-you.editing .fullcolinfo header {
 }
 
 #metaanalysis .coltitle.editing.unsaved:not(.validationerror):not(:focus) + button.coltitlerename:not(:focus):before,
-#metaanalysis .exptitle.editing.unsaved:not(.validationerror):not(:focus) + button.exptitlerename:not(:focus):before {
+#metaanalysis .exptitle.editing.unsaved:not(.validationerror):not(:focus) + button.exptitlerename:not(:focus):before,
+#metaanalysis .papertitle.editing.unsaved:not(.validationerror):not(:focus) + button.papertitlerename:not(:focus):before {
   right: auto;
   left: 100%;
   top: auto;
@@ -1229,7 +1260,11 @@ body.page-about-you.editing .fullcolinfo header {
 #metaanalysis .exptitle.editing:hover + button.exptitlerename,
 #metaanalysis .exptitle.editing:focus + button.exptitlerename,
 #metaanalysis .exptitle.editing + button.exptitlerename:enabled,
-#metaanalysis .exptitle.editing + button.exptitlerename:hover {
+#metaanalysis .exptitle.editing + button.exptitlerename:hover,
+#metaanalysis .papertitle.editing:hover + button.papertitlerename,
+#metaanalysis .papertitle.editing:focus + button.papertitlerename,
+#metaanalysis .papertitle.editing + button.papertitlerename:enabled,
+#metaanalysis .papertitle.editing + button.papertitlerename:hover {
   opacity: 1;
   transition: opacity 0s;
 }
@@ -1489,7 +1524,7 @@ body:not(.editing) #metaanalysis.no-data .no-table, {
 }
 
 #paper table.experiments tr th:first-child,
-#metaanalysis table.experiments tr th:first-child {
+#metaanalysis table.experiments tr th:nth-child(2) {
   border-right: 2px solid black;
   position: relative;
   position: -webkit-sticky;
@@ -1506,6 +1541,10 @@ body:not(.editing) #metaanalysis.no-data .no-table, {
   background: white;
 }
 
+#metaanalysis table.experiments tr:not(.add) th:first-child {
+  border-right: 1px solid black;
+}
+
 #paper table.experiments tr th:first-child .expdescription.short,
 #metaanalysis table.experiments tr th:first-child .expdescription.short {
   white-space: nowrap;
@@ -1518,7 +1557,8 @@ body:not(.editing) #metaanalysis.no-data .no-table, {
 }
 
 #paper table.experiments .fullrowinfo .expdescription:not([contenteditable]):empty:before,
-#metaanalysis table.experiments .fullrowinfo .expdescription:not([contenteditable]):empty:before {
+#metaanalysis table.experiments .paperinfo .expdescription:not([contenteditable]):empty:before,
+#metaanalysis table.experiments .experimentinfo .expdescription:not([contenteditable]):empty:before {
   content: 'No detailed description';
   color: #aaa;
   font-style: italic;
@@ -1563,7 +1603,7 @@ body:not(.editing) #metaanalysis table.experiments tr:first-child th:not(:nth-la
 
 /* thicker first column divider line */
 #paper table.experiments tr:first-child th:first-child:after,
-#metaanalysis table.experiments tr:first-child th:first-child:after {
+#metaanalysis table.experiments tr:first-child th:nth-child(2):after {
   border-top: 2px solid black !important;
 }
 
@@ -2058,7 +2098,7 @@ body:not(.editing) #metaanalysis table.experiments td:last-child {
 #paper table.experiments tr:nth-child(2n),
 #paper table.experiments tr:nth-child(2n) th:first-child,
 #metaanalysis table.experiments tr:nth-child(2n),
-#metaanalysis table.experiments tr:nth-child(2n) th:first-child {
+#metaanalysis table.experiments tr:nth-child(2n):not(.add) th:first-child:not(.papertitleth) {
   background-color: #eee;
 }
 

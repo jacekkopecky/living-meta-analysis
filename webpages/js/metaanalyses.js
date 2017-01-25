@@ -1057,7 +1057,18 @@ function requestAndFillMetaanalysis() {
         var tr = _.cloneTemplate('experiment-row-template').children[0];
         tableBodyNode.insertBefore(tr, addRowNode);
 
-        _.fillEls(tr, '.exptitle', paper.title+'-'+experiment.title);
+        var paperTitleEl = _.findEl(tr, '.papertitleth');
+        // First mention of a paper should have rowspan equal to the number of experiments
+        if (expIndex == 0) {
+          var noExpInCurrPaper = papers[papIndex].experiments.length;
+          paperTitleEl.rowSpan = noExpInCurrPaper;
+          _.fillEls(tr, '.papertitle', paper.title);
+          _.setDataProps(tr, '.papertitle.editing', 'origTitle', paper.title);
+          addConfirmedUpdater(tr, '.papertitle.editing', '.papertitle + .papertitlerename', null, 'textContent', checkExperimentTitleUnique, metaanalysis, ['papers', paperIndex, 'title']);
+        } else { // if it's not the first, it must have a correct rowspan already, so hide it
+          paperTitleEl.classList.add('hidden');
+        };
+        _.fillEls(tr, '.exptitle', experiment.title);
         _.fillEls(tr, '.popupbox .exptitle', experiment.title);
         _.fillEls(tr, '.expdescription', experiment.description);
 
@@ -1073,7 +1084,9 @@ function requestAndFillMetaanalysis() {
         _.setDataProps(tr, '.exptitle.editing', 'origTitle', experiment.title);
         addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitleUnique, metaanalysis, ['papers', paperIndex, 'experiments', expIndex, 'title'], deleteNewExperiment);
 
-        setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', expIndex);
+        // Now we track paperinfo@<index> and experimentinfo@<paper>,<exp>
+        setupPopupBoxPinning(tr, '.paperinfo.popupbox', papIndex);
+        setupPopupBoxPinning(tr, '.experimentinfo.popupbox', papIndex+','+expIndex);
 
         metaanalysis.columnOrder.forEach(function (colId) {
           // early return - ignore this column
@@ -2231,7 +2244,9 @@ function requestAndFillMetaanalysis() {
   }
 
   function unpinPopupBox() {
+    console.log(pinnedBox);
     if (pinnedBox) {
+      console.log("inside");
       var pinned = getPopupBoxEl();
       if (pinned) {
         pinned.classList.remove('pinned');

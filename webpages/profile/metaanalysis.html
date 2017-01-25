@@ -103,6 +103,17 @@
       <tr>
         <th class="popupboxtrigger">
           <div class="popupboxhighlight">
+            <span>Paper</span>
+          </div>
+          <div class="fullcolinfo popupbox" data-boxid='studyexperimentheading'>
+            <div class="pin"></div>
+            <header><p>Paper</p></header>
+            <p class="description">The Paper an experiment comes from.</p>
+            <!-- todo comments -->
+          </div>
+        </th>
+        <th class="popupboxtrigger">
+          <div class="popupboxhighlight">
             <span>Study/Experiment</span>
           </div>
           <div class="fullcolinfo popupbox" data-boxid='studyexperimentheading'>
@@ -236,10 +247,36 @@
 </template>
 <template id="experiment-row-template">
   <tr class="row">
+    <th class="popupboxtrigger popupboxhighlight papertitleth">
+      <!-- todo click on title or exptitle should focus the contenteditable exptitle -->
+      <span class="papertitle"></span>
+      <div class="paperinfo popupbox" data-boxtype='paperinfo'>
+        <div class="pin"></div>
+        <header>
+          <span class="edithighlight" data-focuses=".papertitle.editing">Paper:
+            <span class="papertitle notediting"></span></span
+          ><p class="papertitle editing oneline" contenteditable placeholder="enter a short name"></p>
+          <button class="papertitlerename editing" disabled>rename</button>
+          <div class="paperrenamewarning">
+            <h1>Are you sure to rename the Paper from "<span class="papertitle"></span>"?</h1>
+            <p>If others are using the paper, a change might surprise them.
+              To undo, press <button class="paperrenamecancel">cancel</button>
+            </p>
+          </div>
+          </p>
+        </header>
+        <!-- todo click on .paperdescription.short should focus the contenteditable papertitle -->
+        <div class="paperdescription notediting"></div>
+        <div class="paperdescription editing" contenteditable placeholder="enter description"></div>
+      </div>
+      <div class="paperdescription short" data-focuses=".paperdescription.editing"></div>
+      <!-- todo comments -->
+      <!-- todo show ctime and enteredBy for experiment -->
+    </th>
     <th class="popupboxtrigger popupboxhighlight">
       <!-- todo click on title or exptitle should focus the contenteditable exptitle -->
       <span class="exptitle"></span>
-      <div class="fullrowinfo popupbox" data-boxtype='fullrowinfo'>
+      <div class="experimentinfo popupbox" data-boxtype='experimentinfo'>
         <div class="pin"></div>
         <header>
           <span class="edithighlight" data-focuses=".exptitle.editing">Study/experiment:
