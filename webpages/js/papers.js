@@ -3,6 +3,44 @@
   var lima = window.lima;
   var _ = lima._;
 
+  var papersPromise;
+  var papersNextUpdate = 0;
+
+  lima.getPapers = function() {
+    var curtime = Date.now();
+    if (!papersPromise || papersNextUpdate < curtime) {
+      papersNextUpdate = curtime + 5 * 60 * 1000; // update paper titles no less than 5 minutes from now
+
+      papersPromise = lima.getGapiIDToken()
+      .then(function (idToken) {
+        return fetch('/api/papers', _.idTokenToFetchOptions(idToken));
+      })
+      .then(_.fetchJson)
+      .then(storePapers)
+      .catch(function (err) {
+        console.error("problem getting papers");
+        console.error(err);
+        throw _.apiFail();
+      });
+    }
+
+    return papersPromise;
+  }
+
+  function storePapers(papers){
+    lima.papers = {};
+    Object.keys(papers).forEach(function (id) {
+      storePaper(papers[id]);
+    });
+    return lima.papers;
+  }
+
+  function storePaper(paper) {
+    if (!(paper instanceof Paper)) paper = Object.assign(new Paper(), paper);
+    lima.papers[paper.id] = paper;
+    return paper;
+  }
+
   function extractPaperTitleFromUrl() {
     // the path of a page for a paper will be '/email/title/*',
     // so extract the 'title' portion here:
@@ -129,7 +167,7 @@
       console.error(err);
       throw _.apiFail();
     })
-    .then(loadPaperTitles); // ignoring any errors here
+    .then(loadAllTitles); // ignoring any errors here
   }
 
   function Paper() {}
@@ -201,6 +239,7 @@
   var rebuildingDOM = false;
 
   function fillPaper(paper) {
+    console.log(currentPaper);
     // cleanup
     var oldPaperEl = _.byId('paper');
     rebuildingDOM = true;
@@ -254,7 +293,7 @@
     addOnInputUpdater(paperEl, ".description .value", 'textContent', identity, paper, 'description');
 
     currentPaperOrigTitle = paper.title;
-    addConfirmedUpdater('#paper .title.editing', '#paper .title + .titlerename', '#paper .title ~ * .titlerenamecancel', 'textContent', checkPaperTitleUnique, paper, 'title');
+    addConfirmedUpdater('#paper .title.editing', '#paper .title + .titlerename', '#paper .title ~ * .titlerenamecancel', 'textContent', checkTitleUnique, paper, 'title');
 
     if (!paper.tags) paper.tags = [];
 
@@ -288,7 +327,6 @@
     }
     return doi;
   }
-
 
   /* editTags
    *
@@ -1169,17 +1207,17 @@
     });
   }
 
-  var paperTitles = [];
-  var paperTitlesNextUpdate = 0;
+  var allTitles = [];
+  var titlesNextUpdate = 0;
 
-  // now retrieve the list of all paper titles for checking uniqueness
-  function loadPaperTitles() {
+  // now retrieve the list of all titles for checking uniqueness
+  function loadAllTitles() {
     var curtime = Date.now();
-    if (paperTitlesNextUpdate < curtime) {
-      paperTitlesNextUpdate = curtime + 5 * 60 * 1000; // update paper titles no less than 5 minutes from now
-      fetch('/api/papers/titles')
+    if (titlesNextUpdate < curtime) {
+      titlesNextUpdate = curtime + 5 * 60 * 1000; // update titles no less than 5 minutes from now
+      fetch('/api/titles')
       .then(_.fetchJson)
-      .then(function (titles) { paperTitles = titles; })
+      .then(function (titles) { allTitles = titles; })
       .catch(function (err) {
         console.error('problem getting paper titles');
         console.error(err);
@@ -1189,18 +1227,18 @@
 
   var currentPaperOrigTitle;
 
-  function checkPaperTitleUnique(title) {
+  function checkTitleUnique(title) {
     if (title === '') throw null; // no message necessary
-    if (title === 'new') throw '"new" is a reserved paper name';
+    if (title === 'new-paper' || title === 'new-metaanalysis') throw '"new-paper/new-metaanalysis" are reserved titles';
     if (!title.match(/^[a-zA-Z0-9.-]+$/)) throw 'paper short name cannot contain spaces or special characters';
-    loadPaperTitles();
-    if (title !== currentPaperOrigTitle && paperTitles.indexOf(title) !== -1) {
+    loadAllTitles();
+    if (title !== currentPaperOrigTitle && allTitles.indexOf(title) !== -1) {
       // try to give a useful suggestion for common names like Juliet94a
       var match = title.match(/(^[a-zA-Z0-9]*[0-9]+)([a-zA-Z]?)$/);
       if (match) {
         var suggestion = match[1];
         var postfix = 97; // 97 is 'a'; 123 is beyond 'z'
-        while (paperTitles.indexOf(suggestion+String.fromCharCode(postfix)) > -1 && postfix < 123) postfix++;
+        while (allTitles.indexOf(suggestion+String.fromCharCode(postfix)) > -1 && postfix < 123) postfix++;
         if (postfix < 123) throw 'try ' + suggestion + String.fromCharCode(postfix) + ', "' + title + '" is already used';
       }
 
@@ -2053,10 +2091,9 @@
   lima.updatePaperView = updatePaperView;
   lima.assignDeepValue = assignDeepValue;
   lima.getDeepValue = getDeepValue;
-  lima.getPaperTitles = function(){return paperTitles;};
+  lima.getPaperTitles = function(){return allTitles;};
   lima.getCurrentPaper = function(){return currentPaper;};
   lima.savePendingMax = 0;
-
 
   window._ = _;
 
