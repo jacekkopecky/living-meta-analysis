@@ -434,7 +434,6 @@ function extractMetaanalysisForSending(storageMetaanalysis, email) {
     paperOrder: storageMetaanalysis.paperOrder,
     hiddenCols: storageMetaanalysis.hiddenCols,
     hiddenExperiments: storageMetaanalysis.hiddenExperiments,
-    papers: storageMetaanalysis.papers,
     // todo comments in various places?
   };
 
@@ -458,7 +457,6 @@ function extractReceivedMetaanalysis(receivedMetaanalysis) {
     paperOrder:        tools.array(receivedMetaanalysis.paperOrder, tools.string),
     hiddenCols:        tools.array(receivedMetaanalysis.hiddenCols, tools.string),
     hiddenExperiments: tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
-    papers:            tools.array(receivedMetaanalysis.papers, tools.string),
   };
 
   return retval;

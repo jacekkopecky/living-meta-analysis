@@ -80,6 +80,7 @@ function checkForDisallowedChanges(current, original, columns) {
   //   do the checks we can think of for changes that wouldn't be allowed
   // for example, we can't really allow removing values because we don't allow removing comments
   // todo comment mtimes
+  // todo check that columnOrder references existing columns; that paperOrder references existing papers
   // this might end up being different for papers and for metaanalyses
 
   original = original || {};
