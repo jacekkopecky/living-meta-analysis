@@ -670,6 +670,15 @@ module.exports.getMetaanalysisByTitle = (email, title, time) => {
   });
 };
 
+module.exports.getMetaanalysisPapersByTitle = (email, maTitle, time) => {
+  return module.exports.getMetaanalysisByTitle(email, maTitle, time)
+  .then((metaanalysis) =>
+    paperCache.then(
+      (papers) => papers.filter((p) => metaanalysis.paperOrder.indexOf(p.id) !== -1)
+    )
+  );
+};
+
 function newMetaanalysis(email) {
   const time = tools.uniqueNow();
   return {

@@ -65,6 +65,10 @@ api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_
         REGISTER_USER, getMetaanalysisVersion);
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/:time([0-9]+)/`,
         REGISTER_USER, getMetaanalysisVersion);
+api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/papers/`,
+        REGISTER_USER, getMetaanalysisPapers);
+api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/:time([0-9]+)/papers/`,
+        REGISTER_USER, getMetaanalysisPapers);
 api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
         GUARD, SAME_USER, jsonBodyParser, saveMetaanalysis);
 
@@ -265,6 +269,10 @@ function savePaper(req, res, next) {
   });
 }
 
+function extractPaperArrayForSending(storagePaperArray, email) {
+  return storagePaperArray.map((paper) => extractPaperForSending(paper, true, email));
+}
+
 function extractPaperForSending(storagePaper, includeDataValues, email) {
   const retval = {
     id: storagePaper.id,
@@ -393,6 +401,16 @@ function getMetaanalysisVersion(req, res, next) {
   storage.getMetaanalysisByTitle(req.params.email, req.params.title, req.params.time)
   .then((ma) => {
     res.json(extractMetaanalysisForSending(ma, req.params.email));
+  })
+  .catch((e) => {
+    next(e || new NotFoundError());
+  });
+}
+
+function getMetaanalysisPapers(req, res, next) {
+  storage.getMetaanalysisPapersByTitle(req.params.email, req.params.title, req.params.time)
+  .then((papers) => {
+    res.json(extractPaperArrayForSending(papers, req.params.email));
   })
   .catch((e) => {
     next(e || new NotFoundError());
