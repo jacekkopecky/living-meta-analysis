@@ -134,13 +134,18 @@ app.use(() => { throw new NotFoundError(); });
 
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   if (err.status === 404) {
+    console.log(`not found at ${req.path}`);
     res.status(404).sendFile('404.html', { root: './webpages/' });
   } else if (err.status === 401) {
     res.set('WWW-Authenticate', 'Bearer realm="accounts.google.com"');
     res.status(401).sendFile('401.html', { root: './webpages/' });
   } else if (err.status === 409) {
     res.status(409).send(err.message);
+  } else if (err.status === 501) {
+    console.log(`not implemented at ${req.path}`);
+    res.status(501).send(err.message);
   } else {
+    console.error('internal error');
     console.error(err);
     if ('stack' in err) console.error(err.stack);
     res.status(500).send('internal server error');
@@ -154,4 +159,5 @@ process.on('unhandledRejection', (err) => {
 });
 
 const port = process.env.PORT || 8088;
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+
+api.ready.then(() => app.listen(port, () => console.log(`Example app listening on port ${port}!`)));

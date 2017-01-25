@@ -8,6 +8,7 @@
 'use strict';
 
 const ValidationError = require('./errors/ValidationError');
+const NotImplementedError = require('./errors/NotImplementedError');
 const config = require('./config');
 const tools = require('./tools');
 
@@ -223,14 +224,14 @@ function getAllUsers() {
     .on('data', (entity) => {
       try {
         retval[entity.data.emails[0].value] = entity.data;
-        console.log('getAllUsers: got a user ' + entity.data.emails[0].value);
+        // console.log('getAllUsers: got a user ' + entity.data.emails[0].value);
       } catch (err) {
         console.error('error in a user entity (ignoring)');
         console.error(err);
       }
     })
     .on('end', () => {
-      console.log('getAllUsers: done');
+      console.log(`getAllUsers: ${Object.keys(retval).length} done`);
       resolve(retval);
     });
   });
@@ -428,7 +429,7 @@ module.exports.getPapersEnteredBy = (email) => {
 
 module.exports.getPaperByTitle = (email, title, time) => {
   // todo if time is specified, compute a version as of that time
-  if (time) return Promise.reject('getPaperByTitle with time not implemented');
+  if (time) return Promise.reject(new NotImplementedError('getPaperByTitle with time not implemented'));
 
   // todo different users can use different titles for the same thing
   if (title === config.NEW_PAPER_TITLE) return Promise.resolve(newPaper(email));
@@ -504,7 +505,7 @@ module.exports.savePaper = (paper, email, origTitle) => {
           `failed savePaper: did not find id ${paper.id} with title ${origTitle}`);
       }
       if (email !== original.enteredBy) {
-        throw new Error('not implemented saving someone else\'s paper');
+        throw new NotImplementedError('not implemented saving someone else\'s paper');
       }
 
       paper.enteredBy = original.enteredBy;
@@ -631,7 +632,7 @@ function getAllMetaanalyses() {
       allTitles.push(entity.data.title);
     })
     .on('end', () => {
-      console.log(`getAllMetaanalyses(): ${retval.length} done`);
+      console.log(`getAllMetaanalyses: ${retval.length} done`);
       resolve(retval);
     });
   });
@@ -654,7 +655,7 @@ module.exports.getMetaanalysesEnteredBy = (email) => {
 
 module.exports.getMetaanalysisByTitle = (email, title, time) => {
   // todo if time is specified, compute a version as of that time
-  if (time) return Promise.reject('getMetaanalysisByTitle with time not implemented');
+  if (time) return Promise.reject(new NotImplementedError('getMetaanalysisByTitle with time not implemented'));
 
   // todo different users can use different titles for the same thing
   if (title === config.NEW_META_TITLE) return Promise.resolve(newMetaanalysis(email));
@@ -726,7 +727,7 @@ module.exports.saveMetaanalysis = (metaanalysis, email, origTitle) => {
           `failed saveMetaanalysis: did not find id ${metaanalysis.id} with title ${origTitle}`);
       }
       if (email !== original.enteredBy) {
-        throw new Error('not implemented saving someone else\'s metaanalysis');
+        throw new NotImplementedError('not implemented saving someone else\'s metaanalysis');
       }
 
       metaanalysis.enteredBy = original.enteredBy;
@@ -836,7 +837,7 @@ function getAllColumns() {
     .on('data', (entity) => {
       try {
         retval[entity.data.id] = entity.data;
-        console.log('getAllColumns: got a column ' + entity.data.id);
+        // console.log('getAllColumns: got a column ' + entity.data.id);
       } catch (err) {
         console.error('error in a column entity (ignoring)');
         console.error(err);
@@ -925,3 +926,11 @@ module.exports.saveColumn = (recvCol, email) => {
     });
   });
 };
+
+
+module.exports.ready =
+  metaanalysisCache
+  .then(() => paperCache)
+  .then(() => userCache)
+  .then(() => columnCache)
+  .then(() => console.log('storage: all is now loaded'));

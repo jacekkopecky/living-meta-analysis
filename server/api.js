@@ -168,8 +168,7 @@ function returnUserProfile(req, res, next) {
     res.json(retval);
   })
   .catch((err) => {
-    console.error(err);
-    next(new NotFoundError());
+    next(err || new NotFoundError());
   });
 }
 
@@ -244,8 +243,7 @@ function getPaperVersion(req, res, next) {
     res.json(extractPaperForSending(p, true, req.params.email));
   })
   .catch((e) => {
-    console.error(e);
-    next(new NotFoundError());
+    next(e || new NotFoundError());
   });
 }
 
@@ -397,8 +395,7 @@ function getMetaanalysisVersion(req, res, next) {
     res.json(extractMetaanalysisForSending(ma, req.params.email));
   })
   .catch((e) => {
-    console.error(e);
-    next(new NotFoundError());
+    next(e || new NotFoundError());
   });
 }
 
@@ -547,3 +544,5 @@ function extractReceivedColumn(recCol) {
     // mtime: tools.number(recCol.mtime),           // will be updated
   };
 }
+
+module.exports.ready = storage.ready;
