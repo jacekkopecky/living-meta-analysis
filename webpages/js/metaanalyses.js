@@ -137,20 +137,22 @@
   function Metaanalysis() {}
   Metaanalysis.prototype.save = saveMetaanalysis;
 
-  // TODO: Revisit this function, think needs AfterPaperSave also..
   function updateAfterColumnSave() {
     // clean experiment data of new columns that got new ID when they were saved
-    currentMetaanalysis.experiments.forEach(function (experiment) {
-      if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
-        var col = lima.columns[key];
-        if (col && col.id !== key) {
-          experiment.data[col.id] = experiment.data[key];
-          delete experiment.data[key];
-        }
+    currentMetaanalysis.papers.forEach(function (paper) {
+      paper.experiments.forEach(function (experiment) {
+        if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
+          var col = lima.columns[key];
+          if (col && col.id !== key) {
+            experiment.data[col.id] = experiment.data[key];
+            delete experiment.data[key];
+          }
+        });
       });
+
+      // don't clean columnOrder the same way - in metaanalyses.js, we shouldn't be touching papers' columnOrder
     });
 
-    // clean columnOrder the same way
     if (Array.isArray(currentMetaanalysis.columnOrder)) currentMetaanalysis.columnOrder.forEach(function (key, index) {
       var col = lima.columns[key];
       if (col && col.id !== key) {
@@ -564,7 +566,7 @@
           paperTitleEl.rowSpan = noExpInCurrPaper;
           _.fillEls(tr, '.paptitle', paper.title);
           _.setDataProps(tr, '.paptitle.editing', 'origTitle', paper.title);
-          addConfirmedUpdater(tr, '.paptitle.editing', '.paptitle + .paptitlerename', null, 'textContent', checkExperimentTitleUnique, metaanalysis, ['papers', paperIndex, 'title']);
+          addConfirmedUpdater(tr, '.paptitle.editing', '.paptitle + .paptitlerename', null, 'textContent', checkExperimentTitleUnique, paper, ['title']);
           tr.classList.add('paperstart');
         } else { // if it's not the first, its space is taken by the first, so remove it
           paperTitleEl.remove();
@@ -580,10 +582,10 @@
           _.fillEls(tr, '.exptitle + .exptitlerename', 'rename');
         }
 
-        addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, metaanalysis, ['experiments', expIndex, 'description']);
+        addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
 
         _.setDataProps(tr, '.exptitle.editing', 'origTitle', experiment.title);
-        addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitleUnique, metaanalysis, ['papers', paperIndex, 'experiments', expIndex, 'title'], deleteNewExperiment);
+        addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitleUnique, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
 
         // Now we track paperinfo@<index> and experimentinfo@<paper>,<exp>
         setupPopupBoxPinning(tr, '.paperinfo.popupbox', papIndex);
@@ -610,7 +612,7 @@
               _.fillEls(td, '.value', val.value);
             }
 
-            addOnInputUpdater(td, '.value', 'textContent', identity, metaanalysis, ['experiments', expIndex, 'data', colId, 'value'], recalculateComputedData);
+            addOnInputUpdater(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value'], recalculateComputedData);
 
             var user = lima.getAuthenticatedUserEmail();
             _.fillEls (td, '.valenteredby', val && val.enteredBy || user);
@@ -652,7 +654,7 @@
           setupPopupBoxPinning(td, '.datum.popupbox', expIndex + '$' + colId);
 
           // populate comments
-          fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', metaanalysis, ['experiments', expIndex, 'data', colId, 'comments']);
+          fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', paper, ['experiments', expIndex, 'data', colId, 'comments']);
         });
       });
     });
@@ -1324,7 +1326,8 @@
 
     var i = currentMetaanalysis.columnOrder.indexOf(colId);
     if (i === -1) return console.error('column ' + colId + ' not found in newly regenerated order!');
-    _.moveInArray(currentMetaanalysis.columnOrder, i, left, most);
+    var newPosition = findNextNonHiddenCol(i, left, most);
+    _.moveArrayElement(currentMetaanalysis.columnOrder, i, newPosition);
     moveResultsAfterCharacteristics(currentMetaanalysis);
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
@@ -1339,6 +1342,27 @@
         firstResult++;
       }
     }
+  }
+
+  /*
+   * find where to move a columns from its current index;
+   * `left` indicates direction; if `most`, move to the beginning (left) or end (right) of the columns list.
+   */
+  function findNextNonHiddenCol(currentIndex, left, most) {
+    if (left) {
+      if (most || currentIndex <= 0) return 0;
+      currentIndex -= 1;
+      while (isHiddenCol(currentMetaanalysis.columnOrder[currentIndex]) && currentIndex > 0) {
+        currentIndex -= 1;
+      }
+    } else {
+      if (most) return currentMetaanalysis.columnOrder.length - 1;
+      currentIndex += 1;
+      while (isHiddenCol(currentMetaanalysis.columnOrder[currentIndex]) && currentIndex < currentMetaanalysis.columnOrder.length - 1) {
+        currentIndex += 1;
+      }
+    }
+    return currentIndex;
   }
 
   function changeColumnType(ev) {
