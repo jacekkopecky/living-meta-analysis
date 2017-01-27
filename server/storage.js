@@ -666,7 +666,7 @@ module.exports.getMetaanalysisByTitle = (email, title, time, includePapers) => {
       if (ma.title === title) {
         if (includePapers) {
           // use a shallow copy of ma
-          ma = populateMetaanalysisPapers(Object.assign({}, ma), time);
+          ma = getMetaanalysisWithPapers(ma, time);
         }
         return ma;
       }
@@ -675,13 +675,17 @@ module.exports.getMetaanalysisByTitle = (email, title, time, includePapers) => {
   });
 };
 
-function populateMetaanalysisPapers(ma, time) {
+function getMetaanalysisWithPapers(ma, time) {
   if (time) {
-    return Promise.reject(new NotImplementedError('populateMetaanalysisPapers with time not implemented'));
+    return Promise.reject(new NotImplementedError('getMetaanalysisWithPapers with time not implemented'));
   }
 
   return paperCache.then((papers) => {
+    // use a shallow copy of ma
+    ma = Object.assign({}, ma);
+
     ma.papers = papers.filter((p) => ma.paperOrder.indexOf(p.id) !== -1);
+
     return ma;
   });
 }
