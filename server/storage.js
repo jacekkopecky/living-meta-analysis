@@ -224,7 +224,6 @@ function getAllUsers() {
     .on('data', (entity) => {
       try {
         retval[entity.data.emails[0].value] = entity.data;
-        // console.log('getAllUsers: got a user ' + entity.data.emails[0].value);
       } catch (err) {
         console.error('error in a user entity (ignoring)');
         console.error(err);
@@ -846,7 +845,6 @@ function getAllColumns() {
     .on('data', (entity) => {
       try {
         retval[entity.data.id] = entity.data;
-        // console.log('getAllColumns: got a column ' + entity.data.id);
       } catch (err) {
         console.error('error in a column entity (ignoring)');
         console.error(err);
