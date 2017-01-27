@@ -371,6 +371,7 @@ function timeoutLoading() {
 }
 setTimeout(timeoutLoading, 5000);
 window.lima.initPage = function () {
+  window.lima.initMetaanalysesJS();
   window.lima.requestAndFillUserProfile();
   window.lima.requestAndFillMetaanalysis();
 };

@@ -1281,22 +1281,19 @@
    */
 
   // don't save automatically after an error
-  lima.checkToPreventSaving = function checkToPreventSaving() {
+  function checkToPreventSaving() {
     return _.findEl('#paper.savingerror') || _.findEl('#paper.validationerror') || _.findEl('#paper.unsaved');
   }
 
-  // the page should warn about leaving if it has unsaved changes
-  lima.checkToPreventLeaving = lima.checkToPreventSaving;
-
   // don't save at all when a validation error is there
-  lima.checkToPreventForcedSaving = function checkToPreventForcedSaving() {
+  function checkToPreventForcedSaving() {
     return _.findEl('#paper.validationerror') || _.findEl('#paper.unsaved');
   }
 
   var savePendingInterval = null;
   var savePendingStart = 0;
 
-  lima.savePendingStarted = function savePendingStarted() {
+  function savePendingStarted() {
     _.addClass('#paper', 'savepending');
 
     // every 60s update the screen to say something like "it's been minutes without saving, take a break!"
@@ -1309,7 +1306,7 @@
     // console.log('save pending since ' + Math.round((Date.now()-savePendingStart)/1000) + 's');
   }
 
-  lima.savePendingStopped = function savePendingStopped() {
+  function savePendingStopped() {
     _.removeClass('#paper', 'savepending');
 
     var saveDelay = Math.round((Date.now() - savePendingStart)/1000);
@@ -1322,17 +1319,17 @@
     savePendingInterval = null;
   }
 
-  lima.saveStarted = function saveStarted() {
+  function saveStarted() {
     _.removeClass('#paper', 'savingerror');
     _.addClass('#paper', 'saving');
   }
 
-  lima.saveStopped = function saveStopped() {
+  function saveStopped() {
     _.removeClass('#paper', 'saving');
     _.removeClass('#paper', 'editing-disabled-by-saving');
   }
 
-  lima.saveError = function saveError() {
+  function saveError() {
     _.addClass('#paper', 'savingerror');
     _.removeClass('#paper', 'saving');
   }
@@ -2043,18 +2040,29 @@
   lima.requestAndFillPaperList = requestAndFillPaperList;
   lima.requestAndFillPaper = requestAndFillPaper;
 
-  lima.updateView = updatePaperView;
-  lima.updateAfterColumnSave = updateAfterColumnSave;
+  lima.Paper = Paper;
 
-  // for testing
-  lima.pinPopupBox = pinPopupBox;
-  lima.unpinPopupBox = unpinPopupBox;
-  lima.updatePaperView = updatePaperView;
-  lima.assignDeepValue = assignDeepValue;
-  lima.getDeepValue = getDeepValue;
-  lima.getPaperTitles = function(){return allTitles;};
-  lima.getCurrentPaper = function(){return currentPaper;};
-  lima.savePendingMax = 0;
+  lima.initPapersJS = function () {
+    lima.checkToPreventForcedSaving = checkToPreventForcedSaving;
+    lima.checkToPreventLeaving = lima.checkToPreventSaving;
+    lima.checkToPreventSaving = checkToPreventSaving;
+    lima.saveError = saveError;
+    lima.savePendingStarted = savePendingStarted;
+    lima.savePendingStopped = savePendingStopped;
+    lima.saveStarted = saveStarted;
+    lima.saveStopped = saveStopped;
+    lima.updateAfterColumnSave = updateAfterColumnSave;
+    lima.updateView = updatePaperView;
+
+    // for testing
+    lima.pinPopupBox = pinPopupBox;
+    lima.unpinPopupBox = unpinPopupBox;
+    lima.assignDeepValue = assignDeepValue;
+    lima.getDeepValue = getDeepValue;
+    lima.getPaperTitles = function(){return allTitles;};
+    lima.getCurrentPaper = function(){return currentPaper;};
+    lima.savePendingMax = 0;
+  }
 
   window._ = _;
 

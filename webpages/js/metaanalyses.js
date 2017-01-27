@@ -1224,22 +1224,19 @@
    */
 
   // don't save automatically after an error
-  lima.checkToPreventSaving = function checkToPreventSaving() {
+  function checkToPreventSaving() {
     return _.findEl('#metaanalysis.savingerror') || _.findEl('#metaanalysis.validationerror') || _.findEl('#metaanalysis.unsaved');
   }
 
-  // the page should warn about leaving if it has unsaved changes
-  lima.checkToPreventLeaving = lima.checkToPreventSaving;
-
   // don't save at all when a validation error is there
-  lima.checkToPreventForcedSaving = function checkToPreventForcedSaving() {
+  function checkToPreventForcedSaving() {
     return _.findEl('#metaanalysis.validationerror') || _.findEl('#metaanalysis.unsaved');
   }
 
   var savePendingInterval = null;
   var savePendingStart = 0;
 
-  lima.savePendingStarted = function savePendingStarted() {
+  function savePendingStarted() {
     _.addClass('#metaanalysis', 'savepending');
 
     // every 60s update the screen to say something like "it's been minutes without saving, take a break!"
@@ -1252,7 +1249,7 @@
     // console.log('save pending since ' + Math.round((Date.now()-savePendingStart)/1000) + 's');
   }
 
-  lima.savePendingStopped = function savePendingStopped() {
+  function savePendingStopped() {
     _.removeClass('#metaanalysis', 'savepending');
 
     var saveDelay = Math.round((Date.now() - savePendingStart)/1000);
@@ -1265,17 +1262,17 @@
     savePendingInterval = null;
   }
 
-  lima.saveStarted = function saveStarted() {
+  function saveStarted() {
     _.removeClass('#metaanalysis', 'savingerror');
     _.addClass('#metaanalysis', 'saving');
   }
 
-  lima.saveStopped = function saveStopped() {
+  function saveStopped() {
     _.removeClass('#metaanalysis', 'saving');
     _.removeClass('#metaanalysis', 'editing-disabled-by-saving');
   }
 
-  lima.saveError = function saveError() {
+  function saveError() {
     _.addClass('#metaanalysis', 'savingerror');
     _.removeClass('#metaanalysis', 'saving');
   }
@@ -1956,19 +1953,30 @@
   lima.requestAndFillMetaanalysisList = requestAndFillMetaanalysisList;
   lima.requestAndFillMetaanalysis = requestAndFillMetaanalysis;
 
-  lima.updateView = updateMetaanalysisView;
-  lima.updateAfterColumnSave = updateAfterColumnSave;
+  lima.Metaanalysis = Metaanalysis;
 
-  // for testing
-  lima.pinPopupBox = pinPopupBox;
-  lima.unpinPopupBox = unpinPopupBox;
-  lima.updateMetaanalysisView = updateMetaanalysisView;
-  lima.assignDeepValue = assignDeepValue;
-  lima.getDeepValue = getDeepValue;
-  lima.getAllTitles = function(){return allTitles;};
-  lima.getCurrentMetaanalysis = function(){return currentMetaanalysis;};
-  lima.savePendingMax = 0;
+  lima.initMetaanalysesJS = function () {
+    lima.checkToPreventForcedSaving = checkToPreventForcedSaving;
+    lima.checkToPreventLeaving = lima.checkToPreventSaving;
+    lima.checkToPreventSaving = checkToPreventSaving;
+    lima.saveError = saveError;
+    lima.savePendingStarted = savePendingStarted;
+    lima.savePendingStopped = savePendingStopped;
+    lima.saveStarted = saveStarted;
+    lima.saveStopped = saveStopped;
+    lima.updateAfterColumnSave = updateAfterColumnSave;
+    lima.updateView = updateMetaanalysisView;
 
+    // for testing
+    lima.pinPopupBox = pinPopupBox;
+    lima.unpinPopupBox = unpinPopupBox;
+    lima.updateMetaanalysisView = updateMetaanalysisView;
+    lima.assignDeepValue = assignDeepValue;
+    lima.getDeepValue = getDeepValue;
+    lima.getAllTitles = function(){return allTitles;};
+    lima.getCurrentMetaanalysis = function(){return currentMetaanalysis;};
+    lima.savePendingMax = 0;
+  }
 
   window._ = _;
 
