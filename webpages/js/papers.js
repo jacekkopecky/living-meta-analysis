@@ -859,11 +859,6 @@
       return;
     }
 
-    if (!Array.isArray(currentPaper.experiments) || currentPaper.experiments.length < 1) {
-      console.warn('cannot add a column when the paper has no data');
-      return;
-    }
-
     // show the add column box
     _.addClass('#paper table.experiments tr:first-child th.add', 'adding');
     _.addClass('body', 'addnewcolumn');

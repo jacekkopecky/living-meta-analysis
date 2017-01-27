@@ -846,11 +846,6 @@
       return;
     }
 
-    if (!Array.isArray(currentMetaanalysis.experiments) || currentMetaanalysis.experiments.length < 1) {
-      console.warn('cannot add a column when the metaanalysis has no data');
-      return;
-    }
-
     // show the add column box
     _.addClass('#metaanalysis table.experiments tr:first-child th.add', 'adding');
     _.addClass('body', 'addnewcolumn');
