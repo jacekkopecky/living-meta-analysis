@@ -160,4 +160,4 @@ process.on('unhandledRejection', (err) => {
 
 const port = process.env.PORT || 8088;
 
-api.ready.then(() => app.listen(port, () => console.log(`Example app listening on port ${port}!`)));
+api.ready.then(() => app.listen(port, () => console.log(`LiMA server listening on port ${port}!`)));
