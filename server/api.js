@@ -39,12 +39,7 @@ api.get('/toppapers', listTopPapers);
 api.get('/topmetaanalyses', listTopMetaanalyses);
 api.get('/titles', listTitles);
 
-// todo drop this when client-side is migrated
-api.get('/papers/titles', listTitles);
-
 api.get(`/profile/:email(${config.EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile);
-
-api.get('/papers', listPapers);
 
 api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})`,
         REGISTER_USER, listPapersForUser);
@@ -215,18 +210,6 @@ module.exports.checkUserExists = function (req, res, next) {
  *
  *
  */
-function listPapers(req, res, next) {
-  storage.listPapers()
-  .then((papers) => {
-    const retval = [];
-    papers.forEach((p) => {
-      retval.push(extractPaperForSending(p, false, null));
-    });
-    res.json(retval);
-  })
-  .catch((err) => next(err));
-}
-
 function listPapersForUser(req, res, next) {
   storage.getPapersEnteredBy(req.params.email)
   .then((papers) => {
