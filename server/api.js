@@ -78,7 +78,7 @@ api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE
  */
 
 function apiPaperURL(email, title) { return `/api/papers/${email}/${title}`; }
-function apiMetaanalysisURL(email, title) { return `/api/metanalyses/${email}/${title}`; }
+function apiMetaanalysisURL(email, title) { return `/api/metaanalyses/${email}/${title}`; }
 
 module.exports.getKindForTitle = function getKindForTitle(email, title) {
   return new Promise((resolve, reject) => {

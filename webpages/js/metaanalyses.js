@@ -190,9 +190,9 @@
 
   function fillMetaanalysis(metaanalysis) {
     // cleanup
-    var oldMetaaanalysisEl = _.byId('metaanalysis');
+    var oldMetaanalysisEl = _.byId('metaanalysis');
     rebuildingDOM = true;
-    if (oldMetaaanalysisEl) oldMetaaanalysisEl.parentElement.removeChild(oldMetaaanalysisEl);
+    if (oldMetaanalysisEl) oldMetaanalysisEl.parentElement.removeChild(oldMetaanalysisEl);
     rebuildingDOM = false;
 
     resetComputedDataSetters();
