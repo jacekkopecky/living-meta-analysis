@@ -60,10 +60,6 @@ api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_
         REGISTER_USER, getMetaanalysisVersion);
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/:time([0-9]+)/`,
         REGISTER_USER, getMetaanalysisVersion);
-api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/papers/`,
-        REGISTER_USER, getMetaanalysisPapers);
-api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/:time([0-9]+)/papers/`,
-        REGISTER_USER, getMetaanalysisPapers);
 api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
         GUARD, SAME_USER, jsonBodyParser, saveMetaanalysis);
 
@@ -373,7 +369,7 @@ function listMetaanalysesForUser(req, res, next) {
 
     const retval = [];
     mas.forEach((m) => {
-      retval.push(extractMetaanalysisForSending(m, req.params.email));
+      retval.push(extractMetaanalysisForSending(m, false, req.params.email));
     });
     res.json(retval);
   })
@@ -381,19 +377,9 @@ function listMetaanalysesForUser(req, res, next) {
 }
 
 function getMetaanalysisVersion(req, res, next) {
-  storage.getMetaanalysisByTitle(req.params.email, req.params.title, req.params.time)
+  storage.getMetaanalysisByTitle(req.params.email, req.params.title, req.params.time, true)
   .then((ma) => {
-    res.json(extractMetaanalysisForSending(ma, req.params.email));
-  })
-  .catch((e) => {
-    next(e || new NotFoundError());
-  });
-}
-
-function getMetaanalysisPapers(req, res, next) {
-  storage.getMetaanalysisPapersByTitle(req.params.email, req.params.title, req.params.time)
-  .then((papers) => {
-    res.json(extractPaperArrayForSending(papers, req.params.email));
+    res.json(extractMetaanalysisForSending(ma, true, req.params.email));
   })
   .catch((e) => {
     next(e || new NotFoundError());
@@ -407,7 +393,7 @@ function saveMetaanalysis(req, res, next) {
     req.user.emails[0].value,
     req.params.title)
   .then((ma) => {
-    res.json(extractMetaanalysisForSending(ma, req.params.email));
+    res.json(extractMetaanalysisForSending(ma, false, req.params.email));
   })
   .catch((e) => {
     if (e instanceof ValidationError) {
@@ -418,7 +404,7 @@ function saveMetaanalysis(req, res, next) {
   });
 }
 
-function extractMetaanalysisForSending(storageMetaanalysis, email) {
+function extractMetaanalysisForSending(storageMetaanalysis, includePapers, email) {
   const retval = {
     id: storageMetaanalysis.id,
     title: storageMetaanalysis.title,
@@ -436,6 +422,11 @@ function extractMetaanalysisForSending(storageMetaanalysis, email) {
   };
 
   if (email) retval.apiurl = apiMetaanalysisURL(email, retval.title);
+
+  if (includePapers) {
+    retval.papers = [];
+    storageMetaanalysis.papers.forEach((p) => retval.papers.push(extractPaperForSending(p, true, email)));
+  }
 
   return retval;
 }

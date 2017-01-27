@@ -652,16 +652,22 @@ module.exports.getMetaanalysesEnteredBy = (email) => {
   );
 };
 
-module.exports.getMetaanalysisByTitle = (email, title, time) => {
+module.exports.getMetaanalysisByTitle = (email, title, time, includePapers) => {
   // todo if time is specified, compute a version as of that time
-  if (time) return Promise.reject(new NotImplementedError('getMetaanalysisByTitle with time not implemented'));
+  if (time) {
+    return Promise.reject(new NotImplementedError('getMetaanalysisByTitle with time not implemented'));
+  }
 
   // todo different users can use different titles for the same thing
   if (title === config.NEW_META_TITLE) return Promise.resolve(newMetaanalysis(email));
   return metaanalysisCache
   .then((metaanalyses) => {
-    for (const ma of metaanalyses) {
+    for (let ma of metaanalyses) {
       if (ma.title === title) {
+        if (includePapers) {
+          // use a shallow copy of ma
+          ma = populateMetaanalysisPapers(Object.assign({}, ma), time);
+        }
         return ma;
       }
     }
@@ -669,14 +675,16 @@ module.exports.getMetaanalysisByTitle = (email, title, time) => {
   });
 };
 
-module.exports.getMetaanalysisPapersByTitle = (email, maTitle, time) => {
-  return module.exports.getMetaanalysisByTitle(email, maTitle, time)
-  .then((metaanalysis) =>
-    paperCache.then(
-      (papers) => papers.filter((p) => metaanalysis.paperOrder.indexOf(p.id) !== -1)
-    )
-  );
-};
+function populateMetaanalysisPapers(ma, time) {
+  if (time) {
+    return Promise.reject(new NotImplementedError('populateMetaanalysisPapers with time not implemented'));
+  }
+
+  return paperCache.then((papers) => {
+    ma.papers = papers.filter((p) => ma.paperOrder.indexOf(p.id) !== -1);
+    return ma;
+  });
+}
 
 function newMetaanalysis(email) {
   const time = tools.uniqueNow();
