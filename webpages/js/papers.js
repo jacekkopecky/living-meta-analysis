@@ -25,8 +25,6 @@
     if (rest > -1) url += window.location.pathname.substring(rest);
 
     window.history.replaceState({}, currentPaper.title, url);
-
-    if (currentPaper.apiurl) currentPaperUrl = currentPaper.apiurl;
   }
 
   function createPageURL(email, title) {
@@ -102,7 +100,7 @@
    *
    */
 
-  var currentPaperUrl, currentPaper;
+  var currentPaper;
 
   function requestAndFillPaper() {
     var email = lima.extractUserProfileEmailFromUrl();
@@ -112,7 +110,7 @@
     lima.getColumns() // todo getColumns could run in parallel with everything before updatePaperView
     .then(lima.getGapiIDToken)
     .then(function (idToken) {
-      currentPaperUrl = '/api/papers/' + email + '/' + title;
+      var currentPaperUrl = '/api/papers/' + email + '/' + title;
       return fetch(currentPaperUrl, _.idTokenToFetchOptions(idToken));
     })
     .then(function (response) {
@@ -1330,12 +1328,13 @@
   }
 
   function savePaper() {
+    var self = this;
     return lima.getGapiIDToken()
       .then(function(idToken) {
-        return fetch(currentPaperUrl, {
+        return fetch(self.apiurl, {
           method: 'POST',
           headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
-          body: JSON.stringify(currentPaper),
+          body: JSON.stringify(self),
         });
       })
       .then(_.fetchJson)

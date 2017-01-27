@@ -178,6 +178,12 @@
       moveResultsAfterCharacteristics(metaanalysis);
     }
 
+    metaanalysis.papers.forEach(function (paper, papIndex) {
+      if (!(paper instanceof lima.Paper)) {
+        metaanalysis.papers[papIndex] = Object.assign(new lima.Paper(), paper);
+      }
+    })
+
     currentMetaanalysis = metaanalysis;
 
     fillMetaanalysis(metaanalysis);
@@ -1284,6 +1290,10 @@
         });
       })
       .then(_.fetchJson)
+      .then(function(metaanalysis) {
+        if (!metaanalysis.papers) metaanalysis.papers = currentMetaanalysis.papers;
+        return metaanalysis;
+      })
       .then(updateMetaanalysisView)
       .then(updatePageURL)
       .catch(function(err) {
