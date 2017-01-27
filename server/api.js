@@ -65,6 +65,10 @@ api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_
         REGISTER_USER, getMetaanalysisVersion);
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/:time([0-9]+)/`,
         REGISTER_USER, getMetaanalysisVersion);
+api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/papers/`,
+        REGISTER_USER, getMetaanalysisPapers);
+api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/:time([0-9]+)/papers/`,
+        REGISTER_USER, getMetaanalysisPapers);
 api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
         GUARD, SAME_USER, jsonBodyParser, saveMetaanalysis);
 
@@ -168,8 +172,7 @@ function returnUserProfile(req, res, next) {
     res.json(retval);
   })
   .catch((err) => {
-    console.error(err);
-    next(new NotFoundError());
+    next(err || new NotFoundError());
   });
 }
 
@@ -244,8 +247,7 @@ function getPaperVersion(req, res, next) {
     res.json(extractPaperForSending(p, true, req.params.email));
   })
   .catch((e) => {
-    console.error(e);
-    next(new NotFoundError());
+    next(e || new NotFoundError());
   });
 }
 
@@ -265,6 +267,10 @@ function savePaper(req, res, next) {
       next(new InternalError(e));
     }
   });
+}
+
+function extractPaperArrayForSending(storagePaperArray, email) {
+  return storagePaperArray.map((paper) => extractPaperForSending(paper, true, email));
 }
 
 function extractPaperForSending(storagePaper, includeDataValues, email) {
@@ -397,8 +403,17 @@ function getMetaanalysisVersion(req, res, next) {
     res.json(extractMetaanalysisForSending(ma, req.params.email));
   })
   .catch((e) => {
-    console.error(e);
-    next(new NotFoundError());
+    next(e || new NotFoundError());
+  });
+}
+
+function getMetaanalysisPapers(req, res, next) {
+  storage.getMetaanalysisPapersByTitle(req.params.email, req.params.title, req.params.time)
+  .then((papers) => {
+    res.json(extractPaperArrayForSending(papers, req.params.email));
+  })
+  .catch((e) => {
+    next(e || new NotFoundError());
   });
 }
 
@@ -547,3 +562,5 @@ function extractReceivedColumn(recCol) {
     // mtime: tools.number(recCol.mtime),           // will be updated
   };
 }
+
+module.exports.ready = storage.ready;
