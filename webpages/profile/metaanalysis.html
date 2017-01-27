@@ -1,7 +1,379 @@
 <!doctype html>
-<title>meta-analysis todo</title>
+<title>LiMA Meta-Analysis | Living Meta-Analysis</title>
+<script src="/lib/promise.js"></script>
+<script src="/lib/fetch.js"></script>
+<script src="https://apis.google.com/js/platform.js"></script>
+<link rel="stylesheet" href="/css/main.css">
 
 <!-- Do not send referrer, so Links are followed directly -->
 <meta name="referrer" content="no-referrer">
 
-<h1>meta-analysis todo</h1>
+<body class="loading">
+
+<header>
+  <h1><a href="/">LiMA (Living Meta-Analysis)</a> Meta-Analysis</h1>
+
+  <!-- this puts a sign-in button, and a sign-out link, in the page -->
+  <div class="userinfo signedoff">
+    <img src="/img/user.png" class="userphoto">
+    <div class="actions">
+      <div class="name when-signed-on">Signed in as: <span class="username"></span></div>
+      <div class="g-signin2 signin when-signed-out"></div>
+      <a href="/profile" class="profile when-signed-on">Profile</a>
+      <a id="toggle-editing" class="only-if-page-about-you">Turn editing <span class="ifon">off</span><span class="ifoff">on</span></a>
+      <a class="signout when-signed-on">Sign out</a>
+    </div>
+  </div>
+</header>
+
+<p class="loadingspinner">loading&hellip;</p>
+
+<template id="metaanalysis-template">
+  <section id="metaanalysis">
+    <header>
+    <div class="popupbox default editing">
+      <header><h1>LiMA Meta-Analysis</h1></header>
+      <p>A Meta-Analysis in LiMA is a collection of Papers, usually corresponding to multiple journals
+        or conference publications, maybe supported by data from online appendices, accompanying reports or so.
+      <p>Each Paper contains studies or experiments, and together the Papers that make up a Meta-Analysis
+        share a common theme. In the description, please elaborate on the Meta-Analysis itself, and not each
+        Paper in turn. Information for each Paper can be stored/accessed on the page for that Paper.
+      <p>For example, a Meta-Analysis may include on four Papers; Each Paper could contain two experiments.
+        In LiMA this would translate to eight rows (1 for each experiment) and the collective set of columns.
+    </div>
+      <h1 class="title notediting"></h1>
+      <h1 class="title editing oneline" contenteditable placeholder="enter a short name"></h1>
+      <button class="titlerename editing" disabled>rename</button>
+      <!-- rename and change type warnings should only show up if the server confirms
+           that there are actually other users of the thing (paper, column) -->
+      <div class="titlerenamewarning">
+        <h1>Are you sure to rename the meta-analysis from <span class="title"></span>?</h1>
+        <p>If others are using the meta-analysis, a change of the short name might surprise them.
+          To undo, press <button class="titlerenamecancel">cancel</button>
+        </p>
+      </div>
+      <ul class="tags"></ul>
+      <!-- todo there could be an animated gif on the next line that is a spinner that takes just over 3s to go to full, and we reset it on every deferSave -->
+      <span class="savepending">will be saved soon&hellip;</span>
+      <span class="saving">saving&hellip;</span>
+      <span class="savingerror" title="Sorry, something unexpected happened. Error details might be available in the browser console. Click here to try saving again.">saving error!</span>
+      <span class="validationerrormessage notunpin" title="click here to go to the first highlighted field">please correct fields highlighted below</span>
+      <span class="unsavedmessage notunpin" title="click here to go to the first unconfirmed value">some value(s) need confirmation to be saved</span>
+      <span class="edityourcopy"><a href="#">Edit your copy</a></span>
+    </header>
+    <p>Entered <span class="enteredby only-not-yours needs-owner"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
+    <!-- <p class="authors">Authors:
+      <span class="value notediting">error</span>
+      <span class="value editing oneline" contenteditable placeholder="enter the authors">error</span>
+    </p> -->
+    <div class="published popupboxtrigger">
+      <div class="edithighlight">
+        <span class="popupboxhighlight" data-focuses=".value.editing">Published:</span>
+        <span class="value notediting">error</span>
+        <span class="value editing oneline" contenteditable placeholder="authors, year, title, journal etc.">error</span>
+      </div>
+      <div class="popupbox editing" data-boxid='reference'>
+        <div class="pin"></div>
+        <header><p>Published</p></header>
+        <p class="description">Details of where this Meta-analysis has been published (if anywhere). Should include authors, year, title, and all the usual bibliographic information.</p>
+        <!-- todo comments -->
+      </div>
+    </div>
+    <p class="description edithighlight">
+      <span data-focuses=".value.editing">Description: </span>
+      <span class="value notediting">error</span>
+      <span class="value editing" contenteditable placeholder="add description">error</span>
+    </p>
+    <p class="mtime">Last modified: <span class="value date">error</span></p>
+    <!-- todo show "other contributors" or "forks" or "clones" ... -->
+    <!-- todo show meta-analyses that use this paper -->
+    <!-- todo show history -->
+    <!-- when not editing, show something for empty doi and link (or nothing at all?) -->
+    <!-- todo comments -->
+    <div class="experiments"></div>
+    <p class='no-table'>No data has been entered for this meta-analysis yet.
+      <span class="only-if-page-about-you">Turn editing on to add data.</span><!-- todo instruction to clone the paper? --></p>
+  </section>
+</template>
+<template id="tag-template"><li><span class="tag">error</span><span class="removetag editing">&times;</span></li></template>
+<template id="new-tag-template"><li class="new"><span class="tag" contenteditable></span></li><li class="addtag editing"><span class="notempty tag">+</span><span class="empty tag"> add tags</span></li></template>
+<template id="experiments-table-template">
+  <table class="experiments">
+    <tbody>
+      <tr>
+        <th class="popupboxtrigger">
+          <div class="popupboxhighlight">
+            <span>Paper</span>
+          </div>
+          <div class="fullcolinfo popupbox" data-boxid='studyexperimentheading'>
+            <div class="pin"></div>
+            <header><p>Paper</p></header>
+            <p class="description">The Paper an experiment comes from.</p>
+            <!-- todo comments -->
+          </div>
+        </th>
+        <th class="popupboxtrigger experimenttitle">
+          <div class="popupboxhighlight">
+            <span>Study/Experiment</span>
+          </div>
+          <div class="fullcolinfo popupbox" data-boxid='studyexperimentheading'>
+            <div class="pin"></div>
+            <header><p>Study/Experiment</p></header>
+            <p class="description">A row can be a study, an experiment, or a condition within an experiment.</p>
+            <!-- todo comments -->
+          </div>
+        </th>
+        <th class="add popupboxtrigger">
+          <div class="unhide editing">&#x25C4; &#x25BA;</div>
+          <div><span><button class="add notunpin not-unsaved">add a column</button>
+                     <button class="when-unsaved" disabled title="can't add a column when some changes are unsaved">add a column</button></span></div>
+          <div class="addcolumnbox loading">
+            <header>
+              <h1>Click column to add</h1>
+              <!-- todo search -->
+              <!-- <span class="search"><input type="search" placeholder="search" class="search"></span> -->
+            </header>
+            <div class="loadingspinner">loading&hellip;</div>
+            <ul></ul><!-- this will contain the columns to add -->
+            <footer>
+              <button class="addnew">+ new column type</button>
+              <button class="cancel">cancel</button>
+            </footer>
+          </div>
+          <div class="colinfo popupbox unpopulated" data-boxid='colinfo'>
+            <header>
+              <p class="coltitle">error</p>
+              <p class="alreadythere">(included in the meta-analysis)<p>
+              <p class="unpopulated">Select a column to add</p>
+            </header>
+            <p class="coldescription">error</p>
+            <div class="colcomputedcolumns">
+              <p>Computed column</p>
+              <p>Formula: <span class="colformula">error</span></p>
+              <div class="colformulacolumns">
+                <!-- gets populated in the code -->
+              </div>
+            </div>
+            <p class="unpopulated">To see details of a column, move over it with your mouse.</p>
+            <!-- todo comments -->
+            <footer>
+              <span class="coltype"><span class="type-characteristic">characteristic/moderator</span><span class="type-result">result</span> column</span>
+              <span class="definedby only-not-yours needs-owner"> defined by <a class="value" href="error">error</a>,</span>
+              last updated <span class="colmtime"> on <span class="value date">error</span></span>
+            </footer>
+          </div>
+        </th>
+      </tr>
+      <tr class="add">
+        <th><button class="add notunpin not-unsaved">add a row</button>
+            <button class="when-unsaved" disabled title="can't add a row when some changes are unsaved">add a row</button></th>
+        <td class='no-data'>enter data by adding a row and then columns</td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+<template id="column-list-item-template">
+  <li><span class="coltitle">foo</span><span class="definedby only-not-yours needs-owner">(by <a class="value" href="error">error</a>)</span>
+</template>
+<template id="col-heading-template">
+  <th class="popupboxtrigger">
+    <div class="unhide editing">&#x25C4; &#x25BA;</div>
+    <div class="popupboxhighlight">
+      <span class="coltitle">error</span>
+    </div>
+    <div class="fullcolinfo popupbox" data-boxtype='fullcolinfo'>
+      <div class="pin"></div>
+      <button class="not-unsaved move left most editing" title="move column to the left">|«</button>
+      <button class="not-unsaved move left editing" title="move column to the left">«</button>
+      <button class="not-unsaved hide editing">hide</button>
+      <button class="not-unsaved move right editing" title="move column to the right">»</button>
+      <button class="not-unsaved move right most editing" title="move column to the right">»|</button>
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">|«</button>
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">«</button>
+      <button class="when-unsaved" disabled title="can't hide columns when some changes are unsaved">hide</button>
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">»</button>
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">»|</button>
+      <header>
+        <p class="coltitle notediting-or-not-yours needs-owner">error</p>
+        <p class="coltitle editing only-if-yours needs-owner oneline" contenteditable placeholder="enter a column title">error</p>
+        <button class="coltitlerename editing only-if-yours needs-owner" disabled>rename</button>
+        <div class="colrenamewarning">
+          <h1>Are you sure to rename the column from "<span class="coltitle"></span>"?</h1>
+          <p>If others are using the column, a change of the name might surprise them.
+            To undo, press <button class="colrenamecancel">cancel</button>
+          </p>
+        </div>
+      </header>
+      <p class="coldescription notediting-or-not-yours needs-owner">error</p>
+      <p class="coldescription editing only-if-yours needs-owner" contenteditable placeholder="add column description">error</p>
+      <label class="editing only-if-yours needs-owner"><input type="checkbox" class="colcomputed">Show options for computed column</label>
+      <div class="colcomputedcolumns option-not-checked">
+        <select class="colformulas editing only-if-yours needs-owner">
+          <option value=''>Select formula</option>
+          <!-- gets populated in the code, in which case the option above goes away -->
+        </select>
+        <div class="colformulacolumnsselection editing only-if-yours needs-owner">
+          <!-- gets populated in the code -->
+        </div>
+        <p class="notediting-or-not-yours needs-owner">Formula: <span class="colformula">error</span></p>
+        <div class="notediting-or-not-yours needs-owner colformulacolumns">
+          <!-- gets populated in the code -->
+        </div>
+      </div>
+      <!-- on hiding this column, store in localStorage that this column is being hidden,
+      also add to the end of every row a symbol that there are hidden values,
+      on hover, the symbol will list them and allow you to add some right back -->
+      <!-- todo comments -->
+      <!-- todo add a way of cloning a column -->
+      <footer>
+        <span class="coltype needs-owner when-unsaved" title="can't change the type of a column when some changes are unsaved"><span class="type-characteristic">characteristic/moderator</span><span class="type-result">result</span><span class="aftertype"> column</span></span>
+        <span class="coltype needs-owner not-unsaved"><span class="type-characteristic switch" data-new-type='characteristic'>characteristic/moderator</span><span class="type-result switch" data-new-type='result'>result</span><span class="aftertype"> column</span></span>
+        <span class="definedby only-not-yours needs-owner"> defined by <a class="value" href="error">error</a>,</span>
+        last updated <span class="colmtime"> on <span class="value date">error</span></span>
+        <div class="coltypeconfirm">
+          <p>
+            Are you sure to change column
+            "<span class="coltitle">error</span>" to be a
+            <span class="type-characteristic">result</span><span class="type-result">characteristic/moderator</span>
+            column?
+          </p>
+          <p>If others are using the column, a change of its type might surprise them.</p>
+          <button class="confirm">confirm</button>
+          <button class="cancel">cancel</button>
+        </div>
+      </footer>
+    </div>
+  </th>
+</template>
+<template id="experiment-row-template">
+  <tr class="row">
+    <th class="popupboxtrigger popupboxhighlight papertitle">
+      <!-- todo click on title or exptitle should focus the contenteditable exptitle -->
+      <span class="paptitle"></span>
+      <div class="paperinfo popupbox" data-boxtype='paperinfo'>
+        <div class="pin"></div>
+        <header>
+          <span class="edithighlight" data-focuses=".paptitle.editing">Paper:
+            <span class="paptitle notediting"></span></span
+          ><p class="paptitle editing oneline" contenteditable placeholder="enter a short name"></p>
+          <button class="paptitlerename editing" disabled>rename</button>
+          <div class="paperrenamewarning">
+            <h1>Are you sure to rename the Paper from "<span class="paptitle"></span>"?</h1>
+            <p>If others are using the paper, a change might surprise them.
+              To undo, press <button class="paperrenamecancel">cancel</button>
+            </p>
+          </div>
+          </p>
+        </header>
+        <!-- todo click on .paperdescription.short should focus the contenteditable paptitle -->
+        <div class="paperdescription notediting"></div>
+        <div class="paperdescription editing" contenteditable placeholder="enter description"></div>
+      </div>
+      <div class="paperdescription short" data-focuses=".paperdescription.editing"></div>
+      <!-- todo comments -->
+      <!-- todo show ctime and enteredBy for experiment -->
+    </th>
+    <th class="popupboxtrigger popupboxhighlight experimenttitle">
+      <!-- todo click on title or exptitle should focus the contenteditable exptitle -->
+      <span class="exptitle"></span>
+      <div class="experimentinfo popupbox" data-boxtype='experimentinfo'>
+        <div class="pin"></div>
+        <header>
+          <span class="edithighlight" data-focuses=".exptitle.editing">Study/experiment:
+            <span class="exptitle notediting"></span></span
+          ><p class="exptitle editing oneline" contenteditable placeholder="enter a short name"></p>
+          <button class="exptitlerename editing" disabled>rename</button>
+          <div class="exprenamewarning">
+            <h1>Are you sure to rename the experiment from "<span class="exptitle"></span>"?</h1>
+            <p>If others are using the paper, a change of an experiment name might surprise them.
+              To undo, press <button class="exprenamecancel">cancel</button>
+            </p>
+          </div>
+          </p>
+        </header>
+        <!-- todo click on .exdescription.short should focus the contenteditable exptitle -->
+        <div class="expdescription notediting"></div>
+        <div class="expdescription editing" contenteditable placeholder="enter description"></div>
+      </div>
+      <div class="expdescription short" data-focuses=".expdescription.editing"></div>
+      <!-- todo comments -->
+      <!-- todo show ctime and enteredBy for experiment -->
+    </th>
+  </tr>
+</template>
+<template id="experiment-datum-template">
+  <td class="datum popupboxtrigger popupboxhighlight">
+    <span class="value notcomputed notediting"></span>
+    <span class="value computed"></span>
+    <span class="value notcomputed editing oneline" contenteditable></span>
+    <span class="notcomputed newcol" title="cannot add values/comments for a new column until the column is saved with a title and a type"> </span>
+    <div class="datum popupbox" data-boxtype='datumpopupbox'>
+      <div class="pin"></div>
+      <header>
+        <p class="value" placeholder="no value"></p>
+        <p class="by notcomputed">
+          entered on
+          <span class="valctime date">error</span>
+          by
+          <a class="valenteredby" href="error">error</a>
+        </p>
+        <!-- TODO: Computed from column x & column y -->
+        <p><span class="commentcount"></span> comments:</p>
+      </header>
+      <main><!-- this is where the comments will come --></main>
+      <div class="comment new when-signed-on">
+        <header>
+          new comment:
+        </header>
+        <p>
+          <span class="text" contenteditable placeholder="enter a new comment"></span>
+          <span class="buttons">
+            <button class="cancel">cancel</button>
+            <button class="add confirm" disabled>add comment</button>
+          </span>
+        </p>
+      </div>
+    </div>
+  </td>
+</template>
+<template id="comment-template">
+  <div class="comment">
+    <header>
+      <button data-focuses='.comment .text' class="edit-button only-if-yours needs-owner">edit</button>
+      #<span class="commentnumber"></span>: <a class="by" href="error">error</a> wrote on <span class="ctime date"></span>
+    </header>
+    <p><span class="text only-if-yours needs-owner" contenteditable placeholder="enter your comment"></span></p>
+    <p><span class="text only-not-yours needs-owner"></span></p>
+  </div>
+</template>
+
+<p class="savingspinner">saving&hellip;</p>
+
+<footer>
+  <p>LiMA (Living Meta-Analysis) by <a href="mailto:jacek.kopecky@port.ac.uk">Jacek Kopecky</a> et al. at <a href="http://port.ac.uk/">University of Portsmouth</a>, 2016</p>
+</footer>
+
+
+
+
+<script src="/js/tools.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/userprofile.js"></script>
+<script src="/js/columns.js"></script>
+<script src="/js/formulas.js"></script>
+<script src="/js/metaanalyses.js"></script>
+<script src="/js/version.js"></script>
+<script>
+function timeoutLoading() {
+  if (document.body.classList.contains('loading')) {
+    document.querySelector('.loadingspinner').textContent = 'Still loading; the connection may be slow... If this message never goes away, there may be a problem – please contact us and tell us about it.';
+  }
+}
+setTimeout(timeoutLoading, 5000);
+window.lima.initPage = function () {
+  window.lima.requestAndFillUserProfile();
+  window.lima.requestAndFillMetaanalysis();
+};
+</script>
+
+</body>
