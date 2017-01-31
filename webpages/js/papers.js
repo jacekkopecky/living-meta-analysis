@@ -167,6 +167,14 @@
       if (!Array.isArray(paper.columnOrder)) paper.columnOrder = [];
       if (!Array.isArray(paper.hiddenCols)) paper.hiddenCols = [];
 
+      // if any experiment has data that isn't in columnOrder (e.g. it was added in a metaanalysis page)
+      // add it to the columnorder
+      paper.experiments.forEach(function (experiment) {
+        if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
+          if (paper.columnOrder.indexOf(key) === -1) paper.columnOrder.push(key);
+        });
+      });
+
       // if some column type has changed, make sure the paper reflects that
       moveResultsAfterCharacteristics(paper);
     }
@@ -178,21 +186,6 @@
     // for a new paper, go to editing the title
     if (!paper.id) focusFirstValidationError();
   }
-
-  // todo this would be useful for testing
-  // function assertAllColumnsAreInColumnOrder(paper) {
-  //   if (!paper.experiments) return;
-  //
-  //   // now gather columns in the paper, then sort the columns by type and order
-  //   paper.experiments.forEach(function (experiment) {
-  //     if (experiment.data) Object.keys(experiment.data).forEach(checkColumn);
-  //   });
-  //
-  //   function checkColumn(key) {
-  //     if (paper.columnOrder.indexOf(key) === -1) throw new Error('column ' + key + ' is in the data but not in columnOrder!');
-  //   }
-  // }
-  // also should check that in columnOrder all characteristics precede all results
 
   var startNewTag = null;
   var flashTag = null;
