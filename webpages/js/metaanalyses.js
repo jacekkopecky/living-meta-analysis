@@ -121,6 +121,8 @@
       if (response.status === 404) _.notFound();
       else return _.fetchJson(response);
     })
+    .then(initMetaanalysis)
+    .then(setCurrentMetaanalysis)
     .then(updateMetaanalysisView)
     .then(function() {
       _.removeClass('body', 'loading');
@@ -136,6 +138,7 @@
 
   function Metaanalysis() {}
   Metaanalysis.prototype.save = saveMetaanalysis;
+  Metaanalysis.prototype.init = initMetaanalysis;
 
   function updateAfterColumnSave() {
     // clean experiment data of new columns that got new ID when they were saved
@@ -163,33 +166,44 @@
     updateMetaanalysisView();
   }
 
-  function updateMetaanalysisView(metaanalysis) {
-    if (!metaanalysis) metaanalysis = currentMetaanalysis;
+  function initMetaanalysis(newMetaanalysis) {
+    var self = this;
+    if (!(self instanceof Metaanalysis)) self = new Metaanalysis();
 
-    if (!(metaanalysis instanceof Metaanalysis)) {
-      metaanalysis = Object.assign(new Metaanalysis(), metaanalysis);
+    // clean all properties of this paper
+    for (var prop in self) { if (self.hasOwnProperty(prop)) { delete self[prop]; } }
 
-      if (!Array.isArray(metaanalysis.paperOrder)) metaanalysis.paperOrder = [];
-      if (!Array.isArray(metaanalysis.papers)) metaanalysis.papers = [];
-      if (!Array.isArray(metaanalysis.columnOrder)) metaanalysis.columnOrder = [];
-      if (!Array.isArray(metaanalysis.hiddenCols)) metaanalysis.hiddenCols = [];
+    // get data from the new paper
+    Object.assign(self, newMetaanalysis);
 
-      // if some column type has changed, make sure the paper reflects that
-      moveResultsAfterCharacteristics(metaanalysis);
-    }
+    if (!Array.isArray(self.paperOrder)) self.paperOrder = [];
+    if (!Array.isArray(self.papers)) self.papers = [];
+    if (!Array.isArray(self.columnOrder)) self.columnOrder = [];
+    if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
 
-    metaanalysis.papers.forEach(function (paper, papIndex) {
+    // if some column type has changed, make sure the paper reflects that
+    moveResultsAfterCharacteristics(self);
+
+    self.papers.forEach(function (paper, papIndex) {
       if (!(paper instanceof lima.Paper)) {
-        metaanalysis.papers[papIndex] = Object.assign(new lima.Paper(), paper);
+        self.papers[papIndex] = lima.Paper.prototype.init(paper);
       }
-    })
+    });
 
+    return self;
+  }
+
+  function setCurrentMetaanalysis(metaanalysis) {
     currentMetaanalysis = metaanalysis;
+  }
 
-    fillMetaanalysis(metaanalysis);
+  function updateMetaanalysisView() {
+    if (!currentMetaanalysis) return;
+
+    fillMetaanalysis(currentMetaanalysis);
 
     // for a new metaanalysis, go to editing the title
-    if (!metaanalysis.id) focusFirstValidationError();
+    if (!currentMetaanalysis.id) focusFirstValidationError();
   }
 
   var startNewTag = null;
@@ -1281,6 +1295,7 @@
   }
 
   function saveMetaanalysis() {
+    var self = this;
     return lima.getGapiIDToken()
       .then(function(idToken) {
         return fetch(currentMetaanalysisUrl, {
@@ -1294,8 +1309,11 @@
         if (!metaanalysis.papers) metaanalysis.papers = currentMetaanalysis.papers;
         return metaanalysis;
       })
-      .then(updateMetaanalysisView)
-      .then(updatePageURL)
+      .then(function (metaanalysis) {
+        return self.init(metaanalysis);
+      })
+      .then(lima.updateView)
+      .then(lima.updatePageURL)
       .catch(function(err) {
         console.error('error saving metaanalysis');
         if (err instanceof Response) err.text().then(function (t) {console.error(t)});
@@ -1994,6 +2012,7 @@
     lima.saveStarted = saveStarted;
     lima.saveStopped = saveStopped;
     lima.updateAfterColumnSave = updateAfterColumnSave;
+    lima.updatePageURL = updatePageURL;
     lima.updateView = updateMetaanalysisView;
 
     // for testing

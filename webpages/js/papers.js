@@ -117,6 +117,8 @@
       if (response.status === 404) _.notFound();
       else return _.fetchJson(response);
     })
+    .then(initPaper)
+    .then(setCurrentPaper)
     .then(updatePaperView)
     .then(function() {
       _.removeClass('body', 'loading');
@@ -132,6 +134,7 @@
 
   function Paper() {}
   Paper.prototype.save = savePaper;
+  Paper.prototype.init = initPaper;
 
   function updateAfterColumnSave() {
     // clean experiment data of new columns that got new ID when they were saved
@@ -156,35 +159,46 @@
     updatePaperView();
   }
 
-  function updatePaperView(paper) {
-    if (!paper) paper = currentPaper;
+  function initPaper(newPaper) {
+    var self = this;
+    if (!(self instanceof Paper)) self = new Paper();
 
-    if (!(paper instanceof Paper)) {
-      paper = Object.assign(new Paper(), paper);
+    // clean all properties of this paper
+    for (var prop in self) { if (self.hasOwnProperty(prop)) { delete self[prop]; } }
 
-      // if paper doesn't have experiments or column order, add empty arrays for ease of handling
-      if (!Array.isArray(paper.experiments)) paper.experiments = [];
-      if (!Array.isArray(paper.columnOrder)) paper.columnOrder = [];
-      if (!Array.isArray(paper.hiddenCols)) paper.hiddenCols = [];
+    // get data from the new paper
+    Object.assign(self, newPaper);
 
-      // if any experiment has data that isn't in columnOrder (e.g. it was added in a metaanalysis page)
-      // add it to the columnorder
-      paper.experiments.forEach(function (experiment) {
-        if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
-          if (paper.columnOrder.indexOf(key) === -1) paper.columnOrder.push(key);
-        });
+    // if paper doesn't have experiments or column order, add empty arrays for ease of handling
+    if (!Array.isArray(self.experiments)) self.experiments = [];
+    if (!Array.isArray(self.columnOrder)) self.columnOrder = [];
+    if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
+
+    // if any experiment has data that isn't in columnOrder (e.g. it was added in a metaanalysis page)
+    // add it to the columnorder
+    self.experiments.forEach(function (experiment) {
+      if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
+        if (self.columnOrder.indexOf(key) === -1) self.columnOrder.push(key);
       });
+    });
 
-      // if some column type has changed, make sure the paper reflects that
-      moveResultsAfterCharacteristics(paper);
-    }
+    // if some column type has changed, make sure the paper reflects that
+    moveResultsAfterCharacteristics(self);
 
+    return self;
+  }
+
+  function setCurrentPaper(paper) {
     currentPaper = paper;
+  }
 
-    fillPaper(paper);
+  function updatePaperView() {
+    if (!currentPaper) return;
+
+    fillPaper(currentPaper);
 
     // for a new paper, go to editing the title
-    if (!paper.id) focusFirstValidationError();
+    if (!currentPaper.id) focusFirstValidationError();
   }
 
   var startNewTag = null;
@@ -1331,8 +1345,11 @@
         });
       })
       .then(_.fetchJson)
-      .then(updatePaperView)
-      .then(updatePageURL)
+      .then(function(paper) {
+        return self.init(paper);
+      })
+      .then(lima.updateView)
+      .then(lima.updatePageURL)
       .catch(function(err) {
         console.error('error saving paper');
         if (err instanceof Response) err.text().then(function (t) {console.error(t)});
@@ -2039,6 +2056,7 @@
     lima.saveStarted = saveStarted;
     lima.saveStopped = saveStopped;
     lima.updateAfterColumnSave = updateAfterColumnSave;
+    lima.updatePageURL = updatePageURL;
     lima.updateView = updatePaperView;
 
     // for testing
