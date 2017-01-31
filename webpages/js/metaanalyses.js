@@ -657,7 +657,7 @@
             td.classList.add('newcol');
           }
 
-          setupPopupBoxPinning(td, '.datum.popupbox', expIndex + '$' + colId);
+          setupPopupBoxPinning(td, '.datum.popupbox', papIndex + ',' + expIndex + ',' + colId);
 
           // populate comments
           fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', paper, ['experiments', expIndex, 'data', colId, 'comments']);
