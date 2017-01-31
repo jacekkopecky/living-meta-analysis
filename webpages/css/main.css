@@ -1533,11 +1533,7 @@ body:not(.editing) #metaanalysis.no-data .no-table, {
 #metaanalysis table.experiments tr th.experimenttitle {
   border-right: 2px solid black;
   position: relative;
-  position: -webkit-sticky;
-  position: -moz-sticky;
-  position: -ms-sticky;
-  position: -o-sticky;
-  position: sticky;
+  /*position: sticky;*/
   left: 0;
   z-index: 1;
 }
@@ -1614,9 +1610,10 @@ body:not(.editing) #metaanalysis table.experiments tr:first-child th:not(:nth-la
   border-top: 2px solid black !important;
 }
 
+/* commented out - dropping sticky for now */
 /* give the first column white background so it hides stuff under it in case of position:sticky working */
-#paper table.experiments tr:first-child th:first-child:before,
-#metaanalysis table.experiments tr:first-child th:first-child:before {
+/*#paper table.experiments tr:first-child th:first-child:before,
+#metaanalysis table.experiments tr:first-child th.experimenttitle:before {
   border-top: 100em solid white;
   display: block;
   content: ' ';
@@ -1627,6 +1624,10 @@ body:not(.editing) #metaanalysis table.experiments tr:first-child th:not(:nth-la
   transform: rotate(135deg)skew(45deg)translateY(100em);
   transform-origin: bottom right;
 }
+
+#metaanalysis table.experiments tr:first-child th:first-child {
+  z-index: 10;
+}*/
 
 /* thicker line between characteristics and results columns */
 #paper table.experiments tr:first-child th.characteristic + th.result,
