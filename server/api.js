@@ -8,6 +8,7 @@ const NotFoundError = require('./errors/NotFoundError');
 const UnauthorizedError = require('./errors/UnauthorizedError');
 const InternalError = require('./errors/InternalError');
 const ValidationError = require('./errors/ValidationError');
+const NotImplementedError = require('./errors/NotImplementedError');
 const config = require('./config');
 const storage = require('./storage');
 const tools = require('./tools');
@@ -240,16 +241,12 @@ function savePaper(req, res, next) {
     res.json(extractPaperForSending(p, true, req.params.email));
   })
   .catch((e) => {
-    if (e instanceof ValidationError) {
+    if (e instanceof ValidationError || e instanceof NotImplementedError) {
       next(e);
     } else {
       next(new InternalError(e));
     }
   });
-}
-
-function extractPaperArrayForSending(storagePaperArray, email) {
-  return storagePaperArray.map((paper) => extractPaperForSending(paper, true, email));
 }
 
 function extractPaperForSending(storagePaper, includeDataValues, email) {
