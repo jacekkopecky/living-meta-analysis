@@ -1539,7 +1539,7 @@ body:not(.editing) #metaanalysis.no-data .no-table, {
 }
 
 #paper table.experiments tr th:first-child,
-#metaanalysis table.experiments tr th:first-child {
+#metaanalysis table.experiments tr th.experimenttitle {
   background: white;
 }
 
@@ -2104,10 +2104,28 @@ body:not(.editing) #metaanalysis table.experiments td:last-child {
 }
 
 #paper table.experiments tr:nth-child(2n),
-#paper table.experiments tr:nth-child(2n) th:first-child,
-#metaanalysis table.experiments tr:nth-child(2n),
-#metaanalysis table.experiments tr:nth-child(2n):not(.add) th:first-child:not(.papertitle) {
+#paper table.experiments tr:nth-child(2n) > th:first-child,
+#metaanalysis table.experiments tr:nth-child(2n) > :not(.papertitle),
+#metaanalysis table.experiments tr:nth-child(2n):not(.add) th.experimenttitle {
   background-color: #eee;
+}
+
+#paper table.experiments tr:nth-child(2n),
+#paper table.experiments tr:nth-child(2n) > th:first-child,
+#metaanalysis table.experiments tr:nth-child(2n) > :not(.papertitle),
+#metaanalysis table.experiments tr:nth-child(2n):not(.add) th.experimenttitle {
+  background-color: #eee;
+}
+body:not(.boxpinned) #paper table.experiments tr:nth-child(2n) .popupboxtrigger:hover .popupboxhighlight,
+body:not(.boxpinned) #paper table.experiments tr:nth-child(2n) .popupboxtrigger.popupboxhighlight:hover,
+#paper table.experiments tr:nth-child(2n) .popupboxtrigger.pinned .popupboxhighlight,
+#paper table.experiments tr:nth-child(2n) .popupboxtrigger.pinned.popupboxhighlight,
+body:not(.boxpinned) #metaanalysis table.experiments tr:nth-child(2n) td.popupboxtrigger:hover .popupboxhighlight,
+body:not(.boxpinned) #metaanalysis table.experiments tr:nth-child(2n) td.popupboxtrigger.popupboxhighlight:hover,
+#metaanalysis table.experiments tr:nth-child(2n) td.popupboxtrigger.pinned .popupboxhighlight,
+#metaanalysis table.experiments tr:nth-child(2n) td.popupboxtrigger.pinned.popupboxhighlight,
+_ {
+  background: rgba(228,215,240,1);
 }
 
 #metaanalysis table.experiments tr.paperstart th,
@@ -2124,10 +2142,10 @@ body:not(.boxpinned) #paper table.experiments tr th:first-child.popupboxtrigger:
 body:not(.boxpinned) #paper table.experiments tr th:first-child.popupboxtrigger.popupboxhighlight:hover,
 #paper table.experiments tr th:first-child.popupboxtrigger.pinned .popupboxhighlight,
 #paper table.experiments tr th:first-child.popupboxtrigger.pinned.popupboxhighlight,
-body:not(.boxpinned) #metaanalysis table.experiments tr th:first-child.popupboxtrigger:hover .popupboxhighlight,
-body:not(.boxpinned) #metaanalysis table.experiments tr th:first-child.popupboxtrigger.popupboxhighlight:hover,
-#metaanalysis table.experiments tr th:first-child.popupboxtrigger.pinned .popupboxhighlight,
-#metaanalysis table.experiments tr th:first-child.popupboxtrigger.pinned.popupboxhighlight {
+body:not(.boxpinned) #metaanalysis table.experiments tr th.experimenttitle.popupboxtrigger:hover .popupboxhighlight,
+body:not(.boxpinned) #metaanalysis table.experiments tr th.experimenttitle.popupboxtrigger.popupboxhighlight:hover,
+#metaanalysis table.experiments tr th.experimenttitle.popupboxtrigger.pinned .popupboxhighlight,
+#metaanalysis table.experiments tr th.experimenttitle.popupboxtrigger.pinned.popupboxhighlight {
   background: rgba(243,230,255,1);
 }
 
@@ -2135,10 +2153,10 @@ body:not(.boxpinned) #paper table.experiments tr:nth-child(2n) th:first-child.po
 body:not(.boxpinned) #paper table.experiments tr:nth-child(2n) th:first-child.popupboxtrigger.popupboxhighlight:hover,
 #paper table.experiments tr:nth-child(2n) th:first-child.popupboxtrigger.pinned .popupboxhighlight,
 #paper table.experiments tr:nth-child(2n) th:first-child.popupboxtrigger.pinned.popupboxhighlight,
-body:not(.boxpinned) #metaanalysis table.experiments tr:nth-child(2n) th:first-child.popupboxtrigger:hover .popupboxhighlight,
-body:not(.boxpinned) #metaanalysis table.experiments tr:nth-child(2n) th:first-child.popupboxtrigger.popupboxhighlight:hover,
-#metaanalysis table.experiments tr:nth-child(2n) th:first-child.popupboxtrigger.pinned .popupboxhighlight,
-#metaanalysis table.experiments tr:nth-child(2n) th:first-child.popupboxtrigger.pinned.popupboxhighlight {
+body:not(.boxpinned) #metaanalysis table.experiments tr:nth-child(2n) th.experimenttitle.popupboxtrigger:hover .popupboxhighlight,
+body:not(.boxpinned) #metaanalysis table.experiments tr:nth-child(2n) th.experimenttitle.popupboxtrigger.popupboxhighlight:hover,
+#metaanalysis table.experiments tr:nth-child(2n) th.experimenttitle.popupboxtrigger.pinned .popupboxhighlight,
+#metaanalysis table.experiments tr:nth-child(2n) th.experimenttitle.popupboxtrigger.pinned.popupboxhighlight {
   background: rgba(228,215,240,1);
 }
 
