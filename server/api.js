@@ -420,7 +420,7 @@ function extractMetaanalysisForSending(storageMetaanalysis, includePapers, email
 
   if (email) retval.apiurl = apiMetaanalysisURL(email, retval.title);
 
-  if (includePapers) {
+  if (includePapers && storageMetaanalysis.papers) {
     retval.papers = [];
     storageMetaanalysis.papers.forEach((p) => retval.papers.push(extractPaperForSending(p, true, email)));
   }
