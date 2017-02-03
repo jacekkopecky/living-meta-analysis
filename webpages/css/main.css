@@ -2173,8 +2173,7 @@ body.page-about-you.editing #paper.no-data table.experiments th.add,
 body:not(.page-about-you) #metaanalysis table.experiments tr.add,
 body:not(.page-about-you) #metaanalysis table.experiments th.add,
 body:not(.editing) #metaanalysis table.experiments tr.add,
-body:not(.editing) #metaanalysis table.experiments th.add,
-body.page-about-you.editing #metaanalysis.no-data table.experiments th.add {
+body:not(.editing) #metaanalysis table.experiments th.add {
   display: none;
 }
 
@@ -2204,6 +2203,17 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
 #paper.no-data table.experiments tr.add .no-data,
 #metaanalysis.no-data table.experiments tr.add .no-data {
   border: none;
+}
+
+#metaanalysis.no-data table.experiments tr.add .no-data .no-papers,
+#metaanalysis.no-data table.experiments tr.add .no-data .no-columns {
+  display: none;
+}
+
+#metaanalysis.no-data.no-papers.no-columns table.experiments tr.add .no-data .no-papers.no-columns,
+#metaanalysis.no-data.no-papers:not(.no-columns) table.experiments tr.add .no-data .no-papers:not(.no-columns),
+#metaanalysis.no-data:not(.no-papers).no-columns table.experiments tr.add .no-data .no-columns:not(.no-papers) {
+  display: initial;
 }
 
 #paper .option-not-checked,

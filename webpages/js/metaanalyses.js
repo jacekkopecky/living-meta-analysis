@@ -405,6 +405,11 @@
     // hide the empty papers data table if the user can't edit it
     if (!papers.length) {
       _.addClass('#metaanalysis', 'no-data');
+      _.addClass('#metaanalysis', 'no-papers');
+    }
+    if (!metaanalysis.columnOrder.length) {
+      _.addClass('#metaanalysis', 'no-data');
+      _.addClass('#metaanalysis', 'no-columns');
     }
 
     var table = _.cloneTemplate('experiments-table-template');
