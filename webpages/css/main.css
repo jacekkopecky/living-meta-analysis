@@ -2045,7 +2045,9 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 }
 
 #paper table.experiments .datum.popupbox .computed .computedfrom,
-#paper table.experiments .datum.popupbox .computed .formula {
+#paper table.experiments .datum.popupbox .computed .formula,
+#metaanalysis table.experiments .datum.popupbox .computed .computedfrom,
+#metaanalysis table.experiments .datum.popupbox .computed .formula {
   font-weight: bold;
 }
 
@@ -2110,17 +2112,15 @@ body:not(.editing) #metaanalysis table.experiments td:last-child {
 
 #paper table.experiments tr:nth-child(2n),
 #paper table.experiments tr:nth-child(2n) > th:first-child,
-#metaanalysis table.experiments tr:nth-child(2n) > :not(.papertitle),
-#metaanalysis table.experiments tr:nth-child(2n):not(.add) th.experimenttitle {
+#metaanalysis table.experiments tr:nth-child(2n),
+#metaanalysis table.experiments tr:nth-child(2n) > th.experimenttitle {
   background-color: #eee;
 }
 
-#paper table.experiments tr:nth-child(2n),
-#paper table.experiments tr:nth-child(2n) > th:first-child,
-#metaanalysis table.experiments tr:nth-child(2n) > :not(.papertitle),
-#metaanalysis table.experiments tr:nth-child(2n):not(.add) th.experimenttitle {
-  background-color: #eee;
+#metaanalysis table.experiments tr th.papertitle {
+  background-color: white;
 }
+
 body:not(.boxpinned) #paper table.experiments tr:nth-child(2n) .popupboxtrigger:hover .popupboxhighlight,
 body:not(.boxpinned) #paper table.experiments tr:nth-child(2n) .popupboxtrigger.popupboxhighlight:hover,
 #paper table.experiments tr:nth-child(2n) .popupboxtrigger.pinned .popupboxhighlight,
@@ -2138,7 +2138,8 @@ _ {
   border-top: 1px solid black;
 }
 
-#paper table.experiments tr td.computed {
+#paper table.experiments tr td.computed,
+#metaanalysis table.experiments tr td.computed {
   background-color: rgba(135, 175, 245, .25);
 }
 

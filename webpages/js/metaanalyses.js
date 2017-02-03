@@ -664,6 +664,23 @@
               if (typeof val == 'number') val = val.toPrecision(3);
 
               _.fillEls(td, '.value', val);
+
+
+              // fill in information about where the value was computed from
+              var computedFrom ="";
+              var formulaCount = col.formulaColumns.length;
+              for (var i = 0; i < formulaCount; i++) {
+                var column = lima.columns[col.formulaColumns[i]];
+                computedFrom += column.title;
+                if (i < formulaCount-2) { // more than one left
+                  computedFrom += ", ";
+                }
+                else if (i == formulaCount-2) { // one more left..
+                  computedFrom += " and ";
+                }
+              }
+              _.fillEls(td,  '.computedfrom', computedFrom);
+              _.fillEls(td, '.formula', lima.getFormulaById(col.formula).label);
             });
           }
 
