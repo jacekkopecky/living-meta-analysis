@@ -1021,6 +1021,7 @@
 
     currentMetaanalysis.columnOrder.push(col.id);
     moveResultsAfterCharacteristics(currentMetaanalysis);
+    dismissAddExperimentColumn();
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
 

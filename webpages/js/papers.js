@@ -1022,6 +1022,7 @@
 
     currentPaper.columnOrder.push(col.id);
     moveResultsAfterCharacteristics(currentPaper);
+    dismissAddExperimentColumn();
     updatePaperView();
     _.scheduleSave(currentPaper);
 
