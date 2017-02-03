@@ -200,6 +200,19 @@
     }
   }
 
+  // find out if a bigger array contains all the elements of a smaller array
+  // we don't expect any duplicate entries here
+  _.isSubset = function isSubset(superset, subset) {
+    if (!subset || subset.length === 0) return true;
+    if (!superset || superset.length === 0) return false;
+    if (superset.length < subset.length) return false;
+
+    for (var i = 0; i < subset.length; i++) {
+        if (superset.indexOf(subset[i]) == -1) return false;
+    }
+    return true;
+  }
+
   /* error handling
    *
    *

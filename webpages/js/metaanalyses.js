@@ -885,27 +885,54 @@
     var list = _.findEl('#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul');
     list.innerHTML='';
     var user = lima.getAuthenticatedUserEmail();
-    var ordered = {yours: { result: [], characteristic: []},
-                   other: { result: [], characteristic: []},
-                   already: { result: [], characteristic: []}};
+    var ordered = {yours: { result: [], characteristic: [],
+                            computedValid: [], computedInvalid: []},
+                   other: { result: [], characteristic: [],
+                            computedValid: [], computedInvalid: []},
+                   already: { result: [], characteristic: [],
+                            computedValid: [], computedInvalid: []}
+                  };
     Object.keys(columns).forEach(function(colId) {
       var col = columns[colId];
+      var colType = col.type;
       var bucket = (col.definedBy === user || !col.definedBy) ? 'yours' : 'other';
       if (currentMetaanalysis.columnOrder.indexOf(colId) > -1) bucket = 'already';
-      ordered[bucket][col.type].push(col);
+      if (col.formula) {
+        // TODO Formula columns might be incomplete, in which case we probably don't want to show the column
+        // these comments will go away when computed columns are private
+        if (_.isSubset(currentMetaanalysis.columnOrder, col.formulaColumns)) {
+          colType = 'computedValid'
+        } else {
+          colType = 'computedInvalid';
+        }
+      }
+      ordered[bucket][colType].push(col);
     })
     ordered.yours.result.sort(compareColumnsByAuthorAndTitle);
     ordered.yours.characteristic.sort(compareColumnsByAuthorAndTitle);
+    ordered.yours.computedValid.sort(compareColumnsByAuthorAndTitle);
     ordered.other.result.sort(compareColumnsByAuthorAndTitle);
     ordered.other.characteristic.sort(compareColumnsByAuthorAndTitle);
+    ordered.other.computedValid.sort(compareColumnsByAuthorAndTitle);
     ordered.already.result.sort(compareColumnsByAuthorAndTitle);
     ordered.already.characteristic.sort(compareColumnsByAuthorAndTitle);
+    ordered.already.computedValid.sort(compareColumnsByAuthorAndTitle);
+
     // todo add collapsing of these blocks on clicking the header
+    // TODO: Sometime in the future we may wish to show computedInvalid.
+
+    var usedInTheMetaanalysis = [].concat(
+      ordered.already.characteristic,
+      ordered.already.result,
+      ordered.already.computedValid);
     addColumnsBlock(list, 'your characteristic/moderator columns:', ordered.yours.characteristic);
     addColumnsBlock(list, 'your result columns:', ordered.yours.result);
+    addColumnsBlock(list, 'your computed columns (for which there is data):', ordered.yours.computedValid);
     addColumnsBlock(list, 'characteristic/moderator columns:', ordered.other.characteristic);
     addColumnsBlock(list, 'result columns:', ordered.other.result);
-    addColumnsBlock(list, 'columns used in the meta-analysis:', ordered.already.characteristic.concat(ordered.already.result));
+    addColumnsBlock(list, 'computed columns (for which there is data):', ordered.other.computedValid);
+    addColumnsBlock(list, 'columns used in the meta-analysis:', usedInTheMetaanalysis);
+
     _.removeClass('#metaanalysis table.experiments tr:first-child th.add .addcolumnbox.loading', 'loading');
     _.setYouOrName();
 
