@@ -44,6 +44,7 @@
 
   function storeColumn(column) {
     if (!(column instanceof Column)) column = Object.assign(new Column(), column);
+    if (!column.formulaColumns) column.formulaColumns = [];
     lima.columns[column.id] = column;
     return column;
   }
