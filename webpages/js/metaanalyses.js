@@ -181,14 +181,23 @@
     if (!Array.isArray(self.columnOrder)) self.columnOrder = [];
     if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
 
-    // if some column type has changed, make sure the paper reflects that
-    moveResultsAfterCharacteristics(self);
-
     self.papers.forEach(function (paper, papIndex) {
       if (!(paper instanceof lima.Paper)) {
         self.papers[papIndex] = lima.Paper.prototype.init(paper);
       }
     });
+
+    // Get all columns used across all papers, for now. Concat.
+    self.papers.forEach(function (paper) {
+      paper.columnOrder.forEach(function (column) {
+        if (self.columnOrder.indexOf(column) === -1) {
+          self.columnOrder.push(column);
+        }
+      });
+    });
+
+    // if some column type has changed, make sure the paper reflects that
+    moveResultsAfterCharacteristics(self);
 
     return self;
   }
@@ -400,18 +409,6 @@
 
     var table = _.cloneTemplate('experiments-table-template');
 
-    // Get all columns used across all papers, for now. Concat.
-    function getMetaColumnOrder(metaanalysis) {
-      metaanalysis.papers.forEach(function (paper) {
-        paper.columnOrder.forEach(function (column) {
-          if (metaanalysis.columnOrder.indexOf(column) === -1) {
-            metaanalysis.columnOrder.push(column);
-          }
-        });
-      });
-    }
-
-    getMetaColumnOrder(metaanalysis);
     moveResultsAfterCharacteristics(metaanalysis);
 
     /* column headings
