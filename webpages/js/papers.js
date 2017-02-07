@@ -247,12 +247,12 @@
     _.setDataProps(paperEl, '.enteredby.needs-owner', 'owner', paper.enteredBy);
 
     addConfirmedUpdater('#paper .link span.editing', '#paper .link button.confirm', '#paper .link button.cancel', 'textContent', identity, paper, 'link');
-    addConfirmedUpdater('#paper .doi span.editing', '#paper .doi button.confirm', '#paper .doi button.cancel', 'textContent', stripDOIPrefix, paper, 'doi');
+    addConfirmedUpdater('#paper .doi span.editing', '#paper .doi button.confirm', '#paper .doi button.cancel', 'textContent', _.stripDOIPrefix, paper, 'doi');
 
     // workaround for chrome not focusing right
     // clicking on the placeholder 'doi' of an empty editable doi value focuses the element but doesn't react to subsequent key strokes
-    _.addEventListener(paperEl, '.link .value.editing', 'click', blurAndFocus);
-    _.addEventListener(paperEl, '.doi .value.editing', 'click', blurAndFocus);
+    _.addEventListener(paperEl, '.link .value.editing', 'click', _.blurAndFocus);
+    _.addEventListener(paperEl, '.doi .value.editing', 'click', _.blurAndFocus);
 
     addOnInputUpdater(paperEl, ".authors .value", 'textContent', identity, paper, 'authors');
     addOnInputUpdater(paperEl, ".reference .value", 'textContent', identity, paper, 'reference');
@@ -266,10 +266,10 @@
     _.setYouOrName();
 
     // now that the paper is all there, install various general and specific event listeners
-    _.addEventListener(paperEl, '[contenteditable].oneline', 'keydown', blurOnEnter);
+    _.addEventListener(paperEl, '[contenteditable].oneline', 'keydown', _.blurOnEnter);
 
-    _.addEventListener(paperEl, '.linkedit button.test', 'click', linkEditTest);
-    _.addEventListener(paperEl, '.linkedit button.test', 'mousedown', preventLinkEditBlur);
+    _.addEventListener(paperEl, '.linkedit button.test', 'click', _.linkEditTest);
+    _.addEventListener(paperEl, '.linkedit button.test', 'mousedown', _.preventLinkEditBlur);
 
     _.addEventListener(paperEl, '[data-focuses]', 'click', focusAnotherElementOnClick);
 
@@ -285,13 +285,6 @@
     setUnsavedClass();
 
     recalculateComputedData();
-  }
-
-  function stripDOIPrefix(doi) {
-    if (doi.toLowerCase().startsWith('doi:')) {
-      doi = doi.substring(4);
-    }
-    return doi;
   }
 
   /* editTags
@@ -1249,48 +1242,6 @@
     return title;
   }
 
-  function linkEditTest(ev) {
-    var btn = ev.target;
-    if (!btn) return;
-
-    var linkEl = null;
-    var editEl = null;
-    _.array(btn.parentElement.children).forEach(function (el) {
-      if (el.classList.contains('value')) {
-        if (el.nodeName === 'A') linkEl = el;
-        else if (el.isContentEditable || el.contentEditable === 'true') editEl = el;
-      }
-    })
-
-    if (!linkEl || !editEl) {
-      console.error('linkEditTest cannot find linkEl or editEl');
-      return;
-    }
-
-    var link = editEl.textContent;
-    if (linkEl.dataset.base) link = linkEl.dataset.base + link;
-
-    window.open(link, "linkedittest");
-  }
-
-  function preventLinkEditBlur(ev) {
-    var btn = ev.target;
-    if (!btn) return;
-
-    var editEl = null;
-    _.array(btn.parentElement.children).forEach(function (el) {
-      if (el.classList.contains('value') && (el.isContentEditable || el.contentEditable === 'true')) editEl = el;
-    })
-
-    if (!editEl) {
-      console.error('preventLinkEditBlur cannot find editEl');
-      return;
-    }
-
-    // clicking the 'test' button should not cause blur on the editing field
-    if (document.activeElement === editEl) ev.preventDefault();
-  }
-
 
   /* save
    *
@@ -1922,14 +1873,6 @@
     else pinPopupBox(el);
   }
 
-  // oneline input fields get blurred on enter (for Excel-like editing)
-  function blurOnEnter(ev) {
-    if (ev.keyCode == 13 && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
-      ev.preventDefault();
-      ev.target.blur();
-    }
-  }
-
   function focusAnotherElementOnClick(ev) {
     var el = ev.currentTarget;
 
@@ -1957,12 +1900,6 @@
       el.focus();
       return el;
     }
-  }
-
-  // a workaround for strange chrome behaviour
-  function blurAndFocus(ev) {
-    ev.target.blur();
-    ev.target.focus();
   }
 
   // moving between cells (esp. when editing) should work like excel: tab and enter, maybe with shift

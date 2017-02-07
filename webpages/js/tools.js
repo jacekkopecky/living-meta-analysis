@@ -170,6 +170,66 @@
     }
   }
 
+  // a workaround for strange chrome behaviour where it doesn't focus right:
+  // e.g. clicking on the placeholder 'doi' of an empty editable doi value focuses the element but doesn't react to subsequent key strokes
+  _.blurAndFocus = function(ev) {
+    ev.target.blur();
+    ev.target.focus();
+  }
+
+  // oneline input fields get blurred on enter (for Excel-like editing)
+  _.blurOnEnter = function(ev) {
+    if (ev.keyCode == 13 && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+      ev.preventDefault();
+      ev.target.blur();
+    }
+  }
+
+
+  _.linkEditTest = function(ev) {
+    var btn = ev.target;
+    if (!btn) return;
+
+    var linkEl = null;
+    var editEl = null;
+    _.array(btn.parentElement.children).forEach(function (el) {
+      if (el.classList.contains('value')) {
+        if (el.nodeName === 'A') linkEl = el;
+        else if (el.isContentEditable || el.contentEditable === 'true') editEl = el;
+      }
+    })
+
+    if (!linkEl || !editEl) {
+      console.error('linkEditTest cannot find linkEl or editEl');
+      return;
+    }
+
+    var link = editEl.textContent;
+    if (linkEl.dataset.base) link = linkEl.dataset.base + link;
+
+    window.open(link, "linkedittest");
+  }
+
+  _.preventLinkEditBlur = function(ev) {
+    var btn = ev.target;
+    if (!btn) return;
+
+    var editEl = null;
+    _.array(btn.parentElement.children).forEach(function (el) {
+      if (el.classList.contains('value') && (el.isContentEditable || el.contentEditable === 'true')) editEl = el;
+    })
+
+    if (!editEl) {
+      console.error('preventLinkEditBlur cannot find editEl');
+      return;
+    }
+
+    // clicking the 'test' button should not cause blur on the editing field
+    if (document.activeElement === editEl) ev.preventDefault();
+  }
+
+
+
 
   /* array manipulation
    *
@@ -296,6 +356,15 @@
   function twoDigits(x) {
     return x < 10 ? "0" + x : "" + x;
   }
+
+  _.stripPrefix = function stripPrefix(prefix, string) {
+    if (string.toLowerCase().startsWith(prefix)) {
+      string = string.substring(prefix.length);
+    }
+    return string;
+  }
+
+  _.stripDOIPrefix = function (doi) { return _.stripPrefix('doi:', doi); }
 
 
   /* youOrName

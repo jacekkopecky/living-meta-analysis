@@ -269,7 +269,7 @@
     _.setYouOrName();
 
     // now that the metaanalysis is all there, install various general and specific event listeners
-    _.addEventListener(metaanalysisEl, '[contenteditable].oneline', 'keydown', blurOnEnter);
+    _.addEventListener(metaanalysisEl, '[contenteditable].oneline', 'keydown', _.blurOnEnter);
 
     _.addEventListener(metaanalysisEl, '[data-focuses]', 'click', focusAnotherElementOnClick);
 
@@ -1904,14 +1904,6 @@
       dismissAddExperimentColumn();
     }
     else pinPopupBox(el);
-  }
-
-  // oneline input fields get blurred on enter (for Excel-like editing)
-  function blurOnEnter(ev) {
-    if (ev.keyCode == 13 && !ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
-      ev.preventDefault();
-      ev.target.blur();
-    }
   }
 
   function focusAnotherElementOnClick(ev) {
