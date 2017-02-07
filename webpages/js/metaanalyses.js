@@ -180,6 +180,7 @@
     if (!Array.isArray(self.papers)) self.papers = [];
     if (!Array.isArray(self.columnOrder)) self.columnOrder = [];
     if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
+    if (!Array.isArray(self.tags)) self.tags = [];
 
     self.papers.forEach(function (paper, papIndex) {
       if (!(paper instanceof lima.Paper)) {
@@ -263,8 +264,6 @@
 
     _.setDataProps('#metaanalysis .title.editing', 'origTitle', metaanalysis.title);
     addConfirmedUpdater('#metaanalysis .title.editing', '#metaanalysis .title + .titlerename', '#metaanalysis .title ~ * .titlerenamecancel', 'textContent', checkTitleUnique, metaanalysis, 'title');
-
-    if (!metaanalysis.tags) metaanalysis.tags = [];
 
     _.setYouOrName();
 

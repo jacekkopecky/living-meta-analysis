@@ -173,6 +173,7 @@
     if (!Array.isArray(self.experiments)) self.experiments = [];
     if (!Array.isArray(self.columnOrder)) self.columnOrder = [];
     if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
+    if (!Array.isArray(self.tags)) self.tags = [];
 
     // if any experiment has data that isn't in columnOrder (e.g. it was added in a metaanalysis page)
     // add it to the columnorder
@@ -232,7 +233,6 @@
     _.setProps(paperEl, '.edityourcopy a', 'href', ownURL);
 
     _.fillEls(paperEl, '.title', paper.title);
-    _.fillEls (paperEl, '.authors .value', paper.authors);
     _.fillEls (paperEl, '.reference .value', paper.reference);
     _.fillEls (paperEl, '.description .value', paper.description);
     _.fillEls (paperEl, '.link .value', paper.link);
@@ -254,14 +254,11 @@
     _.addEventListener(paperEl, '.link .value.editing', 'click', _.blurAndFocus);
     _.addEventListener(paperEl, '.doi .value.editing', 'click', _.blurAndFocus);
 
-    addOnInputUpdater(paperEl, ".authors .value", 'textContent', identity, paper, 'authors');
     addOnInputUpdater(paperEl, ".reference .value", 'textContent', identity, paper, 'reference');
     addOnInputUpdater(paperEl, ".description .value", 'textContent', identity, paper, 'description');
 
     currentPaperOrigTitle = paper.title;
     addConfirmedUpdater('#paper .title.editing', '#paper .title + .titlerename', '#paper .title ~ * .titlerenamecancel', 'textContent', checkTitleUnique, paper, 'title');
-
-    if (!paper.tags) paper.tags = [];
 
     _.setYouOrName();
 
