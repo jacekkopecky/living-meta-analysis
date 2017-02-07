@@ -261,7 +261,7 @@
     addOnInputUpdater(metaanalysisEl, ".published .value", 'textContent', identity, metaanalysis, 'published');
     addOnInputUpdater(metaanalysisEl, ".description .value", 'textContent', identity, metaanalysis, 'description');
 
-    currentMetaanalysisOrigTitle = metaanalysis.title;
+    _.setDataProps('#metaanalysis .title.editing', 'origTitle', metaanalysis.title);
     addConfirmedUpdater('#metaanalysis .title.editing', '#metaanalysis .title + .titlerename', '#metaanalysis .title ~ * .titlerenamecancel', 'textContent', checkTitleUnique, metaanalysis, 'title');
 
     if (!metaanalysis.tags) metaanalysis.tags = [];
@@ -581,15 +581,48 @@
         var tr = _.cloneTemplate('experiment-row-template').children[0];
         tableBodyNode.insertBefore(tr, addRowNode);
 
+        _.fillEls(tr, '.paptitle', paper.title);
+
         var paperTitleEl = _.findEl(tr, '.papertitle');
+
         // First mention of a paper should have rowspan equal to the number of experiments
         if (expIndex == 0) {
           var noExpInCurrPaper = papers[papIndex].experiments.length;
           paperTitleEl.rowSpan = noExpInCurrPaper;
-          _.fillEls(tr, '.paptitle', paper.title);
-          _.setDataProps(tr, '.paptitle.editing', 'origTitle', paper.title);
-          addConfirmedUpdater(tr, '.paptitle.editing', '.paptitle + .paptitlerename', null, 'textContent', checkExperimentTitleUnique, paper, ['title']);
           tr.classList.add('paperstart');
+
+          fillTags(paperTitleEl, paper);
+
+          _.fillEls (paperTitleEl, '.papreference .value', paper.reference);
+          _.fillEls (paperTitleEl, '.papdescription .value', paper.description);
+          _.fillEls (paperTitleEl, '.paplink .value', paper.link);
+          _.setProps(paperTitleEl, '.paplink a.value', 'href', paper.link);
+          _.fillEls (paperTitleEl, '.papdoi .value', paper.doi);
+          _.setProps(paperTitleEl, '.papdoi a.value', 'href', function(el){return el.dataset.base + paper.doi});
+          _.fillEls (paperTitleEl, '.papenteredby .value', paper.enteredBy);
+          _.setProps(paperTitleEl, '.papenteredby .value', 'href', '/' + paper.enteredBy + '/');
+          _.fillEls (paperTitleEl, '.papctime .value', _.formatDateTime(paper.ctime));
+          _.fillEls (paperTitleEl, '.papmtime .value', _.formatDateTime(paper.mtime));
+
+          _.setDataProps(paperTitleEl, '.papenteredby.needs-owner', 'owner', paper.enteredBy);
+
+          addConfirmedUpdater(paperTitleEl, '.paplink span.editing', '.paplink button.confirm', '.paplink button.cancel', 'textContent', identity, paper, 'link');
+          addConfirmedUpdater(paperTitleEl, '.papdoi span.editing', '.papdoi button.confirm', '.papdoi button.cancel', 'textContent', _.stripDOIPrefix, paper, 'doi');
+
+          // workaround for chrome not focusing right
+          // clicking on the placeholder 'doi' of an empty editable doi value focuses the element but doesn't react to subsequent key strokes
+          _.addEventListener(paperTitleEl, '.paplink .value.editing', 'click', _.blurAndFocus);
+          _.addEventListener(paperTitleEl, '.papdoi .value.editing', 'click', _.blurAndFocus);
+
+          addOnInputUpdater(paperTitleEl, ".papreference .value", 'textContent', identity, paper, 'reference');
+          addOnInputUpdater(paperTitleEl, ".papdescription .value", 'textContent', identity, paper, 'description');
+
+          _.setDataProps(tr, '.paptitle.editing', 'origTitle', paper.title);
+          addConfirmedUpdater(tr, '.paptitle.editing', '.paptitle.editing + .paptitlerename', '.paptitle.editing ~ * .paprenamecancel', 'textContent', checkTitleUnique, paper, ['title']);
+
+          _.addEventListener(paperTitleEl, '.linkedit button.test', 'click', _.linkEditTest);
+          _.addEventListener(paperTitleEl, '.linkedit button.test', 'mousedown', _.preventLinkEditBlur);
+
         } else { // if it's not the first, its space is taken by the first, so remove it
           paperTitleEl.remove();
         }
@@ -1235,14 +1268,13 @@
     }
   }
 
-  var currentMetaanalysisOrigTitle;
-
-  function checkTitleUnique(title) {
+  // todo this should be shared with papers.js in tools.js
+  function checkTitleUnique(title, el) {
     if (title === '') throw null; // no message necessary
     if (title === 'paper' || title === 'metaanalysis') throw '"paper/metaanalysis" are reserved titles';
     if (!title.match(/^[a-zA-Z0-9.-]+$/)) throw 'metaanalysis short name cannot contain spaces or special characters';
     loadAllTitles();
-    if (title !== currentMetaanalysisOrigTitle && allTitles.indexOf(title) !== -1) {
+    if (title !== el.dataset.origTitle && allTitles.indexOf(title) !== -1) {
       // try to give a useful suggestion for common names like Juliet94a
       var match = title.match(/(^[a-zA-Z0-9]*[0-9]+)([a-zA-Z]?)$/);
       if (match) {
@@ -1253,7 +1285,7 @@
       }
 
       // otherwise just say this
-      throw 'metaanalysis "' + title + '" already exists, please try a different short name';
+      throw '"' + title + '" already exists, please try a different short name';
     }
     return title;
   }

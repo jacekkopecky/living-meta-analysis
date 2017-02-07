@@ -261,21 +261,53 @@
             <span class="paptitle notediting"></span></span
           ><p class="paptitle editing oneline" contenteditable placeholder="enter a short name"></p>
           <button class="paptitlerename editing" disabled>rename</button>
-          <div class="paperrenamewarning">
+          <div class="paprenamewarning">
             <h1>Are you sure to rename the Paper from "<span class="paptitle"></span>"?</h1>
             <p>If others are using the paper, a change might surprise them.
-              To undo, press <button class="paperrenamecancel">cancel</button>
+              To undo, press <button class="paprenamecancel">cancel</button>
             </p>
+            <p>Good short names have authors and year, e.g. Jones04, JonesSmyth04, JonesEtAl04, Jones04a and so on.</p>
           </div>
-          </p>
+          <ul class="tags"></ul>
         </header>
-        <!-- todo click on .paperdescription.short should focus the contenteditable paptitle -->
-        <div class="paperdescription notediting"></div>
-        <div class="paperdescription editing" contenteditable placeholder="enter description"></div>
+        <p>Entered <span class="papenteredby only-not-yours needs-owner"> by <a class="value" href="error">error</a></span><span class="papctime"> on <span class="value date">error</span></span></p>
+        <!-- <p class="authors">Authors:
+          <span class="value notediting">error</span>
+          <span class="value editing oneline" contenteditable placeholder="enter the authors">error</span>
+        </p> -->
+        <div class="papreference">
+          <div class="edithighlight">
+            <span data-focuses=".value.editing">Reference:</span>
+            <span class="value notediting">error</span>
+            <span class="value editing oneline" contenteditable placeholder="authors, year, title, journal etc.">error</span>
+          </div>
+        </div>
+        <p class="papdescription edithighlight">
+          <span data-focuses=".value.editing">Description: </span>
+          <span class="value notediting">error</span>
+          <span class="value editing" contenteditable placeholder="add description">error</span>
+        </p>
+        <p class="paplink linkedit edithighlight">
+          <span data-focuses=".value.editing">Link: </span>
+          <a class="value notediting" href="error">error</a>
+          <span class="value editing" contenteditable placeholder="url">error</span>
+          <button class="test editing" title="opens the link in a new window">test</button>
+          <button class="confirm editing">confirm</button>
+          <button class="cancel editing">cancel</button>
+        </p>
+        <p class="papdoi linkedit edithighlight">
+          <span data-focuses=".value.editing">DOI: </span>
+          <a class="value notediting" href="error" data-base="https://dx.doi.org/">error</a>
+          <span class="value editing" contenteditable placeholder="doi">error</span>
+          <button class="test editing" title="opens the link in a new window">test</button>
+          <button class="confirm editing">confirm</button>
+          <button class="cancel editing">cancel</button>
+        </p>
+        <p class="papmtime">Last modified: <span class="value date">error</span></p>
       </div>
+      <!-- todo make this smaller and ellipsized, and fill it -->
       <div class="paperdescription short" data-focuses=".paperdescription.editing"></div>
       <!-- todo comments -->
-      <!-- todo show ctime and enteredBy for experiment -->
     </th>
     <th class="popupboxtrigger popupboxhighlight experimenttitle">
       <!-- todo click on title or exptitle should focus the contenteditable exptitle -->
@@ -283,6 +315,7 @@
       <div class="experimentinfo popupbox" data-boxtype='experimentinfo'>
         <div class="pin"></div>
         <header>
+          <p class="papertitle">Paper: <span class="paptitle"></span><p>
           <span class="edithighlight" data-focuses=".exptitle.editing">Study/experiment:
             <span class="exptitle notediting"></span></span
           ><p class="exptitle editing oneline" contenteditable placeholder="enter a short name"></p>
