@@ -2143,15 +2143,27 @@ _ {
   background-color: rgba(135, 175, 245, .25);
 }
 
+/* highlight even computed columns on hover */
+body:not(.boxpinned) #paper table.experiments tr td.computed.popupboxtrigger:hover .popupboxhighlight,
+body:not(.boxpinned) #paper table.experiments tr td.computed.popupboxtrigger.popupboxhighlight:hover,
+#paper table.experiments tr td.computed.popupboxtrigger.pinned .popupboxhighlight,
+#paper table.experiments tr td.computed.popupboxtrigger.pinned.popupboxhighlight,
+body:not(.boxpinned) #metaanalysis table.experiments tr td.computed.popupboxtrigger:hover .popupboxhighlight,
+body:not(.boxpinned) #metaanalysis table.experiments tr td.computed.popupboxtrigger.popupboxhighlight:hover,
+#metaanalysis table.experiments tr td.computed.popupboxtrigger.pinned .popupboxhighlight,
+#metaanalysis table.experiments tr td.computed.popupboxtrigger.pinned.popupboxhighlight {
+  background: rgba(128,0,255,.1);
+}
+
 /* fix highlighting of the row headings which have their own background */
 body:not(.boxpinned) #paper table.experiments tr th:first-child.popupboxtrigger:hover .popupboxhighlight,
 body:not(.boxpinned) #paper table.experiments tr th:first-child.popupboxtrigger.popupboxhighlight:hover,
 #paper table.experiments tr th:first-child.popupboxtrigger.pinned .popupboxhighlight,
 #paper table.experiments tr th:first-child.popupboxtrigger.pinned.popupboxhighlight,
-body:not(.boxpinned) #metaanalysis table.experiments tr th.experimenttitle.popupboxtrigger:hover .popupboxhighlight,
-body:not(.boxpinned) #metaanalysis table.experiments tr th.experimenttitle.popupboxtrigger.popupboxhighlight:hover,
-#metaanalysis table.experiments tr th.experimenttitle.popupboxtrigger.pinned .popupboxhighlight,
-#metaanalysis table.experiments tr th.experimenttitle.popupboxtrigger.pinned.popupboxhighlight {
+body:not(.boxpinned) #metaanalysis table.experiments tr th.popupboxtrigger:hover .popupboxhighlight,
+body:not(.boxpinned) #metaanalysis table.experiments tr th.popupboxtrigger.popupboxhighlight:hover,
+#metaanalysis table.experiments tr th.popupboxtrigger.pinned .popupboxhighlight,
+#metaanalysis table.experiments tr th.popupboxtrigger.pinned.popupboxhighlight {
   background: rgba(243,230,255,1);
 }
 
