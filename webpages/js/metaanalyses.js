@@ -1181,7 +1181,7 @@
     var table = _.cloneTemplate('aggregates-table-template');
     var addAggregateNode = _.findEl(table, 'tr.add');
 
-    metaanalysis.aggregates.forEach(function (aggregate) {
+    metaanalysis.aggregates.forEach(function (aggregate, aggregateIndex) {
       var aggregateEl = _.cloneTemplate('aggregate-row-template').children[0];
       addAggregateNode.parentElement.insertBefore(aggregateEl, addAggregateNode);
 
@@ -1220,6 +1220,7 @@
       var aggrFormula = lima.getAggregateFormulaById(aggregate.formula);
       fillAggregateColumnsSelection(metaanalysis, aggregate, aggregateEl, aggrFormula);
 
+      setupPopupBoxPinning(aggregateEl, '.datum.popupbox', aggregateIndex);
     });
 
     // Event handlers
