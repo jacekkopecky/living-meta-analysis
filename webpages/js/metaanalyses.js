@@ -847,7 +847,57 @@
     computedDataSetters.forEach(function (f) { f(); });
   }
 
-  function getDatumValue(colId, expIndex, paperIndex) {
+  function getDatumValue(colIdOrAggregate, expIndex, paperIndex) {
+    if (typeof colIdOrAggregate === 'string') {
+      return getExperimentsTableDatumValue(colIdOrAggregate, expIndex, paperIndex);
+    } else if (colIdOrAggregate.formula) {
+      return getAggregateDatumValue(colIdOrAggregate);
+    }
+  }
+
+  function getAggregateDatumValue(aggregate) {
+    var aggregateId = aggregate.formula + '(' + aggregate.columns.join(',') + ')';
+
+    if (!computedDataCache.aggregates) computedDataCache.aggregates = {};
+    if (aggregateId in computedDataCache.aggregates) {
+      if (computedDataCache.aggregates[aggregateId] === CIRCULAR_COMPUTATION_FLAG) {
+        throw new Error('circular computation involving aggregate ' + aggregateId);
+      }
+      return computedDataCache.aggregates[aggregateId];
+    }
+
+    computedDataCache.aggregates[aggregateId] = CIRCULAR_COMPUTATION_FLAG;
+
+    var inputs = [];
+    var currentInputArray;
+    var formula = lima.getAggregateFormulaById(aggregate.formula);
+    var aggregateNotCompletelyDefined = false;
+
+    // compute the value
+    // if anything here throws an exception, value cannot be computed
+    for (var i=0; i<aggregate.columns.length; i++) {
+      if (!(aggregate.columns[i] in lima.columns)) {
+        // the computed column's input columns are not all defined
+        aggregateNotCompletelyDefined = true;
+        break;
+      }
+      currentInputArray = [];
+      for (var paperIndex = 0; paperIndex < currentMetaanalysis.papers.length; paperIndex++) {
+        for (var expIndex = 0; expIndex < currentMetaanalysis.papers[paperIndex].experiments.length; expIndex++) {
+          currentInputArray.push(getDatumValue(aggregate.columns[i], expIndex, paperIndex));
+        }
+      }
+      inputs.push(currentInputArray);
+    }
+
+    var val = null;
+    if (!aggregateNotCompletelyDefined) val = formula.func.apply(null, inputs);
+
+    computedDataCache.aggregates[aggregateId] = val;
+    return val;
+  }
+
+  function getExperimentsTableDatumValue(colId, expIndex, paperIndex) {
     // check cache
     if (!(colId in computedDataCache)) computedDataCache[colId] = [];
     if (!(computedDataCache[colId][paperIndex])) computedDataCache[colId][paperIndex] = [];
@@ -1176,8 +1226,18 @@
     }
   }
 
-  /* Add macro for 'Aggregates' here
-  */
+  /* aggregates
+   *
+   *
+   *     ##    ####   ####  #####  ######  ####    ##   ##### ######  ####
+   *    #  #  #    # #    # #    # #      #    #  #  #    #   #      #
+   *   #    # #      #      #    # #####  #      #    #   #   #####   ####
+   *   ###### #  ### #  ### #####  #      #  ### ######   #   #           #
+   *   #    # #    # #    # #   #  #      #    # #    #   #   #      #    #
+   *   #    #  ####   ####  #    # ######  ####  #    #   #   ######  ####
+   *
+   *
+   */
   function fillAggregateTable(metaanalysis) {
     var table = _.cloneTemplate('aggregates-table-template');
     var addAggregateNode = _.findEl(table, 'tr.add');
@@ -1186,7 +1246,7 @@
       var aggregateEl = _.cloneTemplate('aggregate-row-template').children[0];
       addAggregateNode.parentElement.insertBefore(aggregateEl, addAggregateNode);
 
-      // TODO: Fill value in a similar manner to ComputedColumns -> Invoke function
+      var aggregateValTd = _.findEl(aggregateEl, 'td');
 
       // Editing Options
       // Add an option for every aggregate formula we know
@@ -1222,6 +1282,27 @@
       fillAggregateColumnsSelection(metaanalysis, aggregate, aggregateEl, aggrFormula);
 
       setupPopupBoxPinning(aggregateEl, '.datum.popupbox', aggregateIndex);
+
+      addComputedDatumSetter(function() {
+        var val = getDatumValue(aggregate);
+
+        // handle bad values like Excel
+        if (val == null) {
+          val = '';
+          aggregateValTd.classList.add('empty');
+        } else if (typeof val == 'number' && isNaN(val)) {
+          val = '#VALUE!';
+          aggregateValTd.classList.add('empty');
+        } else {
+          aggregateValTd.classList.remove('empty');
+        }
+
+        // only show three significant digits for numbers
+        if (typeof val == 'number') val = val.toPrecision(3);
+
+        _.fillEls(aggregateValTd, '.value', val);
+      });
+
     });
 
     // Event handlers

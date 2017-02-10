@@ -141,7 +141,7 @@
 
   // here start the functions implementing the aggregates
   // Key structure to an aggregate function:
-  //  - Parameters must be arrays
+  //  - Parameters must be arrays; may contain null/undefined values.
   //  - The functions return a single numerical value.
   //  - May return NaN or infinities.
   //  - Must gracefully handle wacko figures, including !VALUE and nulls.

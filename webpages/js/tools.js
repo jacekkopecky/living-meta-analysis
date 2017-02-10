@@ -298,7 +298,7 @@
   }
 
   _.strictToNumberOrNull = function strictToNumberOrNull(val) {
-    if (val === null) return val;
+    if (val == null) return val;
     if (typeof val == 'number') return val;
     if (typeof val == 'string') {
       if (val == '') return null;
