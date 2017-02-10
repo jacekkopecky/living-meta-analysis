@@ -850,14 +850,15 @@
   function getDatumValue(colId, expIndex, paperIndex) {
     // check cache
     if (!(colId in computedDataCache)) computedDataCache[colId] = [];
-    if (expIndex in computedDataCache[colId]) {
-      if (computedDataCache[colId][expIndex] === CIRCULAR_COMPUTATION_FLAG) {
+    if (!(computedDataCache[colId][paperIndex])) computedDataCache[colId][paperIndex] = [];
+    if (expIndex in computedDataCache[colId][paperIndex]) {
+      if (computedDataCache[colId][paperIndex][expIndex] === CIRCULAR_COMPUTATION_FLAG) {
         throw new Error('circular computation involving col ' + colId);
       }
-      return computedDataCache[colId][expIndex];
+      return computedDataCache[colId][paperIndex][expIndex];
     }
 
-    computedDataCache[colId][expIndex] = CIRCULAR_COMPUTATION_FLAG;
+    computedDataCache[colId][paperIndex][expIndex] = CIRCULAR_COMPUTATION_FLAG;
 
     var col = lima.columns[colId];
     var val = null;
@@ -895,7 +896,7 @@
       }
     }
 
-    computedDataCache[colId][expIndex] = val;
+    computedDataCache[colId][paperIndex][expIndex] = val;
     return val;
   }
 
