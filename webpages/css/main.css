@@ -2252,6 +2252,48 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
   display: none;
 }
 
+/* aggregates
+ *
+ *
+ *     ##    ####   ####  #####  ######  ####    ##   ##### ######  ####
+ *    #  #  #    # #    # #    # #      #    #  #  #    #   #      #
+ *   #    # #      #      #    # #####  #      #    #   #   #####   ####
+ *   ###### #  ### #  ### #####  #      #  ### ######   #   #           #
+ *   #    # #    # #    # #   #  #      #    # #    #   #   #      #    #
+ *   #    #  ####   ####  #    # ######  ####  #    #   #   ######  ####
+ *
+ *
+ */
+
+#metaanalysis table.aggregates {
+  margin-top: 2em;
+  border-collapse: collapse;
+}
+
+#metaanalysis table.aggregates tr + tr > * {
+  border-top: 1px solid black;
+}
+
+#metaanalysis table.aggregates th,
+#metaanalysis table.aggregates td {
+  padding: .3em .5em;
+  font-weight: normal;
+}
+
+#metaanalysis table.aggregates tr:first-of-type {
+  text-align: left;
+}
+
+#metaanalysis table.aggregates tr:first-of-type th {
+  font-weight: bold;
+}
+
+#metaanalysis table.aggregates tr:nth-child(2n) {
+  background-color: #eee;
+}
+
+
+
 /* validation
  *
  *

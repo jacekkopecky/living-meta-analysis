@@ -393,7 +393,7 @@ function saveMetaanalysis(req, res, next) {
     res.json(extractMetaanalysisForSending(ma, false, req.params.email));
   })
   .catch((e) => {
-    if (e instanceof ValidationError) {
+    if (e instanceof ValidationError || e instanceof NotImplementedError) {
       next(e);
     } else {
       next(new InternalError(e));
@@ -415,6 +415,7 @@ function extractMetaanalysisForSending(storageMetaanalysis, includePapers, email
     paperOrder: storageMetaanalysis.paperOrder,
     hiddenCols: storageMetaanalysis.hiddenCols,
     hiddenExperiments: storageMetaanalysis.hiddenExperiments,
+    aggregates: storageMetaanalysis.aggregates,
     // todo comments in various places?
   };
 
@@ -443,9 +444,18 @@ function extractReceivedMetaanalysis(receivedMetaanalysis) {
     paperOrder:        tools.array(receivedMetaanalysis.paperOrder, tools.string),
     hiddenCols:        tools.array(receivedMetaanalysis.hiddenCols, tools.string),
     hiddenExperiments: tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
+    aggregates:        tools.array(receivedMetaanalysis.aggregates, extractReceivedAggregate),
   };
 
   return retval;
+}
+
+function extractReceivedAggregate(recAggr) {
+  // expecting receivedAggregate to come from JSON.parse()
+  return {
+    formula: tools.string(recAggr.formula),
+    columns: tools.array(recAggr.columns, tools.string),
+  };
 }
 
 function listTopMetaanalyses(req, res, next) {
@@ -511,7 +521,7 @@ function saveColumn(req, res, next) {
     res.json(extractColumnForSending(column));
   })
   .catch((e) => {
-    if (e instanceof ValidationError) {
+    if (e instanceof ValidationError || e instanceof NotImplementedError) {
       next(e);
     } else {
       next(new InternalError(e));

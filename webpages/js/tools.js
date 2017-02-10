@@ -51,6 +51,8 @@
     return document.getElementById(id);
   }
 
+  // todo maybe if the template only has one child, return that instead of the DocumentFragment
+  // this way we'd avoid all the _.cloneTemplate().children[0]
   _.cloneTemplate = function cloneTemplate(template) {
     if (!(template instanceof Node)) template = _.byId(template);
     if (!template) return void 0;
@@ -59,8 +61,8 @@
   }
 
   _.array = function array(arr) {
-      return [].slice.call(arr);
-      // todo NodeList returned by document.querySelectorAll is soon getting .forEach so this function may soon no longer be needed
+    return [].slice.call(arr);
+    // todo NodeList returned by document.querySelectorAll is soon getting .forEach so this function may soon no longer be needed
   }
 
   function valOrFun(val, param) {
@@ -268,10 +270,43 @@
     if (superset.length < subset.length) return false;
 
     for (var i = 0; i < subset.length; i++) {
-        if (superset.indexOf(subset[i]) == -1) return false;
+      if (superset.indexOf(subset[i]) == -1) return false;
     }
     return true;
   }
+
+  /* input validation
+   *
+   *
+   *   # #    # #####  #    # #####    #    #   ##   #      # #####    ##   ##### #  ####  #    #
+   *   # ##   # #    # #    #   #      #    #  #  #  #      # #    #  #  #    #   # #    # ##   #
+   *   # # #  # #    # #    #   #      #    # #    # #      # #    # #    #   #   # #    # # #  #
+   *   # #  # # #####  #    #   #      #    # ###### #      # #    # ######   #   # #    # #  # #
+   *   # #   ## #      #    #   #       #  #  #    # #      # #    # #    #   #   # #    # #   ##
+   *   # #    # #       ####    #        ##   #    # ###### # #####  #    #   #   #  ####  #    #
+   *
+   *
+   */
+
+  _.strictToNumber = function strictToNumber(val) {
+    if (typeof val == 'number') return val;
+    if (typeof val == 'string') {
+      if (val == '') return NaN;
+      else return Number(val);
+    }
+    return NaN;
+  }
+
+  _.strictToNumberOrNull = function strictToNumberOrNull(val) {
+    if (val === null) return val;
+    if (typeof val == 'number') return val;
+    if (typeof val == 'string') {
+      if (val == '') return null;
+      else return Number(val);
+    }
+    return NaN;
+  }
+
 
   /* error handling
    *
