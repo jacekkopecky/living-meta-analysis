@@ -1056,6 +1056,14 @@ body:not(.page-about-you).signed-on #paper > header .edityourcopy {
   display: none;
 }
 
+#metaanalysis button.up {
+  transform: rotate(90deg)
+}
+
+#metaanalysis button.down {
+  transform: rotate(90deg)
+}
+
 #metaanalysis .lastcolumnhidden .unhide {
   color: rgba(0, 0, 0, 0.26);
   border: 1px solid rgba(0,0,0,0);
