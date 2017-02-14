@@ -2299,6 +2299,15 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
   background-color: #eee;
 }
 
+#metaanalysis table.aggregates .aggregatecolumnsselection label {
+  margin-top: .5em;
+  display: block;
+}
+
+#metaanalysis table.aggregates .aggregatecolumnsselection select {
+  display: block;
+}
+
 
 
 /* validation
@@ -2313,12 +2322,14 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
  *
  *
  */
-[contenteditable].validationerror {
+[contenteditable].validationerror,
+select.validationerror {
   box-shadow: 0 0 3px 3px rgba(255,0,0,.5);
   position: relative;
 }
 
 [contenteditable].validationerror[data-validationmessage]:after {
+select.validationerror[data-validationmessage]:after {
   font-size: .8rem;
   font-weight: normal;
   display: block;

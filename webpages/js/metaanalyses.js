@@ -1255,7 +1255,10 @@
         var el = document.createElement("option");
         el.textContent = aggregateFormulas[i].label;
         el.value = aggregateFormulas[i].id;
-        if (aggregate.formula === el.value) el.selected = true;
+        if (aggregate.formula === el.value) {
+          el.selected = true;
+          aggregateFormulasDropdown.classList.remove('validationerror');
+        }
         aggregateFormulasDropdown.appendChild(el);
       }
 
@@ -1263,6 +1266,12 @@
         aggregate.formula = e.target.value;
 
         var formula = lima.getAggregateFormulaById(aggregate.formula);
+        if (formula) {
+          aggregateFormulasDropdown.classList.remove('validationerror');
+        } else {
+          aggregateFormulasDropdown.classList.add('validationerror');
+        }
+        // we'll call setValidationErrorClass() in fillAggregateColumnsSelection
 
         // make sure formula columns array matches the number of expected parameters
         aggregate.columns.length = formula ? formula.parameters.length : 0;
@@ -1354,22 +1363,12 @@
       var select = document.createElement("select");
       label.appendChild(select);
 
-      // listen to changes of the dropdown box
-      // preserve the value of i inside this code
-      (function(i){
-        select.onchange = function(e) {
-          aggregate.columns[i] = e.target.value;
-          _.scheduleSave(metaanalysis);
-          fillAggregateInformation(aggregateEl, aggregate);
-          recalculateComputedData();
-        };
-      })(i);
-
       // the first option is an instruction
       var op = document.createElement("option");
       op.textContent = 'Select a column';
       op.value = '';
       select.appendChild(op);
+      select.classList.add('validationerror');
 
       // Now make an option for each column in paper
       for (var j = 0; j < metaanalysis.columnOrder.length; j++){
@@ -1380,9 +1379,29 @@
         el.value = colId;
         if (aggregate.columns[i] === el.value) {
           el.selected = true;
+          select.classList.remove('validationerror');
         }
+        setValidationErrorClass();
         select.appendChild(el);
       }
+
+      // listen to changes of the dropdown box
+      // preserve the value of i inside this code
+      (function(i, select){
+        select.onchange = function(e) {
+          aggregate.columns[i] = e.target.value;
+          if (e.target.value) {
+            select.classList.remove('validationerror');
+          } else {
+            select.classList.add('validationerror');
+          }
+          setValidationErrorClass();
+          _.scheduleSave(metaanalysis);
+          fillAggregateInformation(aggregateEl, aggregate);
+          recalculateComputedData();
+        };
+      })(i, select);
+
     }
 
     fillAggregateInformation(aggregateEl, aggregate);
@@ -1393,6 +1412,7 @@
     currentMetaanalysis.aggregates.push(aggregate);
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
+    setTimeout(focusFirstValidationError, 0);
   }
 
 
