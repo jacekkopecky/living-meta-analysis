@@ -1056,12 +1056,11 @@ body:not(.page-about-you).signed-on #paper > header .edityourcopy {
   display: none;
 }
 
-#metaanalysis button.up {
-  transform: rotate(90deg)
-}
-
-#metaanalysis button.down {
-  transform: rotate(90deg)
+#metaanalysis button.up span,
+#metaanalysis button.down span {
+  display: inline-block;
+  transform: rotate(90deg);
+  line-height: 1em;
 }
 
 #metaanalysis .lastcolumnhidden .unhide {
