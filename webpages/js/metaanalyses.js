@@ -1247,11 +1247,6 @@
       addAggregateNode.parentElement.insertBefore(aggregateEl, addAggregateNode);
 
       var aggregateValTd = _.findEl(aggregateEl, 'td');
-      _.setDataProps(aggregateEl, '.datum .popupbox', 'index', aggregateIndex);
-
-      _.addEventListener(aggregateEl, 'button.move', 'click', moveAggregate);
-      _.addEventListener(aggregateEl, 'button.delete', 'click', deleteAggregate);
-
       // Editing Options
       // Add an option for every aggregate formula we know
       var aggregateFormulas = lima.listAggregateFormulas();
@@ -1285,7 +1280,12 @@
       var aggrFormula = lima.getAggregateFormulaById(aggregate.formula);
       fillAggregateColumnsSelection(metaanalysis, aggregate, aggregateEl, aggrFormula);
 
-      setupPopupBoxPinning(aggregateEl, '.datum.popupbox', aggregateIndex);
+      var aggregateId = aggregate.formula + '(' + aggregate.columns.join(',') + ')';
+      setupPopupBoxPinning(aggregateEl, '.datum.popupbox', aggregateId);
+      _.setDataProps(aggregateEl, '.datum.popupbox', 'index', aggregateIndex);
+
+      _.addEventListener(aggregateEl, 'button.move', 'click', moveAggregate);
+      _.addEventListener(aggregateEl, 'button.delete', 'click', deleteAggregate);
 
       addComputedDatumSetter(function() {
         var val = getDatumValue(aggregate);
@@ -1639,7 +1639,7 @@
 
   function moveColumn() {
     // a click will pin the box,
-    // this timout makes sure the click gets processed first and then we do the moving
+    // this timeout makes sure the click gets processed first and then we do the moving
     setTimeout(doMoveColumn, 0, this);
   }
 
@@ -1720,7 +1720,7 @@
 
   function changeColumnTypeConfirmOrCancel(ev) {
     // a click will pin the box,
-    // this timout makes sure the click gets processed first and then we do the change
+    // this timeout makes sure the click gets processed first and then we do the change
     setTimeout(doChangeColumnTypeConfirmOrCancel, 0, ev.target);
   }
 
@@ -1792,13 +1792,23 @@
     _.scheduleSave(currentMetaanalysis);
   }
 
-  /* BANNER - Changing Aggregates
-  */
+  /* changing aggregates
+   *
+   *
+   *    ####  #    #   ##   #    #  ####  # #    #  ####       ##    ####   ####  #####  ######  ####    ##   ##### ######  ####
+   *   #    # #    #  #  #  ##   # #    # # ##   # #    #     #  #  #    # #    # #    # #      #    #  #  #    #   #      #
+   *   #      ###### #    # # #  # #      # # #  # #         #    # #      #      #    # #####  #      #    #   #   #####   ####
+   *   #      #    # ###### #  # # #  ### # #  # # #  ###    ###### #  ### #  ### #####  #      #  ### ######   #   #           #
+   *   #    # #    # #    # #   ## #    # # #   ## #    #    #    # #    # #    # #   #  #      #    # #    #   #   #      #    #
+   *    ####  #    # #    # #    #  ####  # #    #  ####     #    #  ####   ####  #    # ######  ####  #    #   #   ######  ####
+   *
+   *
+   */
 
 
   function moveAggregate() {
     // a click will pin the box,
-    // this timout makes sure the click gets processed first and then we do the moving
+    // this timeout makes sure the click gets processed first and then we do the moving
     setTimeout(doMoveAggregate, 0, this);
   }
 
@@ -1806,7 +1816,7 @@
     var up = el.classList.contains('up');
     var most = el.classList.contains('most');
     var aggregateIndex = _.findPrecedingEl(el, 'div.popupbox').dataset.index;
-    if (!aggregateIndex) console.log("foo"); // we don't know what to move
+    if (!aggregateIndex) return; // we don't know what to move
 
     if (!currentMetaanalysis.aggregates[aggregateIndex]) return console.error('aggregate[' + aggregateIndex + '] not found in aggregates!');
     var newPosition = findNextAggr(aggregateIndex, up, most);
@@ -1815,9 +1825,24 @@
     _.scheduleSave(currentMetaanalysis);
   }
 
+  /*
+   * find where to move an aggregate from its current index;
+   * `up` indicates direction (up meaning left in array order); if `most`, move to the beginning (top) or end (bottom) of the aggregate list.
+   */
+  function findNextAggr(currentIndex, up, most) {
+    if (up) {
+      if (most || currentIndex <= 0) return 0;
+      currentIndex -= 1;
+    } else {
+      if (most) return currentMetaanalysis.aggregates.length - 1;
+      currentIndex += 1;
+    }
+    return currentIndex;
+  }
+
   function deleteAggregate() {
     // a click will pin the box,
-    // this timout makes sure the click gets processed first and then we do the moving
+    // this timeout makes sure the click gets processed first and then we do the moving
     setTimeout(doDeleteAggregate, 0, this);
   }
 
@@ -1827,29 +1852,9 @@
 
     if (!currentMetaanalysis.aggregates[aggregateIndex]) return console.error('aggregate[' + aggregateIndex + '] not found in aggregates!');
     currentMetaanalysis.aggregates.splice(aggregateIndex, 1);
+    unpinPopupBox();
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
-  }
-
-  /*
-   * find where to move a aggregate from its current index;
-   * `up` indicates direction (up meaning left in array order); if `most`, move to the beginning (left) or end (right) of the columns list.
-   */
-  function findNextAggr(currentIndex, up, most) {
-    if (up) {
-      if (most || currentIndex <= 0) return 0;
-      currentIndex -= 1;
-      while (!currentMetaanalysis.aggregates[currentIndex] && currentIndex > 0) {
-        currentIndex -= 1;
-      }
-    } else {
-      if (most) return currentMetaanalysis.aggregates.length - 1;
-      currentIndex += 1;
-      while (!currentMetaanalysis.aggregates[currentIndex] && currentIndex < currentMetaanalysis.aggregates.length - 1) {
-        currentIndex += 1;
-      }
-    }
-    return currentIndex;
   }
 
   /* DOM updates
