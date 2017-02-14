@@ -254,7 +254,7 @@
     return arr;
   }
 
-  // remove an element by its index from the array in-place
+  // remove an element from the array in-place, by value
   _.removeFromArray = function removeFromArray(array, element) {
     var index = array.indexOf(element);
     if (index !== -1) {
