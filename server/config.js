@@ -14,4 +14,8 @@ module.exports = {
     keyFilename: 'jacek-soc-port-ac-uk-google-key.json',
   },
   gcloudDatastoreNamespace: 'living-meta-analysis-v2',
+  port: 8080,
+  httpsPort: 8443,
+  httpsCert: '/etc/letsencrypt/live/lima.soc.port.ac.uk/fullchain.pem',
+  httpsKey: '/etc/letsencrypt/live/lima.soc.port.ac.uk/privkey.pem',
 };
