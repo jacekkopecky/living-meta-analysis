@@ -214,7 +214,7 @@ function getAllUsers() {
   userCache = new Promise((resolve, reject) => {
     console.log('getAllUsers: making a datastore request');
     const retval = {};
-    datastore.createQuery('User').run()
+    datastore.createQuery('User').runStream()
     .on('error', (err) => {
       console.error('error retrieving users');
       console.error(err);
@@ -223,7 +223,7 @@ function getAllUsers() {
     })
     .on('data', (entity) => {
       try {
-        retval[entity.data.emails[0].value] = entity.data;
+        retval[entity.emails[0].value] = entity;
       } catch (err) {
         console.error('error in a user entity (ignoring)');
         console.error(err);
@@ -385,7 +385,7 @@ function getAllPapers() {
   paperCache = new Promise((resolve, reject) => {
     console.log('getAllPapers: making a datastore request');
     const retval = [];
-    datastore.createQuery('Paper').run()
+    datastore.createQuery('Paper').runStream()
     .on('error', (err) => {
       console.error('error retrieving papers');
       console.error(err);
@@ -393,8 +393,8 @@ function getAllPapers() {
       reject(err);
     })
     .on('data', (entity) => {
-      retval.push(migratePaper(entity.data));
-      allTitles.push(entity.data.title);
+      retval.push(migratePaper(entity));
+      allTitles.push(entity.title);
     })
     .on('end', () => {
       console.log(`getAllPapers: ${retval.length} done`);
@@ -619,7 +619,7 @@ function getAllMetaanalyses() {
   metaanalysisCache = new Promise((resolve, reject) => {
     console.log('getAllMetaanalyses: making a datastore request');
     const retval = [];
-    datastore.createQuery('Metaanalysis').run()
+    datastore.createQuery('Metaanalysis').runStream()
     .on('error', (err) => {
       console.error('error retrieving metaanalyses');
       console.error(err);
@@ -627,8 +627,8 @@ function getAllMetaanalyses() {
       reject(err);
     })
     .on('data', (entity) => {
-      retval.push(migrateMetaanalysis(entity.data));
-      allTitles.push(entity.data.title);
+      retval.push(migrateMetaanalysis(entity));
+      allTitles.push(entity.title);
     })
     .on('end', () => {
       console.log(`getAllMetaanalyses: ${retval.length} done`);
@@ -847,7 +847,7 @@ function getAllColumns() {
   columnCache = new Promise((resolve, reject) => {
     console.log('getAllColumns: making a datastore request');
     const retval = {};
-    datastore.createQuery('Column').run()
+    datastore.createQuery('Column').runStream()
     .on('error', (err) => {
       console.error('error retrieving columns');
       console.error(err);
@@ -856,7 +856,7 @@ function getAllColumns() {
     })
     .on('data', (entity) => {
       try {
-        retval[entity.data.id] = entity.data;
+        retval[entity.id] = entity;
       } catch (err) {
         console.error('error in a column entity (ignoring)');
         console.error(err);
