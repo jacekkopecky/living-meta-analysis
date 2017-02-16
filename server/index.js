@@ -8,6 +8,9 @@
 
 const express = require('express');
 const googleOpenID = require('simple-google-openid');
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
 
 const config = require('./config');
 
@@ -158,6 +161,22 @@ process.on('unhandledRejection', (err) => {
   console.error(new Error());
 });
 
-const port = process.env.PORT || 8088;
+const port = process.env.PORT || config.port;
+const httpsPort = process.env.HTTPSPORT || config.httpsPort;
 
-api.ready.then(() => app.listen(port, () => console.log(`LiMA server listening on port ${port}!`)));
+api.ready.then(() => {
+  http.createServer(app)
+  .listen(port, () => console.log(`LiMA server listening on port ${port}`));
+
+  if (config.httpsPort) {
+    try {
+      const httpsKey = fs.readFileSync(config.httpsKey, 'utf8');
+      const httpsCert = fs.readFileSync(config.httpsCert, 'utf8');
+      const credentials = { key: httpsKey, cert: httpsCert };
+      https.createServer(credentials, app)
+      .listen(httpsPort, () => console.log(`LiMA server listening on HTTPS port ${httpsPort}`));
+    } catch (e) {
+      console.error('error starting https', e.message || e);
+    }
+  }
+});
