@@ -12,6 +12,9 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 
+const morgan = require('morgan');
+const rfs = require('rotating-file-stream');
+
 const config = require('./config');
 
 const api = require('./api');
@@ -25,8 +28,37 @@ app.set('strict routing', true);
 
 app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
 
-// simple logging when debugging
-// app.use((req, resp, next) => { console.log(req.path); next(); });
+/* logging
+ *
+ *
+ *   #       ####   ####   ####  # #    #  ####
+ *   #      #    # #    # #    # # ##   # #    #
+ *   #      #    # #      #      # # #  # #
+ *   #      #    # #  ### #  ### # #  # # #  ###
+ *   #      #    # #    # #    # # #   ## #    #
+ *   ######  ####   ####   ####  # #    #  ####
+ *
+ *
+ */
+
+if (config.logDirectory) {
+  // ensure log directory exists
+  if (!fs.existsSync(config.logDirectory)) fs.mkdirSync(config.logDirectory);
+
+  // create a rotating write stream
+  const accessLogStream = rfs('access.log', {
+    interval: '1d', // rotate daily
+    compress: true,
+    path: config.logDirectory,
+  });
+
+  // setup the logger
+  app.use(morgan('combined', { stream: accessLogStream }));
+  console.log(`logging HTTP accesses into ${config.logDirectory}`);
+} else {
+  console.log('not logging HTTP accesses');
+}
+
 
 /* routes
  *

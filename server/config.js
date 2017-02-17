@@ -5,6 +5,9 @@ module.exports = {
   NEW_META_TITLE: 'new-metaanalysis',
   TITLE_RE: '[a-zA-Z0-9.-]+',
 
+  // where to store Web access logs; relative to project root
+  logDirectory: './log',
+
   // this is a delay for demonstration purposes so the server seems slow
   demoApiDelay: 0,
 
