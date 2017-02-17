@@ -161,22 +161,47 @@ process.on('unhandledRejection', (err) => {
   console.error(new Error());
 });
 
+/* start server
+ *
+ *
+ *    ####  #####   ##   #####  #####     ####  ###### #####  #    # ###### #####
+ *   #        #    #  #  #    #   #      #      #      #    # #    # #      #    #
+ *    ####    #   #    # #    #   #       ####  #####  #    # #    # #####  #    #
+ *        #   #   ###### #####    #           # #      #####  #    # #      #####
+ *   #    #   #   #    # #   #    #      #    # #      #   #   #  #  #      #   #
+ *    ####    #   #    # #    #   #       ####  ###### #    #   ##   ###### #    #
+ *
+ *
+ */
+
 const port = process.env.PORT || config.port;
 const httpsPort = process.env.HTTPSPORT || config.httpsPort;
 
 api.ready.then(() => {
-  http.createServer(app)
-  .listen(port, () => console.log(`LiMA server listening on port ${port}`));
-
-  if (config.httpsPort) {
+  if (!config.httpsPort) {
+    // only HTTP
+    http.createServer(app)
+    .listen(port, () => console.log(`LiMA server listening on insecure port ${port}`));
+  } else {
+    // HTTPS; with HTTP redirecting to that
     try {
-      const httpsKey = fs.readFileSync(config.httpsKey, 'utf8');
-      const httpsCert = fs.readFileSync(config.httpsCert, 'utf8');
-      const credentials = { key: httpsKey, cert: httpsCert };
-      https.createServer(credentials, app)
-      .listen(httpsPort, () => console.log(`LiMA server listening on HTTPS port ${httpsPort}`));
+      const credentials = {};
+      credentials.key = fs.readFileSync(config.httpsKey, 'utf8');
+      credentials.cert = fs.readFileSync(config.httpsCert, 'utf8');
+
+      https.createServer(credentials, app).listen(httpsPort, () => {
+        console.log(`LiMA server listening on HTTPS port ${httpsPort}`);
+      });
+
+      // HTTP app will just redirect to HTTPS
+      const redirectApp = express();
+      redirectApp.get('*', (req, res) => res.redirect('https://' + req.hostname + req.url));
+
+      http.createServer(redirectApp).listen(port, () => {
+        console.log(`LiMA redirect server listening on port ${port}`);
+      });
     } catch (e) {
-      console.error('error starting https', e.message || e);
+      console.error('error starting HTTPS', e.message || e);
     }
   }
 });
