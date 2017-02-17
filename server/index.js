@@ -40,6 +40,8 @@ app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
  *
  */
 
+let loggingMiddleware;
+
 if (config.logDirectory) {
   // ensure log directory exists
   if (!fs.existsSync(config.logDirectory)) fs.mkdirSync(config.logDirectory);
@@ -52,7 +54,8 @@ if (config.logDirectory) {
   });
 
   // setup the logger
-  app.use(morgan(config.logFormat || 'combined', { stream: accessLogStream }));
+  loggingMiddleware = morgan(config.logFormat || 'combined', { stream: accessLogStream });
+  app.use(loggingMiddleware);
   console.log(`logging HTTP accesses into ${config.logDirectory}`);
 } else {
   console.log('not logging HTTP accesses');
@@ -226,6 +229,7 @@ api.ready.then(() => {
 
       // HTTP app will just redirect to HTTPS
       const redirectApp = express();
+      if (loggingMiddleware) redirectApp.use(loggingMiddleware);
       redirectApp.get('*', (req, res) => res.redirect('https://' + req.hostname + req.url));
 
       http.createServer(redirectApp).listen(port, () => {
