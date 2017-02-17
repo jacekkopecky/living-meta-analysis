@@ -110,7 +110,7 @@
     lima.getColumns() // todo getColumns could run in parallel with everything before updatePaperView
     .then(lima.getGapiIDToken)
     .then(function (idToken) {
-      var currentPaperUrl = '/api/papers/' + email + '/' + title;
+      var currentPaperUrl = getPaperUrl(email, title);
       return fetch(currentPaperUrl, _.idTokenToFetchOptions(idToken));
     })
     .then(function (response) {
@@ -1309,9 +1309,10 @@
 
   function savePaper() {
     var self = this;
+    if (!currentPaperUrl) currentPaperUrl = getPaperUrl(self.enteredBy, self.title);
     return lima.getGapiIDToken()
       .then(function(idToken) {
-        return fetch(self.apiurl, {
+        return fetch(currentPaperUrl, {
           method: 'POST',
           headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
           body: JSON.stringify(self),
@@ -1331,7 +1332,7 @@
       })
   }
 
-
+function getPaperUrl(email, title) { return `/api/papers/${email}/${title}`; }
 
   /* changing cols
    *
