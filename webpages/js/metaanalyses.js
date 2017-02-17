@@ -577,12 +577,14 @@
     var addRowNode = _.findEl(table, 'tbody > tr.add');
 
     papers.forEach(function(paper, papIndex) {
-      var paperIndex = papIndex;
       paper.experiments.forEach(function (experiment, expIndex) {
         var tr = _.cloneTemplate('experiment-row-template').children[0];
         tableBodyNode.insertBefore(tr, addRowNode);
 
         _.fillEls(tr, '.paptitle', paper.title);
+
+        // the "add a row" button needs to know what paper it's on
+        tr.dataset.paperIndex = papIndex;
 
         var paperTitleEl = _.findEl(tr, '.papertitle');
 
@@ -681,7 +683,7 @@
             // todo computed from x and y
 
             addComputedDatumSetter(function() {
-              var val = getDatumValue(colId, expIndex, paperIndex);
+              var val = getDatumValue(colId, expIndex, papIndex);
 
               // handle bad values like Excel
               if (val == null) {
@@ -732,7 +734,8 @@
       });
     });
 
-    _.addEventListener(table, 'tr.add button.add', 'click', addExperimentRow);
+    _.addEventListener(table, 'tr:not(.add) .papertitle button.add', 'click', addExperimentRow);
+    // _.addEventListener(table, 'tr.add button.add', 'click', addPaperRow);
 
     _.addEventListener(table, 'th.add button.add', 'click', addExperimentColumn);
     _.addEventListener(table, 'th.add button.cancel', 'click', dismissAddExperimentColumn);
@@ -1200,29 +1203,39 @@
    *
    */
 
-  function addExperimentRow() {
+  function addExperimentRow(e) {
     // if there are no pending changes, add a new experiment
     if (!lima.checkToPreventForcedSaving()) {
-      if (!Array.isArray(currentMetaanalysis.experiments)) currentMetaanalysis.experiments = [];
-      currentMetaanalysis.experiments.push({});
+      var parentTr = _.findPrecedingEl(e.target, "tr");
+      var paperIndex = parentTr.dataset.paperIndex;
+      var paper = currentMetaanalysis.papers[paperIndex];
+      if (!paper) return console.error('cannot find paper with index ' + paperIndex + ' for button ', e.target);
+
+      if (!Array.isArray(paper.experiments)) paper.experiments = [];
+      paper.experiments.push({});
       updateMetaanalysisView();
       // focus the empty title of the new experiment
-      focusFirstValidationError();
+      setTimeout(focusFirstValidationError, 0);
     } else {
       console.warn('cannot add a row with some edited values pending');
     }
   }
 
-  function deleteNewExperiment() {
+  function deleteNewExperiment(el) {
     if (!lima.checkToPreventForcedSaving()) {
-      if (!Array.isArray(currentMetaanalysis.experiments)) return;
-      var lastExp = currentMetaanalysis.experiments[currentMetaanalysis.experiments.length - 1];
+      var parentTr = _.findPrecedingEl(el, "tr");
+      var paperIndex = parentTr.dataset.paperIndex;
+      var paper = currentMetaanalysis.papers[paperIndex];
+      if (!paper) return console.error('cannot find paper with index ' + paperIndex + ' for editing field ', el);
+
+      if (!Array.isArray(paper.experiments)) return;
+      var lastExp = paper.experiments[paper.experiments.length - 1];
       if (lastExp && Object.keys(lastExp).length === 0) {
-        currentMetaanalysis.experiments.pop();
+        paper.experiments.pop();
       }
       unpinPopupBox();
       updateMetaanalysisView();
-      focusFirstValidationError();
+      setTimeout(focusFirstValidationError, 0);
     }
   }
 
@@ -2007,7 +2020,7 @@
           editingEl.classList.remove('validationerror');
           setUnsavedClass();
           setValidationErrorClass();
-          deleteFunction();
+          deleteFunction(editingEl);
         } else {
           cancel();
           ev.target.blur();

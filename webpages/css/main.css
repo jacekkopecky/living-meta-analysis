@@ -1469,6 +1469,30 @@ body:not(.page-about-you).signed-on #metaanalysis > header .edityourcopy {
 
 #metaanalysis.editing-disabled-by-saving { opacity: .5; transition: opacity .3s; }
 
+#metaanalysis table.experiments tr.add th {
+  text-align: right;
+  vertical-align: top;
+}
+
+#metaanalysis table.experiments tr:not(.add) .papertitle {
+  position: relative;
+}
+
+#metaanalysis table.experiments tr:not(.add) .papertitle button.add,
+#metaanalysis table.experiments tr:not(.add) .papertitle button.add + button {
+  position: absolute;
+  bottom: .3rem;
+  right: .5rem;
+}
+
+#metaanalysis table.experiments tr.add td {
+  border-left: none;
+  border-right: none;
+}
+
+#metaanalysis table.experiments tr.add:nth-child(n) {
+  background-color: inherit;
+}
 
 /* experiment data
  *
