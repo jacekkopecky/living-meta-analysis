@@ -11,7 +11,6 @@ const googleOpenID = require('simple-google-openid');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
-
 const morgan = require('morgan');
 const rfs = require('rotating-file-stream');
 
