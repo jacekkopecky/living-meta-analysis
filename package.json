@@ -30,6 +30,6 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "google-cloud": "^0.47.0",
-    "simple-google-openid": "0.0.5"
+    "simple-google-openid": "0.0.6"
   }
 }
