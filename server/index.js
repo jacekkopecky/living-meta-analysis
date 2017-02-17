@@ -11,6 +11,8 @@ const googleOpenID = require('simple-google-openid');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
+const morgan = require('morgan');
+const rfs = require('rotating-file-stream');
 
 const config = require('./config');
 
@@ -25,8 +27,37 @@ app.set('strict routing', true);
 
 app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
 
-// simple logging when debugging
-// app.use((req, resp, next) => { console.log(req.path); next(); });
+/* logging
+ *
+ *
+ *   #       ####   ####   ####  # #    #  ####
+ *   #      #    # #    # #    # # ##   # #    #
+ *   #      #    # #      #      # # #  # #
+ *   #      #    # #  ### #  ### # #  # # #  ###
+ *   #      #    # #    # #    # # #   ## #    #
+ *   ######  ####   ####   ####  # #    #  ####
+ *
+ *
+ */
+
+if (config.logDirectory) {
+  // ensure log directory exists
+  if (!fs.existsSync(config.logDirectory)) fs.mkdirSync(config.logDirectory);
+
+  // create a rotating write stream
+  const accessLogStream = rfs('access.log', {
+    interval: '1d', // rotate daily
+    compress: true,
+    path: config.logDirectory,
+  });
+
+  // setup the logger
+  app.use(morgan(config.logFormat || 'combined', { stream: accessLogStream }));
+  console.log(`logging HTTP accesses into ${config.logDirectory}`);
+} else {
+  console.log('not logging HTTP accesses');
+}
+
 
 /* routes
  *
@@ -161,22 +192,47 @@ process.on('unhandledRejection', (err) => {
   console.error(new Error());
 });
 
+/* start server
+ *
+ *
+ *    ####  #####   ##   #####  #####     ####  ###### #####  #    # ###### #####
+ *   #        #    #  #  #    #   #      #      #      #    # #    # #      #    #
+ *    ####    #   #    # #    #   #       ####  #####  #    # #    # #####  #    #
+ *        #   #   ###### #####    #           # #      #####  #    # #      #####
+ *   #    #   #   #    # #   #    #      #    # #      #   #   #  #  #      #   #
+ *    ####    #   #    # #    #   #       ####  ###### #    #   ##   ###### #    #
+ *
+ *
+ */
+
 const port = process.env.PORT || config.port;
 const httpsPort = process.env.HTTPSPORT || config.httpsPort;
 
 api.ready.then(() => {
-  http.createServer(app)
-  .listen(port, () => console.log(`LiMA server listening on port ${port}`));
-
-  if (config.httpsPort) {
+  if (!config.httpsPort) {
+    // only HTTP
+    http.createServer(app)
+    .listen(port, () => console.log(`LiMA server listening on insecure port ${port}`));
+  } else {
+    // HTTPS; with HTTP redirecting to that
     try {
-      const httpsKey = fs.readFileSync(config.httpsKey, 'utf8');
-      const httpsCert = fs.readFileSync(config.httpsCert, 'utf8');
-      const credentials = { key: httpsKey, cert: httpsCert };
-      https.createServer(credentials, app)
-      .listen(httpsPort, () => console.log(`LiMA server listening on HTTPS port ${httpsPort}`));
+      const credentials = {};
+      credentials.key = fs.readFileSync(config.httpsKey, 'utf8');
+      credentials.cert = fs.readFileSync(config.httpsCert, 'utf8');
+
+      https.createServer(credentials, app).listen(httpsPort, () => {
+        console.log(`LiMA server listening on HTTPS port ${httpsPort}`);
+      });
+
+      // HTTP app will just redirect to HTTPS
+      const redirectApp = express();
+      redirectApp.get('*', (req, res) => res.redirect('https://' + req.hostname + req.url));
+
+      http.createServer(redirectApp).listen(port, () => {
+        console.log(`LiMA redirect server listening on port ${port}`);
+      });
     } catch (e) {
-      console.error('error starting https', e.message || e);
+      console.error('error starting HTTPS', e.message || e);
     }
   }
 });

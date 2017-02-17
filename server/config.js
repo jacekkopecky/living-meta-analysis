@@ -5,6 +5,11 @@ module.exports = {
   NEW_META_TITLE: 'new-metaanalysis',
   TITLE_RE: '[a-zA-Z0-9.-]+',
 
+  // where to store Web access logs; relative to project root
+  logDirectory: './log',
+  // morgan format for access log lines, default is 'combined'
+  logFormat: ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time ms',   // eslint-disable-line
+
   // this is a delay for demonstration purposes so the server seems slow
   demoApiDelay: 0,
 
@@ -15,6 +20,7 @@ module.exports = {
   },
   gcloudDatastoreNamespace: 'living-meta-analysis-v2',
   port: 8080,
+  // comment out, or delete, the following lines, to have LiMA running on HTTP only
   httpsPort: 8443,
   httpsCert: '/etc/letsencrypt/live/lima.soc.port.ac.uk/fullchain.pem',
   httpsKey: '/etc/letsencrypt/live/lima.soc.port.ac.uk/privkey.pem',
