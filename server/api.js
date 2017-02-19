@@ -455,6 +455,7 @@ function extractReceivedAggregate(recAggr) {
   return {
     formula: tools.string(recAggr.formula),
     columns: tools.array(recAggr.columns, tools.string),
+    comments: tools.array(recAggr.comments, extractReceivedComment),
   };
 }
 

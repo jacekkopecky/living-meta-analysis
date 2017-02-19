@@ -1256,6 +1256,7 @@
     var addAggregateNode = _.findEl(table, 'tr.add');
 
     metaanalysis.aggregates.forEach(function (aggregate, aggregateIndex) {
+      console.log(aggregate);
       var aggregateEl = _.cloneTemplate('aggregate-row-template').children[0];
       addAggregateNode.parentElement.insertBefore(aggregateEl, addAggregateNode);
 
@@ -1330,6 +1331,7 @@
       });
 
       fillAggregateInformation(aggregateEl, aggregate);
+      fillComments('comment-template', aggregateValTd, '.commentcount', '.datum.popupbox main', metaanalysis, ['aggregates', aggregateIndex, 'comments']);
     });
 
     // Event handlers
