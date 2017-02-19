@@ -1329,6 +1329,7 @@
         _.fillEls(aggregateValTd, '.value', val);
       });
 
+      fillAggregateInformation(aggregateEl, aggregate);
     });
 
     // Event handlers
