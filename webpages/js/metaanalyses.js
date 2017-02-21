@@ -735,7 +735,7 @@
     });
 
     _.addEventListener(table, 'tr:not(.add) .papertitle button.add', 'click', addExperimentRow);
-    // _.addEventListener(table, 'tr.add button.add', 'click', addPaperRow);
+    _.addEventListener(table, 'tr.add button.add', 'click', addPaperRow);
 
     _.addEventListener(table, 'th.add button.add', 'click', addExperimentColumn);
     _.addEventListener(table, 'th.add button.cancel', 'click', dismissAddExperimentColumn);
@@ -1237,6 +1237,15 @@
       updateMetaanalysisView();
       setTimeout(focusFirstValidationError, 0);
     }
+  }
+
+  function addPaperRow() {
+    // todo
+    var newPaper = new lima.Paper();
+    newPaper.init();
+    currentMetaanalysis.papers.push(newPaper);
+    updateMetaanalysisView();
+    setTimeout(focusFirstValidationError, 0);
   }
 
   /* aggregates
