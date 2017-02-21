@@ -241,7 +241,7 @@
     var metaanalysisEl = _.cloneTemplate(metaanalysisTemplate).children[0];
     metaanalysisTemplate.parentElement.insertBefore(metaanalysisEl, metaanalysisTemplate);
 
-
+    fillPaperOrder(metaanalysis);
     fillTags(metaanalysisEl, metaanalysis);
     fillMetaanalysisExperimentTable(metaanalysis);
     fillAggregateTable(metaanalysis);
@@ -286,6 +286,16 @@
     setUnsavedClass();
 
     recalculateComputedData();
+  }
+
+  // Ensure all local .papers are in paperOrder
+  function fillPaperOrder(metaanalysis) {
+    metaanalysis.papers.forEach(function(paper){
+      if (metaanalysis.paperOrder.indexOf(paper.id) == -1) {
+        metaanalysis.paperOrder.push(paper.id);
+        _.scheduleSave(metaanalysis);
+      }
+    });
   }
 
   /* editTags
@@ -735,7 +745,7 @@
     });
 
     _.addEventListener(table, 'tr:not(.add) .papertitle button.add', 'click', addExperimentRow);
-    // _.addEventListener(table, 'tr.add button.add', 'click', addPaperRow);
+    _.addEventListener(table, 'tr.add button.add', 'click', addPaperRow);
 
     _.addEventListener(table, 'th.add button.add', 'click', addExperimentColumn);
     _.addEventListener(table, 'th.add button.cancel', 'click', dismissAddExperimentColumn);
@@ -1237,6 +1247,18 @@
       updateMetaanalysisView();
       setTimeout(focusFirstValidationError, 0);
     }
+  }
+
+  function addPaperRow() {
+    var newPaper = new lima.Paper();
+    newPaper.init();
+    // Populate an empty experiment
+    newPaper.experiments.push({});
+    // Fill in missing user information
+    newPaper.enteredBy = lima.getAuthenticatedUserEmail();
+    currentMetaanalysis.papers.push(newPaper);
+    updateMetaanalysisView();
+    setTimeout(focusFirstValidationError, 0);
   }
 
   /* aggregates
