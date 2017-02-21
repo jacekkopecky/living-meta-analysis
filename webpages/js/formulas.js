@@ -27,21 +27,45 @@
         parameters: [ 'experimental', 'control' ]
       },
       {
-        id: 'logOddsRatioPercent',
-        label: 'Log Odds Ratio (percentages)',
-        func: logOddsRatioPercent,
-        parameters: [ 'experimental (%)', 'control (%)' ]
-      },
-      {
         id: 'weight',
         label: 'Weight',
         func: weight,
         parameters: [ 'experimental outcome', 'experimental N', 'control outcome', 'control N' ]
       },
       {
+        id: 'lowerConfidenceLimit',
+        label: 'Lower Confidence Limit',
+        func: lowerConfidenceLimit,
+        parameters: [ 'experimental outcome', 'experimental N', 'control outcome', 'control N' ]
+      },
+      {
+        id: 'upperConfidenceLimit',
+        label: 'Upper Confidence Limit',
+        func: upperConfidenceLimit,
+        parameters: [ 'experimental outcome', 'experimental N', 'control outcome', 'control N' ]
+      },
+      {
+        id: 'logOddsRatioPercent',
+        label: 'Log Odds Ratio (percentages)',
+        func: logOddsRatioPercent,
+        parameters: [ 'experimental (%)', 'control (%)' ]
+      },
+      {
         id: 'weightPercent',
         label: 'Weight (percentages)',
         func: weightPercent,
+        parameters: [ 'experimental outcome (%)', 'experimental N', 'control outcome (%)', 'control N' ]
+      },
+      {
+        id: 'lowerConfidenceLimitPercent',
+        label: 'Lower Confidence Limit (percentages)',
+        func: lowerConfidenceLimitPercent,
+        parameters: [ 'experimental outcome (%)', 'experimental N', 'control outcome (%)', 'control N' ]
+      },
+      {
+        id: 'upperConfidenceLimitPercent',
+        label: 'Upper Confidence Limit (percentages)',
+        func: upperConfidenceLimitPercent,
         parameters: [ 'experimental outcome (%)', 'experimental N', 'control outcome (%)', 'control N' ]
       },
     ];
@@ -77,7 +101,7 @@
     return logOddsRatio(experimental/100, control/100);
   }
 
-  function weight (Me, Ne, Mc, Nc) {
+  function variance (Me, Ne, Mc, Nc) {
     // validate the input
     Me = _.strictToNumber(Me);
     Ne = _.strictToNumber(Ne);
@@ -86,20 +110,37 @@
 
     // perform the calculation
     // may return NaN or infinities
-    return 1 / ( 1/(Me*Ne) + 1/((1-Me)*Ne) + 1/(Mc*Nc) + 1/((1-Mc)*Nc) );
+    return 1/(Me*Ne) + 1/((1-Me)*Ne) + 1/(Mc*Nc) + 1/((1-Mc)*Nc);
+  }
+
+  function weight (Me, Ne, Mc, Nc) {
+    return 1 / variance(Me, Ne, Mc, Nc);
   }
 
   function weightPercent (Me, Ne, Mc, Nc) {
-    // validate the input
-    Me = _.strictToNumber(Me);
-    Ne = _.strictToNumber(Ne);
-    Mc = _.strictToNumber(Mc);
-    Nc = _.strictToNumber(Nc);
-
-    // perform the calculation
-    // may return NaN or infinities
     return weight(Me/100, Ne, Mc/100, Nc);
   }
+
+  function standardError (Me, Ne, Mc, Nc) {
+    return Math.sqrt(variance(Me, Ne, Mc, Nc));
+  }
+
+  function lowerConfidenceLimit (Me, Ne, Mc, Nc) {
+    return logOddsRatio(Me, Mc) - 1.96 * standardError(Me, Ne, Mc, Nc);
+  }
+
+  function upperConfidenceLimit (Me, Ne, Mc, Nc) {
+    return logOddsRatio(Me, Mc) + 1.96 * standardError(Me, Ne, Mc, Nc);
+  }
+
+  function lowerConfidenceLimitPercent (Me, Ne, Mc, Nc) {
+    return lowerConfidenceLimit(Me/100, Ne, Mc/100, Nc);
+  }
+
+  function upperConfidenceLimitPercent (Me, Ne, Mc, Nc) {
+    return upperConfidenceLimit(Me/100, Ne, Mc/100, Nc);
+  }
+
 
   /* aggregates
    *
