@@ -1200,8 +1200,8 @@ body.page-about-you.editing .fullcolinfo header {
 }
 
 #metaanalysis > header .title.editing.unsaved ~ .titlerenamewarning,
-#metaanalysis .coltitle.editing.unsaved ~ .exprenamewarning,
-#metaanalysis .coltitle.editing.unsaved ~ .paprenamewarning,
+#metaanalysis .exptitle.editing.unsaved ~ .exprenamewarning,
+#metaanalysis .paptitle.editing.unsaved ~ .paprenamewarning,
 #metaanalysis th:not(.newcol) .coltitle.editing.unsaved ~ .colrenamewarning {
   transition: visibility 0s 1s;
 }
@@ -1216,16 +1216,16 @@ body.page-about-you.editing .fullcolinfo header {
 #metaanalysis .exptitle.editing:not(.new).unsaved + .exptitlerename:hover ~ .exprenamewarning,
 #metaanalysis .exptitle.editing:not(.new).unsaved + .exptitlerename:focus ~ .exprenamewarning,
 #metaanalysis .exptitle.editing:not(.new).unsaved ~ .exprenamewarning:hover,
-#metaanalysis .paptitle.editing:not(.new).unsaved:focus ~ .exprenamewarning,
-#metaanalysis .paptitle.editing:not(.new).unsaved:hover ~ .exprenamewarning,
-#metaanalysis .paptitle.editing:not(.new).unsaved + .paptitlerename:hover ~ .exprenamewarning,
-#metaanalysis .paptitle.editing:not(.new).unsaved + .paptitlerename:focus ~ .exprenamewarning,
-#metaanalysis .paptitle.editing:not(.new).unsaved ~ .exprenamewarning:hover,
-#metaanalysis .exptitle.editing:not(.new).unsaved:focus ~ .paprenamewarning,
-#metaanalysis .exptitle.editing:not(.new).unsaved:hover ~ .paprenamewarning,
-#metaanalysis .exptitle.editing:not(.new).unsaved + .exptitlerename:hover ~ .paprenamewarning,
-#metaanalysis .exptitle.editing:not(.new).unsaved + .exptitlerename:focus ~ .paprenamewarning,
-#metaanalysis .exptitle.editing:not(.new).unsaved ~ .paprenamewarning:hover,
+#metaanalysis .exptitle.editing:not(.new).unsaved:focus ~ .exprenamewarning,
+#metaanalysis .exptitle.editing:not(.new).unsaved:hover ~ .exprenamewarning,
+#metaanalysis .exptitle.editing:not(.new).unsaved + .exptitlerename:hover ~ .exprenamewarning,
+#metaanalysis .exptitle.editing:not(.new).unsaved + .exptitlerename:focus ~ .exprenamewarning,
+#metaanalysis .exptitle.editing:not(.new).unsaved ~ .exprenamewarning:hover,
+#metaanalysis .paptitle.editing:not(.new).unsaved:focus ~ .paprenamewarning,
+#metaanalysis .paptitle.editing:not(.new).unsaved:hover ~ .paprenamewarning,
+#metaanalysis .paptitle.editing:not(.new).unsaved + .paptitlerename:hover ~ .paprenamewarning,
+#metaanalysis .paptitle.editing:not(.new).unsaved + .paptitlerename:focus ~ .paprenamewarning,
+#metaanalysis .paptitle.editing:not(.new).unsaved ~ .paprenamewarning:hover,
 #metaanalysis .paptitle.editing:not(.new).unsaved:focus ~ .paprenamewarning,
 #metaanalysis .paptitle.editing:not(.new).unsaved:hover ~ .paprenamewarning,
 #metaanalysis .paptitle.editing:not(.new).unsaved + .paptitlerename:hover ~ .paprenamewarning,

@@ -662,7 +662,7 @@
         addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
 
         _.setDataProps(tr, '.exptitle.editing', 'origTitle', experiment.title);
-        addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitleUnique, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
+        addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', '.exptitle.editing ~ * .exprenamecancel', 'textContent', checkExperimentTitleUnique, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
 
         // Now we track paperinfo@<index> and experimentinfo@<paper>,<exp>
         setupPopupBoxPinning(tr, '.paperinfo.popupbox', papIndex);
@@ -2065,7 +2065,7 @@
 
     function cancel() {
       editingEl[property] = getDeepValue(target, targetProp);
-      editingEl.oninput();
+      editingEl.oninput(true);
     }
 
     editingEl.onkeydown = function (ev) {
