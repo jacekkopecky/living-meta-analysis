@@ -102,22 +102,27 @@
 
   var currentPaper;
 
-  function requestAndFillPaper() {
+  function requestPaper(title) {
     var email = lima.extractUserProfileEmailFromUrl();
-    var title = lima.extractPaperTitleFromUrl();
-    _.fillEls('#paper .title', title);
 
-    lima.getColumns() // todo getColumns could run in parallel with everything before updatePaperView
-    .then(lima.getGapiIDToken)
+    return lima.getGapiIDToken()
     .then(function (idToken) {
-      var currentPaperUrl = getPaperUrl(email, title);
+      var currentPaperUrl = '/api/papers/' + email + '/' + title;
       return fetch(currentPaperUrl, _.idTokenToFetchOptions(idToken));
     })
     .then(function (response) {
       if (response.status === 404) _.notFound();
       else return _.fetchJson(response);
     })
-    .then(initPaper)
+    .then(initPaper);
+  }
+
+  function requestAndFillPaper() {
+    var title = lima.extractPaperTitleFromUrl();
+    _.fillEls('#paper .title', title);
+
+    lima.getColumns() // todo getColumns could run in parallel with everything before updatePaperView
+    .then(function() { return requestPaper(title); })
     .then(setCurrentPaper)
     .then(updatePaperView)
     .then(function() {
@@ -1309,10 +1314,9 @@
 
   function savePaper() {
     var self = this;
-    if (!currentPaperUrl) currentPaperUrl = getPaperUrl(self.enteredBy, self.title);
     return lima.getGapiIDToken()
       .then(function(idToken) {
-        return fetch(currentPaperUrl, {
+        return fetch(self.apiurl, {
           method: 'POST',
           headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
           body: JSON.stringify(self),
@@ -1331,8 +1335,6 @@
         throw err;
       })
   }
-
-function getPaperUrl(email, title) { return `/api/papers/${email}/${title}`; }
 
   /* changing cols
    *
@@ -2003,6 +2005,7 @@ function getPaperUrl(email, title) { return `/api/papers/${email}/${title}`; }
   lima.extractPaperTitleFromUrl = extractPaperTitleFromUrl;
   lima.requestAndFillPaperList = requestAndFillPaperList;
   lima.requestAndFillPaper = requestAndFillPaper;
+  lima.requestPaper = requestPaper;
 
   lima.Paper = Paper;
 

@@ -211,10 +211,23 @@
   function updateMetaanalysisView() {
     if (!currentMetaanalysis) return;
 
+    // check for papers that we don't have in paperOrder
+    // those will be newly added papers that just got saved and now have an ID
+    updatePaperOrder();
+
     fillMetaanalysis(currentMetaanalysis);
 
     // for a new metaanalysis, go to editing the title
     if (!currentMetaanalysis.id) focusFirstValidationError();
+  }
+
+  function updatePaperOrder() {
+    currentMetaanalysis.papers.forEach(function(paper){
+      if (paper.id && currentMetaanalysis.paperOrder.indexOf(paper.id) == -1) {
+        currentMetaanalysis.paperOrder.push(paper.id);
+        _.scheduleSave(currentMetaanalysis);
+      }
+    });
   }
 
   var startNewTag = null;
@@ -241,7 +254,6 @@
     var metaanalysisEl = _.cloneTemplate(metaanalysisTemplate).children[0];
     metaanalysisTemplate.parentElement.insertBefore(metaanalysisEl, metaanalysisTemplate);
 
-    fillPaperOrder(metaanalysis);
     fillTags(metaanalysisEl, metaanalysis);
     fillMetaanalysisExperimentTable(metaanalysis);
     fillAggregateTable(metaanalysis);
@@ -286,16 +298,6 @@
     setUnsavedClass();
 
     recalculateComputedData();
-  }
-
-  // Ensure all local .papers are in paperOrder
-  function fillPaperOrder(metaanalysis) {
-    metaanalysis.papers.forEach(function(paper){
-      if (metaanalysis.paperOrder.indexOf(paper.id) == -1) {
-        metaanalysis.paperOrder.push(paper.id);
-        _.scheduleSave(metaanalysis);
-      }
-    });
   }
 
   /* editTags
@@ -1250,15 +1252,15 @@
   }
 
   function addPaperRow() {
-    var newPaper = new lima.Paper();
-    newPaper.init();
-    // Populate an empty experiment
-    newPaper.experiments.push({});
-    // Fill in missing user information
-    newPaper.enteredBy = lima.getAuthenticatedUserEmail();
-    currentMetaanalysis.papers.push(newPaper);
-    updateMetaanalysisView();
-    setTimeout(focusFirstValidationError, 0);
+    lima.requestPaper('new-paper')
+    .then(function (newPaper) {
+      // Populate an empty experiment
+      newPaper.experiments.push({});
+      // Fill in missing user information
+      currentMetaanalysis.papers.push(newPaper);
+      updateMetaanalysisView();
+      setTimeout(focusFirstValidationError, 0);
+    });
   }
 
   /* aggregates
