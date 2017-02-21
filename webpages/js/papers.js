@@ -102,13 +102,10 @@
 
   var currentPaper;
 
-  function requestAndFillPaper() {
+  function requestPaper(title) {
     var email = lima.extractUserProfileEmailFromUrl();
-    var title = lima.extractPaperTitleFromUrl();
-    _.fillEls('#paper .title', title);
 
-    lima.getColumns() // todo getColumns could run in parallel with everything before updatePaperView
-    .then(lima.getGapiIDToken)
+    return lima.getGapiIDToken()
     .then(function (idToken) {
       var currentPaperUrl = '/api/papers/' + email + '/' + title;
       return fetch(currentPaperUrl, _.idTokenToFetchOptions(idToken));
@@ -117,7 +114,15 @@
       if (response.status === 404) _.notFound();
       else return _.fetchJson(response);
     })
-    .then(initPaper)
+    .then(initPaper);
+  }
+
+  function requestAndFillPaper() {
+    var title = lima.extractPaperTitleFromUrl();
+    _.fillEls('#paper .title', title);
+
+    lima.getColumns() // todo getColumns could run in parallel with everything before updatePaperView
+    .then(function() { return requestPaper(title); })
     .then(setCurrentPaper)
     .then(updatePaperView)
     .then(function() {
@@ -1331,8 +1336,6 @@
       })
   }
 
-
-
   /* changing cols
    *
    *
@@ -2002,6 +2005,7 @@
   lima.extractPaperTitleFromUrl = extractPaperTitleFromUrl;
   lima.requestAndFillPaperList = requestAndFillPaperList;
   lima.requestAndFillPaper = requestAndFillPaper;
+  lima.requestPaper = requestPaper;
 
   lima.Paper = Paper;
 

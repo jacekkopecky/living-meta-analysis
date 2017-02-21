@@ -211,10 +211,23 @@
   function updateMetaanalysisView() {
     if (!currentMetaanalysis) return;
 
+    // check for papers that we don't have in paperOrder
+    // those will be newly added papers that just got saved and now have an ID
+    updatePaperOrder();
+
     fillMetaanalysis(currentMetaanalysis);
 
     // for a new metaanalysis, go to editing the title
     if (!currentMetaanalysis.id) focusFirstValidationError();
+  }
+
+  function updatePaperOrder() {
+    currentMetaanalysis.papers.forEach(function(paper){
+      if (paper.id && currentMetaanalysis.paperOrder.indexOf(paper.id) == -1) {
+        currentMetaanalysis.paperOrder.push(paper.id);
+        _.scheduleSave(currentMetaanalysis);
+      }
+    });
   }
 
   var startNewTag = null;
@@ -240,7 +253,6 @@
     var metaanalysisTemplate = _.byId('metaanalysis-template');
     var metaanalysisEl = _.cloneTemplate(metaanalysisTemplate).children[0];
     metaanalysisTemplate.parentElement.insertBefore(metaanalysisEl, metaanalysisTemplate);
-
 
     fillTags(metaanalysisEl, metaanalysis);
     fillMetaanalysisExperimentTable(metaanalysis);
@@ -735,7 +747,7 @@
     });
 
     _.addEventListener(table, 'tr:not(.add) .papertitle button.add', 'click', addExperimentRow);
-    // _.addEventListener(table, 'tr.add button.add', 'click', addPaperRow);
+    _.addEventListener(table, 'tr.add button.add', 'click', addPaperRow);
 
     _.addEventListener(table, 'th.add button.add', 'click', addExperimentColumn);
     _.addEventListener(table, 'th.add button.cancel', 'click', dismissAddExperimentColumn);
@@ -1237,6 +1249,18 @@
       updateMetaanalysisView();
       setTimeout(focusFirstValidationError, 0);
     }
+  }
+
+  function addPaperRow() {
+    lima.requestPaper('new-paper')
+    .then(function (newPaper) {
+      // Populate an empty experiment
+      newPaper.experiments.push({});
+      // Fill in missing user information
+      currentMetaanalysis.papers.push(newPaper);
+      updateMetaanalysisView();
+      setTimeout(focusFirstValidationError, 0);
+    });
   }
 
   /* aggregates

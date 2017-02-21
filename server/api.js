@@ -78,8 +78,12 @@ api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE
  *
  */
 
-function apiPaperURL(email, title) { return `/api/papers/${email}/${title}`; }
-function apiMetaanalysisURL(email, title) { return `/api/metaanalyses/${email}/${title}`; }
+function apiPaperURL(email, title) {
+  return `/api/papers/${email}/${title || config.NEW_PAPER_TITLE}`;
+}
+function apiMetaanalysisURL(email, title) {
+  return `/api/metaanalyses/${email}/${title || config.NEW_META_TITLE}`;
+}
 
 module.exports.getKindForTitle = function getKindForTitle(email, title) {
   return new Promise((resolve, reject) => {
