@@ -2231,10 +2231,16 @@ body:not(.page-about-you) #paper table.experiments th.add,
 body:not(.editing) #paper table.experiments tr.add,
 body:not(.editing) #paper table.experiments th.add,
 body.page-about-you.editing #paper.no-data table.experiments th.add,
+body:not(.page-about-you) #metaanalysis table.aggregates tr.add,
+body:not(.editing) #metaanalysis table.aggregates tr.add,
 body:not(.page-about-you) #metaanalysis table.experiments tr.add,
 body:not(.page-about-you) #metaanalysis table.experiments th.add,
 body:not(.editing) #metaanalysis table.experiments tr.add,
-body:not(.editing) #metaanalysis table.experiments th.add {
+body:not(.editing) #metaanalysis table.experiments th.add,
+body:not(.page-about-you) #metaanalysis table.experiments button.add,
+body:not(.page-about-you) #metaanalysis table.experiments button.add + button,
+body:not(.editing) #metaanalysis table.experiments button.add,
+body:not(.editing) #metaanalysis table.experiments button.add + button {
   display: none;
 }
 
