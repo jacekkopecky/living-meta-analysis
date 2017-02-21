@@ -690,7 +690,6 @@ function getMetaanalysisWithPapers(ma, time) {
       const index = ma.paperOrder.indexOf(p.id);
       if (index !== -1) ma.papers[index] = p;
     });
-    console.log(ma.papers);
 
     return ma;
   });
