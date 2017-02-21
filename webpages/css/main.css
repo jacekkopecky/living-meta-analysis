@@ -2019,6 +2019,10 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
   position: relative;
 }
 
+#metaanalysis table.aggregates td {
+  position: relative;
+}
+
 #paper table.experiments td.newcol,
 #metaanalysis table.experiments td.newcol {
   background-color: #ddd;
