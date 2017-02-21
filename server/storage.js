@@ -684,7 +684,13 @@ function getMetaanalysisWithPapers(ma, time) {
     // use a shallow copy of ma
     ma = Object.assign({}, ma);
 
-    ma.papers = papers.filter((p) => ma.paperOrder.indexOf(p.id) !== -1);
+    ma.papers = [];
+    // populate the papers array in the order of ma.paperOrder
+    papers.forEach((p) => {
+      const index = ma.paperOrder.indexOf(p.id);
+      if (index !== -1) ma.papers[index] = p;
+    });
+    console.log(ma.papers);
 
     return ma;
   });
