@@ -632,8 +632,15 @@
           addOnInputUpdater(paperTitleEl, ".papreference .value", 'textContent', identity, paper, 'reference');
           addOnInputUpdater(paperTitleEl, ".papdescription .value", 'textContent', identity, paper, 'description');
 
+          if (!paper.title) {
+            _.addClass(tr, '.paptitle.editing', 'new');
+            _.fillEls(tr, '.paptitle + .paptitlerename', 'confirm');
+          } else {
+            _.fillEls(tr, '.paptitle + .paptitlerename', 'rename');
+          }
+
           _.setDataProps(tr, '.paptitle.editing', 'origTitle', paper.title);
-          addConfirmedUpdater(tr, '.paptitle.editing', '.paptitle.editing + .paptitlerename', '.paptitle.editing ~ * .paprenamecancel', 'textContent', checkTitleUnique, paper, ['title']);
+          addConfirmedUpdater(tr, '.paptitle.editing', '.paptitle.editing + .paptitlerename', '.paptitle.editing ~ * .paprenamecancel', 'textContent', checkTitleUnique, paper, ['title'], deleteNewPaper);
 
           _.addEventListener(paperTitleEl, '.linkedit button.test', 'click', _.linkEditTest);
           _.addEventListener(paperTitleEl, '.linkedit button.test', 'mousedown', _.preventLinkEditBlur);
@@ -1231,6 +1238,28 @@
     } else {
       console.warn('cannot add a row with some edited values pending');
     }
+  }
+
+  function deleteNewPaper(el) {
+    var parentTr = _.findPrecedingEl(el, "tr");
+    var paperIndex = parentTr.dataset.paperIndex;
+    // we only want this to delete the last paper
+    if (currentMetaanalysis.papers.length-1 != paperIndex) return;
+
+    var paper = currentMetaanalysis.papers[paperIndex];
+    // don't delete if the paper is already saved
+    if (paper.id) return;
+
+    // if the user has been able to add a second experiment, the paper is no longer empty.
+    if (paper.experiments.length > 1) return;
+    var experiment = paper.experiments[0];
+    if (experiment && Object.keys(experiment).length !== 0) return;
+
+    // safe to delete paper.
+    currentMetaanalysis.papers.pop();
+    unpinPopupBox();
+    updateMetaanalysisView();
+    setTimeout(focusFirstValidationError, 0);
   }
 
   function deleteNewExperiment(el) {
