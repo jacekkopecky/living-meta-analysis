@@ -2296,6 +2296,11 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
   display: none;
 }
 
+#metaanalysis table.experiments th.papertitle > span {
+    margin-bottom: 1.5em;
+    display: block;
+}
+
 /* aggregates
  *
  *
