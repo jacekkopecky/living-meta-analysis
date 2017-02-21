@@ -90,10 +90,10 @@ app.get(`/:email(${config.EMAIL_ADDRESS_RE})/`,
         (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
 
 app.use(`/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`, SLASH_URL);
-app.get(`/:email(${config.EMAIL_ADDRESS_RE})/new-paper/`,
+app.get(`/:email(${config.EMAIL_ADDRESS_RE})/${config.NEW_PAPER_TITLE}/`,
         api.checkUserExists,
         (req, res) => res.sendFile('profile/paper.html', { root: './webpages/' }));
-app.get(`/:email(${config.EMAIL_ADDRESS_RE})/new-metaanalysis/`,
+app.get(`/:email(${config.EMAIL_ADDRESS_RE})/${config.NEW_META_TITLE}/`,
         api.checkUserExists,
         (req, res) => res.sendFile('profile/metaanalysis.html', { root: './webpages/' }));
 app.get(`/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
