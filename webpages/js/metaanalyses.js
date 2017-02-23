@@ -153,13 +153,13 @@
         });
       });
 
-      // don't clean columnOrder the same way - in metaanalyses.js, we shouldn't be touching papers' columnOrder
+      // don't clean columns the same way - in metaanalyses.js, we shouldn't be touching papers' columns
     });
 
-    if (Array.isArray(currentMetaanalysis.columnOrder)) currentMetaanalysis.columnOrder.forEach(function (key, index) {
+    if (Array.isArray(currentMetaanalysis.columns)) currentMetaanalysis.columns.forEach(function (key, index) {
       var col = lima.columns[key];
       if (col && col.id !== key) {
-        currentMetaanalysis.columnOrder[index] = col.id;
+        currentMetaanalysis.columns[index] = col.id;
       }
     });
 
@@ -178,7 +178,7 @@
 
     if (!Array.isArray(self.paperOrder)) self.paperOrder = [];
     if (!Array.isArray(self.papers)) self.papers = [];
-    if (!Array.isArray(self.columnOrder)) self.columnOrder = [];
+    if (!Array.isArray(self.columns)) self.columns = [];
     if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
     if (!Array.isArray(self.tags)) self.tags = [];
     if (!Array.isArray(self.aggregates)) self.aggregates = [];
@@ -191,9 +191,9 @@
 
     // Get all columns used across all papers, for now. Concat.
     self.papers.forEach(function (paper) {
-      paper.columnOrder.forEach(function (column) {
-        if (self.columnOrder.indexOf(column) === -1) {
-          self.columnOrder.push(column);
+      paper.columns.forEach(function (column) {
+        if (self.columns.indexOf(column) === -1) {
+          self.columns.push(column);
         }
       });
     });
@@ -420,7 +420,7 @@
       _.addClass('#metaanalysis', 'no-data');
       _.addClass('#metaanalysis', 'no-papers');
     }
-    if (!metaanalysis.columnOrder.length) {
+    if (!metaanalysis.columns.length) {
       _.addClass('#metaanalysis', 'no-data');
       _.addClass('#metaanalysis', 'no-columns');
     }
@@ -450,7 +450,7 @@
 
     var lastColumnHidden = false;
 
-    metaanalysis.columnOrder.forEach(function (colId) {
+    metaanalysis.columns.forEach(function (colId) {
       if (isHiddenCol(colId)) {
         // Save the fact that we just hid a column, so the next non-hidden
         // column can behave differently (i.e show a arrow).
@@ -667,7 +667,7 @@
         setupPopupBoxPinning(tr, '.paperinfo.popupbox', papIndex);
         setupPopupBoxPinning(tr, '.experimentinfo.popupbox', papIndex+','+expIndex);
 
-        metaanalysis.columnOrder.forEach(function (colId) {
+        metaanalysis.columns.forEach(function (colId) {
           // early return - ignore this column
           if (isHiddenCol(colId)) return;
 
@@ -806,8 +806,8 @@
       select.appendChild(op);
 
       // Now make an option for each column in metaanalysis
-      for (var j = 0; j < metaanalysis.columnOrder.length; j++){
-        var colId = metaanalysis.columnOrder[j];
+      for (var j = 0; j < metaanalysis.columns.length; j++){
+        var colId = metaanalysis.columns[j];
 
         // the current computed column should not be an option here
         if (colId === col.id) continue;
@@ -1019,11 +1019,11 @@
       var col = columns[colId];
       var colType = col.type;
       var bucket = (col.definedBy === user || !col.definedBy) ? 'yours' : 'other';
-      if (currentMetaanalysis.columnOrder.indexOf(colId) > -1) bucket = 'already';
+      if (currentMetaanalysis.columns.indexOf(colId) > -1) bucket = 'already';
       if (col.formula) {
         // TODO Formula columns might be incomplete, in which case we probably don't want to show the column
         // these comments will go away when computed columns are private
-        if (_.isSubset(currentMetaanalysis.columnOrder, col.formulaColumns)) {
+        if (_.isSubset(currentMetaanalysis.columns, col.formulaColumns)) {
           colType = 'computedValid'
         } else {
           colType = 'computedInvalid';
@@ -1086,7 +1086,7 @@
       _.setDataProps(li, '.needs-owner', 'owner', col.definedBy || user);
       li.dataset.colid = col.id;
 
-      if (currentMetaanalysis.columnOrder.indexOf(col.id) > -1) {
+      if (currentMetaanalysis.columns.indexOf(col.id) > -1) {
         li.classList.add('alreadythere');
       }
 
@@ -1119,7 +1119,7 @@
 
     _.removeClass('#metaanalysis th.add .colinfo', 'unpopulated');
 
-    if (currentMetaanalysis.columnOrder.indexOf(col.id) > -1) {
+    if (currentMetaanalysis.columns.indexOf(col.id) > -1) {
       _.addClass('#metaanalysis th.add .colinfo', 'alreadythere');
     } else {
       _.removeClass('#metaanalysis th.add .colinfo', 'alreadythere');
@@ -1171,10 +1171,10 @@
       console.warn('selectNewColumn on element that doesn\'t have a valid column ID: ' + ev.target.dataset.colid);
       return;
     }
-    if (currentMetaanalysis.columnOrder.indexOf(col.id) > -1) return; // do nothing on columns that are already there
+    if (currentMetaanalysis.columns.indexOf(col.id) > -1) return; // do nothing on columns that are already there
     // todo this will change when un-hiding a column
 
-    currentMetaanalysis.columnOrder.push(col.id);
+    currentMetaanalysis.columns.push(col.id);
     moveResultsAfterCharacteristics(currentMetaanalysis);
     dismissAddExperimentColumn();
     updateMetaanalysisView();
@@ -1187,7 +1187,7 @@
   function addNewExperimentColumn() {
     dismissAddExperimentColumn();
     var col = lima.newColumn();
-    currentMetaanalysis.columnOrder.push(col.id);
+    currentMetaanalysis.columns.push(col.id);
     moveResultsAfterCharacteristics(currentMetaanalysis);
     updateMetaanalysisView();
     setTimeout(focusFirstValidationError, 0);
@@ -1195,11 +1195,11 @@
 
   function deleteNewColumn() {
     unpinPopupBox();
-    for (var i = 0; i < currentMetaanalysis.columnOrder.length; i++) {
-      var colId = currentMetaanalysis.columnOrder[i];
+    for (var i = 0; i < currentMetaanalysis.columns.length; i++) {
+      var colId = currentMetaanalysis.columns[i];
       var col = lima.columns[colId];
       if (col.new && !col.title) {
-        currentMetaanalysis.columnOrder.splice(i, 1);
+        currentMetaanalysis.columns.splice(i, 1);
         moveResultsAfterCharacteristics(currentMetaanalysis);
         break;
       }
@@ -1438,8 +1438,8 @@
       select.classList.add('validationerror');
 
       // Now make an option for each column in paper
-      for (var j = 0; j < metaanalysis.columnOrder.length; j++){
-        var colId = metaanalysis.columnOrder[j];
+      for (var j = 0; j < metaanalysis.columns.length; j++){
+        var colId = metaanalysis.columns[j];
 
         var el = document.createElement("option");
         el.textContent = lima.columns[colId].title;
@@ -1736,10 +1736,10 @@
     var colId = _.findPrecedingEl(el, 'th').dataset.colid;
     if (!colId) return; // we don't know what to move
 
-    var i = currentMetaanalysis.columnOrder.indexOf(colId);
+    var i = currentMetaanalysis.columns.indexOf(colId);
     if (i === -1) return console.error('column ' + colId + ' not found in newly regenerated order!');
     var newPosition = findNextNonHiddenCol(i, left, most);
-    _.moveArrayElement(currentMetaanalysis.columnOrder, i, newPosition);
+    _.moveArrayElement(currentMetaanalysis.columns, i, newPosition);
     moveResultsAfterCharacteristics(currentMetaanalysis);
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
@@ -1748,9 +1748,9 @@
   function moveResultsAfterCharacteristics(metaanalysis) {
     // make sure result columns come after characteristics columns
     var firstResult = 0;
-    for (var i = 0; i < metaanalysis.columnOrder.length; i++) {
-      if (lima.columns[metaanalysis.columnOrder[i]].type === 'characteristic') {
-        _.moveArrayElement(metaanalysis.columnOrder, i, firstResult);
+    for (var i = 0; i < metaanalysis.columns.length; i++) {
+      if (lima.columns[metaanalysis.columns[i]].type === 'characteristic') {
+        _.moveArrayElement(metaanalysis.columns, i, firstResult);
         firstResult++;
       }
     }
@@ -1764,13 +1764,13 @@
     if (left) {
       if (most || currentIndex <= 0) return 0;
       currentIndex -= 1;
-      while (isHiddenCol(currentMetaanalysis.columnOrder[currentIndex]) && currentIndex > 0) {
+      while (isHiddenCol(currentMetaanalysis.columns[currentIndex]) && currentIndex > 0) {
         currentIndex -= 1;
       }
     } else {
-      if (most) return currentMetaanalysis.columnOrder.length - 1;
+      if (most) return currentMetaanalysis.columns.length - 1;
       currentIndex += 1;
-      while (isHiddenCol(currentMetaanalysis.columnOrder[currentIndex]) && currentIndex < currentMetaanalysis.columnOrder.length - 1) {
+      while (isHiddenCol(currentMetaanalysis.columns[currentIndex]) && currentIndex < currentMetaanalysis.columns.length - 1) {
         currentIndex += 1;
       }
     }
@@ -1852,7 +1852,7 @@
     _.addEventListener(colNode, '.unhide', 'click', unhideColumns);
   }
 
-  // This function takes a colid to start counting back from in metaanalysis.columnOrder.
+  // This function takes a colid to start counting back from in metaanalysis.columns.
   // It will unhide columns until a non-hidden column is found.
   // e.g. ['hidden0', 'col1', 'hidden2', 'hidden3', 'col4'].
   // Passing col1 will unhide hidden0, and passing col4 will unhide 2 and 3.
@@ -1862,14 +1862,14 @@
     var index;
     // If we don't have a colId, it's the 'add column' button, so start at the end.
     if (!colId) {
-      index = currentMetaanalysis.columnOrder.length-1;
+      index = currentMetaanalysis.columns.length-1;
     } else {
-      index = currentMetaanalysis.columnOrder.indexOf(colId) - 1;
+      index = currentMetaanalysis.columns.indexOf(colId) - 1;
     }
 
     for (var i = index; i >= 0; i--) {
-      if (isHiddenCol(currentMetaanalysis.columnOrder[i])) {
-        _.removeFromArray(currentMetaanalysis.hiddenCols, currentMetaanalysis.columnOrder[i]);
+      if (isHiddenCol(currentMetaanalysis.columns[i])) {
+        _.removeFromArray(currentMetaanalysis.hiddenCols, currentMetaanalysis.columns[i]);
       } else {
         break;
       }

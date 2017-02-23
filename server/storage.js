@@ -82,7 +82,7 @@ function checkForDisallowedChanges(current, original, columns) {
   //   do the checks we can think of for changes that wouldn't be allowed
   // for example, we can't really allow removing values because we don't allow removing comments
   // todo comment mtimes
-  // todo check that columnOrder references existing columns; that paperOrder references existing papers
+  // todo check that columns references existing columns; that paperOrder references existing papers
   // this might end up being different for papers and for metaanalyses
 
   original = original || {};
@@ -316,7 +316,7 @@ module.exports.addUser = (email, user) => {
       // with onVersionBy and ctime we can view the version on which the comment was done
     },
   ]
-  columnOrder: [ '/id/col/12', '/id/col/13', '/id/col/14' ],
+  columns: [ '/id/col/12', '/id/col/13', '/id/col/14' ],
   experiments: [
     {
       title: "ex1", // needs to be unique within the paper only
@@ -405,16 +405,13 @@ function getAllPapers() {
 }
 
 /*
- * change paper from an old format to the new one, if need be
+ * change paper from an old format to the new one on load from datastore, if need be
  */
 function migratePaper(paper) {
-  // 2016-08-19: remove authors and published fields in favor of a textual reference field
-  if (!paper.reference && (paper.authors || paper.published)) {
-    paper.reference = paper.authors || '';
-    if (paper.authors && paper.published) paper.reference += ', ';
-    paper.reference += paper.published || '';
-    delete paper.authors;
-    delete paper.published;
+  // 2017-02-23: move columnOrder to columns
+  if (paper.columnOrder) {
+    paper.columns = paper.columnOrder;
+    delete paper.columnOrder;
   }
   return paper;
 }
@@ -639,10 +636,14 @@ function getAllMetaanalyses() {
 }
 
 /*
- * change metaanalysis from an old format to the new one, if need be
+ * change metaanalysis from an old format to the new one on load from datastore, if need be
  */
 function migrateMetaanalysis(metaanalysis) {
-  // do nothing for now
+  // 2017-02-23: move columnOrder to columns
+  if (metaanalysis.columnOrder) {
+    metaanalysis.columns = metaanalysis.columnOrder;
+    delete metaanalysis.columnOrder;
+  }
   return metaanalysis;
 }
 
