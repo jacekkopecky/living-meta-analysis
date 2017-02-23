@@ -153,11 +153,11 @@
       });
     });
 
-    // clean columnOrder the same way
-    if (Array.isArray(currentPaper.columnOrder)) currentPaper.columnOrder.forEach(function (key, index) {
+    // clean columns the same way
+    if (Array.isArray(currentPaper.columns)) currentPaper.columns.forEach(function (key, index) {
       var col = lima.columns[key];
       if (col && col.id !== key) {
-        currentPaper.columnOrder[index] = col.id;
+        currentPaper.columns[index] = col.id;
       }
     });
 
@@ -176,15 +176,15 @@
 
     // if paper doesn't have experiments or column order, add empty arrays for ease of handling
     if (!Array.isArray(self.experiments)) self.experiments = [];
-    if (!Array.isArray(self.columnOrder)) self.columnOrder = [];
+    if (!Array.isArray(self.columns)) self.columns = [];
     if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
     if (!Array.isArray(self.tags)) self.tags = [];
 
-    // if any experiment has data that isn't in columnOrder (e.g. it was added in a metaanalysis page)
+    // if any experiment has data that isn't in columns (e.g. it was added in a metaanalysis page)
     // add it to the columnorder
     self.experiments.forEach(function (experiment) {
       if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
-        if (self.columnOrder.indexOf(key) === -1) self.columnOrder.push(key);
+        if (self.columns.indexOf(key) === -1) self.columns.push(key);
       });
     });
 
@@ -431,7 +431,7 @@
 
     var lastColumnHidden = false;
 
-    paper.columnOrder.forEach(function (colId) {
+    paper.columns.forEach(function (colId) {
       if (isHiddenCol(colId)) {
         // Save the fact that we just hid a column, so the next non-hidden
         // column can behave differently (i.e show a arrow).
@@ -589,7 +589,7 @@
 
       setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', expIndex);
 
-      paper.columnOrder.forEach(function (colId) {
+      paper.columns.forEach(function (colId) {
         // early return - ignore this column
         if (isHiddenCol(colId)) return;
 
@@ -726,8 +726,8 @@
       select.appendChild(op);
 
       // Now make an option for each column in paper
-      for (var j = 0; j < paper.columnOrder.length; j++){
-        var colId = paper.columnOrder[j];
+      for (var j = 0; j < paper.columns.length; j++){
+        var colId = paper.columns[j];
 
         // the current computed column should not be an option here
         if (colId === col.id) continue;
@@ -887,9 +887,9 @@
       var col = columns[colId];
       var colType = col.type;
       var bucket = (col.definedBy === user || !col.definedBy) ? 'yours' : 'other';
-      if (currentPaper.columnOrder.indexOf(colId) > -1) bucket = 'already';
+      if (currentPaper.columns.indexOf(colId) > -1) bucket = 'already';
       if (col.formula) {
-        if (_.isSubset(currentPaper.columnOrder, col.formulaColumns)) {
+        if (_.isSubset(currentPaper.columns, col.formulaColumns)) {
           colType = 'computedValid'
         } else {
           colType = 'computedInvalid';
@@ -951,7 +951,7 @@
       _.setDataProps(li, '.needs-owner', 'owner', col.definedBy || user);
       li.dataset.colid = col.id;
 
-      if (currentPaper.columnOrder.indexOf(col.id) > -1) {
+      if (currentPaper.columns.indexOf(col.id) > -1) {
         li.classList.add('alreadythere');
       }
 
@@ -984,7 +984,7 @@
 
     _.removeClass('#paper th.add .colinfo', 'unpopulated');
 
-    if (currentPaper.columnOrder.indexOf(col.id) > -1) {
+    if (currentPaper.columns.indexOf(col.id) > -1) {
       _.addClass('#paper th.add .colinfo', 'alreadythere');
     } else {
       _.removeClass('#paper th.add .colinfo', 'alreadythere');
@@ -1036,10 +1036,10 @@
       console.warn('selectNewColumn on element that doesn\'t have a valid column ID: ' + ev.target.dataset.colid);
       return;
     }
-    if (currentPaper.columnOrder.indexOf(col.id) > -1) return; // do nothing on columns that are already there
+    if (currentPaper.columns.indexOf(col.id) > -1) return; // do nothing on columns that are already there
     // todo this will change when un-hiding a column
 
-    currentPaper.columnOrder.push(col.id);
+    currentPaper.columns.push(col.id);
     moveResultsAfterCharacteristics(currentPaper);
     dismissAddExperimentColumn();
     updatePaperView();
@@ -1052,7 +1052,7 @@
   function addNewExperimentColumn() {
     dismissAddExperimentColumn();
     var col = lima.newColumn();
-    currentPaper.columnOrder.push(col.id);
+    currentPaper.columns.push(col.id);
     moveResultsAfterCharacteristics(currentPaper);
     updatePaperView();
     setTimeout(focusFirstValidationError, 0);
@@ -1060,11 +1060,11 @@
 
   function deleteNewColumn() {
     unpinPopupBox();
-    for (var i = 0; i < currentPaper.columnOrder.length; i++) {
-      var colId = currentPaper.columnOrder[i];
+    for (var i = 0; i < currentPaper.columns.length; i++) {
+      var colId = currentPaper.columns[i];
       var col = lima.columns[colId];
       if (col.new && !col.title) {
-        currentPaper.columnOrder.splice(i, 1);
+        currentPaper.columns.splice(i, 1);
         moveResultsAfterCharacteristics(currentPaper);
         break;
       }
@@ -1361,10 +1361,10 @@
     var colId = _.findPrecedingEl(el, 'th').dataset.colid;
     if (!colId) return; // we don't know what to move
 
-    var i = currentPaper.columnOrder.indexOf(colId);
+    var i = currentPaper.columns.indexOf(colId);
     if (i === -1) return console.error('column ' + colId + ' not found in newly regenerated order!');
     var newPosition = findNextNonHiddenCol(i, left, most);
-    _.moveArrayElement(currentPaper.columnOrder, i, newPosition);
+    _.moveArrayElement(currentPaper.columns, i, newPosition);
     moveResultsAfterCharacteristics(currentPaper);
     updatePaperView();
     _.scheduleSave(currentPaper);
@@ -1373,9 +1373,9 @@
   function moveResultsAfterCharacteristics(paper) {
     // make sure result columns come after characteristics columns
     var firstResult = 0;
-    for (var i = 0; i < paper.columnOrder.length; i++) {
-      if (lima.columns[paper.columnOrder[i]].type === 'characteristic') {
-        _.moveArrayElement(paper.columnOrder, i, firstResult);
+    for (var i = 0; i < paper.columns.length; i++) {
+      if (lima.columns[paper.columns[i]].type === 'characteristic') {
+        _.moveArrayElement(paper.columns, i, firstResult);
         firstResult++;
       }
     }
@@ -1389,13 +1389,13 @@
     if (left) {
       if (most || currentIndex <= 0) return 0;
       currentIndex -= 1;
-      while (isHiddenCol(currentPaper.columnOrder[currentIndex]) && currentIndex > 0) {
+      while (isHiddenCol(currentPaper.columns[currentIndex]) && currentIndex > 0) {
         currentIndex -= 1;
       }
     } else {
-      if (most) return currentPaper.columnOrder.length - 1;
+      if (most) return currentPaper.columns.length - 1;
       currentIndex += 1;
-      while (isHiddenCol(currentPaper.columnOrder[currentIndex]) && currentIndex < currentPaper.columnOrder.length - 1) {
+      while (isHiddenCol(currentPaper.columns[currentIndex]) && currentIndex < currentPaper.columns.length - 1) {
         currentIndex += 1;
       }
     }
@@ -1477,7 +1477,7 @@
     _.addEventListener(colNode, '.unhide', 'click', unhideColumns);
   }
 
-  // This function takes a colid to start counting back from in paper.columnOrder.
+  // This function takes a colid to start counting back from in paper.columns.
   // It will unhide columns until a non-hidden column is found.
   // e.g. ['hidden0', 'col1', 'hidden2', 'hidden3', 'col4'].
   // Passing col1 will unhide hidden0, and passing col4 will unhide 2 and 3.
@@ -1487,14 +1487,14 @@
     var index;
     // If we don't have a colId, it's the 'add column' button, so start at the end.
     if (!colId) {
-      index = currentPaper.columnOrder.length-1;
+      index = currentPaper.columns.length-1;
     } else {
-      index = currentPaper.columnOrder.indexOf(colId) - 1;
+      index = currentPaper.columns.indexOf(colId) - 1;
     }
 
     for (var i = index; i >= 0; i--) {
-      if (isHiddenCol(currentPaper.columnOrder[i])) {
-        _.removeFromArray(currentPaper.hiddenCols, currentPaper.columnOrder[i]);
+      if (isHiddenCol(currentPaper.columns[i])) {
+        _.removeFromArray(currentPaper.hiddenCols, currentPaper.columns[i]);
       } else {
         break;
       }

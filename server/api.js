@@ -272,7 +272,7 @@ function extractPaperForSending(storagePaper, includeDataValues, email) {
 
   if (includeDataValues) {
     retval.experiments = storagePaper.experiments;
-    retval.columnOrder = storagePaper.columnOrder;
+    retval.columns = storagePaper.columns;
     retval.hiddenCols = storagePaper.hiddenCols;
   }
 
@@ -293,7 +293,7 @@ function extractReceivedPaper(receivedPaper) {
     doi:            tools.string(receivedPaper.doi),
     tags:           tools.array(receivedPaper.tags, tools.string),
     experiments:    tools.array(receivedPaper.experiments, extractReceivedExperiment),
-    columnOrder:    tools.array(receivedPaper.columnOrder, tools.string),
+    columns:        tools.array(receivedPaper.columns, tools.string),
     hiddenCols:     tools.array(receivedPaper.hiddenCols, tools.string),
   };
 
@@ -415,7 +415,7 @@ function extractMetaanalysisForSending(storageMetaanalysis, includePapers, email
     published: storageMetaanalysis.published,
     description: storageMetaanalysis.description,
     tags: storageMetaanalysis.tags,
-    columnOrder: storageMetaanalysis.columnOrder,
+    columns: storageMetaanalysis.columns,
     paperOrder: storageMetaanalysis.paperOrder,
     hiddenCols: storageMetaanalysis.hiddenCols,
     hiddenExperiments: storageMetaanalysis.hiddenExperiments,
@@ -444,7 +444,7 @@ function extractReceivedMetaanalysis(receivedMetaanalysis) {
     published:         tools.string(receivedMetaanalysis.published),
     description:       tools.string(receivedMetaanalysis.description),
     tags:              tools.array(receivedMetaanalysis.tags, tools.string),
-    columnOrder:       tools.array(receivedMetaanalysis.columnOrder, tools.string),
+    columns:           tools.array(receivedMetaanalysis.columns, tools.string),
     paperOrder:        tools.array(receivedMetaanalysis.paperOrder, tools.string),
     hiddenCols:        tools.array(receivedMetaanalysis.hiddenCols, tools.string),
     hiddenExperiments: tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
