@@ -353,6 +353,50 @@
     })
   }
 
+  /* testing
+   *
+   *
+   *   ##### ######  ####  ##### # #    #  ####
+   *     #   #      #        #   # ##   # #    #
+   *     #   #####   ####    #   # # #  # #
+   *     #   #           #   #   # #  # # #  ###
+   *     #   #      #    #   #   # #   ## #    #
+   *     #   ######  ####    #   # #    #  ####
+   *
+   *
+   */
+
+  var tests = [];
+
+  _.runTests = function runTests() {
+    var successfulAssertions;
+    var currentAssertion;
+    var failedTests = 0;
+
+    function assert(cond, msg) {
+      currentAssertion += 1;
+      if (!cond) throw new Error(msg);
+      successfulAssertions += 1;
+    }
+
+    console.log('running ' + tests.length + ' tests');
+    tests.forEach(function (test, index) {
+      successfulAssertions = 0;
+      currentAssertion = -1;
+      console.log('running test ' + (test.name || index));
+      try {
+        test(assert);
+      } catch (e) {
+        console.log('  assertion #' + currentAssertion + ' error: ', e);
+        failedTests += 1;
+      }
+      console.log('  done test ' + (test.name || index) + ' (' + successfulAssertions + ' assertion(s) passed)');
+    });
+    console.log('finished ' + tests.length + ' tests: ' + (tests.length - failedTests) + ' passed, ' + failedTests + ' failed');
+  };
+
+  _.addTest = function addTest(f) { tests.push(f); }
+
 
   /* formatting
    *
