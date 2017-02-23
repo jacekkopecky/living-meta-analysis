@@ -75,6 +75,15 @@ if (config.logDirectory) {
  *
  */
 
+// redirect by default to a coming-soon page
+app.get('/', (req, res, next) => {
+  if (!req.query || Object.keys(req.query).length === 0) {
+    res.sendFile('coming-soon.html', { root: './webpages/' });
+  } else {
+    next();
+  }
+});
+
 app.get('/version', oneLineVersion);
 app.get('/version/log',
         (req, res) => res.redirect('https://github.com/jacekkopecky/living-meta-analysis/commits/master'));

@@ -97,6 +97,15 @@ body > footer > p {
   font-family: monospace;
 }
 
+.alert {
+  padding: 1em;
+  background-color: #ff8;
+  font-size: 125%;
+  border: 1px solid #800;
+  margin: 1em;
+  border-radius: .6em;
+}
+
 /* popupbox
  *
  *
