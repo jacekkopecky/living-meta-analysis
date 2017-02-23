@@ -1487,6 +1487,10 @@ body:not(.page-about-you).signed-on #metaanalysis > header .edityourcopy {
   position: relative;
 }
 
+#metaanalysis table.experiments tr:not(.paperstart) .papertitle {
+  display: none;
+}
+
 #metaanalysis table.experiments tr:not(.add) .papertitle button.add,
 #metaanalysis table.experiments tr:not(.add) .papertitle button.add + button {
   position: absolute;
@@ -1593,7 +1597,7 @@ body:not(.editing) #metaanalysis.no-data .no-table, {
 }
 
 #paper table.experiments tr th:first-child .expdescription.short,
-#metaanalysis table.experiments tr th:first-child .expdescription.short {
+#metaanalysis table.experiments tr th.experimenttitle .expdescription.short {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

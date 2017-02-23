@@ -600,7 +600,8 @@
 
         var paperTitleEl = _.findEl(tr, '.papertitle');
 
-        // First mention of a paper should have rowspan equal to the number of experiments
+        // in the first row for a paper, the paperTitle TH should have rowspan equal to the number of experiments
+        // in other rows, the paperTitle TH is hidden by the CSS
         if (expIndex == 0) {
           var noExpInCurrPaper = papers[papIndex].experiments.length;
           paperTitleEl.rowSpan = noExpInCurrPaper;
@@ -644,10 +645,8 @@
 
           _.addEventListener(paperTitleEl, '.linkedit button.test', 'click', _.linkEditTest);
           _.addEventListener(paperTitleEl, '.linkedit button.test', 'mousedown', _.preventLinkEditBlur);
-
-        } else { // if it's not the first, its space is taken by the first, so remove it
-          paperTitleEl.remove();
         }
+
         _.fillEls(tr, '.exptitle', experiment.title);
         _.fillEls(tr, '.popupbox .exptitle', experiment.title);
         _.fillEls(tr, '.expdescription', experiment.description);
