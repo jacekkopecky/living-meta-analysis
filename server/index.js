@@ -242,10 +242,19 @@ process.on('unhandledRejection', (err) => {
  */
 
 const port = process.env.PORT || config.port;
-const httpsPort = process.env.HTTPSPORT || config.httpsPort;
+let httpsPort = process.env.HTTPSPORT || config.httpsPort;
 
 api.ready.then(() => {
-  if (!config.httpsPort) {
+  if (process.env.DISABLE_HTTPS) {
+    console.warn('**************************************************');
+    console.warn('');
+    console.warn('WARNING: DISABLING HTTPS, THIS SERVER IS INSECURE');
+    console.warn('');
+    console.warn('**************************************************');
+    httpsPort = null;
+  }
+
+  if (!httpsPort) {
     // only HTTP
     http.createServer(app)
     .listen(port, () => console.log(`LiMA server listening on insecure port ${port}`));
