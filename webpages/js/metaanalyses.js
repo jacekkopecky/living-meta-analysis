@@ -183,6 +183,17 @@
     if (!Array.isArray(self.tags)) self.tags = [];
     if (!Array.isArray(self.aggregates)) self.aggregates = [];
 
+    self.aggregates.forEach(function (aggr) {
+      var parsed = lima.parseFormulaString(aggr.formula);
+      if (parsed != null) {
+        aggr.formulaName = parsed.formulaName;
+        aggr.formulaParams = parsed.formulaParams;
+      } else {
+        aggr.formulaName = null;
+        aggr.formulaParams = [];
+      }
+    });
+
     self.papers.forEach(function (paper, papIndex) {
       if (!(paper instanceof lima.Paper)) {
         self.papers[papIndex] = lima.Paper.prototype.init(paper);
@@ -871,41 +882,39 @@
   function getDatumValue(colIdOrAggregate, expIndex, paperIndex) {
     if (typeof colIdOrAggregate === 'string') {
       return getExperimentsTableDatumValue(colIdOrAggregate, expIndex, paperIndex);
-    } else if (colIdOrAggregate.formula) {
+    } else if (colIdOrAggregate.formulaName) {
       return getAggregateDatumValue(colIdOrAggregate);
     }
   }
 
   function getAggregateDatumValue(aggregate) {
-    var aggregateId = aggregate.formula + '(' + aggregate.columns.join(',') + ')';
-
     if (!computedDataCache.aggregates) computedDataCache.aggregates = {};
-    if (aggregateId in computedDataCache.aggregates) {
-      if (computedDataCache.aggregates[aggregateId] === CIRCULAR_COMPUTATION_FLAG) {
-        throw new Error('circular computation involving aggregate ' + aggregateId);
+    if (aggregate.formula in computedDataCache.aggregates) {
+      if (computedDataCache.aggregates[aggregate.formula] === CIRCULAR_COMPUTATION_FLAG) {
+        throw new Error('circular computation involving aggregate ' + aggregate.formula);
       }
-      return computedDataCache.aggregates[aggregateId];
+      return computedDataCache.aggregates[aggregate.formula];
     }
 
-    computedDataCache.aggregates[aggregateId] = CIRCULAR_COMPUTATION_FLAG;
+    computedDataCache.aggregates[aggregate.formula] = CIRCULAR_COMPUTATION_FLAG;
 
     var inputs = [];
     var currentInputArray;
-    var formula = lima.getAggregateFormulaById(aggregate.formula);
+    var formula = lima.getAggregateFormulaById(aggregate.formulaName);
     var aggregateNotCompletelyDefined = false;
 
     // compute the value
     // if anything here throws an exception, value cannot be computed
-    for (var i=0; i<aggregate.columns.length; i++) {
-      if (!(aggregate.columns[i] in lima.columns)) {
-        // the computed column's input columns are not all defined
+    for (var i=0; i<aggregate.formulaParams.length; i++) {
+      if (!(aggregate.formulaParams[i] in lima.columns)) {
+        // the aggregate's input columns are not all defined
         aggregateNotCompletelyDefined = true;
         break;
       }
       currentInputArray = [];
       for (var paperIndex = 0; paperIndex < currentMetaanalysis.papers.length; paperIndex++) {
         for (var expIndex = 0; expIndex < currentMetaanalysis.papers[paperIndex].experiments.length; expIndex++) {
-          currentInputArray.push(getDatumValue(aggregate.columns[i], expIndex, paperIndex));
+          currentInputArray.push(getDatumValue(aggregate.formulaParams[i], expIndex, paperIndex));
         }
       }
       inputs.push(currentInputArray);
@@ -914,7 +923,7 @@
     var val = null;
     if (!aggregateNotCompletelyDefined) val = formula.func.apply(null, inputs);
 
-    computedDataCache.aggregates[aggregateId] = val;
+    computedDataCache.aggregates[aggregate.formula] = val;
     return val;
   }
 
@@ -1320,7 +1329,7 @@
         var el = document.createElement("option");
         el.textContent = aggregateFormulas[i].label;
         el.value = aggregateFormulas[i].id;
-        if (aggregate.formula === el.value) {
+        if (aggregate.formulaName === el.value) {
           el.selected = true;
           aggregateFormulasDropdown.classList.remove('validationerror');
         }
@@ -1328,9 +1337,10 @@
       }
 
       aggregateFormulasDropdown.onchange = function(e) {
-        aggregate.formula = e.target.value;
+        aggregate.formulaName = e.target.value;
+        aggregate.formula = lima.createFormulaString(aggregate);
 
-        var formula = lima.getAggregateFormulaById(aggregate.formula);
+        var formula = lima.getAggregateFormulaById(aggregate.formulaName);
         if (formula) {
           aggregateFormulasDropdown.classList.remove('validationerror');
         } else {
@@ -1339,7 +1349,7 @@
         // we'll call setValidationErrorClass() in fillAggregateColumnsSelection
 
         // make sure formula columns array matches the number of expected parameters
-        aggregate.columns.length = formula ? formula.parameters.length : 0;
+        aggregate.formulaParams.length = formula ? formula.parameters.length : 0;
 
         // fill in the current formula
         _.fillEls(aggregateEl, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
@@ -1351,11 +1361,10 @@
         recalculateComputedData();
       };
 
-      var aggrFormula = lima.getAggregateFormulaById(aggregate.formula);
+      var aggrFormula = lima.getAggregateFormulaById(aggregate.formulaName);
       fillAggregateColumnsSelection(metaanalysis, aggregate, aggregateEl, aggrFormula);
 
-      var aggregateId = aggregate.formula + '(' + aggregate.columns.join(',') + ')';
-      setupPopupBoxPinning(aggregateEl, '.datum.popupbox', aggregateId);
+      setupPopupBoxPinning(aggregateEl, '.datum.popupbox', aggregate.formula);
       _.setDataProps(aggregateEl, '.datum.popupbox', 'index', aggregateIndex);
 
       _.addEventListener(aggregateEl, 'button.move', 'click', moveAggregate);
@@ -1393,15 +1402,15 @@
   }
 
   function fillAggregateInformation(aggregateEl, aggregate) {
-    var aggrFormula = lima.getAggregateFormulaById(aggregate.formula);
+    var aggrFormula = lima.getAggregateFormulaById(aggregate.formulaName);
     _.fillEls(aggregateEl, '.formula', aggrFormula ? aggrFormula.label : "No formula selected");
 
     // fill in information about where the value was aggregated from
     var aggregatedFrom ="";
-    var aggregateColumnsCount = aggregate.columns.length;
+    var aggregateColumnsCount = aggregate.formulaParams.length;
     if (aggregateColumnsCount != 0) {
       for (var i = 0; i < aggregateColumnsCount; i++) {
-        var column = lima.columns[aggregate.columns[i]];
+        var column = lima.columns[aggregate.formulaParams[i]];
         aggregatedFrom += column ? column.title : "no column selected";
         if (i < aggregateColumnsCount - 1) aggregatedFrom += ', ';
       }
@@ -1444,7 +1453,7 @@
         var el = document.createElement("option");
         el.textContent = lima.columns[colId].title;
         el.value = colId;
-        if (aggregate.columns[i] === el.value) {
+        if (aggregate.formulaParams[i] === el.value) {
           el.selected = true;
           select.classList.remove('validationerror');
         }
@@ -1456,7 +1465,8 @@
       // preserve the value of i inside this code
       (function(i, select){
         select.onchange = function(e) {
-          aggregate.columns[i] = e.target.value;
+          aggregate.formulaParams[i] = e.target.value;
+          aggregate.formula = lima.createFormulaString(aggregate);
           if (e.target.value) {
             select.classList.remove('validationerror');
           } else {
@@ -1475,7 +1485,8 @@
   }
 
   function addNewAggregateToMetaanalysis() {
-    var aggregate = {formula: null, columns: []};
+    var aggregate = {formulaName: null, formulaParams: []};
+    aggregate.formula = lima.createFormulaString(aggregate);
     currentMetaanalysis.aggregates.push(aggregate);
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
