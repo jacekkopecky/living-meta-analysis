@@ -57,6 +57,13 @@ function fillByAndCtimes(current, original, email) {
       }
     }
   }
+  if (current.aggregates) {
+    for (let aggrIndex = 0; aggrIndex < current.aggregates.length; aggrIndex++) {
+      const aggr = current.aggregates[aggrIndex];
+      const origAggr = (orig.aggregates || [])[aggrIndex] || {};
+      fillByAndCtimeInComments(aggr.comments, origAggr.comments, email);
+    }
+  }
 }
 
 function fillByAndCtimeInComments(comments, origComments, email) {
