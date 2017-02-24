@@ -297,7 +297,11 @@
     retval += obj.formulaName || 'undefined';
     retval += '(';
     if (Array.isArray(obj.formulaParams)) {
-      retval += obj.formulaParams.map(function (param) { return createFormulaString(param || 'undefined'); }).join(',');
+      var params = obj.formulaParams.slice();
+      for (var i=0; i<params.length; i+=1) {
+        params[i] = createFormulaString(params[i] || 'undefined');
+      }
+      retval += params.join(',');
     }
     retval += ')';
     return retval;
@@ -319,8 +323,10 @@
 
   _.addTest(function testCreateFormulaString(assert) {
     function testObject(obj, expected) {
+      var json = JSON.stringify(obj);
       var str = lima.createFormulaString(obj);
       assert(str == expected, 'wrong formula string ' + str + ' for ' + JSON.stringify(obj) + ', expecting ' + expected);
+      assert(JSON.stringify(obj) == json, 'the input should not change');
     }
 
     testObject({}, 'undefined()');
@@ -329,6 +335,11 @@
     testObject({formulaName: 'a', formulaParams: ['b', 'c']}, 'a(b,c)');
     testObject({formulaParams: ['b', 'c']}, 'undefined(b,c)');
     testObject({formulaParams: [ null, 'c']}, 'undefined(undefined,c)');
+
+    var sparseArray = []
+    sparseArray[1] = 'c';
+    sparseArray.length = 4;
+    testObject({formulaParams: sparseArray}, 'undefined(undefined,c,undefined,undefined)');
     testObject({formulaParams: [ {formulaName: 'a', formulaParams: ['b', 'c']}, 'd']}, 'undefined(a(b,c),d)');
     testObject({formulaName:"a",formulaParams:[{formulaName:"b",formulaParams:["c","d"]},"e",{formulaName:"f",formulaParams:["g"]}]}, 'a(b(c,d),e,f(g))');
     testObject({formulaName:"a",formulaParams:[{formulaName:"b",formulaParams:[null,"d"]},"e",{formulaParams:["g"]}]}, 'a(b(undefined,d),e,undefined(g))');
