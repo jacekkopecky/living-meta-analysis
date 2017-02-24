@@ -798,7 +798,7 @@
     var formula = lima.getFormulaById(col.formulaName);
     fillFormulaColumnsSelection(currentMetaanalysis, col, th, formula);
 
-    setupPopupBoxPinning(th, '.datum.popupbox', col.formula);
+    setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.formula);
 
     _.addEventListener(th, 'button.move', 'click', moveColumn);
     _.addEventListener(th, 'button.delete', 'click', deleteColumn);
