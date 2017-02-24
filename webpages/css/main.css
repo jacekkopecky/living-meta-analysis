@@ -2104,9 +2104,9 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
   font-weight: bold;
 }
 
-#paper table.experiments .datum.popupbox .comment,
-#metaanalysis table.experiments .datum.popupbox .comment,
-#metaanalysis table.aggregates .datum.popupbox .comment {
+#paper .datum.popupbox .comment,
+#metaanalysis .datum.popupbox .comment,
+#metaanalysis .datum.popupbox .comment {
   display: block;
   border-top: 1px solid black;
   margin: .5em 0;

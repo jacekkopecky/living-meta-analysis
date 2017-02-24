@@ -814,6 +814,7 @@
     // clear out old children.
     formulaColumnsSelectionEl.innerHTML = '';
 
+    fillComputedColumnInformation(computedColumnsOptionsEl, col);
 
     if (!formula) return;
 
@@ -841,7 +842,8 @@
       // account for computed columns in metaanalysis.columns
       for (var j = 0; j < metaanalysis.columns.length; j++){
         var colId = metaanalysis.columns[j];
-        foundCurrentValue = foundCurrentValue || makeOption(colId, col, col.formulaParams[i], select);
+        var found = makeOption(colId, col, col.formulaParams[i], select);
+        foundCurrentValue = foundCurrentValue || found;
       }
 
       // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
@@ -871,8 +873,6 @@
         };
       })(i, select);
     }
-
-    fillComputedColumnInformation(computedColumnsOptionsEl, col);
   }
 
   function makeOption(optionColumn, currentTableColumn, currentValue, selectEl) {
@@ -904,6 +904,8 @@
     if (typeof col === 'string') {
       var column = lima.columns[col];
       return column ? column.title : col;
+    } else if (col == null) {
+      return 'none';
     } else if (typeof col === 'object') {
       return getRichColumnLabel(col, level);
     } else {
