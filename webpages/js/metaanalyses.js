@@ -183,6 +183,20 @@
     if (!Array.isArray(self.tags)) self.tags = [];
     if (!Array.isArray(self.aggregates)) self.aggregates = [];
 
+    self.columns.forEach(function (col) {
+      if (typeof col === 'object') {
+        var parsed = lima.parseFormulaString(col.formula);
+        if (parsed != null) {
+          col.formulaName = parsed.formulaName;
+          col.formulaParams = parsed.formulaParams;
+        } else {
+          col.formulaName = null;
+          col.formulaParams = [];
+        }
+      }
+    });
+    renumberComputedColumns(self.columns);
+
     self.aggregates.forEach(function (aggr) {
       var parsed = lima.parseFormulaString(aggr.formula);
       if (parsed != null) {
@@ -213,6 +227,15 @@
     moveResultsAfterCharacteristics(self);
 
     return self;
+  }
+
+  function renumberComputedColumns(columns) {
+    var computedColumnCount = 0;
+    columns.forEach(function (col) {
+      if (typeof col === 'object') {
+        col.number = computedColumnCount += 1;
+      }
+    });
   }
 
   function setCurrentMetaanalysis(metaanalysis) {
@@ -461,118 +484,30 @@
 
     var lastColumnHidden = false;
 
-    metaanalysis.columns.forEach(function (colId) {
-      if (isHiddenCol(colId)) {
+    metaanalysis.columns.forEach(function (col, columnIndex) {
+      if (typeof col !== 'object' && isHiddenCol(col)) {
         // Save the fact that we just hid a column, so the next non-hidden
         // column can behave differently (i.e show a arrow).
         lastColumnHidden = true;
         return;
       }
 
-      var col = lima.columns[colId];
-      var th = _.cloneTemplate('col-heading-template').children[0];
+      var th;
+
+      if (typeof col === 'object') {
+        th = fillComputedColumnHeading(metaanalysis, col, columnIndex);
+      } else {
+        th = fillDataColumnHeading(col, curtime, user);
+      }
+
       headingsRowNode.insertBefore(th, addColumnNode);
+      _.setDataProps(th, '.fullcolinfo.popupbox', 'index', columnIndex);
 
       if (lastColumnHidden) {
         // We know that there should be an "unhide" button on this column
         addUnhideButton(th);
         lastColumnHidden = false;
       }
-
-      _.fillEls(th, '.coltitle', col.title);
-      _.fillEls(th, '.coldescription', col.description);
-      _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime || curtime));
-      _.fillEls(th, '.colmtime .value', _.formatDateTime(col.mtime || curtime));
-      _.fillEls(th, '.definedby .value', col.definedBy || user);
-      _.setProps(th, '.definedby .value', 'href', '/' + (col.definedBy || user) + '/');
-
-      _.addEventListener(th, 'button.move', 'click', moveColumn);
-
-      th.dataset.colid = col.id;
-
-      _.addEventListener(th, 'button.hide', 'click', function () {
-        metaanalysis.hiddenCols.push(th.dataset.colid);
-        unpinPopupBox();
-        updateMetaanalysisView();
-        _.scheduleSave(currentMetaanalysis);
-      });
-
-      th.classList.add(col.type);
-      _.addClass(th, '.coltype', col.type);
-
-      if (col.new) {
-        th.classList.add('newcol');
-        _.addClass(th, '.coltype', 'newcol');
-        _.addClass(th, '.coltitle.editing', 'new');
-        // todo move the confirm/rename difference into html, but that means we have multiple confirm buttons and addConfirmedUpdater might be unhappy
-        _.fillEls(th, '.coltitle + .coltitlerename', 'confirm');
-      }
-
-      addOnInputUpdater(th, '.coldescription', 'textContent', identity, col, ['description']);
-
-      addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, col, 'title', deleteNewColumn, function(){_.scheduleSave(metaanalysis);});
-
-      setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
-
-      _.addEventListener(th, '.coltype .switch', 'click', changeColumnType);
-      _.addEventListener(th, '.coltypeconfirm button', 'click', changeColumnTypeConfirmOrCancel);
-
-      // Computed columns
-      var computedColumnsOptionsEl = _.findEl(th, '.colcomputedcolumns');
-      if (col.formula) {
-        // If we have anything re. computed columns, show the further options
-        _.setProps(th, '.colcomputed', 'checked', 1);
-        computedColumnsOptionsEl.classList.remove('option-not-checked');
-      }
-
-      _.addEventListener(th, '.colcomputed', 'click', function (e) {
-        var checked = e.target.checked;
-        if (checked) {
-          computedColumnsOptionsEl.classList.remove('option-not-checked');
-        } else {
-          computedColumnsOptionsEl.classList.add('option-not-checked');
-        }
-      });
-
-      // fill in the current formula
-      var formula = lima.getFormulaById(col.formula);
-      _.fillEls(computedColumnsOptionsEl, '.colformula', formula ? formula.label : 'error'); // the 'error' string should not be visible
-
-      // Add an option for every formula we know
-      var formulas = lima.listFormulas();
-      var formulasDropdown = _.findEl(th, 'select.colformulas')
-      for (var i = 0; i < formulas.length; i++){
-        var el = document.createElement("option");
-        el.textContent = formulas[i].label;
-        el.value = formulas[i].id;
-        if (col.formula === el.value) el.selected = true;
-        formulasDropdown.appendChild(el);
-      }
-
-      // react to changes in the selection of formula
-      formulasDropdown.onchange = function(e) {
-        col.formula = e.target.value;
-
-        var formula = lima.getFormulaById(col.formula);
-
-        // make sure formula columns array matches the number of expected parameters
-        if (!Array.isArray(col.formulaColumns)) col.formulaColumns = [];
-        col.formulaColumns.length = formula ? formula.parameters.length : 0;
-
-        // fill in the current formula
-        _.fillEls(computedColumnsOptionsEl, '.colformula', formula ? formula.label : 'error'); // the 'error' string should not be visible
-
-        // fill the columns selection
-        fillFormulaColumnsSelection(metaanalysis, col, computedColumnsOptionsEl, formula);
-
-        _.scheduleSave(col);
-        recalculateComputedData();
-      };
-
-      // if we already have a formula, fill the columns selection
-      fillFormulaColumnsSelection(metaanalysis, col, computedColumnsOptionsEl, formula);
-
-      _.setDataProps(th, '.needs-owner', 'owner', col.definedBy || user);
     });
 
     // Check to see if the last column was hidden.
@@ -678,19 +613,18 @@
         setupPopupBoxPinning(tr, '.paperinfo.popupbox', papIndex);
         setupPopupBoxPinning(tr, '.experimentinfo.popupbox', papIndex+','+expIndex);
 
-        metaanalysis.columns.forEach(function (colId) {
+        metaanalysis.columns.forEach(function (col) {
           // early return - ignore this column
-          if (isHiddenCol(colId)) return;
+          if (isHiddenCol(col)) return;
 
-          var col = lima.columns[colId];
           var val = null;
           var td = _.cloneTemplate('experiment-datum-template').children[0];
           tr.appendChild(td);
 
-          if (!col.formula) {
+          if (typeof col === 'string') {
             // not a computed column
-            if (experiment.data && experiment.data[colId]) {
-              val = experiment.data[colId];
+            if (experiment.data && experiment.data[col]) {
+              val = experiment.data[col];
             }
 
             if (!val || val.value == null) {
@@ -699,20 +633,26 @@
               _.fillEls(td, '.value', val.value);
             }
 
-            addOnInputUpdater(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', colId, 'value'], recalculateComputedData);
+            addOnInputUpdater(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', col, 'value'], recalculateComputedData);
 
             var user = lima.getAuthenticatedUserEmail();
             _.fillEls (td, '.valenteredby', val && val.enteredBy || user);
             _.setProps(td, '.valenteredby', 'href', '/' + (val && val.enteredBy || user) + '/');
             _.fillEls (td, '.valctime', _.formatDateTime(val && val.ctime || Date.now()));
 
+            setupPopupBoxPinning(td, '.datum.popupbox', papIndex + ',' + expIndex + ',' + col);
+
+            // populate comments
+            fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', paper, ['experiments', expIndex, 'data', col, 'comments']);
+
+            td.classList.add(lima.columns[col].type);
           } else {
             // computed column
             td.classList.add('computed');
             // todo computed from x and y
 
             addComputedDatumSetter(function() {
-              var val = getDatumValue(colId, expIndex, papIndex);
+              var val = getDatumValue(col, expIndex, papIndex);
 
               // handle bad values like Excel
               if (val == null) {
@@ -733,10 +673,10 @@
 
               // fill in information about where the value was computed from
               var computedFrom ="";
-              var formulaCount = col.formulaColumns.length;
+              var formulaCount = col.formulaParams.length;
               for (var i = 0; i < formulaCount; i++) {
-                var column = lima.columns[col.formulaColumns[i]];
-                computedFrom += column.title;
+                var column = lima.columns[col.formulaParams[i]];
+                computedFrom += column ? column.title : 'no column selected';
                 if (i < formulaCount-2) { // more than one left
                   computedFrom += ", ";
                 }
@@ -745,20 +685,18 @@
                 }
               }
               _.fillEls(td,  '.computedfrom', computedFrom);
-              _.fillEls(td, '.formula', lima.getFormulaById(col.formula).label);
+              _.fillEls(td, '.formula', lima.getFormulaOrAggregateLabelById(col.formulaName));
             });
-          }
 
-          td.classList.add(col.type);
+            setupPopupBoxPinning(td, '.datum.popupbox', papIndex + ',' + expIndex + ',' + col.formula);
+
+            td.classList.add('result');
+          }
 
           if (col.new) {
             td.classList.add('newcol');
           }
 
-          setupPopupBoxPinning(td, '.datum.popupbox', papIndex + ',' + expIndex + ',' + colId);
-
-          // populate comments
-          fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', paper, ['experiments', expIndex, 'data', colId, 'comments']);
         });
       });
     });
@@ -769,22 +707,112 @@
     _.addEventListener(table, 'th.add button.add', 'click', addExperimentColumn);
     _.addEventListener(table, 'th.add button.cancel', 'click', dismissAddExperimentColumn);
     _.addEventListener(table, 'th.add button.addnew', 'click', addNewExperimentColumn);
+    _.addEventListener(table, 'th.add button.addcomp', 'click', addNewComputedColumn);
 
     var experimentsContainer = _.findEl('#metaanalysis .experiments');
     experimentsContainer.appendChild(table);
   }
 
-  function fillFormulaColumnsSelection(metaanalysis, col, computedColumnsOptionsEl, formula) {
+  function fillDataColumnHeading(colId, curtime, user) {
+    var th = _.cloneTemplate('col-heading-template').children[0];
+    var col = lima.columns[colId];
 
+    _.fillEls(th, '.coltitle', col.title);
+    _.fillEls(th, '.coldescription', col.description);
+    _.fillEls(th, '.colctime .value', _.formatDateTime(col.ctime || curtime));
+    _.fillEls(th, '.colmtime .value', _.formatDateTime(col.mtime || curtime));
+    _.fillEls(th, '.definedby .value', col.definedBy || user);
+    _.setProps(th, '.definedby .value', 'href', '/' + (col.definedBy || user) + '/');
+
+    _.addEventListener(th, 'button.move', 'click', moveColumn);
+
+    _.addEventListener(th, 'button.hide', 'click', hideColumn);
+
+    th.classList.add(col.type);
+    _.addClass(th, '.coltype', col.type);
+
+    if (col.new) {
+      th.classList.add('newcol');
+      _.addClass(th, '.coltype', 'newcol');
+      _.addClass(th, '.coltitle.editing', 'new');
+      // todo move the confirm/rename difference into html, but that means we have multiple confirm buttons and addConfirmedUpdater might be unhappy
+      _.fillEls(th, '.coltitle + .coltitlerename', 'confirm');
+    }
+
+    addOnInputUpdater(th, '.coldescription', 'textContent', identity, col, ['description']);
+
+    addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, col, 'title', deleteNewColumn, function(){_.scheduleSave(currentMetaanalysis);});
+
+    setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
+
+    _.addEventListener(th, '.coltype .switch', 'click', changeColumnType);
+    _.addEventListener(th, '.coltypeconfirm button', 'click', changeColumnTypeConfirmOrCancel);
+
+    _.setDataProps(th, '.needs-owner', 'owner', col.definedBy || user);
+
+    return th;
+  }
+
+  function fillComputedColumnHeading(metaanalysis, col, columnIndex) {
+    var th = _.cloneTemplate('computed-col-heading-template').children[0];
+
+    th.classList.add('result');
+
+    // Editing Options
+    // Add an option for every formula we know
+    var formulas = lima.listFormulas();
+    var formulasDropdown = _.findEl(th, 'select.colformulas')
+    for (var i = 0; i < formulas.length; i++){
+      var el = document.createElement("option");
+      el.textContent = formulas[i].label;
+      el.value = formulas[i].id;
+      if (col.formulaName === el.value) {
+        el.selected = true;
+        formulasDropdown.classList.remove('validationerror');
+      }
+      formulasDropdown.appendChild(el);
+    }
+
+    formulasDropdown.onchange = function(e) {
+      col.formulaName = e.target.value;
+
+      var formula = lima.getFormulaById(col.formulaName);
+      if (formula) {
+        formulasDropdown.classList.remove('validationerror');
+      } else {
+        formulasDropdown.classList.add('validationerror');
+      }
+      // we'll call setValidationErrorClass() in fillAggregateColumnsSelection
+
+      // make sure formula columns array matches the number of expected parameters
+      col.formulaParams.length = formula ? formula.parameters.length : 0;
+      col.formula = lima.createFormulaString(col);
+
+      // fill the columns selection
+      fillFormulaColumnsSelection(currentMetaanalysis, col, th, formula);
+
+      _.scheduleSave(metaanalysis);
+      recalculateComputedData();
+    };
+
+    var formula = lima.getFormulaById(col.formulaName);
+    fillFormulaColumnsSelection(currentMetaanalysis, col, th, formula);
+
+    setupPopupBoxPinning(th, '.datum.popupbox', col.formula);
+
+    _.addEventListener(th, 'button.move', 'click', moveColumn);
+    _.addEventListener(th, 'button.delete', 'click', deleteColumn);
+
+    fillComments('comment-template', th, '.commentcount', '.fullcolinfo.popupbox main', metaanalysis, ['columns', columnIndex, 'comments']);
+
+    return th;
+  }
+
+  function fillFormulaColumnsSelection(metaanalysis, col, computedColumnsOptionsEl, formula) {
     // editing drop-down boxes for parameter columns
     var formulaColumnsSelectionEl = _.findEl(computedColumnsOptionsEl, '.colformulacolumnsselection');
     // clear out old children.
     formulaColumnsSelectionEl.innerHTML = '';
-
-    // non-editing information about parameter columns
-    var formulaColumnsInfoEl = _.findEl(computedColumnsOptionsEl, '.colformulacolumns');
-    // clear out old children.
-    formulaColumnsInfoEl.innerHTML = '';
 
 
     if (!formula) return;
@@ -800,51 +828,123 @@
       var select = document.createElement("select");
       label.appendChild(select);
 
-      // listen to changes of the dropdown box
-      // preserve the value of i inside this code
-      (function(i){
-        select.onchange = function(e) {
-          col.formulaColumns[i] = e.target.value;
-          _.scheduleSave(col);
-          recalculateComputedData();
-        };
-      })(i);
-
       // the first option is an instruction
       var op = document.createElement("option");
       op.textContent = 'Select a column';
       op.value = '';
       select.appendChild(op);
+      select.classList.add('validationerror');
+
+      var foundCurrentValue = false;
 
       // Now make an option for each column in metaanalysis
+      // account for computed columns in metaanalysis.columns
       for (var j = 0; j < metaanalysis.columns.length; j++){
         var colId = metaanalysis.columns[j];
-
-        // the current computed column should not be an option here
-        if (colId === col.id) continue;
-
-        var el = document.createElement("option");
-        el.textContent = lima.columns[colId].title;
-        el.value = colId;
-        if (col.formulaColumns[i] === el.value) {
-          el.selected = true;
-        }
-        select.appendChild(el);
+        foundCurrentValue = foundCurrentValue || makeOption(colId, col, col.formulaParams[i], select);
       }
+
+      // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
+      if (!foundCurrentValue) {
+        colId = col.formulaParams[i];
+        makeOption(colId, col, colId, select);
+      }
+
+      setValidationErrorClass();
+
+
+      // listen to changes of the dropdown box
+      // preserve the value of i inside this code
+      (function(i, select){
+        select.onchange = function(e) {
+          col.formulaParams[i] = lima.parseFormulaString(e.target.value);
+          col.formula = lima.createFormulaString(col);
+          if (e.target.value) {
+            select.classList.remove('validationerror');
+          } else {
+            select.classList.add('validationerror');
+          }
+          setValidationErrorClass();
+          _.scheduleSave(metaanalysis);
+          fillComputedColumnInformation(computedColumnsOptionsEl, col);
+          recalculateComputedData();
+        };
+      })(i, select);
     }
 
-    for (i = 0; i < noOfParams; i++){
-      // show the parameter in a paragraph
-      var paramEl = document.createElement('p');
-      paramEl.textContent = formula.parameters[i] + ': ';
-      formulaColumnsInfoEl.appendChild(paramEl);
+    fillComputedColumnInformation(computedColumnsOptionsEl, col);
+  }
 
-      var paramCol = lima.columns[col.formulaColumns[i]];
-      var colTitleEl = document.createElement('span');
-      colTitleEl.textContent = paramCol ? paramCol.title : 'unspecified';
-      if (!paramCol) colTitleEl.classList.add('unspecified');
-      paramEl.appendChild(colTitleEl);
+  function makeOption(optionColumn, currentTableColumn, currentValue, selectEl) {
+    // the current computed column should not be an option here
+    if (typeof optionColumn === 'object' && optionColumn.formula === currentTableColumn.formula) return;
+
+    var el = document.createElement("option");
+
+    el.innerHTML = getColTitle(optionColumn);
+    el.value = getColIdentifier(optionColumn);
+
+    var foundCurrentValue = false;
+
+    if (getColIdentifier(currentValue) === el.value) {
+      el.selected = true;
+      selectEl.classList.remove('validationerror');
+      foundCurrentValue = true;
     }
+    selectEl.appendChild(el);
+
+    return foundCurrentValue;
+  }
+
+  // level is how much parameter nesting we want to show:
+  // 0 - no parameters, e.g. sum(...)
+  // 1 - parameters without their parameters, e.g. sum(weight(...))
+  // Infinity - full nesting
+  function getColTitle(col, level) {
+    if (typeof col === 'string') {
+      var column = lima.columns[col];
+      return column ? column.title : col;
+    } else if (typeof col === 'object') {
+      return getRichColumnLabel(col, level);
+    } else {
+      return null;
+    }
+  }
+
+  function getRichColumnLabel(col, level) {
+    if (level == undefined) level = col.number == null ? 1 : 0;
+
+    var retval = '';
+    if (col.number !== undefined) retval += '<span>' + col.number + '. </span>';
+    retval += '<span>' + lima.getFormulaOrAggregateLabelById(col.formulaName) + '</span> (';
+
+    if (level == 0) {
+      retval += '…';
+    } else {
+      for (var i=0; i<col.formulaParams.length; i+=1) {
+        retval += ' ' + getColTitle(col.formulaParams[i], level-1);
+        if (i < col.formulaParams.length - 1) retval += ',';
+      }
+      retval += ' ';
+    }
+    return retval + ')';
+  }
+
+  function getColIdentifier(col) {
+    if (typeof col === 'string') {
+      return col;
+    } else if (typeof col === 'object') {
+      if (!col.formula) col.formula = lima.createFormulaString(col);
+      return col.formula;
+    } else {
+      return null;
+    }
+  }
+
+  function fillComputedColumnInformation(th, col) {
+    _.setProps(th, '.richcollabel', 'innerHTML', getColTitle(col, 1));
+    _.setProps(th, '.fullcollabel', 'innerHTML', getColTitle(col, Infinity));
+    // todo do more for non-editing; use computed-datum as inspiration but fix it to account for computed columns
   }
 
   /* computed cols
@@ -860,7 +960,7 @@
    *
    */
   var computedDataSetters;
-  var computedDataCache = {};
+  var dataCache = {};
   var CIRCULAR_COMPUTATION_FLAG = {message: 'uncaught circular computation!'};
 
   function resetComputedDataSetters() {
@@ -874,76 +974,75 @@
 
   function recalculateComputedData() {
     // clear computation cache
-    computedDataCache = {};
+    dataCache = {};
     // call all the calculation functions
     computedDataSetters.forEach(function (f) { f(); });
   }
 
-  function getDatumValue(colIdOrAggregate, expIndex, paperIndex) {
-    if (typeof colIdOrAggregate === 'string') {
-      return getExperimentsTableDatumValue(colIdOrAggregate, expIndex, paperIndex);
-    } else if (colIdOrAggregate.formulaName) {
-      return getAggregateDatumValue(colIdOrAggregate);
+  function getDatumValue(col, expIndex, paperIndex) {
+    if (typeof col === 'string' || expIndex != null) {
+      return getExperimentsTableDatumValue(col, expIndex, paperIndex);
+    } else if (col.formulaName) {
+      return getAggregateDatumValue(col);
     }
   }
 
   function getAggregateDatumValue(aggregate) {
-    if (!computedDataCache.aggregates) computedDataCache.aggregates = {};
-    if (aggregate.formula in computedDataCache.aggregates) {
-      if (computedDataCache.aggregates[aggregate.formula] === CIRCULAR_COMPUTATION_FLAG) {
+    if (!dataCache.aggr) dataCache.aggr = {};
+    if (aggregate.formula in dataCache.aggr) {
+      if (dataCache.aggr[aggregate.formula] === CIRCULAR_COMPUTATION_FLAG) {
         throw new Error('circular computation involving aggregate ' + aggregate.formula);
       }
-      return computedDataCache.aggregates[aggregate.formula];
+      return dataCache.aggr[aggregate.formula];
     }
 
-    computedDataCache.aggregates[aggregate.formula] = CIRCULAR_COMPUTATION_FLAG;
+    dataCache.aggr[aggregate.formula] = CIRCULAR_COMPUTATION_FLAG;
 
     var inputs = [];
     var currentInputArray;
-    var formula = lima.getAggregateFormulaById(aggregate.formulaName);
-    var aggregateNotCompletelyDefined = false;
 
-    // compute the value
-    // if anything here throws an exception, value cannot be computed
-    for (var i=0; i<aggregate.formulaParams.length; i++) {
-      if (!(aggregate.formulaParams[i] in lima.columns)) {
-        // the aggregate's input columns are not all defined
-        aggregateNotCompletelyDefined = true;
-        break;
-      }
-      currentInputArray = [];
-      for (var paperIndex = 0; paperIndex < currentMetaanalysis.papers.length; paperIndex++) {
-        for (var expIndex = 0; expIndex < currentMetaanalysis.papers[paperIndex].experiments.length; expIndex++) {
-          currentInputArray.push(getDatumValue(aggregate.formulaParams[i], expIndex, paperIndex));
+    var val;
+
+    if (isColCompletelyDefined(aggregate)) {
+      var formula = lima.getAggregateFormulaById(aggregate.formulaName);
+
+      // compute the value
+      // if anything here throws an exception, value cannot be computed
+      for (var i=0; i<aggregate.formulaParams.length; i++) {
+        currentInputArray = [];
+        for (var paperIndex = 0; paperIndex < currentMetaanalysis.papers.length; paperIndex++) {
+          for (var expIndex = 0; expIndex < currentMetaanalysis.papers[paperIndex].experiments.length; expIndex++) {
+            currentInputArray.push(getDatumValue(aggregate.formulaParams[i], expIndex, paperIndex));
+          }
         }
+        inputs.push(currentInputArray);
       }
-      inputs.push(currentInputArray);
+
+      val = formula.func.apply(null, inputs);
+      dataCache.aggr[aggregate.formula] = val;
     }
 
-    var val = null;
-    if (!aggregateNotCompletelyDefined) val = formula.func.apply(null, inputs);
-
-    computedDataCache.aggregates[aggregate.formula] = val;
     return val;
   }
 
   function getExperimentsTableDatumValue(colId, expIndex, paperIndex) {
     // check cache
-    if (!(colId in computedDataCache)) computedDataCache[colId] = [];
-    if (!(computedDataCache[colId][paperIndex])) computedDataCache[colId][paperIndex] = [];
-    if (expIndex in computedDataCache[colId][paperIndex]) {
-      if (computedDataCache[colId][paperIndex][expIndex] === CIRCULAR_COMPUTATION_FLAG) {
-        throw new Error('circular computation involving col ' + colId);
+    if (!dataCache.exp) dataCache.exp = {};
+    var cacheId = typeof colId === 'string' ? colId : colId.formula;
+    if (!(cacheId in dataCache.exp)) dataCache.exp[cacheId] = [];
+    if (!(dataCache.exp[cacheId][paperIndex])) dataCache.exp[cacheId][paperIndex] = [];
+    if (expIndex in dataCache.exp[cacheId][paperIndex]) {
+      if (dataCache.exp[cacheId][paperIndex][expIndex] === CIRCULAR_COMPUTATION_FLAG) {
+        throw new Error('circular computation involving col ' + cacheId);
       }
-      return computedDataCache[colId][paperIndex][expIndex];
+      return dataCache.exp[cacheId][paperIndex][expIndex];
     }
 
-    computedDataCache[colId][paperIndex][expIndex] = CIRCULAR_COMPUTATION_FLAG;
+    dataCache.exp[cacheId][paperIndex][expIndex] = CIRCULAR_COMPUTATION_FLAG;
 
-    var col = lima.columns[colId];
     var val = null;
     var paper = currentMetaanalysis.papers[paperIndex];
-    if (!col.formula) {
+    if (typeof colId === 'string') {
       // not a computed column
       if (paper.experiments[expIndex] &&
           paper.experiments[expIndex].data &&
@@ -953,22 +1052,20 @@
       }
     } else {
       // computed column
+      var col = colId;
       var inputs = [];
-      var formula = lima.getFormulaById(col.formula);
-      var columnNotCompletelyDefined = false;
 
-      // compute the value
-      // if anything here throws an exception, value cannot be computed
-      for (var i=0; i<col.formulaColumns.length; i++) {
-        if (!(col.formulaColumns[i] in lima.columns)) {
-          // the computed column's input columns are not all defined
-          columnNotCompletelyDefined = true;
-          break;
+      if (isColCompletelyDefined(col)) {
+        var formula = lima.getFormulaById(colId.formulaName);
+
+        // compute the value
+        // if anything here throws an exception, value cannot be computed
+        for (var i=0; i<col.formulaParams.length; i++) {
+          inputs.push(getDatumValue(col.formulaParams[i], expIndex, paperIndex));
         }
-        inputs.push(getDatumValue(col.formulaColumns[i], expIndex, paperIndex));
-      }
 
-      if (!columnNotCompletelyDefined) val = formula.func.apply(null, inputs);
+        val = formula.func.apply(null, inputs);
+      }
 
       // if the result is NaN but some of the inputs were empty, change the result to empty.
       if (typeof val == 'number' && isNaN(val)) {
@@ -976,8 +1073,27 @@
       }
     }
 
-    computedDataCache[colId][paperIndex][expIndex] = val;
+    dataCache.exp[cacheId][paperIndex][expIndex] = val;
     return val;
+  }
+
+  // check whether the column has all its parameters completely defined
+  // this also works for aggregates and simple column IDs
+  function isColCompletelyDefined(col) {
+    if (col == null) return false;
+
+    if (typeof col === 'string') return col in lima.columns;
+
+    if (!lima.getFormulaById(col.formulaName) &&
+        !lima.getAggregateFormulaById(col.formulaName)) return false;
+
+    for (var i=0; i<col.formulaParams.length; i++) {
+      if (!isColCompletelyDefined(col.formulaParams[i])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /* adding cols
@@ -1134,37 +1250,6 @@
       _.removeClass('#metaanalysis th.add .colinfo', 'alreadythere');
     }
 
-    // Computed columns
-    // If we have anything re. computed columns, show the further options
-    var compColDetailsEl = _.findEl('#metaanalysis th.add .colinfo .colcomputedcolumns');
-    if (col.formula) {
-      var formula = lima.getFormulaById(col.formula);
-      compColDetailsEl.classList.remove('option-not-checked');
-      _.fillEls(compColDetailsEl, '.colformula', formula.label);
-
-      var formulaColumnsInfoEl = _.findEl(compColDetailsEl, '.colformulacolumns');
-      // clear out old children.
-      formulaColumnsInfoEl.innerHTML = '';
-
-      var noOfParams = formula.parameters.length;
-
-      for (var i = 0; i < noOfParams; i++){
-        // show the parameter in a paragraph
-        var paramEl = document.createElement('p');
-        paramEl.textContent = formula.parameters[i] + ': ';
-        formulaColumnsInfoEl.appendChild(paramEl);
-
-        var paramCol = lima.columns[col.formulaColumns[i]];
-        var colTitleEl = document.createElement('span');
-        colTitleEl.textContent = paramCol ? paramCol.title : 'unspecified';
-        if (!paramCol) colTitleEl.classList.add('unspecified');
-        paramEl.appendChild(colTitleEl);
-      }
-
-    } else {
-      compColDetailsEl.classList.add('option-not-checked');
-    }
-
     _.setYouOrName();
   }
 
@@ -1198,6 +1283,19 @@
     var col = lima.newColumn();
     currentMetaanalysis.columns.push(col.id);
     moveResultsAfterCharacteristics(currentMetaanalysis);
+    updateMetaanalysisView();
+    setTimeout(focusFirstValidationError, 0);
+  }
+
+  function addNewComputedColumn() {
+    dismissAddExperimentColumn();
+    var col = {
+      formula: 'undefined()',
+      formulaName: null,
+      formulaParams: [],
+    };
+    currentMetaanalysis.columns.push(col);
+    renumberComputedColumns(currentMetaanalysis.columns);
     updateMetaanalysisView();
     setTimeout(focusFirstValidationError, 0);
   }
@@ -1402,22 +1500,9 @@
   }
 
   function fillAggregateInformation(aggregateEl, aggregate) {
-    var aggrFormula = lima.getAggregateFormulaById(aggregate.formulaName);
-    _.fillEls(aggregateEl, '.formula', aggrFormula ? aggrFormula.label : "No formula selected");
-
-    // fill in information about where the value was aggregated from
-    var aggregatedFrom ="";
-    var aggregateColumnsCount = aggregate.formulaParams.length;
-    if (aggregateColumnsCount != 0) {
-      for (var i = 0; i < aggregateColumnsCount; i++) {
-        var column = lima.columns[aggregate.formulaParams[i]];
-        aggregatedFrom += column ? column.title : "no column selected";
-        if (i < aggregateColumnsCount - 1) aggregatedFrom += ', ';
-      }
-    } else {
-      aggregatedFrom = "no column(s) selected";
-    }
-    _.fillEls(aggregateEl,  '.aggregatedfrom', aggregatedFrom);
+    _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
+    _.setProps(aggregateEl, '.fullaggrlabel', 'innerHTML', getColTitle(aggregate, Infinity));
+    // todo something for the non-editing case
   }
 
   function fillAggregateColumnsSelection(metaanalysis, aggregate, aggregateEl, formula) {
@@ -1446,14 +1531,16 @@
       select.appendChild(op);
       select.classList.add('validationerror');
 
-      // Now make an option for each column in paper
+      // Now make an option for each column in metaanalysis
       for (var j = 0; j < metaanalysis.columns.length; j++){
         var colId = metaanalysis.columns[j];
 
         var el = document.createElement("option");
-        el.textContent = lima.columns[colId].title;
-        el.value = colId;
-        if (aggregate.formulaParams[i] === el.value) {
+
+        el.innerHTML = getColTitle(colId);
+        el.value = getColIdentifier(colId);
+
+        if (getColIdentifier(aggregate.formulaParams[i]) === el.value) {
           el.selected = true;
           select.classList.remove('validationerror');
         }
@@ -1744,13 +1831,12 @@
   function doMoveColumn(el) {
     var left = el.classList.contains('left');
     var most = el.classList.contains('most');
-    var colId = _.findPrecedingEl(el, 'th').dataset.colid;
-    if (!colId) return; // we don't know what to move
+    var colIndex = _.findPrecedingEl(el, 'div.popupbox').dataset.index;
+    if (colIndex == null) return; // we don't know what to move
 
-    var i = currentMetaanalysis.columns.indexOf(colId);
-    if (i === -1) return console.error('column ' + colId + ' not found in newly regenerated order!');
-    var newPosition = findNextNonHiddenCol(i, left, most);
-    _.moveArrayElement(currentMetaanalysis.columns, i, newPosition);
+    if (!currentMetaanalysis.columns[colIndex]) return console.error('columns[' + colIndex + '] not found in columns!');
+    var newPosition = findNextNonHiddenCol(colIndex, left, most);
+    _.moveArrayElement(currentMetaanalysis.columns, colIndex, newPosition);
     moveResultsAfterCharacteristics(currentMetaanalysis);
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
@@ -1760,7 +1846,7 @@
     // make sure result columns come after characteristics columns
     var firstResult = 0;
     for (var i = 0; i < metaanalysis.columns.length; i++) {
-      if (lima.columns[metaanalysis.columns[i]].type === 'characteristic') {
+      if (typeof metaanalysis.columns[i] === 'string' && lima.columns[metaanalysis.columns[i]].type === 'characteristic') {
         _.moveArrayElement(metaanalysis.columns, i, firstResult);
         firstResult++;
       }
@@ -1831,7 +1917,8 @@
       return;
     }
 
-    var colId = _.findPrecedingEl(btn, 'th').dataset.colid;
+    var colIndex = _.findPrecedingEl(btn, 'div.popupbox').dataset.index;
+    var colId = currentMetaanalysis.columns[colIndex];
     var col = lima.columns[colId];
     if (!col) {
       console.warn('changeColumnTypeConfirmOrCancel couldn\'t find column for id ' + colId);
@@ -1857,6 +1944,36 @@
   function isHiddenCol(colid) {
     return currentMetaanalysis.hiddenCols.indexOf(colid) !== -1;
   }
+
+  function hideColumn(e) {
+    var colIndex = _.findPrecedingEl(e.target, 'div.popupbox').dataset.index;
+    if (colIndex == null) return; // we don't know what to move
+
+    if (typeof currentMetaanalysis.columns[colIndex] !== 'string') return console.error('columns[' + colIndex + '] not a string!');
+
+    currentMetaanalysis.hiddenCols.push(currentMetaanalysis.columns[colIndex]);
+    unpinPopupBox();
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+  }
+
+  function deleteColumn() {
+    // a click will pin the box,
+    // this timeout makes sure the click gets processed first and then we do the moving
+    setTimeout(doDeleteColumn, 0, this);
+  }
+
+  function doDeleteColumn(el) {
+    var columnIndex = _.findPrecedingEl(el, 'div.popupbox').dataset.index;
+    if (!columnIndex) return; // we don't know what to move
+
+    if (!currentMetaanalysis.columns[columnIndex]) return console.error('column[' + columnIndex + '] not found in columns!');
+    currentMetaanalysis.columns.splice(columnIndex, 1);
+    unpinPopupBox();
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+  }
+
 
   function addUnhideButton(colNode) {
     colNode.classList.add('lastcolumnhidden');
@@ -1914,7 +2031,7 @@
     var up = el.classList.contains('up');
     var most = el.classList.contains('most');
     var aggregateIndex = _.findPrecedingEl(el, 'div.popupbox').dataset.index;
-    if (!aggregateIndex) return; // we don't know what to move
+    if (aggregateIndex == null) return; // we don't know what to move
 
     if (!currentMetaanalysis.aggregates[aggregateIndex]) return console.error('aggregate[' + aggregateIndex + '] not found in aggregates!');
     var newPosition = findNextAggr(aggregateIndex, up, most);
@@ -1946,7 +2063,7 @@
 
   function doDeleteAggregate(el) {
     var aggregateIndex = _.findPrecedingEl(el, 'div.popupbox').dataset.index;
-    if (!aggregateIndex) return; // we don't know what to move
+    if (aggregateIndex == null) return; // we don't know what to move
 
     if (!currentMetaanalysis.aggregates[aggregateIndex]) return console.error('aggregate[' + aggregateIndex + '] not found in aggregates!');
     currentMetaanalysis.aggregates.splice(aggregateIndex, 1);

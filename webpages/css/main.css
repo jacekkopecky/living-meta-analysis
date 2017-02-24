@@ -2296,11 +2296,6 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
   display: initial;
 }
 
-#paper .option-not-checked,
-#metaanalysis .option-not-checked {
-  display: none;
-}
-
 #paper .colformulacolumnsselection label,
 #paper .colformulacolumnsselection label > select,
 #metaanalysis .colformulacolumnsselection label,

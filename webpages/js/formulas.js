@@ -79,6 +79,11 @@
     return null;
   }
 
+  lima.getFormulaOrAggregateLabelById = function getFormulaOrAggregateLabelById(id) {
+    var formula = lima.getFormulaById(id) || lima.getAggregateFormulaById(id);
+    return (formula ? formula.label : 'no formula selected');
+  }
+
   // here start the functions implementing the formulas
 
   function logOddsRatio (experimental, control) {
