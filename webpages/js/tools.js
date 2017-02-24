@@ -379,20 +379,30 @@
       successfulAssertions += 1;
     }
 
-    console.log('running ' + tests.length + ' tests');
+    var log = console.log;
+    if (window.testoutput) {
+      log = function() {
+        console.log.apply(console, arguments);
+        window.testoutput.textContent += Array.prototype.join.call(arguments, ' ');
+        if (arguments[arguments.length - 1].stack) window.testoutput.textContent += '\n  ' + arguments[arguments.length - 1].stack;
+        window.testoutput.textContent += '\n';
+      };
+    }
+
+    log('running ' + tests.length + ' tests');
     tests.forEach(function (test, index) {
       successfulAssertions = 0;
       currentAssertion = -1;
-      console.log('running test ' + (test.name || index));
+      log('running test ' + (test.name || index));
       try {
         test(assert);
       } catch (e) {
-        console.log('  assertion #' + currentAssertion + ' error: ', e);
+        log('  assertion #' + currentAssertion + ' error: ', e);
         failedTests += 1;
       }
-      console.log('  done test ' + (test.name || index) + ' (' + successfulAssertions + ' assertion(s) passed)');
+      log('   done test ' + (test.name || index) + ' (' + successfulAssertions + ' assertion(s) passed)');
     });
-    console.log('finished ' + tests.length + ' tests: ' + (tests.length - failedTests) + ' passed, ' + failedTests + ' failed');
+    log('finished ' + tests.length + ' tests: ' + (tests.length - failedTests) + ' passed, ' + failedTests + ' failed');
   };
 
   _.addTest = function addTest(f) { tests.push(f); }
