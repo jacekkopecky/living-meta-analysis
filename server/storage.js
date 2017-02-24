@@ -38,6 +38,7 @@ function fillByAndCtimes(current, original, email) {
   if (!current.enteredBy) current.enteredBy = orig.enteredBy || email;
   if (!current.ctime) current.ctime = orig.ctime || tools.uniqueNow();
   fillByAndCtimeInComments(current.comments, orig.comments, email);
+
   if (current.experiments) {
     for (let expIndex = 0; expIndex < current.experiments.length; expIndex++) {
       const exp = current.experiments[expIndex];
@@ -57,6 +58,17 @@ function fillByAndCtimes(current, original, email) {
       }
     }
   }
+
+  if (current.columns) {
+    for (let colIndex = 0; colIndex < current.columns.length; colIndex++) {
+      if (typeof current.columns[colIndex] === 'object') {
+        const col = current.columns[colIndex];
+        const origCol = (orig.columns || [])[colIndex] || {};
+        fillByAndCtimeInComments(col.comments, origCol.comments, email);
+      }
+    }
+  }
+
   if (current.aggregates) {
     for (let aggrIndex = 0; aggrIndex < current.aggregates.length; aggrIndex++) {
       const aggr = current.aggregates[aggrIndex];

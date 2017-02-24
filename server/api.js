@@ -444,7 +444,7 @@ function extractReceivedMetaanalysis(receivedMetaanalysis) {
     published:         tools.string(receivedMetaanalysis.published),
     description:       tools.string(receivedMetaanalysis.description),
     tags:              tools.array(receivedMetaanalysis.tags, tools.string),
-    columns:           tools.array(receivedMetaanalysis.columns, tools.string),
+    columns:           tools.array(receivedMetaanalysis.columns, extractReceivedColumnEntry),
     paperOrder:        tools.array(receivedMetaanalysis.paperOrder, tools.string),
     hiddenCols:        tools.array(receivedMetaanalysis.hiddenCols, tools.string),
     hiddenExperiments: tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
@@ -452,6 +452,19 @@ function extractReceivedMetaanalysis(receivedMetaanalysis) {
   };
 
   return retval;
+}
+
+function extractReceivedColumnEntry(recCol) {
+  if (typeof recCol === 'string') {
+    return tools.string(recCol);
+  } else if (typeof recCol === 'object') {
+    return {
+      formula: tools.string(recCol.formula),
+      comments: tools.array(recCol.comments, extractReceivedComment),
+    };
+  }
+
+  return undefined;
 }
 
 function extractReceivedAggregate(recAggr) {
@@ -508,8 +521,6 @@ function extractColumnForSending(storageColumn) {
     title: storageColumn.title,
     type: storageColumn.type,
     description: storageColumn.description,
-    formula: storageColumn.formula,
-    formulaColumns: storageColumn.formulaColumns,
     definedBy: storageColumn.definedBy,
     ctime: storageColumn.ctime,
     mtime: storageColumn.mtime,
@@ -540,8 +551,6 @@ function extractReceivedColumn(recCol) {
     title: tools.string(recCol.title),
     type: tools.string(recCol.type),
     description: tools.string(recCol.description),
-    formula: tools.string(recCol.formula),
-    formulaColumns: tools.array(recCol.formulaColumns, tools.string),
     CHECKdefinedBy: tools.string(recCol.definedBy), // can't be changed but should be checked
     CHECKctime: tools.number(recCol.ctime),         // can't be changed but should be checked
     // mtime: tools.number(recCol.mtime),           // will be updated
