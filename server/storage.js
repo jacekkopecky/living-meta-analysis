@@ -952,6 +952,45 @@ module.exports.saveColumn = (recvCol, email) => {
 };
 
 
+/* closed beta
+ *
+ *
+ *    ####  #       ####   ####  ###### #####     #####  ###### #####   ##
+ *   #    # #      #    # #      #      #    #    #    # #        #    #  #
+ *   #      #      #    #  ####  #####  #    #    #####  #####    #   #    #
+ *   #      #      #    #      # #      #    #    #    # #        #   ######
+ *   #    # #      #    # #    # #      #    #    #    # #        #   #    #
+ *    ####  ######  ####   ####  ###### #####     #####  ######   #   #    #
+ *
+ *
+ */
+
+// a hash keyed on invite codes for closed beta users
+module.exports.betaCodes = {};
+
+// todo this should be in the data store
+module.exports.betaCodes['team-1'] = {};
+
+// when we touch a beta code (someone uses it in a request), store:
+//   last access (trigger a save if more than 24h after the last one)
+//   logged-in email address if available (triggers a save if a new address there)
+//   access count per email address per day for the last 7 days
+module.exports.touchBetaCode = (code, email) => void email;
+
+
+/* ready function
+ *
+ *
+ *   #####  ######   ##   #####  #   #    ###### #    # #    #  ####  ##### #  ####  #    #
+ *   #    # #       #  #  #    #  # #     #      #    # ##   # #    #   #   # #    # ##   #
+ *   #    # #####  #    # #    #   #      #####  #    # # #  # #        #   # #    # # #  #
+ *   #####  #      ###### #    #   #      #      #    # #  # # #        #   # #    # #  # #
+ *   #   #  #      #    # #    #   #      #      #    # #   ## #    #   #   # #    # #   ##
+ *   #    # ###### #    # #####    #      #       ####  #    #  ####    #   #  ####  #    #
+ *
+ *
+ */
+
 module.exports.ready =
   metaanalysisCache
   .then(() => paperCache)
