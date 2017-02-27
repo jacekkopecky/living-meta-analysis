@@ -9,7 +9,7 @@
 
   footer.innerHTML += '<p class="limaversion">version <span class="value">&hellip;</span> (<a href="/version/log">full changelog</a>)</p>';
 
-  fetch('/version')
+  fetch('/version', { credentials: 'same-origin' })
   .then(_.fetchText)
   .then(function (text) { _.fillEls('.limaversion .value', text)})
   .catch(function (err) {

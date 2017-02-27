@@ -13,10 +13,12 @@ const https = require('https');
 const fs = require('fs');
 const morgan = require('morgan');
 const rfs = require('rotating-file-stream');
+const cookieParser = require('cookie-parser');
 
 const config = require('./config');
 
 const api = require('./api');
+const storage = require('./storage');
 const NotFoundError = require('./errors/NotFoundError');
 
 const exec = require('child_process').exec;
@@ -62,6 +64,39 @@ if (config.logDirectory) {
 }
 
 
+/* closed beta
+ *
+ *
+ *    ####  #       ####   ####  ###### #####     #####  ###### #####   ##
+ *   #    # #      #    # #      #      #    #    #    # #        #    #  #
+ *   #      #      #    #  ####  #####  #    #    #####  #####    #   #    #
+ *   #      #      #    #      # #      #    #    #    # #        #   ######
+ *   #    # #      #    # #    # #      #    #    #    # #        #   #    #
+ *    ####  ######  ####   ####  ###### #####     #####  ######   #   #    #
+ *
+ *
+ */
+
+// in closed beta, restrict access to HTML pages:
+// if we don't get a valid closed-beta code in the lima-beta-code cookie,
+// we will redirect to a coming-soon page
+
+// regex for quickly checking for selected paths to be allowed: /css, /js, /img, /api
+const closedBetaAllowedURLs = /^\/(css|js|img|api)\//;
+
+app.use('/', cookieParser(), (req, res, next) => {
+  if (req.url.match(closedBetaAllowedURLs)) {
+    next();
+  } else if (storage.betaCodes.hasOwnProperty(req.cookies['lima-beta-code'])) {
+    storage.touchBetaCode(req.cookies['lima-beta-code'], req.user ? req.user.emails[0].value : undefined);
+    next();
+  } else if (req.url === '/') {
+    res.sendFile('coming-soon.html', { root: './webpages/' });
+  } else {
+    res.redirect('/');
+  }
+});
+
 /* routes
  *
  *
@@ -74,15 +109,6 @@ if (config.logDirectory) {
  *
  *
  */
-
-// redirect by default to a coming-soon page
-app.get('/', (req, res, next) => {
-  if (!req.query || Object.keys(req.query).length === 0) {
-    res.sendFile('coming-soon.html', { root: './webpages/' });
-  } else {
-    next();
-  }
-});
 
 app.get('/version', oneLineVersion);
 app.get('/version/log',

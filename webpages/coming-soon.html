@@ -1,6 +1,24 @@
 <!doctype html>
 <title>LiMA – Living Meta-Analysis</title>
 <link rel="stylesheet" href="/css/main.css">
+<style>
+  form {
+    display: inline;
+  }
+
+  #cookieuse {
+    display: block;
+    margin-top: 1em;
+    font-style: italic;
+    padding: .5em 1em;
+    max-width: 30em;
+    background-color: #eef;
+    border: 1px solid #88f;
+    border-radius: .5em;
+  }
+
+  #invitecode:not(:valid) ~ #cookieuse { display: none; }
+</style>
 
 <header>
   <h1>LiMA (Living Meta-Analysis)</h1>
@@ -8,7 +26,7 @@
 </header>
 
 <p>
-  LiMA is now in testing, please come back in April 2017. Thank you for your interest.
+  LiMA is currently in invitation-only beta testing. Thank you for your interest.
 </p>
 
 
@@ -16,6 +34,18 @@
 <p>
   To sign up to our mailing list, please email <a href="mailto:jacek.kopecky@port.ac.uk">jacek.kopecky@port.ac.uk</a>.
 </p>
+
+<form id="inviteform">
+  <p>
+    If you have an invite, please enter the code here: <input id="invitecode" type=text size=20 required autofocus><input type="submit" value="Proceed">
+
+    <span id=cookieuse>
+      Please note that we use cookies to store the invite code.
+      By using LiMA with an invite, you express consent with our use of cookies.
+    </span>
+  </p>
+
+</form>
 
 
 
@@ -25,5 +55,18 @@
 </footer>
 
 
-<script src="/js/tools.js"></script>
-<script src="/js/version.js"></script>
+<script>
+  // reset the cookie because the server did not accept it
+  if (window.location.pathname == '/') {
+    document.cookie = "lima-beta-code=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  }
+
+  // use the invite code as a cookie for server access
+  window.inviteform.onsubmit = function(e) {
+    e.preventDefault();
+    if (window.invitecode.value.trim()) {
+      document.cookie = "lima-beta-code=" + encodeURIComponent(window.invitecode.value.trim()) + "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+      window.location.href="/?closedbeta";
+    }
+  }
+</script>

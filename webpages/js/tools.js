@@ -323,7 +323,7 @@
 
   _.notFound = function notFound() {
     document.body.innerHTML = '';
-    fetch('/404')
+    fetch('/404', { credentials: 'same-origin' })
     .then(_.fetchText)
     .catch(function (err) {
       console.error('error getting 404');
@@ -339,7 +339,7 @@
 
   _.apiFail = function apiFail() {
     document.body.innerHTML = '';
-    fetch('/apifail')
+    fetch('/apifail', { credentials: 'same-origin' })
     .then(_.fetchText)
     .catch(function (err) {
       console.error('error getting apifail page');
