@@ -2011,7 +2011,7 @@
 
   lima.initPapersJS = function () {
     lima.checkToPreventForcedSaving = checkToPreventForcedSaving;
-    lima.checkToPreventLeaving = lima.checkToPreventSaving;
+    lima.checkToPreventLeaving = checkToPreventSaving;
     lima.checkToPreventSaving = checkToPreventSaving;
     lima.saveError = saveError;
     lima.savePendingStarted = savePendingStarted;
