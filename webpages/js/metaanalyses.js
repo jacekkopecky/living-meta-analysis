@@ -936,7 +936,7 @@
     if (typeof col === 'string') {
       return col;
     } else if (typeof col === 'object') {
-      if (!col.formula) col.formula = lima.createFormulaString(col);
+      if (!col.formula) throw new Error('every computed column / aggregate should always have formula');
       return col.formula;
     } else {
       return null;
