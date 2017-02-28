@@ -36,3 +36,26 @@ For now with `./invites.txt` to generate an invite, append a line like this:
 ```
 random-code-12345 # 2017-02-28 generated for Cochrane workshop attendees
 ```
+
+use the script `geninvite` to generate invites, e.g.
+
+```
+for pom in `seq 1 100`; do geninvite "for Cochrane workshop attendees and other invitees"; done >> invites.txt
+```
+
+Then print them with [LiMA's print page](https://lima.soc.port.ac.uk/admin/print-invites).
+
+Source of `geninvite`:
+
+```
+#!/bin/bash
+
+code=''
+while grep -q "$code" invites.txt
+do
+  code=`uuidgen`
+  code=${code##*-}
+done
+
+echo $code '#' `date +"%Y-%m-%d %H:%M"` $1
+```

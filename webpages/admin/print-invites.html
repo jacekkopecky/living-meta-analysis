@@ -1,0 +1,127 @@
+<!doctype html>
+<title>LiMA (Living Meta-Analysis) Invite Codes</title>
+<link href="https://fonts.googleapis.com/css?family=Gruppo|Raleway:300" rel="stylesheet">
+<style>
+  #codes {
+    display: block;
+    font-family: "Raleway", "Arial", "Helvetica", sans-serif;
+    position: relative;
+  }
+
+  section.invite {
+    max-width: 33%;
+    min-width: 32%;
+    display: inline-block;
+    padding: 2em;
+    box-sizing: border-box;
+    text-align: center;
+    page-break-inside: avoid;
+    position: relative;
+  }
+
+  section.invite > h1 {
+    font-size: 5em;
+    font-family: "Gruppo";
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    line-height: 1em;
+    margin-left: -.033em; /* compensate for font space around the L */
+  }
+
+  section.invite > h2 {
+    font-size: 1.16em;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    line-height: 1em;
+    font-family: "Raleway";
+  }
+
+  section.invite > h3 {
+    font-size: 1.36em;
+    /*font-weight: normal;*/
+    margin: .8em 0;
+    padding: 0;
+    line-height: 1em;
+  }
+
+  section.invite .link {
+    margin: .5em 0;
+  }
+
+  section.invite .codeline {
+    font-size: 93%;
+    margin: .5em 0;
+  }
+
+  section.invite .code {
+    font-family: "Consolas", monospace;
+    /*font-weight: bold;*/
+  }
+
+  #codeinput {
+    width: 80%;
+    height: 10em;
+    font-family: monospace;
+  }
+
+  @media print {
+    body {
+      font-size: 10pt;
+    }
+
+    .noprint { display: none; }
+  }
+</style>
+
+<h1 class="noprint">LiMA (Living Meta-Analysis) Invite Codes</h1>
+
+<p class="noprint">Paste your codes here and then print</p>
+<textarea class="noprint" id="codeinput">test # paste your codes here and then print</textarea>
+
+<main id="codes"><!-- this will contain the codes --></main>
+
+<template id="invite">
+  <section class='invite'>
+    <h1>LiMA</h1>
+    <h2>Living Meta–Analysis</h2>
+    <h3>Invitation</h3>
+    <p class="codeline">your code: <span class="code"></span></p>
+    <p class="link">lima.soc.port.ac.uk</p>
+  </section>
+</template>
+
+<script>
+
+if (localStorage.codeinput) {
+  window.codeinput.value = localStorage.codeinput;
+}
+
+function prepCodes() {
+  window.codes.innerHTML='';
+
+  localStorage.codeinput = window.codeinput.value || undefined;
+
+  var inputArray = window.codeinput.value.split(/\n/);
+  var codeArray = [];
+
+  inputArray.forEach(function(line) {
+    var code = line.split('#')[0].trim();
+    if (code) codeArray.push(code);
+  });
+
+  codeArray.forEach(function (code) {
+    var el = document.importNode(window.invite.content, true);
+
+    el.querySelector('.code').textContent = code;
+
+    window.codes.appendChild(el);
+  });
+}
+
+prepCodes();
+
+window.codeinput.oninput = prepCodes;
+
+</script>
