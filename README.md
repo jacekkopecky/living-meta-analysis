@@ -28,3 +28,11 @@ git diff -u              # review everything
 npm install              # if package.json has changed
 forever restart server   # if server has changed
 ```
+
+## invite codes
+
+For now with `./invites.txt` to generate an invite, append a line like this:
+
+```
+random-code-12345 # 2017-02-28 generated for Cochrane workshop attendees
+```
