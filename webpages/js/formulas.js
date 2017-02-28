@@ -24,49 +24,49 @@
         id: 'logOddsRatio',
         label: 'Log Odds Ratio',
         func: logOddsRatio,
-        parameters: [ 'experimental', 'control' ]
+        parameters: [ 'group 1 (e.g. experimental)', 'group 2 (e.g. control)' ]
       },
       {
         id: 'weight',
         label: 'Weight',
         func: weight,
-        parameters: [ 'experimental outcome', 'experimental N', 'control outcome', 'control N' ]
+        parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N' ]
       },
       {
         id: 'lowerConfidenceLimit',
         label: 'Lower Confidence Limit',
         func: lowerConfidenceLimit,
-        parameters: [ 'experimental outcome', 'experimental N', 'control outcome', 'control N' ]
+        parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N' ]
       },
       {
         id: 'upperConfidenceLimit',
         label: 'Upper Confidence Limit',
         func: upperConfidenceLimit,
-        parameters: [ 'experimental outcome', 'experimental N', 'control outcome', 'control N' ]
+        parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N' ]
       },
       {
         id: 'logOddsRatioPercent',
         label: 'Log Odds Ratio (percentages)',
         func: logOddsRatioPercent,
-        parameters: [ 'experimental (%)', 'control (%)' ]
+        parameters: [ 'group 1 (e.g. experimental %)', 'group 2 (e.g. control %)' ]
       },
       {
         id: 'weightPercent',
         label: 'Weight (percentages)',
         func: weightPercent,
-        parameters: [ 'experimental outcome (%)', 'experimental N', 'control outcome (%)', 'control N' ]
+        parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
       },
       {
         id: 'lowerConfidenceLimitPercent',
         label: 'Lower Confidence Limit (percentages)',
         func: lowerConfidenceLimitPercent,
-        parameters: [ 'experimental outcome (%)', 'experimental N', 'control outcome (%)', 'control N' ]
+        parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
       },
       {
         id: 'upperConfidenceLimitPercent',
         label: 'Upper Confidence Limit (percentages)',
         func: upperConfidenceLimitPercent,
-        parameters: [ 'experimental outcome (%)', 'experimental N', 'control outcome (%)', 'control N' ]
+        parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
       },
     ];
   }
@@ -86,24 +86,24 @@
 
   // here start the functions implementing the formulas
 
-  function logOddsRatio (experimental, control) {
+  function logOddsRatio (group1, group2) {
     // validate the input
-    experimental = _.strictToNumber(experimental);
-    control = _.strictToNumber(control);
+    group1 = _.strictToNumber(group1);
+    group2 = _.strictToNumber(group2);
 
     // perform the calculation
     // may return NaN or infinities
-    return Math.log((control/(1-control))/(experimental/(1-experimental)));
+    return Math.log((group1/(1-group1))/(group2/(1-group2)));
   }
 
-  function logOddsRatioPercent (experimental, control) {
+  function logOddsRatioPercent (group1, group2) {
     // validate the input
-    experimental = _.strictToNumber(experimental);
-    control = _.strictToNumber(control);
+    group1 = _.strictToNumber(group1);
+    group2 = _.strictToNumber(group2);
 
     // perform the calculation
     // may return NaN or infinities
-    return logOddsRatio(experimental/100, control/100);
+    return logOddsRatio(group1/100, group2/100);
   }
 
   function variance (Me, Ne, Mc, Nc) {
