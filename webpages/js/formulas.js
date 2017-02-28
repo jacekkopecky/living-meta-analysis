@@ -310,6 +310,7 @@
     } else {
       retval.formulaParams = [];
     }
+    retval.formula = lima.createFormulaString(retval);
     return retval;
   }
 
@@ -438,10 +439,10 @@
     assert(val.formulaParams[0] == 'b', "bad formula params in " + JSON.stringify(val));
 
     val = lima.parseFormulaString('a(b(c,d),e,f(g))');
-    assert(JSON.stringify(val) == '{"formulaName":"a","formulaParams":[{"formulaName":"b","formulaParams":["c","d"]},"e",{"formulaName":"f","formulaParams":["g"]}]}', "bad formula parsed in " + JSON.stringify(val));
+    assert(JSON.stringify(val) == '{"formulaName":"a","formulaParams":[{"formulaName":"b","formulaParams":["c","d"],"formula":"b(c,d)"},"e",{"formulaName":"f","formulaParams":["g"],"formula":"f(g)"}],"formula":"a(b(c,d),e,f(g))"}', "bad formula parsed in " + JSON.stringify(val));
 
     val = lima.parseFormulaString('a(b(c(d(e)),f),g,h(i))');
-    assert(JSON.stringify(val) == '{"formulaName":"a","formulaParams":[{"formulaName":"b","formulaParams":[{"formulaName":"c","formulaParams":[{"formulaName":"d","formulaParams":["e"]}]},"f"]},"g",{"formulaName":"h","formulaParams":["i"]}]}', "bad formula parsed in " + JSON.stringify(val));
+    assert(JSON.stringify(val) == '{"formulaName":"a","formulaParams":[{"formulaName":"b","formulaParams":[{"formulaName":"c","formulaParams":[{"formulaName":"d","formulaParams":["e"],"formula":"d(e)"}],"formula":"c(d(e))"},"f"],"formula":"b(c(d(e)),f)"},"g",{"formulaName":"h","formulaParams":["i"],"formula":"h(i)"}],"formula":"a(b(c(d(e)),f),g,h(i))"}', "bad formula parsed in " + JSON.stringify(val));
 
     val = lima.parseFormulaString("undefined(undefined,undefined)");
     assert(val.formulaName == 'undefined', "bad formula name in " + JSON.stringify(val));
