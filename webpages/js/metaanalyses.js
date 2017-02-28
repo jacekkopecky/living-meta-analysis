@@ -991,14 +991,15 @@
 
   function getAggregateDatumValue(aggregate) {
     if (!dataCache.aggr) dataCache.aggr = {};
-    if (aggregate.formula in dataCache.aggr) {
-      if (dataCache.aggr[aggregate.formula] === CIRCULAR_COMPUTATION_FLAG) {
-        throw new Error('circular computation involving aggregate ' + aggregate.formula);
+    var cacheId = getColIdentifier(aggregate);
+    if (cacheId in dataCache.aggr) {
+      if (dataCache.aggr[cacheId] === CIRCULAR_COMPUTATION_FLAG) {
+        throw new Error('circular computation involving aggregate ' + cacheId);
       }
-      return dataCache.aggr[aggregate.formula];
+      return dataCache.aggr[cacheId];
     }
 
-    dataCache.aggr[aggregate.formula] = CIRCULAR_COMPUTATION_FLAG;
+    dataCache.aggr[cacheId] = CIRCULAR_COMPUTATION_FLAG;
 
     var inputs = [];
     var currentInputArray;
@@ -1021,7 +1022,7 @@
       }
 
       val = formula.func.apply(null, inputs);
-      dataCache.aggr[aggregate.formula] = val;
+      dataCache.aggr[cacheId] = val;
     }
 
     return val;
@@ -1030,7 +1031,7 @@
   function getExperimentsTableDatumValue(colId, expIndex, paperIndex) {
     // check cache
     if (!dataCache.exp) dataCache.exp = {};
-    var cacheId = typeof colId === 'string' ? colId : colId.formula;
+    var cacheId = getColIdentifier(colId);
     if (!(cacheId in dataCache.exp)) dataCache.exp[cacheId] = [];
     if (!(dataCache.exp[cacheId][paperIndex])) dataCache.exp[cacheId][paperIndex] = [];
     if (expIndex in dataCache.exp[cacheId][paperIndex]) {
@@ -1058,7 +1059,7 @@
       var inputs = [];
 
       if (isColCompletelyDefined(col)) {
-        var formula = lima.getFormulaById(colId.formulaName);
+        var formula = lima.getFormulaById(col.formulaName);
 
         // compute the value
         // if anything here throws an exception, value cannot be computed
@@ -1533,7 +1534,7 @@
       // preserve the value of i inside this code
       (function(i, select){
         select.onchange = function(e) {
-          aggregate.formulaParams[i] = e.target.value;
+          aggregate.formulaParams[i] = lima.parseFormulaString(e.target.value);
           aggregate.formula = lima.createFormulaString(aggregate);
           if (e.target.value) {
             select.classList.remove('validationerror');
