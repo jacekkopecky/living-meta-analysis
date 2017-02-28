@@ -68,6 +68,30 @@
         func: upperConfidenceLimitPercent,
         parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
       },
+      {
+        id: 'logOddsRatioNumber',
+        label: 'Log Odds Ratio (numbers affected)',
+        func: logOddsRatioNumber,
+        parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ]
+      },
+      {
+        id: 'weightNumber',
+        label: 'Weight (numbers affected)',
+        func: weightNumber,
+        parameters: [ 'group 1 outcome (affected)', 'group 1 N', 'group 2 outcome (affected)', 'group 2 N' ]
+      },
+      {
+        id: 'lowerConfidenceLimitNumber',
+        label: 'Lower Confidence Limit (numbers affected)',
+        func: lowerConfidenceLimitNumber,
+        parameters: [ 'group 1 outcome (affected)', 'group 1 N', 'group 2 outcome (affected)', 'group 2 N' ]
+      },
+      {
+        id: 'upperConfidenceLimitNumber',
+        label: 'Upper Confidence Limit (numbers affected)',
+        func: upperConfidenceLimitNumber,
+        parameters: [ 'group 1 outcome (affected)', 'group 1 N', 'group 2 outcome (affected)', 'group 2 N' ]
+      },
     ];
   }
 
@@ -106,6 +130,18 @@
     return logOddsRatio(group1/100, group2/100);
   }
 
+  function logOddsRatioNumber (group1, n1, group2, n2) {
+    // validate the input
+    group1 = _.strictToNumber(group1);
+    group2 = _.strictToNumber(group2);
+    n1 = _.strictToNumber(n1);
+    n2 = _.strictToNumber(n2);
+
+    // perform the calculation
+    // may return NaN or infinities
+    return logOddsRatio(group1/n1, group2/n2);
+  }
+
   function variance (Me, Ne, Mc, Nc) {
     // validate the input
     Me = _.strictToNumber(Me);
@@ -126,6 +162,10 @@
     return weight(Me/100, Ne, Mc/100, Nc);
   }
 
+  function weightNumber (Me, Ne, Mc, Nc) {
+    return weight(Me/Ne, Ne, Mc/Nc, Nc);
+  }
+
   function standardError (Me, Ne, Mc, Nc) {
     return Math.sqrt(variance(Me, Ne, Mc, Nc));
   }
@@ -144,6 +184,14 @@
 
   function upperConfidenceLimitPercent (Me, Ne, Mc, Nc) {
     return upperConfidenceLimit(Me/100, Ne, Mc/100, Nc);
+  }
+
+  function lowerConfidenceLimitNumber (Me, Ne, Mc, Nc) {
+    return lowerConfidenceLimit(Me/Ne, Ne, Mc/Nc, Nc);
+  }
+
+  function upperConfidenceLimitNumber (Me, Ne, Mc, Nc) {
+    return upperConfidenceLimit(Me/Ne, Ne, Mc/Nc, Nc);
   }
 
 
