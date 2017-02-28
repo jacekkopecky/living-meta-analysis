@@ -1313,7 +1313,7 @@
     // if there are no pending changes, add a new experiment
     if (!lima.checkToPreventForcedSaving()) {
       var parentTr = _.findPrecedingEl(e.target, "tr");
-      var paperIndex = parentTr.dataset.paperIndex;
+      var paperIndex = parseInt(parentTr.dataset.paperIndex);
       var paper = currentMetaanalysis.papers[paperIndex];
       if (!paper) return console.error('cannot find paper with index ' + paperIndex + ' for button ', e.target);
 
@@ -1329,7 +1329,7 @@
 
   function deleteNewPaper(el) {
     var parentTr = _.findPrecedingEl(el, "tr");
-    var paperIndex = parentTr.dataset.paperIndex;
+    var paperIndex = parseInt(parentTr.dataset.paperIndex);
     // we only want this to delete the last paper
     if (currentMetaanalysis.papers.length-1 != paperIndex) return;
 
@@ -1352,7 +1352,7 @@
   function deleteNewExperiment(el) {
     if (!lima.checkToPreventForcedSaving()) {
       var parentTr = _.findPrecedingEl(el, "tr");
-      var paperIndex = parentTr.dataset.paperIndex;
+      var paperIndex = parseInt(parentTr.dataset.paperIndex);
       var paper = currentMetaanalysis.papers[paperIndex];
       if (!paper) return console.error('cannot find paper with index ' + paperIndex + ' for editing field ', el);
 
@@ -1812,8 +1812,8 @@
   function doMoveColumn(el) {
     var left = el.classList.contains('left');
     var most = el.classList.contains('most');
-    var colIndex = _.findPrecedingEl(el, 'div.popupbox').dataset.index;
-    if (colIndex == null) return; // we don't know what to move
+    var colIndex = parseInt(_.findPrecedingEl(el, 'div.popupbox').dataset.index);
+    if (isNaN(colIndex)) return; // we don't know what to move
 
     if (!currentMetaanalysis.columns[colIndex]) return console.error('columns[' + colIndex + '] not found in columns!');
     var newPosition = findNextNonHiddenCol(colIndex, left, most);
@@ -1898,7 +1898,7 @@
       return;
     }
 
-    var colIndex = _.findPrecedingEl(btn, 'div.popupbox').dataset.index;
+    var colIndex = parseInt(_.findPrecedingEl(btn, 'div.popupbox').dataset.index);
     var colId = currentMetaanalysis.columns[colIndex];
     var col = lima.columns[colId];
     if (!col) {
@@ -1927,8 +1927,8 @@
   }
 
   function hideColumn(e) {
-    var colIndex = _.findPrecedingEl(e.target, 'div.popupbox').dataset.index;
-    if (colIndex == null) return; // we don't know what to move
+    var colIndex = parseInt(_.findPrecedingEl(e.target, 'div.popupbox').dataset.index);
+    if (isNaN(colIndex)) return; // we don't know what to move
 
     if (typeof currentMetaanalysis.columns[colIndex] !== 'string') return console.error('columns[' + colIndex + '] not a string!');
 
@@ -1945,8 +1945,8 @@
   }
 
   function doDeleteColumn(el) {
-    var columnIndex = _.findPrecedingEl(el, 'div.popupbox').dataset.index;
-    if (!columnIndex) return; // we don't know what to move
+    var columnIndex = parseInt(_.findPrecedingEl(el, 'div.popupbox').dataset.index);
+    if (isNaN(columnIndex)) return; // we don't know what to move
 
     if (!currentMetaanalysis.columns[columnIndex]) return console.error('column[' + columnIndex + '] not found in columns!');
     currentMetaanalysis.columns.splice(columnIndex, 1);
@@ -1966,14 +1966,13 @@
   // e.g. ['hidden0', 'col1', 'hidden2', 'hidden3', 'col4'].
   // Passing col1 will unhide hidden0, and passing col4 will unhide 2 and 3.
   function unhideColumns (e) {
-    var colId = _.findPrecedingEl(e.target, 'th').dataset.colid;
+    var index = parseInt(_.findEl(_.findPrecedingEl(e.target, 'th'), '.fullcolinfo.popupbox').dataset.index);
 
-    var index;
     // If we don't have a colId, it's the 'add column' button, so start at the end.
-    if (!colId) {
+    if (isNaN(index)) {
       index = currentMetaanalysis.columns.length-1;
     } else {
-      index = currentMetaanalysis.columns.indexOf(colId) - 1;
+      index -= 1;
     }
 
     for (var i = index; i >= 0; i--) {
@@ -2011,8 +2010,8 @@
   function doMoveAggregate(el) {
     var up = el.classList.contains('up');
     var most = el.classList.contains('most');
-    var aggregateIndex = _.findPrecedingEl(el, 'div.popupbox').dataset.index;
-    if (aggregateIndex == null) return; // we don't know what to move
+    var aggregateIndex = parseInt(_.findPrecedingEl(el, 'div.popupbox').dataset.index);
+    if (isNaN(aggregateIndex)) return; // we don't know what to move
 
     if (!currentMetaanalysis.aggregates[aggregateIndex]) return console.error('aggregate[' + aggregateIndex + '] not found in aggregates!');
     var newPosition = findNextAggr(aggregateIndex, up, most);
@@ -2043,8 +2042,8 @@
   }
 
   function doDeleteAggregate(el) {
-    var aggregateIndex = _.findPrecedingEl(el, 'div.popupbox').dataset.index;
-    if (aggregateIndex == null) return; // we don't know what to move
+    var aggregateIndex = parseInt(_.findPrecedingEl(el, 'div.popupbox').dataset.index);
+    if (isNaN(aggregateIndex)) return; // we don't know what to move
 
     if (!currentMetaanalysis.aggregates[aggregateIndex]) return console.error('aggregate[' + aggregateIndex + '] not found in aggregates!');
     currentMetaanalysis.aggregates.splice(aggregateIndex, 1);
