@@ -672,20 +672,7 @@
 
 
               // fill in information about where the value was computed from
-              var computedFrom ="";
-              var formulaCount = col.formulaParams.length;
-              for (var i = 0; i < formulaCount; i++) {
-                var column = lima.columns[col.formulaParams[i]];
-                computedFrom += column ? column.title : 'no column selected';
-                if (i < formulaCount-2) { // more than one left
-                  computedFrom += ", ";
-                }
-                else if (i == formulaCount-2) { // one more left..
-                  computedFrom += " and ";
-                }
-              }
-              _.fillEls(td,  '.computedfrom', computedFrom);
-              _.fillEls(td, '.formula', lima.getFormulaOrAggregateLabelById(col.formulaName));
+              _.setProps(td, '.formula', 'innerHTML', getColTitle(col, Infinity));
             });
 
             setupPopupBoxPinning(td, '.datum.popupbox', papIndex + ',' + expIndex + ',' + col.formula);
@@ -917,7 +904,7 @@
     if (level == undefined) level = col.number == null ? 1 : 0;
 
     var retval = '';
-    if (col.number !== undefined) retval += '<span>' + col.number + '. </span>';
+    if (level != Infinity && col.number !== undefined) retval += '<span>' + col.number + '. </span>';
     retval += '<span>' + lima.getFormulaOrAggregateLabelById(col.formulaName) + '</span> (';
 
     if (level == 0) {
