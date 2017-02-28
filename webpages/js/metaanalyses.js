@@ -753,7 +753,7 @@
     return th;
   }
 
-  function fillComputedColumnHeading(metaanalysis, col, columnIndex) {
+  function fillComputedColumnHeading(metaanalysis, col /*, columnIndex */) {
     var th = _.cloneTemplate('computed-col-heading-template').children[0];
 
     th.classList.add('result');
@@ -803,7 +803,7 @@
     _.addEventListener(th, 'button.move', 'click', moveColumn);
     _.addEventListener(th, 'button.delete', 'click', deleteColumn);
 
-    fillComments('comment-template', th, '.commentcount', '.fullcolinfo.popupbox main', metaanalysis, ['columns', columnIndex, 'comments']);
+    // fillComments('comment-template', th, '.commentcount', '.fullcolinfo.popupbox main', metaanalysis, ['columns', columnIndex, 'comments']);
 
     return th;
   }
