@@ -211,17 +211,35 @@
   lima.listAggregateFormulas = function listAggregateFormulas() {
     return [
       {
-        id: 'sum',
-        label: 'Sum',
-        func: sum,
-        parameters: ['values']
+        id: 'weightedMean',
+        label: 'Weighted Mean',
+        func: weightedMeanAggr,
+        parameters: ['values', 'weights'],
       },
       {
-        id: 'sumproduct',
-        label: 'Sum of Product',
-        func: sumproduct,
-        parameters: ['values1', 'values2'] // There might be more appropriate names for these. Factor1/2?
+        id: 'lowerConfidenceLimit',
+        label: 'Lower Confidence Limit',
+        func: lowerConfidenceLimitAggr,
+        parameters: ['values', 'weights'],
       },
+      {
+        id: 'upperConfidenceLimit',
+        label: 'Upper Confidence Limit',
+        func: upperConfidenceLimitAggr,
+        parameters: ['values', 'weights'],
+      },
+      {
+        id: 'sum',
+        label: 'Sum',
+        func: sumAggr,
+        parameters: ['values']
+      },
+      // {
+      //   id: 'sumProduct',
+      //   label: 'Sum of Product',
+      //   func: sumProductAggr,
+      //   parameters: ['values1', 'values2'] // There might be more appropriate names for these. Factor1/2?
+      // },
     ];
   }
 
@@ -240,7 +258,7 @@
   //  - May return NaN or infinities.
   //  - Must gracefully handle wacko figures, including !VALUE and nulls.
 
-  function sum (valueArray) {
+  function sumAggr (valueArray) {
     var total = 0;
     valueArray.forEach(function(value) {
       total += _.strictToNumberOrNull(value);
@@ -251,7 +269,7 @@
 
   // TODO: Depending on implementation further in the future, this may require extra
   // validation, to be sure we are given correct Arrays.
-  function sumproduct (valueArray1, valueArray2) {
+  function sumProductAggr (valueArray1, valueArray2) {
     var total = 0;
 
     for (var i=0; i<valueArray1.length; i++) {
@@ -261,6 +279,26 @@
     }
 
     return total;
+  }
+
+  function weightedMeanAggr (valArray, weightArray) {
+    return (sumProductAggr (valArray,weightArray) / sumAggr(weightArray));
+  }
+
+  function varianceAggr (weightArray) {
+    return 1/sumAggr(weightArray);
+  }
+
+  function standardErrorAggr (weightArray) {
+    return Math.sqrt(varianceAggr(weightArray));
+  }
+
+  function lowerConfidenceLimitAggr (valArray, weightArray) {
+    return weightedMeanAggr(valArray, weightArray) - 1.96 * standardErrorAggr(weightArray);
+  }
+
+  function upperConfidenceLimitAggr (valArray, weightArray) {
+    return weightedMeanAggr(valArray, weightArray) + 1.96 * standardErrorAggr(weightArray);
   }
 
   /* parsing
@@ -277,7 +315,7 @@
    */
 
   // this regexp matches the outside of function formulas of the type
-  // "sumproduct(/id/col/1473674381680,neg(/id/col/1473674325686))"
+  // "sumProduct(/id/col/1473674381680,neg(/id/col/1473674325686))"
   var functionRegex = /^([^(),\s]+)\s*(\((.*)\))?$/;
 
   // parse nested function formulas of the type "a(b(c,d),e,f(g))"
