@@ -1513,22 +1513,23 @@
       select.appendChild(op);
       select.classList.add('validationerror');
 
+      var foundCurrentValue = false;
+
       // Now make an option for each column in metaanalysis
+      // account for computed columns in metaanalysis.columns
       for (var j = 0; j < metaanalysis.columns.length; j++){
         var colId = metaanalysis.columns[j];
-
-        var el = document.createElement("option");
-
-        el.innerHTML = getColTitle(colId);
-        el.value = getColIdentifier(colId);
-
-        if (getColIdentifier(aggregate.formulaParams[i]) === el.value) {
-          el.selected = true;
-          select.classList.remove('validationerror');
-        }
-        setValidationErrorClass();
-        select.appendChild(el);
+        var found = makeOption(colId, aggregate, aggregate.formulaParams[i], select);
+        foundCurrentValue = foundCurrentValue || found;
       }
+
+      // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
+      if (!foundCurrentValue) {
+        colId = aggregate.formulaParams[i];
+        makeOption(colId, aggregate, colId, select);
+      }
+
+      setValidationErrorClass();
 
       // listen to changes of the dropdown box
       // preserve the value of i inside this code
