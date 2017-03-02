@@ -378,22 +378,6 @@
     //     or
     //     lcl
     //     ucl
-    var lines = [
-      {
-        title: 'example(slides16plus)',
-        or: 1.20,
-        wt: 6.58,
-        lcl: 0.437,
-        ucl: 1.97,
-      },
-      {
-        title: 'example(made-up)',
-        or: 0.539,
-        wt: 7.64,
-        lcl: -0.170,
-        ucl: 1.25,
-      },
-    ];
 
     // todo the plot should be associated with its parameters differently, not through an aggregate
     // for one, there should be the possibility to have more forest plots
@@ -412,10 +396,45 @@
       return;
     }
 
+    var orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
+    var wtFunc = { formulaName: "weightNumber", formulaParams: params };
+    var lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
+    var uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: params };
+
+    orFunc.formula = lima.createFormulaString(orFunc);
+    wtFunc.formula = lima.createFormulaString(wtFunc);
+    lclFunc.formula = lima.createFormulaString(lclFunc);
+    uclFunc.formula = lima.createFormulaString(uclFunc);
+
+    var lines=[];
+
+    for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
+      for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
+        var line = {};
+        line.title = currentMetaanalysis.papers[i].title;
+        if (currentMetaanalysis.papers[i].experiments.length > 1) {
+          line.title += ' (' + currentMetaanalysis.papers[i].experiments[j].title + ')';
+        }
+        line.or = getDatumValue(orFunc, j, i);
+        line.wt = getDatumValue(wtFunc, j, i);
+        line.lcl = getDatumValue(lclFunc, j, i);
+        line.ucl = getDatumValue(uclFunc, j, i);
+        lines.push(line);
+      }
+    }
+
+    var orAggrFunc = { formulaName: "weightedMean", formulaParams: [ orFunc, wtFunc ] };
+    var lclAggrFunc = { formulaName: "lowerConfidenceLimit", formulaParams: [ orFunc, wtFunc ] };
+    var uclAggrFunc = { formulaName: "upperConfidenceLimit", formulaParams: [ orFunc, wtFunc ] };
+
+    orAggrFunc.formula = lima.createFormulaString(orAggrFunc);
+    lclAggrFunc.formula = lima.createFormulaString(lclAggrFunc);
+    uclAggrFunc.formula = lima.createFormulaString(uclAggrFunc);
+
     var aggregates = {
-      or: 0.845,
-      lcl: 0.325,
-      ucl: 1.37,
+      or: getDatumValue(orAggrFunc),
+      lcl: getDatumValue(lclAggrFunc),
+      ucl: getDatumValue(uclAggrFunc),
     }
 
     // compute
