@@ -293,7 +293,7 @@ function extractReceivedPaper(receivedPaper) {
     doi:            tools.string(receivedPaper.doi),
     tags:           tools.array(receivedPaper.tags, tools.string),
     experiments:    tools.array(receivedPaper.experiments, extractReceivedExperiment),
-    columns:        tools.array(receivedPaper.columns, tools.string),
+    columns:        tools.array(receivedPaper.columns, extractReceivedColumnEntry),
     hiddenCols:     tools.array(receivedPaper.hiddenCols, tools.string),
   };
 

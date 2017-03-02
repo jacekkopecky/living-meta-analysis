@@ -2105,7 +2105,6 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 }
 
 #paper .datum.popupbox .comment,
-#metaanalysis .datum.popupbox .comment,
 #metaanalysis .datum.popupbox .comment {
   display: block;
   border-top: 1px solid black;
