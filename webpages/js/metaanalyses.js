@@ -340,18 +340,190 @@
     setValidationErrorClass();
     setUnsavedClass();
 
+    addComputedDatumSetter(drawForestPlot);
+
     recalculateComputedData();
   }
 
-  /* editTags
+  /* forest plot
    *
-   *                         #######
-   *   ###### #####  # #####    #      ##    ####   ####
-   *   #      #    # #   #      #     #  #  #    # #
-   *   #####  #    # #   #      #    #    # #       ####
-   *   #      #    # #   #      #    ###### #  ###      #
-   *   #      #    # #   #      #    #    # #    # #    #
-   *   ###### #####  #   #      #    #    #  ####   ####
+   *
+   *   ######  ####  #####  ######  ####  #####    #####  #       ####  #####
+   *   #      #    # #    # #      #        #      #    # #      #    #   #
+   *   #####  #    # #    # #####   ####    #      #    # #      #    #   #
+   *   #      #    # #####  #           #   #      #####  #      #    #   #
+   *   #      #    # #   #  #      #    #   #      #      #      #    #   #
+   *   #       ####  #    # ######  ####    #      #      ######  ####    #
+   *
+   *
+   */
+
+  function drawForestPlot() {
+    var plotsContainer = _.findEl('#metaanalysis > .plots');
+    plotsContainer.innerHTML = '';
+
+    var plotEl = _.cloneTemplate('forest-plot-template').children[0];
+
+    // todo prepare data:
+    // first, find a column with some weight function, take its parameters
+    // then for every paper and every experiment, call appropriate functions to get or,lcl,ucl,wt
+    // then get the aggregates or,lcl,ucl
+    //   lines (array)
+    //     title (paper and maybe experiment)
+    //     or
+    //     lcl
+    //     ucl
+    //     wt
+    //   aggregated
+    //     or
+    //     lcl
+    //     ucl
+    var lines = [
+      {
+        title: 'example(slides16plus)',
+        or: 1.20,
+        wt: 6.58,
+        lcl: 0.437,
+        ucl: 1.97,
+      },
+      {
+        title: 'example(made-up)',
+        or: 0.539,
+        wt: 7.64,
+        lcl: -0.170,
+        ucl: 1.25,
+      },
+    ];
+    var aggregates = {
+      or: 0.845,
+      lcl: 0.325,
+      ucl: 1.37,
+    }
+
+    // compute
+    //   sum of wt
+    //   min and max of wt
+    //   min of lcl and aggr lcl
+    //   max of ucl and aggr ucl
+    var sumOfWt = 0;
+    var minWt = lines[0].wt;
+    var maxWt = lines[0].wt;
+    var minLcl = aggregates.lcl;
+    var maxUcl = aggregates.ucl;
+
+    lines.forEach(function (line) {
+      sumOfWt += line.wt;
+      if (line.wt < minWt) minWt = line.wt;
+      if (line.wt > maxWt) maxWt = line.wt;
+      if (line.lcl < minLcl) minLcl = line.lcl;
+      if (line.ucl > maxUcl) maxUcl = line.ucl;
+    });
+
+    // adjust minimum and maximum around decimal non-logarithmic values
+    minLcl = Math.min(Math.floor(minLcl/Math.LN10), 0)*Math.LN10 - .1;
+    maxUcl = Math.max(Math.ceil(maxUcl/Math.LN10), 0)*Math.LN10 + .1;
+
+    var xRatio = 1/(maxUcl-minLcl)*parseInt(plotEl.dataset.graphWidth);
+
+    // return the X coordinate on the graph that corresponds to the given logarithmic value
+    function getX(val) {
+      return (val-minLcl)*xRatio;
+    }
+
+    // minWt = 0; // todo uncomment this to make all weights relative to only the maximum weight
+    var minWtSize = parseInt(plotEl.dataset.minWtSize);
+    var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxWtSize)-minWtSize);
+
+    // return the box size for a given weight
+    function getBoxSize(wt) {
+      return (wt-minWt)*wtRatio + minWtSize;
+    }
+
+    var currY = parseInt(plotEl.dataset.startHeight);
+
+    // put experiments into the plot
+    lines.forEach(function (line) {
+      var expEl = _.cloneTemplate(_.findEl(plotEl, 'template.experiment'));
+
+      expEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+      _.fillEls(expEl, '.expname', line.title);
+      _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
+      _.fillEls(expEl, '.lcl', Math.exp(line.lcl).toPrecision(3));
+      _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
+      _.fillEls(expEl, '.wt', '' + Math.round(line.wt / sumOfWt * 100) + '%');
+
+      _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
+      _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
+
+      _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
+      _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
+      _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
+
+      plotEl.appendChild(expEl);
+
+      currY += parseInt(plotEl.dataset.lineHeight);
+    })
+
+
+    // put axes into the plot
+    var axesEl = _.cloneTemplate(_.findEl(plotEl, 'template.axes'));
+
+    axesEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+    _.setAttrs(axesEl, 'line.yaxis', 'y2', currY+parseInt(plotEl.dataset.extraLineLen));
+    _.setAttrs(axesEl, 'line.yaxis', 'x1', getX(0));
+    _.setAttrs(axesEl, 'line.yaxis', 'x2', getX(0));
+
+    for (var tick=Math.ceil(minLcl/Math.LN10)*Math.LN10; tick<maxUcl; tick+=Math.LN10) {
+      var tickEl = _.cloneTemplate(_.findEl(plotEl, 'template.tick'));
+      tickEl.setAttribute('transform', 'translate(' + getX(tick) + ',0)');
+      _.fillEls(tickEl, 'text', (tick < 0 ? Math.exp(tick).toPrecision(1) : Math.round(Math.exp(tick))));
+      axesEl.children[0].appendChild(tickEl);
+    }
+    // todo add ticks at 2,5, or maybe at 3, increments as well - make sure there are at least 3 ticks and at most 6?
+
+    plotEl.appendChild(axesEl);
+
+
+    // put summary into the plot
+    var sumEl = _.cloneTemplate(_.findEl(plotEl, 'template.summary'));
+
+    sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+    _.fillEls(sumEl, '.or', Math.exp(aggregates.or).toPrecision(3));
+    _.fillEls(sumEl, '.lcl', Math.exp(aggregates.lcl).toPrecision(3));
+    _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toPrecision(3));
+
+    var confidenceInterval = "" + getX(aggregates.lcl) + ",0 " +
+                                + getX(aggregates.or) + ",-10 " +
+                                + getX(aggregates.ucl) + ",0 " +
+                                + getX(aggregates.or) + ",10";
+
+    _.setAttrs(sumEl, 'polygon.confidenceinterval', 'points', confidenceInterval);
+
+    _.setAttrs(sumEl, 'line.guideline', 'x1', getX(aggregates.or));
+    _.setAttrs(sumEl, 'line.guideline', 'x2', getX(aggregates.or));
+    _.setAttrs(sumEl, 'line.guideline', 'y2', currY+parseInt(plotEl.dataset.extraLineLen));
+
+    plotEl.appendChild(sumEl);
+
+
+    plotEl.setAttribute('height', parseInt(plotEl.dataset.zeroLineHeight) + lines.length*parseInt(plotEl.dataset.lineHeight));
+
+    plotsContainer.appendChild(plotEl);
+    console.log(plotEl);
+  }
+
+  /* edit tags
+   *
+   *
+   *   ###### #####  # #####    #####   ##    ####   ####
+   *   #      #    # #   #        #    #  #  #    # #
+   *   #####  #    # #   #        #   #    # #       ####
+   *   #      #    # #   #        #   ###### #  ###      #
+   *   #      #    # #   #        #   #    # #    # #    #
+   *   ###### #####  #   #        #   #    #  ####   ####
    *
    *
    */

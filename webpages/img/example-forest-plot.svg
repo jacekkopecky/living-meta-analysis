@@ -1,0 +1,159 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="500"
+  height="200"
+  version="1.1"
+  >
+  <!--
+    line height: 30px
+    font size:   20px
+    padding:     10px
+
+    x-axis:      starts at 210
+  -->
+  <style>
+    svg {
+      stroke-width: 2;
+      fill: white;
+      stroke: black;
+      stroke-linecap: butt;
+      stroke-linejoin: miter;
+      font-size: 16px;
+      font-family: "Arial", sans-serif;
+      border: 1px solid red;
+    }
+
+    text {
+      stroke-width: 0;
+      fill: black;
+      text-anchor: middle;
+    }
+
+    .headings text.or,
+    .experiment text.or,
+    .summary text.or {
+      transform: translate(310px,23px);
+    }
+    .headings text.lcl,
+    .experiment text.lcl,
+    .summary text.lcl {
+      transform: translate(360px,23px);
+    }
+    .headings text.ucl,
+    .experiment text.ucl,
+    .summary text.ucl {
+      transform: translate(400px,23px);
+    }
+    .headings text.wt,
+    .experiment text.wt,
+    .summary text.wt {
+      transform: translate(450px,23px);
+    }
+
+    .experiment .expname {
+      text-anchor: start;
+      transform: translate(0,23px);
+    }
+
+    .experiment .rowgraph {
+      transform: translate(180px,0);
+    }
+
+    .experiment .rowgraph .confidenceinterval {
+      transform: translate(0,15px);
+    }
+
+    .experiment .rowgraph .weightbox {
+      transform: translate(-50%,-50%) translate(0,15px);
+      fill: black;
+    }
+
+
+    .summary .sumname {
+      text-anchor: start;
+      transform: translate(0,23px);
+    }
+
+    .summary .sumgraph {
+      transform: translate(180px,0);
+    }
+
+    .summary .sumgraph .confidenceinterval {
+      transform: translate(0,15px);
+    }
+
+    .summary .guideline {
+      transform: translate(180px,12.5px);
+      stroke-dasharray: 5px;
+      stroke-linecap: butt;
+    }
+
+    #axes {
+      transform: translate(180px,42.5px);
+    }
+
+    #axes text.tick {
+      font-size: 12px;
+      transform: translate(0, 20px);
+    }
+
+  </style>
+
+  <g transform="translate(10,0)" class="headings">
+    <text class="or">OR</text>
+    <text class="lcl">LCL</text>
+    <text class="ucl">UCL</text>
+    <text class="wt">WT</text>
+  </g>
+
+  <g transform="translate(10,50)" class="experiment">
+    <text class="expname">Smith1990</text>
+    <text class="or">6</text>
+    <text class="lcl">1.5</text>
+    <text class="ucl">15</text>
+    <text class="wt">55%</text>
+    <g class="rowgraph">
+      <line class="confidenceinterval" x1="10" x2="50"/>
+      <rect class="weightbox" x="30" width="6" height="6"/>
+    </g>
+  </g>
+
+  <g transform="translate(10,80)" class="experiment">
+    <text class="expname">Jones2017</text>
+    <text class="or">15</text>
+    <text class="lcl">3</text>
+    <text class="ucl">110</text>
+    <text class="wt">45%</text>
+    <g class="rowgraph">
+      <line class="confidenceinterval" x1="20" x2="80"/>
+      <rect class="weightbox" x="50" width="4" height="4"/>
+    </g>
+  </g>
+
+  <!-- todo have <g class="nextline"> inside another, just meaning move 30px down? -->
+  <g transform="translate(10,130)" class="summary">
+    <text class="sumname">Total</text>
+    <text class="or">9</text>
+    <text class="lcl">3</text>
+    <text class="ucl">30</text>
+    <line class="guideline" x1="40" y1="30" x2="40" y2="-1000000"/>
+    <g class="sumgraph">
+      <polygon class="confidenceinterval" points="20,0 40,-10 60,0 40,10"/>
+    </g>
+  </g>
+
+  <g transform="translate(10,130)">
+    <g id="axes">
+      <line x1="5" x2="5" y2="-1000000"/>
+      <line x1="0" x2="85"/>
+      <line class="tick" x1="5" y1="0" x2="5" y2="5"/>
+      <line class="tick" x1="42.5" y1="0" x2="42.5" y2="5"/>
+      <line class="tick" x1="80" y1="0" x2="80" y2="5"/>
+      <text class="tick" x="5">1</text>
+      <text class="tick" x="42.5">10</text>
+      <text class="tick" x="80">100</text>
+    </g>
+  </g>
+
+</svg>

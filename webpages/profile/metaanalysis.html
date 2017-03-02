@@ -91,6 +91,7 @@
     <!-- when not editing, show something for empty doi and link (or nothing at all?) -->
     <!-- todo comments -->
     <div class="experiments"></div>
+    <div class="plots"></div>
     <div class="aggregates"></div>
     <p class='no-table'>No data has been entered for this meta-analysis yet.
       <span class="only-if-page-about-you">Turn editing on to add data.</span><!-- todo instruction to clone the paper? --></p>
@@ -469,6 +470,175 @@
     <p><span class="text only-if-yours needs-owner" contenteditable placeholder="enter your comment"></span></p>
     <p><span class="text only-not-yours needs-owner"></span></p>
   </div>
+</template>
+<template id="forest-plot-template">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    width="500"
+    height="200"
+    version="1.1"
+    data-line-height="30"
+    data-font-size="20"
+    data-padding="10"
+    data-graph-width="100"
+    data-zero-line-height="145"
+    data-start-height="50"
+    data-min-wt-size="4"
+    data-max-wt-size="14"
+    data-extra-line-len="20"
+    >
+    <style>
+      svg {
+        stroke-width: 2px;
+        fill: white;
+        stroke: black;
+        stroke-linecap: butt;
+        stroke-linejoin: miter;
+        font-size: 16px;
+        font-family: "Arial", sans-serif;
+        border: 1px solid red;
+      }
+
+      text {
+        stroke-width: 0;
+        fill: black;
+        text-anchor: middle;
+      }
+
+      .headings text.or,
+      .experiment text.or,
+      .summary text.or {
+        transform: translate(310px,23px);
+      }
+      .headings text.lcl,
+      .experiment text.lcl,
+      .summary text.lcl {
+        transform: translate(370px,23px);
+      }
+      .headings text.ucl,
+      .experiment text.ucl,
+      .summary text.ucl {
+        transform: translate(415px,23px);
+      }
+      .headings text.wt,
+      .experiment text.wt,
+      .summary text.wt {
+        transform: translate(480px,23px);
+        text-anchor: end;
+      }
+
+      .experiment .expname {
+        text-anchor: start;
+        transform: translate(0,23px);
+      }
+
+      .experiment .rowgraph {
+        transform: translate(180px,0);
+      }
+
+      .experiment .rowgraph .confidenceinterval {
+        transform: translate(0,15px);
+      }
+
+      .experiment .rowgraph .weightbox {
+        transform: translate(-50%,-50%) translate(0,15px);
+        fill: black;
+      }
+
+      .summary > g {
+        transform: translate(0, 20px);
+      }
+
+      .summary .sumname {
+        text-anchor: start;
+        transform: translate(0,23px);
+      }
+
+      .summary .sumgraph {
+        transform: translate(180px,0);
+      }
+
+      .summary .sumgraph .confidenceinterval {
+        transform: translate(0,15px);
+      }
+
+      .summary .guideline {
+        stroke-width: 1px;
+        transform: translate(180px,42.5px) scale(1,-1);
+        stroke-dasharray: 5px;
+        stroke-linecap: butt;
+      }
+
+      .axes > g {
+        transform: translate(180px,62.5px);
+      }
+
+      .axes .tick text {
+        font-size: 12px;
+        transform: translate(0, 20px);
+      }
+
+      .axes .yaxis {
+        transform: translate(0px, 5px) scale(1, -1);
+      }
+
+    </style>
+
+    <g transform="translate(10,0)" class="headings">
+      <text class="or">OR</text>
+      <text class="lcl">LCL</text>
+      <text class="ucl">UCL</text>
+      <text class="wt">WT</text>
+    </g>
+
+    <template class="experiment">
+      <g class="experiment"><!-- should get transform="translate(padding,currY++)" -->
+        <text class="expname">error</text>
+        <text class="or">err</text>
+        <text class="lcl">err</text>
+        <text class="ucl">err</text>
+        <text class="wt">err</text>
+        <g class="rowgraph">
+          <line class="confidenceinterval"/><!-- should get x1="lcl" x2="ucl" -->
+          <rect class="weightbox"/><!-- should get x="or" width="wt" height="wt" -->
+        </g>
+      </g>
+    </template>
+
+    <template class="summary">
+      <g class="summary"><!-- should get transform="translate(padding,currY)" -->
+        <g>
+          <text class="sumname">Total</text>
+          <text class="or">err</text>
+          <text class="lcl">err</text>
+          <text class="ucl">err0</text>
+          <line class="guideline"/><!-- should get x1="or" x2="or" y2="currY+parseInt(plotEl.dataset.extraLineLen)" -->
+          <g class="sumgraph">
+            <polygon class="confidenceinterval"/><!-- should get points="lcl,0 or,-10 ucl,0 or,10" -->
+          </g>
+        </g>
+      </g>
+    </template>
+
+    <template class="axes">
+      <g class="axes"><!-- should get transform="translate(padding,currY)" -->
+        <g>
+          <line class="yaxis"/><!-- should get x1="getX(0)" x2="getX(0)" y2="currY+parseInt(plotEl.dataset.extraLineLen)" -->
+          <line x1="0" x2="100"/>
+          <!-- should get a number of ticks -->
+        </g>
+      </g>
+    </template>
+
+    <template class="tick">
+      <g class="tick"><!-- should get transform="translate(x,0)" -->
+        <line y2="5"/>
+        <text>val</text>
+      </g>
+    </template>
+
+  </svg>
 </template>
 
 <p class="savingspinner">saving&hellip;</p>

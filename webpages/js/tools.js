@@ -57,7 +57,12 @@
     if (!(template instanceof Node)) template = _.byId(template);
     if (!template) return void 0;
 
-    return template.content.cloneNode(true);
+    if (template.content) {
+      return template.content.cloneNode(true);
+    } else {
+      // this is not an HTML template (might be an SVG template, for example), so import its first child
+      return document.importNode(template.children[0], true);
+    }
   }
 
   _.array = function array(arr) {
@@ -94,6 +99,16 @@
       root = document;
     }
     _.findEls(root, selector).forEach(function (el) { el[attr] = valOrFun(value, el); });
+  }
+
+  _.setAttrs = function setAttrs(root, selector, attr, value) {
+    if (!(root instanceof Node)) {
+      value = attr;
+      attr = selector;
+      selector = root;
+      root = document;
+    }
+    _.findEls(root, selector).forEach(function (el) { el.setAttribute(attr, valOrFun(value, el)); });
   }
 
   _.setDataProps = function setDataProps(root, selector, name, value) {
