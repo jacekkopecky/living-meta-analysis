@@ -475,13 +475,13 @@
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
-    width="500"
+    width="600"
     height="200"
     version="1.1"
     data-line-height="30"
     data-font-size="20"
     data-padding="10"
-    data-graph-width="100"
+    data-graph-width="200"
     data-zero-line-height="145"
     data-start-height="50"
     data-min-wt-size="4"
@@ -509,22 +509,24 @@
       .headings text.or,
       .experiment text.or,
       .summary text.or {
-        transform: translate(310px,23px);
+        transform: translate(410px,23px);
       }
       .headings text.lcl,
       .experiment text.lcl,
       .summary text.lcl {
-        transform: translate(370px,23px);
+        text-anchor: end;
+        transform: translate(490px,23px);
       }
       .headings text.ucl,
       .experiment text.ucl,
       .summary text.ucl {
-        transform: translate(415px,23px);
+        text-anchor: start;
+        transform: translate(495px,23px);
       }
       .headings text.wt,
       .experiment text.wt,
       .summary text.wt {
-        transform: translate(480px,23px);
+        transform: translate(580px,23px);
         text-anchor: end;
       }
 
@@ -587,7 +589,7 @@
 
     <g transform="translate(10,0)" class="headings">
       <text class="or">OR</text>
-      <text class="lcl">LCL</text>
+      <text class="lcl">LCL,</text>
       <text class="ucl">UCL</text>
       <text class="wt">WT</text>
     </g>
@@ -596,7 +598,7 @@
       <g class="experiment"><!-- should get transform="translate(padding,currY++)" -->
         <text class="expname">error</text>
         <text class="or">err</text>
-        <text class="lcl">err</text>
+        <text class="lcl">err,</text>
         <text class="ucl">err</text>
         <text class="wt">err</text>
         <g class="rowgraph">
@@ -611,8 +613,8 @@
         <g>
           <text class="sumname">Total</text>
           <text class="or">err</text>
-          <text class="lcl">err</text>
-          <text class="ucl">err0</text>
+          <text class="lcl">err,</text>
+          <text class="ucl">err</text>
           <line class="guideline"/><!-- should get x1="or" x2="or" y2="currY+parseInt(plotEl.dataset.extraLineLen)" -->
           <g class="sumgraph">
             <polygon class="confidenceinterval"/><!-- should get points="lcl,0 or,-10 ucl,0 or,10" -->
@@ -625,7 +627,7 @@
       <g class="axes"><!-- should get transform="translate(padding,currY)" -->
         <g>
           <line class="yaxis"/><!-- should get x1="getX(0)" x2="getX(0)" y2="currY+parseInt(plotEl.dataset.extraLineLen)" -->
-          <line x1="0" x2="100"/>
+          <line x1="0" x2="200"/>
           <!-- should get a number of ticks -->
         </g>
       </g>

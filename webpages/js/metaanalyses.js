@@ -364,8 +364,8 @@
 
     var plotEl = _.cloneTemplate('forest-plot-template').children[0];
 
-    // todo prepare data:
-    // first, find a column with some weight function, take its parameters
+    // prepare data:
+    // first find the forestPlot aggregate, it gives us the parameters
     // then for every paper and every experiment, call appropriate functions to get or,lcl,ucl,wt
     // then get the aggregates or,lcl,ucl
     //   lines (array)
@@ -380,11 +380,10 @@
     //     ucl
 
     // todo the plot should be associated with its parameters differently, not through an aggregate
-    // for one, there should be the possibility to have more forest plots
+    // todo there should be the possibility to have more forest plots
     var params;
     for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
       if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlot' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
-        console.log(currentMetaanalysis.aggregates[i]);
         params = currentMetaanalysis.aggregates[i].formulaParams;
         break;
       }
@@ -392,7 +391,6 @@
 
     if (!params) {
       // we don't have any parameters for the forestPlot
-      console.log('no plot');
       return;
     }
 
@@ -456,9 +454,35 @@
       if (line.ucl > maxUcl) maxUcl = line.ucl;
     });
 
+    var TICK_SPACING;
+
+
+    // select tick spacing based on a rough estimate of how many ticks we'll need anyway
+    var clSpread = (maxUcl - minLcl) / Math.LN10; // how many orders of magnitude we cover
+    if (clSpread > 3) TICK_SPACING = [100];
+    else if (clSpread > 1.3) TICK_SPACING = [10];
+    else TICK_SPACING = [ 2, 2.5, 2 ]; // ticks at 1, 2, 5, 10, 20, 50, 100...
+
+
     // adjust minimum and maximum around decimal non-logarithmic values
-    minLcl = Math.min(Math.floor(minLcl/Math.LN10), 0)*Math.LN10 - .1;
-    maxUcl = Math.max(Math.ceil(maxUcl/Math.LN10), 0)*Math.LN10 + .1;
+    var newBound = 1;
+    var tickNo = 0;
+    while (Math.log(newBound) > minLcl) {
+      tickNo -= 1;
+      newBound /= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)]; // JS % can be negative
+    }
+    minLcl = Math.log(newBound) - .1;
+
+    var startingTickVal = newBound;
+    var startingTick = tickNo;
+
+    newBound = 1;
+    tickNo = 0;
+    while (Math.log(newBound) < maxUcl) {
+      newBound *= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)];
+      tickNo += 1;
+    }
+    maxUcl = Math.log(newBound) + .1;
 
     var xRatio = 1/(maxUcl-minLcl)*parseInt(plotEl.dataset.graphWidth);
 
@@ -498,7 +522,7 @@
 
       _.fillEls(expEl, '.expname', line.title);
       _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
-      _.fillEls(expEl, '.lcl', Math.exp(line.lcl).toPrecision(3));
+      _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
       _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
       _.fillEls(expEl, '.wt', '' + Math.round(line.wt / sumOfWt * 100) + '%');
 
@@ -524,11 +548,14 @@
     _.setAttrs(axesEl, 'line.yaxis', 'x1', getX(0));
     _.setAttrs(axesEl, 'line.yaxis', 'x2', getX(0));
 
-    for (var tick=Math.ceil(minLcl/Math.LN10)*Math.LN10; tick<maxUcl; tick+=Math.LN10) {
+    var tickVal;
+    while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
       var tickEl = _.cloneTemplate(_.findEl(plotEl, 'template.tick'));
-      tickEl.setAttribute('transform', 'translate(' + getX(tick) + ',0)');
-      _.fillEls(tickEl, 'text', (tick < 0 ? Math.exp(tick).toPrecision(1) : Math.round(Math.exp(tick))));
+      tickEl.setAttribute('transform', 'translate(' + getX(tickVal) + ',0)');
+      _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
       axesEl.children[0].appendChild(tickEl);
+      startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
+      startingTick += 1;
     }
     // todo add ticks at 2,5, or maybe at 3, increments as well - make sure there are at least 3 ticks and at most 6?
 
@@ -541,7 +568,7 @@
     sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
 
     _.fillEls(sumEl, '.or', Math.exp(aggregates.or).toPrecision(3));
-    _.fillEls(sumEl, '.lcl', Math.exp(aggregates.lcl).toPrecision(3));
+    _.fillEls(sumEl, '.lcl', "" + Math.exp(aggregates.lcl).toPrecision(3) + ",");
     _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toPrecision(3));
 
     var confidenceInterval = "" + getX(aggregates.lcl) + ",0 " +
@@ -561,7 +588,6 @@
     plotEl.setAttribute('height', parseInt(plotEl.dataset.zeroLineHeight) + lines.length*parseInt(plotEl.dataset.lineHeight));
 
     plotsContainer.appendChild(plotEl);
-    console.log(plotEl);
   }
 
   /* edit tags

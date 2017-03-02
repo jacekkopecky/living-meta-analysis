@@ -319,6 +319,10 @@
     return NaN;
   }
 
+  _.mod = function mod(x, n) {
+    return ((x%n)+n)%n;
+  }
+
 
   /* error handling
    *
