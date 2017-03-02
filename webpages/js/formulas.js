@@ -217,7 +217,7 @@
         parameters: ['values', 'weights'],
       },
       {
-        id: 'lowerConfidenceLimit',
+        id: 'lowerConfidenceLimit', // todo suffix id with Aggr?
         label: 'Lower Confidence Limit',
         func: lowerConfidenceLimitAggr,
         parameters: ['values', 'weights'],
@@ -232,7 +232,13 @@
         id: 'sum',
         label: 'Sum',
         func: sumAggr,
-        parameters: ['values']
+        parameters: ['values'],
+      },
+      {
+        id: 'forestPlot',
+        label: 'Forest Plot',
+        func: forestPlotAggr,
+        parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ],
       },
       // {
       //   id: 'sumProduct',
@@ -299,6 +305,11 @@
 
   function upperConfidenceLimitAggr (valArray, weightArray) {
     return weightedMeanAggr(valArray, weightArray) + 1.96 * standardErrorAggr(weightArray);
+  }
+
+  // todo this is just a placeholder
+  function forestPlotAggr () {
+    return 'see above';
   }
 
   /* parsing

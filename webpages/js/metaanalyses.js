@@ -394,6 +394,24 @@
         ucl: 1.25,
       },
     ];
+
+    // todo the plot should be associated with its parameters differently, not through an aggregate
+    // for one, there should be the possibility to have more forest plots
+    var params;
+    for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
+      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlot' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+        console.log(currentMetaanalysis.aggregates[i]);
+        params = currentMetaanalysis.aggregates[i].formulaParams;
+        break;
+      }
+    }
+
+    if (!params) {
+      // we don't have any parameters for the forestPlot
+      console.log('no plot');
+      return;
+    }
+
     var aggregates = {
       or: 0.845,
       lcl: 0.325,
