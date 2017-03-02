@@ -467,13 +467,25 @@
       return (val-minLcl)*xRatio;
     }
 
-    // minWt = 0; // todo uncomment this to make all weights relative to only the maximum weight
+    // adjust weights so that in case of very similar weights they don't range from minimum to maximum
+    var MIN_WT_SPREAD=2.5;
+    if (maxWt/minWt < MIN_WT_SPREAD) {
+      minWt = (maxWt + minWt) / 2 / Math.sqrt(MIN_WT_SPREAD);
+      maxWt = minWt * MIN_WT_SPREAD;
+    }
+
+    // todo use the area of the square
+
+    // minWt = 0; // todo we can uncomment this to make all weights relative to only the maximum weight
     var minWtSize = parseInt(plotEl.dataset.minWtSize);
+    // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
+    maxWt = Math.sqrt(maxWt);
+    minWt = Math.sqrt(minWt);
     var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxWtSize)-minWtSize);
 
     // return the box size for a given weight
     function getBoxSize(wt) {
-      return (wt-minWt)*wtRatio + minWtSize;
+      return (Math.sqrt(wt)-minWt)*wtRatio + minWtSize;
     }
 
     var currY = parseInt(plotEl.dataset.startHeight);
