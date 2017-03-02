@@ -145,7 +145,8 @@
             <div class="loadingspinner">loading&hellip;</div>
             <ul></ul><!-- this will contain the columns to add -->
             <footer>
-              <button class="addnew">+ new column type</button>
+              <button class="addnew">+ new data column</button>
+              <button class="addcomp">+ new computed column</button>
               <button class="cancel">cancel</button>
             </footer>
           </div>
@@ -156,13 +157,6 @@
               <p class="unpopulated">Select a column to add</p>
             </header>
             <p class="coldescription">error</p>
-            <div class="colcomputedcolumns">
-              <p>Computed column</p>
-              <p>Formula: <span class="colformula">error</span></p>
-              <div class="colformulacolumns">
-                <!-- gets populated in the code -->
-              </div>
-            </div>
             <p class="unpopulated">To see details of a column, move over it with your mouse.</p>
             <!-- todo comments -->
             <footer>
@@ -215,23 +209,6 @@
       </header>
       <p class="coldescription notediting-or-not-yours needs-owner">error</p>
       <p class="coldescription editing only-if-yours needs-owner" contenteditable placeholder="add column description">error</p>
-      <label class="editing only-if-yours needs-owner"><input type="checkbox" class="colcomputed">Show options for computed column</label>
-      <div class="colcomputedcolumns option-not-checked">
-        <select class="colformulas editing only-if-yours needs-owner">
-          <option value=''>Select formula</option>
-          <!-- gets populated in the code, in which case the option above goes away -->
-        </select>
-        <div class="colformulacolumnsselection editing only-if-yours needs-owner">
-          <!-- gets populated in the code -->
-        </div>
-        <p class="notediting-or-not-yours needs-owner">Formula: <span class="colformula">error</span></p>
-        <div class="notediting-or-not-yours needs-owner colformulacolumns">
-          <!-- gets populated in the code -->
-        </div>
-      </div>
-      <!-- on hiding this column, store in localStorage that this column is being hidden,
-      also add to the end of every row a symbol that there are hidden values,
-      on hover, the symbol will list them and allow you to add some right back -->
       <!-- todo comments -->
       <!-- todo add a way of cloning a column -->
       <footer>
@@ -251,6 +228,40 @@
           <button class="cancel">cancel</button>
         </div>
       </footer>
+    </div>
+  </th>
+</template>
+<template id="computed-col-heading-template">
+  <th class="popupboxtrigger">
+    <div class="unhide editing">&#x25C4; &#x25BA;</div>
+    <div class="popupboxhighlight">
+      <span class="richcollabel">error</span>
+    </div>
+    <div class="fullcolinfo popupbox" data-boxtype='fullcolinfo'>
+      <div class="pin"></div>
+      <button class="not-unsaved move left most editing" title="move column to the left">|«</button>
+      <button class="not-unsaved move left editing" title="move column to the left">«</button>
+      <button class="not-unsaved delete editing">delete</button>
+      <button class="not-unsaved move right editing" title="move column to the right">»</button>
+      <button class="not-unsaved move right most editing" title="move column to the right">»|</button>
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">|«</button>
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">«</button>
+      <button class="when-unsaved" disabled title="can't delete columns when some changes are unsaved">delete</button>
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">»</button>
+      <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">»|</button>
+      <header>
+        <span class="fullcollabel">error</span>
+        <div class="colcomputedcolumns">
+          <select class="colformulas editing validationerror">
+            <option value=''>Select formula</option>
+            <!-- gets populated in the code, in which case the option above goes away -->
+          </select>
+          <div class="colformulacolumnsselection editing">
+            <!-- gets populated in the code -->
+          </div>
+        </div>
+        <!-- todo add a way of cloning a column -->
+      </header>
     </div>
   </th>
 </template>
@@ -296,9 +307,8 @@
       <header>
         <p class="value" placeholder="no value"></p>
         <p class="computed">
+          calculated as
           <span class="formula"></span>
-          calculated from
-          <span class="computedfrom"></span>
         </p>
         <p class="by notcomputed">
           entered on
@@ -306,11 +316,10 @@
           by
           <a class="valenteredby" href="error">error</a>
         </p>
-        <!-- TODO: Computed from column x & column y -->
-        <p><span class="commentcount"></span> comments:</p>
+        <p class="notcomputed"><span class="commentcount"></span> comments:</p>
       </header>
-      <main><!-- this is where the comments will come --></main>
-      <div class="comment new when-signed-on">
+      <main class="notcomputed"><!-- this is where the comments will come --></main>
+      <div class="comment new when-signed-on notcomputed">
         <header>
           new comment:
         </header>
