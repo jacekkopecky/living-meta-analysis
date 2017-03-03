@@ -482,11 +482,12 @@
     data-font-size="20"
     data-padding="10"
     data-graph-width="200"
-    data-zero-line-height="145"
+    data-zero-line-height2="115"
     data-start-height="50"
+    data-end-height="65"
     data-min-wt-size="4"
     data-max-wt-size="14"
-    data-extra-line-len="20"
+    data-extra-line-len="-10"
     >
     <style>
       svg {
@@ -573,7 +574,7 @@
       }
 
       .axes > g {
-        transform: translate(180px,62.5px);
+        transform: translate(180px,32.5px);
       }
 
       .axes .tick text {
@@ -615,7 +616,7 @@
           <text class="or">err</text>
           <text class="lcl">err,</text>
           <text class="ucl">err</text>
-          <line class="guideline"/><!-- should get x1="or" x2="or" y2="currY+parseInt(plotEl.dataset.extraLineLen)" -->
+          <line class="guideline"/><!-- should get x1="or" x2="or" y2="currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen)" -->
           <g class="sumgraph">
             <polygon class="confidenceinterval"/><!-- should get points="lcl,0 or,-10 ucl,0 or,10" -->
           </g>

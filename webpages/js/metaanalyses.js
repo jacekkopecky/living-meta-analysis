@@ -418,6 +418,12 @@
         line.lcl = getDatumValue(lclFunc, j, i);
         line.ucl = getDatumValue(uclFunc, j, i);
         lines.push(line);
+
+        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0)) {
+          line.lcl = 0;
+          line.ucl = 0;
+          line.wt = 0;
+        }
       }
     }
 
@@ -435,6 +441,11 @@
       ucl: getDatumValue(uclAggrFunc),
     }
 
+    if (isNaN(aggregates.or*0) || isNaN(aggregates.lcl*0) || isNaN(aggregates.ucl*0)) {
+      aggregates.lcl = 0;
+      aggregates.ucl = 0;
+    }
+
     // compute
     //   sum of wt
     //   min and max of wt
@@ -446,6 +457,9 @@
     var minLcl = aggregates.lcl;
     var maxUcl = aggregates.ucl;
 
+    if (isNaN(minLcl)) minLcl = 0;
+    if (isNaN(maxUcl)) maxUcl = 0;
+
     lines.forEach(function (line) {
       sumOfWt += line.wt;
       if (line.wt < minWt) minWt = line.wt;
@@ -453,6 +467,9 @@
       if (line.lcl < minLcl) minLcl = line.lcl;
       if (line.ucl > maxUcl) maxUcl = line.ucl;
     });
+
+    if (minLcl < -10) minLcl = -10;
+    if (maxUcl > 10) maxUcl = 10;
 
     var TICK_SPACING;
 
@@ -516,6 +533,8 @@
 
     // put experiments into the plot
     lines.forEach(function (line) {
+      if (isNaN(line.or*0)) return;
+
       var expEl = _.cloneTemplate(_.findEl(plotEl, 'template.experiment'));
 
       expEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
@@ -539,6 +558,33 @@
     })
 
 
+
+    // put summary into the plot
+    if (!isNaN(aggregates.or*0)) {
+      var sumEl = _.cloneTemplate(_.findEl(plotEl, 'template.summary'));
+
+      sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+      _.fillEls(sumEl, '.or', Math.exp(aggregates.or).toPrecision(3));
+      _.fillEls(sumEl, '.lcl', "" + Math.exp(aggregates.lcl).toPrecision(3) + ",");
+      _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toPrecision(3));
+
+      var confidenceInterval = "" + getX(aggregates.lcl) + ",0 " +
+                                  + getX(aggregates.or) + ",-10 " +
+                                  + getX(aggregates.ucl) + ",0 " +
+                                  + getX(aggregates.or) + ",10";
+
+      _.setAttrs(sumEl, 'polygon.confidenceinterval', 'points', confidenceInterval);
+
+      _.setAttrs(sumEl, 'line.guideline', 'x1', getX(aggregates.or));
+      _.setAttrs(sumEl, 'line.guideline', 'x2', getX(aggregates.or));
+      _.setAttrs(sumEl, 'line.guideline', 'y2', currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen));
+
+      plotEl.appendChild(sumEl);
+      currY += parseInt(plotEl.dataset.lineHeight);
+    }
+
+
     // put axes into the plot
     var axesEl = _.cloneTemplate(_.findEl(plotEl, 'template.axes'));
 
@@ -559,33 +605,9 @@
     }
     // todo add ticks at 2,5, or maybe at 3, increments as well - make sure there are at least 3 ticks and at most 6?
 
-    plotEl.appendChild(axesEl);
+    plotEl.insertBefore(axesEl, sumEl);
 
-
-    // put summary into the plot
-    var sumEl = _.cloneTemplate(_.findEl(plotEl, 'template.summary'));
-
-    sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
-
-    _.fillEls(sumEl, '.or', Math.exp(aggregates.or).toPrecision(3));
-    _.fillEls(sumEl, '.lcl', "" + Math.exp(aggregates.lcl).toPrecision(3) + ",");
-    _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toPrecision(3));
-
-    var confidenceInterval = "" + getX(aggregates.lcl) + ",0 " +
-                                + getX(aggregates.or) + ",-10 " +
-                                + getX(aggregates.ucl) + ",0 " +
-                                + getX(aggregates.or) + ",10";
-
-    _.setAttrs(sumEl, 'polygon.confidenceinterval', 'points', confidenceInterval);
-
-    _.setAttrs(sumEl, 'line.guideline', 'x1', getX(aggregates.or));
-    _.setAttrs(sumEl, 'line.guideline', 'x2', getX(aggregates.or));
-    _.setAttrs(sumEl, 'line.guideline', 'y2', currY+parseInt(plotEl.dataset.extraLineLen));
-
-    plotEl.appendChild(sumEl);
-
-
-    plotEl.setAttribute('height', parseInt(plotEl.dataset.zeroLineHeight) + lines.length*parseInt(plotEl.dataset.lineHeight));
+    plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
 
     plotsContainer.appendChild(plotEl);
   }
