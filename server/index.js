@@ -175,7 +175,7 @@ function oneLineVersion(req, res) {
   res.send(oneLineVersionString);
 }
 
-exec('git log -1 --pretty=format:"%ai \'%s\'"',
+exec('git log -1 --date=short --pretty=format:"%ad"',
   (error, stdout, stderr) => {
     if (error) oneLineVersionString = 'error getting version: ' + error + '\n' + stderr;
     else oneLineVersionString = stdout;
