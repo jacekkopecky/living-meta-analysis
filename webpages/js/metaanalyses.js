@@ -769,7 +769,7 @@
       } else {
         formulasDropdown.classList.add('validationerror');
       }
-      // we'll call setValidationErrorClass() later
+      // we'll call setValidationErrorClass() in fillFormulaColumnsSelection
 
       // make sure formula columns array matches the number of expected parameters
       col.formulaParams.length = formula ? formula.parameters.length : 0;
