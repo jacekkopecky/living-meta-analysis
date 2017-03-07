@@ -217,7 +217,7 @@
     // Get all columns used across all papers, for now. Concat.
     self.papers.forEach(function (paper) {
       paper.columns.forEach(function (column) {
-        if (self.columns.indexOf(column) === -1) {
+        if (typeof column === 'string' && self.columns.indexOf(column) === -1) {
           self.columns.push(column);
         }
       });
