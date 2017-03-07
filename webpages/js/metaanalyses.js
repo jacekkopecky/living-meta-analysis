@@ -536,7 +536,8 @@
     lines.forEach(function (line) {
       if (isNaN(line.or*0)) return;
 
-      var expEl = _.cloneTemplate(_.findEl(plotEl, 'template.experiment'));
+      var expT = _.findEl(plotEl, 'template.experiment');
+      var expEl = _.cloneTemplate(expT);
 
       expEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
 
@@ -553,7 +554,7 @@
       _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
       _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
 
-      plotEl.appendChild(expEl);
+      expT.parentElement.insertBefore(expEl, expT);
 
       currY += parseInt(plotEl.dataset.lineHeight);
     })
@@ -562,7 +563,8 @@
 
     // put summary into the plot
     if (!isNaN(aggregates.or*0)) {
-      var sumEl = _.cloneTemplate(_.findEl(plotEl, 'template.summary'));
+      var sumT = _.findEl(plotEl, 'template.summary');
+      var sumEl = _.cloneTemplate(sumT);
 
       sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
 
@@ -581,13 +583,14 @@
       _.setAttrs(sumEl, 'line.guideline', 'x2', getX(aggregates.or));
       _.setAttrs(sumEl, 'line.guideline', 'y2', currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen));
 
-      plotEl.appendChild(sumEl);
+      sumT.parentElement.insertBefore(sumEl, sumT);
       currY += parseInt(plotEl.dataset.lineHeight);
     }
 
 
     // put axes into the plot
-    var axesEl = _.cloneTemplate(_.findEl(plotEl, 'template.axes'));
+    var axesT = _.findEl(plotEl, 'template.axes');
+    var axesEl = _.cloneTemplate(axesT);
 
     axesEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
 
@@ -595,18 +598,19 @@
     _.setAttrs(axesEl, 'line.yaxis', 'x1', getX(0));
     _.setAttrs(axesEl, 'line.yaxis', 'x2', getX(0));
 
+    var tickT = _.findEl(axesEl, 'template.tick');
     var tickVal;
     while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
-      var tickEl = _.cloneTemplate(_.findEl(plotEl, 'template.tick'));
+      var tickEl = _.cloneTemplate(tickT);
       tickEl.setAttribute('transform', 'translate(' + getX(tickVal) + ',0)');
       _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
-      axesEl.children[0].appendChild(tickEl);
+      tickT.parentElement.insertBefore(tickEl, tickT);
       startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
       startingTick += 1;
     }
     // todo add ticks at 2,5, or maybe at 3, increments as well - make sure there are at least 3 ticks and at most 6?
 
-    plotEl.insertBefore(axesEl, sumEl);
+    axesT.parentElement.insertBefore(axesEl, axesT);
 
     plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
 

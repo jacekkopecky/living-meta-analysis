@@ -609,6 +609,22 @@
       </g>
     </template>
 
+    <template class="axes">
+      <g class="axes"><!-- should get transform="translate(padding,currY)" -->
+        <g>
+          <line class="yaxis"/><!-- should get x1="getX(0)" x2="getX(0)" y2="currY+parseInt(plotEl.dataset.extraLineLen)" -->
+          <line class="xaxis" x1="0" x2="200"/>
+          <!-- should get a number of ticks -->
+          <template class="tick">
+            <g class="tick"><!-- should get transform="translate(x,0)" -->
+              <line y2="5"/>
+              <text>val</text>
+            </g>
+          </template>
+        </g>
+      </g>
+    </template>
+
     <template class="summary">
       <g class="summary"><!-- should get transform="translate(padding,currY)" -->
         <g>
@@ -621,23 +637,6 @@
             <polygon class="confidenceinterval"/><!-- should get points="lcl,0 or,-10 ucl,0 or,10" -->
           </g>
         </g>
-      </g>
-    </template>
-
-    <template class="axes">
-      <g class="axes"><!-- should get transform="translate(padding,currY)" -->
-        <g>
-          <line class="yaxis"/><!-- should get x1="getX(0)" x2="getX(0)" y2="currY+parseInt(plotEl.dataset.extraLineLen)" -->
-          <line class="xaxis" x1="0" x2="200"/>
-          <!-- should get a number of ticks -->
-        </g>
-      </g>
-    </template>
-
-    <template class="tick">
-      <g class="tick"><!-- should get transform="translate(x,0)" -->
-        <line y2="5"/>
-        <text>val</text>
       </g>
     </template>
 
