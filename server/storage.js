@@ -219,6 +219,14 @@ module.exports.listTitles = () =>
  * }
  */
 
+const LOCAL_STORAGE_SPECIAL_USER = {
+  emails: [
+    {
+      value: "lima@local"
+    }
+  ]
+}
+
 let userCache;
 
 // get all users immediately on the start of the server
@@ -247,6 +255,12 @@ function getAllUsers() {
       console.log(`getAllUsers: ${Object.keys(retval).length} done`);
       resolve(retval);
     });
+  })
+  .then((users) => {
+    // add a special user for local storage
+    // - after all other users are loaded so datastore never overrides this one
+    users[LOCAL_STORAGE_SPECIAL_USER.emails[0].value] = LOCAL_STORAGE_SPECIAL_USER;
+    return users;
   });
 }
 
