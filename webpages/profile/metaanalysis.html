@@ -90,8 +90,8 @@
     <!-- todo show history -->
     <!-- when not editing, show something for empty doi and link (or nothing at all?) -->
     <!-- todo comments -->
-    <div class="experiments"></div>
     <div class="plots"></div>
+    <div class="experiments"></div>
     <div class="aggregates"></div>
     <p class='no-table'>No data has been entered for this meta-analysis yet.
       <span class="only-if-page-about-you">Turn editing on to add data.</span><!-- todo instruction to clone the paper? --></p>
@@ -638,6 +638,262 @@
       <g class="tick"><!-- should get transform="translate(x,0)" -->
         <line y2="5"/>
         <text>val</text>
+      </g>
+    </template>
+
+  </svg>
+</template>
+<template id="grape-plot-template">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    width="600"
+    height="300"
+    version="1.1"
+    data-line-height="30"
+    data-font-size="20"
+    data-padding="10"
+    data-graph-width="200"
+    data-zero-line-height2="115"
+    data-start-height="50"
+    data-end-height="65"
+    data-min-wt-size="4"
+    data-max-wt-size="14"
+    data-extra-line-len="-10"
+    >
+    <style>
+      svg {
+        stroke-width: 2px;
+        fill: white;
+        stroke: black;
+        stroke-linecap: butt;
+        stroke-linejoin: miter;
+        font-size: 16px;
+        font-family: "Arial", sans-serif;
+        border: 1px solid red;
+      }
+
+      text {
+        stroke-width: 0;
+        fill: black;
+        text-anchor: middle;
+      }
+
+      .headings text.or,
+      .experiment text.or,
+      .summary text.or {
+        transform: translate(410px,23px);
+      }
+      .headings text.lcl,
+      .experiment text.lcl,
+      .summary text.lcl {
+        text-anchor: end;
+        transform: translate(490px,23px);
+      }
+      .headings text.ucl,
+      .experiment text.ucl,
+      .summary text.ucl {
+        text-anchor: start;
+        transform: translate(495px,23px);
+      }
+      .headings text.wt,
+      .experiment text.wt,
+      .summary text.wt {
+        transform: translate(580px,23px);
+        text-anchor: end;
+      }
+
+      .experiment .expname {
+        text-anchor: start;
+        transform: translate(0,23px);
+      }
+
+      .experiment .rowgraph {
+        transform: translate(180px,0);
+      }
+
+      .experiment .rowgraph .confidenceinterval {
+        transform: translate(0,15px);
+      }
+
+      .experiment .rowgraph .weightbox {
+        transform: translate(-50%,-50%) translate(0,15px);
+        fill: black;
+      }
+
+      .guideline {
+        stroke-width: 1px;
+        transform: translate(2.5px,0);
+        stroke-dasharray: 5px;
+        stroke-linecap: butt;
+      }
+
+      .summary .guideline {
+        stroke-dasharray: 0;
+        transform: none;
+      }
+
+      .axes .tick line {
+        font-size: 12px;
+        transform: translate(-5px, 0);
+      }
+
+      .axes .tick text {
+        font-size: 12px;
+        transform: translate(-10px, 4px);
+        text-anchor: end;
+      }
+
+      .axes .yaxis,
+      .group .trunk {
+        transform: scale(1, -1);
+      }
+
+      .grape {
+        fill: white;
+      }
+
+      .tooltips .grape {
+        fill: transparent;
+        stroke: transparent;
+      }
+
+      .tooltips .grape:not(:hover) + .tooltip {
+        display: none
+      }
+
+      .tooltip {
+        transform: translate(-50px,-120px);
+      }
+
+      .tooltip text {
+        transform: translate(10px,20px);
+        text-anchor: start;
+      }
+
+    </style>
+
+    <g class="axes" transform="translate(100,250)">
+      <line class="yaxis" x1="0" x2="0" y2="200"/>
+      <line class="xaxis" x1="0" x2="400"/>
+      <!-- should get a number of ticks -->
+      <g class="tick" transform="translate(0,-180)">
+        <line x2="5"/>
+        <text>1</text>
+      </g>
+      <g class="tick" transform="translate(0,-100)">
+        <line x2="5"/>
+        <text>0</text>
+      </g>
+      <g class="tick" transform="translate(0,-20)">
+        <line x2="5"/>
+        <text>-1</text>
+      </g>
+    </g>
+
+    <g class="summary" transform="translate(100,250)">
+      <line class="guideline" x1="0" x2="400" y1="-90" y2="-90"/>
+    </g>
+
+    <g class="group" transform="translate(200,250)">
+      <g>
+        <line class="guideline" x1="-100" x2="90" y1="-110" y2="-110"/>
+        <line class="trunk" x1="0" x2="0" y2="200"/>
+        <circle class="experiment grape" r="10" transform="translate(5,-118)"/>
+        <circle class="experiment grape" r="8" transform="translate(-23,-107)"/>
+        <circle class="experiment grape" r="12" transform="translate(25,-103)"/>
+        <circle class="experiment grape" r="7" transform="translate(-6,-102)"/>
+      </g>
+    </g>
+
+    <g class="group" transform="translate(400,250)">
+      <g>
+        <line class="guideline" x1="-100" x2="90" y1="-80" y2="-80"/>
+        <line class="trunk" x1="0" x2="0" y2="200"/>
+        <circle class="experiment grape" r="10" transform="translate(5,-88)"/>
+        <circle class="experiment grape" r="8" transform="translate(-23,-77)"/>
+        <circle class="experiment grape" r="12" transform="translate(25,-73)"/>
+        <circle class="experiment grape" r="7" transform="translate(-6,-72)"/>
+      </g>
+    </g>
+
+    <g class="group tooltips" transform="translate(200,250)">
+      <g>
+        <g class="experiment" transform="translate(5,-118)">
+          <circle class="grape" r="10"/>
+          <g class="tooltip">
+            <rect width="100" height="100"/>
+            <text>foo</text>
+          </g>
+        </g>
+        <g class="experiment" transform="translate(-23,-107)">
+          <circle class="grape" r="8"/>
+          <g class="tooltip">
+            <rect width="100" height="100"/>
+            <text>foo</text>
+          </g>
+        </g>
+        <g class="experiment" transform="translate(25,-103)">
+          <circle class="grape" r="12"/>
+          <g class="tooltip">
+            <rect width="100" height="100"/>
+            <text>foo</text>
+          </g>
+        </g>
+        <g class="experiment" transform="translate(-6,-102)">
+          <circle class="grape" r="7"/>
+          <g class="tooltip">
+            <rect width="100" height="100"/>
+            <text>foo</text>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <g class="group tooltips" transform="translate(400,250)">
+      <g>
+        <g class="experiment" transform="translate(5,-88)">
+          <circle class="grape" r="10"/>
+          <g class="tooltip">
+            <rect width="100" height="100"/>
+            <text>foo</text>
+          </g>
+        </g>
+        <g class="experiment" transform="translate(-23,-77)">
+          <circle class="grape" r="8"/>
+          <g class="tooltip">
+            <rect width="100" height="100"/>
+            <text>foo</text>
+          </g>
+        </g>
+        <g class="experiment" transform="translate(25,-73)">
+          <circle class="grape" r="12"/>
+          <g class="tooltip">
+            <rect width="100" height="100"/>
+            <text>foo</text>
+          </g>
+        </g>
+        <g class="experiment" transform="translate(-6,-72)">
+          <circle class="grape" r="7"/>
+          <g class="tooltip">
+            <rect width="100" height="100"/>
+            <text>foo</text>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <template class="experiment">
+      <g class="experiment"><!-- should get transform="translate(padding,currY++)" -->
+        <text class="expname">error</text>
+        <text class="or">err</text>
+        <text class="lcl">err,</text>
+        <text class="ucl">err</text>
+        <text class="wt">err</text>
+        <g class="rowgraph">
+          <line class="confidenceinterval"/><!-- should get x1="lcl" x2="ucl" -->
+          <rect class="weightbox"/><!-- should get x="or" width="wt" height="wt" -->
+        </g>
       </g>
     </template>
 

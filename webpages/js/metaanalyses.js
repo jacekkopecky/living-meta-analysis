@@ -341,6 +341,7 @@
     setUnsavedClass();
 
     addComputedDatumSetter(drawForestPlot);
+    addComputedDatumSetter(drawGrapePlot);
 
     recalculateComputedData();
   }
@@ -608,6 +609,46 @@
     plotEl.insertBefore(axesEl, sumEl);
 
     plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
+
+    plotsContainer.appendChild(plotEl);
+  }
+
+
+  function drawGrapePlot() {
+    // prepare data:
+    // first find the forestPlot aggregate, it gives us the parameters
+    // then for every paper and every experiment, call appropriate functions to get or,lcl,ucl,wt
+    // then get the aggregates or,lcl,ucl
+    //   lines (array)
+    //     title (paper and maybe experiment)
+    //     or
+    //     lcl
+    //     ucl
+    //     wt
+    //   aggregated
+    //     or
+    //     lcl
+    //     ucl
+
+    // todo the plot should be associated with its parameters differently, not through an aggregate
+    // todo there should be the possibility to have more forest plots
+    var params;
+    for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
+      if (currentMetaanalysis.aggregates[i].formulaName === 'grapePlot' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+        params = currentMetaanalysis.aggregates[i].formulaParams;
+        break;
+      }
+    }
+
+    if (!params) {
+      // we don't have any parameters for the grapePlot
+      return;
+    }
+
+    var plotsContainer = _.findEl('#metaanalysis > .plots');
+    plotsContainer.innerHTML = '';
+
+    var plotEl = _.cloneTemplate('grape-plot-template').children[0];
 
     plotsContainer.appendChild(plotEl);
   }

@@ -240,6 +240,12 @@
         func: forestPlotAggr,
         parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ],
       },
+      {
+        id: 'grapePlot',
+        label: 'Grape Plot',
+        func: grapePlotAggr,
+        parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ],
+      },
       // {
       //   id: 'sumProduct',
       //   label: 'Sum of Product',
@@ -309,6 +315,9 @@
 
   // todo this is just a placeholder
   function forestPlotAggr () {
+    return 'see above';
+  }
+  function grapePlotAggr () {
     return 'see above';
   }
 
