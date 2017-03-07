@@ -649,7 +649,7 @@
     return th;
   }
 
-  function fillComputedColumnHeading(paper, col, columnIndex) {
+  function fillComputedColumnHeading(paper, col /*, columnIndex */) {
     var th = _.cloneTemplate('computed-col-heading-template').children[0];
 
     th.classList.add('result');
