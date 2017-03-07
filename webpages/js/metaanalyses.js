@@ -359,11 +359,6 @@
    */
 
   function drawForestPlot() {
-    var plotsContainer = _.findEl('#metaanalysis > .plots');
-    plotsContainer.innerHTML = '';
-
-    var plotEl = _.cloneTemplate('forest-plot-template').children[0];
-
     // prepare data:
     // first find the forestPlot aggregate, it gives us the parameters
     // then for every paper and every experiment, call appropriate functions to get or,lcl,ucl,wt
@@ -393,6 +388,11 @@
       // we don't have any parameters for the forestPlot
       return;
     }
+
+    var plotsContainer = _.findEl('#metaanalysis > .plots');
+    plotsContainer.innerHTML = '';
+
+    var plotEl = _.cloneTemplate('forest-plot-template').children[0];
 
     var orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
     var wtFunc = { formulaName: "weightNumber", formulaParams: params };
