@@ -21,6 +21,7 @@ A tool for supporting living and collaborative meta-analysis.
 ssh lima
 sudo login -f lima
 cd living-meta-analysis
+# do not forever stop server
 git stash
 git pull
 git stash apply
