@@ -379,7 +379,7 @@
     // todo there should be the possibility to have more forest plots
     var params;
     for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
-      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlot' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
         params = currentMetaanalysis.aggregates[i].formulaParams;
         break;
       }
@@ -428,9 +428,9 @@
       }
     }
 
-    var orAggrFunc = { formulaName: "weightedMean", formulaParams: [ orFunc, wtFunc ] };
-    var lclAggrFunc = { formulaName: "lowerConfidenceLimit", formulaParams: [ orFunc, wtFunc ] };
-    var uclAggrFunc = { formulaName: "upperConfidenceLimit", formulaParams: [ orFunc, wtFunc ] };
+    var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
+    var lclAggrFunc = { formulaName: "lowerConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
+    var uclAggrFunc = { formulaName: "upperConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
 
     orAggrFunc.formula = lima.createFormulaString(orAggrFunc);
     lclAggrFunc.formula = lima.createFormulaString(lclAggrFunc);
@@ -634,7 +634,7 @@
     // todo there should be the possibility to have more forest plots
     var params;
     for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
-      if (currentMetaanalysis.aggregates[i].formulaName === 'grapePlot' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+      if (currentMetaanalysis.aggregates[i].formulaName === 'grapePlotAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
         params = currentMetaanalysis.aggregates[i].formulaParams;
         break;
       }
