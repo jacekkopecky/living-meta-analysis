@@ -1324,6 +1324,7 @@
 
     if (isColCompletelyDefined(aggregate)) {
       var formula = lima.getAggregateFormulaById(aggregate.formulaName);
+      if (formula == null) return NaN;
 
       // compute the value
       // if anything here throws an exception, value cannot be computed
@@ -1378,6 +1379,7 @@
 
       if (isColCompletelyDefined(col)) {
         var formula = lima.getFormulaById(col.formulaName);
+        if (formula == null) return NaN;
 
         // compute the value
         // if anything here throws an exception, value cannot be computed
