@@ -230,9 +230,6 @@
     if (document.activeElement === editEl) ev.preventDefault();
   }
 
-
-
-
   /* array manipulation
    *
    *
