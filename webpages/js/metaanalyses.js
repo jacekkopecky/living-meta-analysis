@@ -182,6 +182,7 @@
     if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
     if (!Array.isArray(self.tags)) self.tags = [];
     if (!Array.isArray(self.aggregates)) self.aggregates = [];
+    if (!Array.isArray(self.excludedExperiments)) self.excludedExperiments = [];
 
     self.columns.forEach(function (col) {
       if (typeof col === 'object') {
@@ -591,6 +592,18 @@
 
           _.addEventListener(paperTitleEl, '.linkedit button.test', 'click', _.linkEditTest);
           _.addEventListener(paperTitleEl, '.linkedit button.test', 'mousedown', _.preventLinkEditBlur);
+
+          // Excluding
+          var excluded = excludedExperimentsInPaper(paper);
+          if (excluded == paper.experiments.length) { // all
+            _.setProps(tr, '.papertitle > div > .exclude', 'checked', 0);
+            tr.classList.add("papexcluded");
+          } else if (excluded > 0) { // at least one
+            // todo: Do we want styling changes here?
+            _.setProps(tr, '.papertitle > div > .exclude', 'indeterminate', 1);
+          }
+          _.setDataProps(tr, '.papertitle > div > .exclude', 'index', papIndex);
+          _.addEventListener(tr, '.papertitle > div > .exclude', 'click', excludePaper);
         }
 
         _.fillEls(tr, '.exptitle', experiment.title);
@@ -612,6 +625,17 @@
         // Now we track paperinfo@<index> and experimentinfo@<paper>,<exp>
         setupPopupBoxPinning(tr, '.paperinfo.popupbox', papIndex);
         setupPopupBoxPinning(tr, '.experimentinfo.popupbox', papIndex+','+expIndex);
+
+        _.setDataProps(tr, '.experimenttitle > div > .exclude', 'id', paper.id+','+expIndex);
+
+        // Excluding
+        if (isExcludedExp(paper, expIndex)) {
+          _.setProps(tr, '.experimenttitle > div > .exclude', 'checked', 0)
+          tr.classList.add('excluded');
+        } else {
+          tr.classList.remove('excluded');
+        }
+        _.addEventListener(tr, '.experimenttitle > div > .exclude', 'click', excludeExperiment);
 
         metaanalysis.columns.forEach(function (col) {
           // early return - ignore this column
@@ -1002,7 +1026,9 @@
         currentInputArray = [];
         for (var paperIndex = 0; paperIndex < currentMetaanalysis.papers.length; paperIndex++) {
           for (var expIndex = 0; expIndex < currentMetaanalysis.papers[paperIndex].experiments.length; expIndex++) {
-            currentInputArray.push(getDatumValue(aggregate.formulaParams[i], expIndex, paperIndex));
+            if (!isExcludedExp(currentMetaanalysis.papers[paperIndex], expIndex)) {
+              currentInputArray.push(getDatumValue(aggregate.formulaParams[i], expIndex, paperIndex));
+            }
           }
         }
         inputs.push(currentInputArray);
@@ -1779,6 +1805,77 @@
       })
   }
 
+  /* BANNER FOR 'Excluding' HERE
+   */
+   function excludePaper() {
+     // a click will pin the box,
+     // this timeout makes sure the click gets processed first and then we do the moving
+     setTimeout(doExcludePaper, 0, this);
+   }
+
+   function doExcludePaper(el) {
+     var papIndex = el.dataset.index;
+     var paper = currentMetaanalysis.papers[papIndex];
+
+     // include experiments
+     if (el.checked) {
+       paper.experiments.forEach(function(exp, expIndex) {
+         var index = currentMetaanalysis.excludedExperiments.indexOf(paper.id+','+expIndex);
+         currentMetaanalysis.excludedExperiments.splice(index, 1);
+       });
+     } else { // exclude
+       paper.experiments.forEach(function(exp, expIndex) {
+         if (!isExcludedExp(paper, expIndex)) { // if we already have it, ignore
+           currentMetaanalysis.excludedExperiments.push(paper.id+','+expIndex);
+         }
+       });
+     }
+
+     updateMetaanalysisView();
+     _.scheduleSave(currentMetaanalysis);
+
+   }
+
+  function excludeExperiment() {
+    // a click will pin the box,
+    // this timeout makes sure the click gets processed first and then we do the moving
+    setTimeout(doExcludeExperiment, 0, this);
+  }
+
+  function doExcludeExperiment(el) {
+    // takes the form of paperId,expIndex
+    var id = el.dataset.id;
+
+    // include experiment
+    if (el.checked) {
+      var index = currentMetaanalysis.excludedExperiments.indexOf(id);
+      currentMetaanalysis.excludedExperiments.splice(index, 1);
+    } else { // exclude
+      currentMetaanalysis.excludedExperiments.push(id);
+    }
+
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+
+  }
+
+  // take paper and expIndex, use it to check if Id in the form <paperId>,<expIndex>
+  // exists in excludedExperiments
+  function isExcludedExp(paper, expIndex) {
+    return currentMetaanalysis.excludedExperiments.indexOf(paper.id+','+expIndex) !== -1;
+  }
+
+  // Return No# of excludedExperiments within a paper
+  function excludedExperimentsInPaper(paper) {
+    var excluded = 0;
+    paper.experiments.forEach(function(experiment, expIndex) {
+      if (isExcludedExp(paper, expIndex)) {
+        excluded++;
+      }
+    });
+
+    return excluded;
+  }
   /* changing cols
    *
    *
