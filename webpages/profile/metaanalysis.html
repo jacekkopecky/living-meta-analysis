@@ -652,14 +652,14 @@
     data-line-height="30"
     data-font-size="20"
     data-padding="10"
-    data-graph-width="200"
     data-zero-line-height2="115"
     data-start-height="50"
     data-end-height="65"
     data-extra-line-len="-10"
 
-    data-min-wt-size="7"
-    data-max-wt-size="14"
+    data-graph-height="500"
+    data-min-grape-size="7"
+    data-max-grape-size="14"
     data-first-group="250"
     data-group-spacing="300"
     data-grape-spacing="1.5"
@@ -675,7 +675,6 @@
         stroke-linejoin: miter;
         font-size: 16px;
         font-family: "Arial", sans-serif;
-        <!-- border: 1px solid red; -->
       }
 
       text {
@@ -688,12 +687,6 @@
         stroke-width: 1px;
         stroke-dasharray: 5px;
         stroke-linecap: butt;
-      }
-
-      .summary .guideline {
-        stroke-width: 0px;
-        stroke-dasharray: 5px;
-        transform: translate(2.5px,0);
       }
 
       .axes .tick line {
@@ -710,6 +703,11 @@
       .axes .yaxis,
       .group .trunk {
         transform: scale(1, -1);
+        stroke-linecap: round;
+      }
+
+      .group .xaxis {
+        stroke-linecap: round;
       }
 
       .group .trunk {
@@ -788,29 +786,14 @@
     </style>
 
     <g class="axes" transform="translate(100,550)">
-      <line class="yaxis" x1="0" x2="0" y2="520"/>
-      <line class="xaxis" x1="0" x2="600"/>
+      <line class="yaxis" x1="0" x2="0" y2="500"/>
       <!-- should get a number of ticks -->
-      <g class="tick" transform="translate(0,-515)">
-        <line x2="5"/>
-        <text>1000</text>
-      </g>
-      <g class="tick" transform="translate(0,-387.5)">
-        <line x2="5"/>
-        <text>100</text>
-      </g>
-      <g class="tick" transform="translate(0,-260)">
-        <line x2="5"/>
-        <text>10</text>
-      </g>
-      <g class="tick" transform="translate(0,-132.5)">
-        <line x2="5"/>
-        <text>1</text>
-      </g>
-      <g class="tick" transform="translate(0,-5)">
-        <line x2="5"/>
-        <text>0.1</text>
-      </g>
+      <template class="tick">
+        <g class="tick"><!-- should get transform="translate(0,-y)"-->
+          <line x2="5"/>
+          <text>1000</text>
+        </g>
+      </template>
       <text class="ylabel" transform="translate(-40,-260) rotate(-90)">odds ratio</text>
       <g class="legend">
         <text x="530" y="-515">Legend:</text>
@@ -819,13 +802,10 @@
       </g>
     </g>
 
-    <g class="summary" transform="translate(100,550)">
-      <line class="guideline" x1="0" x2="600" y1="0" y2="0"/>
-    </g>
-
     <template class="group-grapes">
-      <g class="group"><!-- should get  transform="translate(groupx,550)" -->
+      <g class="group"><!-- should get transform="translate(groupx,550)" -->
         <g>
+          <line class="xaxis" x1="-150" x2="150"/>
           <line class="guideline" x1="-142.5" x2="142.5"/><!-- should get y1="-110" y2="-110" -->
           <line class="trunk" x1="0" x2="0" y2="520"/>
           <text class="label">label</text><!-- should be filled -->

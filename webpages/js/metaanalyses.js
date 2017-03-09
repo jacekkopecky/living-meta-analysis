@@ -620,9 +620,10 @@
     // prepare data:
     // first find the grapeChart aggregate, it gives us the parameters
     // then for every paper and every experiment, call appropriate functions to get or,lcl,ucl,wt
-    // then get the aggregates or,lcl,ucl
-    //   lines (array)
-    //     title (paper and maybe experiment)
+    //   data (array)
+    //     paper
+    //     exp
+    //     group
     //     or
     //     lcl
     //     ucl
@@ -632,8 +633,6 @@
     //     lcl
     //     ucl
 
-    // todo the plot should be associated with its parameters differently, not through an aggregate
-    // todo there should be the possibility to have more forest plots
     var params;
     for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
       if (currentMetaanalysis.aggregates[i].formulaName === 'grapeChartAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
@@ -651,14 +650,52 @@
     plotsContainer.innerHTML = '';
 
     var plotEl = _.cloneTemplate('grape-plot-template').children[0];
-    plotsContainer.appendChild(plotEl);
-    plotEl.onclick = function() {
-      sortingStrategy = (sortingStrategy + 1 ) % sortingStrategies.length;
-      drawGrapeChart();
+
+    // get the data
+    var dataParams = params.slice(0, 4); // the first param is for grouping
+    var orFunc = { formulaName: "logOddsRatioNumber", formulaParams: dataParams };
+    var wtFunc = { formulaName: "weightNumber", formulaParams: dataParams };
+    var lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: dataParams };
+    var uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: dataParams };
+    var moderatorParam = params[4];
+
+    orFunc.formula = lima.createFormulaString(orFunc);
+    wtFunc.formula = lima.createFormulaString(wtFunc);
+    lclFunc.formula = lima.createFormulaString(lclFunc);
+    uclFunc.formula = lima.createFormulaString(uclFunc);
+
+    var data = [];
+    var groups = [];
+
+    for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
+      for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
+        var line = {};
+        line.paper = currentMetaanalysis.papers[i].title;
+        line.exp = currentMetaanalysis.papers[i].experiments[j].title;
+        line.or = getDatumValue(orFunc, j, i);
+        line.wt = getDatumValue(wtFunc, j, i);
+        line.lcl = getDatumValue(lclFunc, j, i);
+        line.ucl = getDatumValue(uclFunc, j, i);
+        line.group = getDatumValue(moderatorParam, j, i);
+        data.push(line);
+
+        if (line.group != null && groups.indexOf(line.group) === -1) groups.push(line.group);
+
+        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0)) {
+          line.lcl = 0;
+          line.ucl = 0;
+          line.wt = 0;
+        }
+      }
     }
 
+    groups.sort(); // alphabetically
 
-    var data = [
+    if (data.length == 0) return null;
+    plotsContainer.appendChild(plotEl);
+
+    var groups2 = ["warning", "no warning"]
+    var data2 = [
       {
         paper: 'Blank (1998), Exp. 1',
         exp: 'not titled',
@@ -1435,34 +1472,82 @@
       },
     ];
 
-    var groups = [ 'warning', 'no warning' ];
-
     var dataGroups =
       groups.map(function (group) {
         return data.filter(function (exp) { return exp.group == group; });
       });
 
-    var dataAggr = {
-      or: 1.170631013,
-      perGroup: {
-        'warning': {
-          or: 0.739853414,
-        },
-        'no warning': {
-          or: 1.576078262,
-        }
+
+    // todo use per-group aggregates here
+    var perGroup = {};
+    dataGroups.forEach(function (dataGroup) {
+      perGroup[dataGroup[0].group] = {
+        or: dataGroup.reduce(function sumproduct(acc, line) {return acc+line.or*line.wt;}, 0) /
+            dataGroup.reduce(function sum(acc, line) {return acc+line.wt;}, 0),
       }
-    };
+    });
+
+    console.log(JSON.stringify(perGroup));
+
+    // todo highlight the current experiment in forest plot and in grape chart
+
 
     var sumOfWt = 0;
     var minWt = data[0].wt;
     var maxWt = data[0].wt;
+    var minOr = data[0].or;
+    var maxOr = data[0].or;
 
     data.forEach(function (exp) {
       sumOfWt += exp.wt;
       if (exp.wt < minWt) minWt = exp.wt;
       if (exp.wt > maxWt) maxWt = exp.wt;
+      if (exp.or < minOr) minOr = exp.or;
+      if (exp.or > maxOr) maxOr = exp.or;
     });
+
+    if (minOr < -10) minOr = -10;
+    if (maxOr > 10) maxOr = 10;
+
+    var TICK_SPACING;
+
+    // select tick spacing based on a rough estimate of how many ticks we'll need anyway
+    var clSpread = (maxOr - minOr) / Math.LN10; // how many orders of magnitude we cover
+    if (clSpread > 5) TICK_SPACING = [100];
+    else if (clSpread > 2) TICK_SPACING = [10];
+    else TICK_SPACING = [ 2, 2.5, 2 ]; // ticks at 1, 2, 5, 10, 20, 50, 100...
+
+    // adjust minimum and maximum around decimal non-logarithmic values
+    var newBound = 1;
+    var tickNo = 0;
+    while (Math.log(newBound) > minOr) {
+      tickNo -= 1;
+      newBound /= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)]; // JS % can be negative
+    }
+    minOr = Math.log(newBound) - .1;
+
+    var startingTickVal = newBound;
+    var startingTick = tickNo;
+
+    newBound = 1;
+    tickNo = 0;
+    while (Math.log(newBound) < maxOr) {
+      newBound *= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)];
+      tickNo += 1;
+    }
+    maxOr = Math.log(newBound) + .1;
+
+    var midOr = (minOr + maxOr) / 2;
+
+    var yRatio = 1/(maxOr-minOr)*parseInt(plotEl.dataset.graphHeight);
+    function getY(logVal) {
+      return -(logVal-minOr)*yRatio;
+    }
+
+    function isTopHalf(logVal) {
+      return logVal > midOr;
+    }
+
 
     var MIN_WT_SPREAD=2.5;
     if (maxWt/minWt < MIN_WT_SPREAD) {
@@ -1471,37 +1556,16 @@
     }
 
     // minWt = 0; // todo we can uncomment this to make all weights relative to only the maximum weight
-    var minWtSize = parseInt(plotEl.dataset.minWtSize);
+    var minGrapeSize = parseInt(plotEl.dataset.minGrapeSize);
     // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
     maxWt = Math.sqrt(maxWt);
     minWt = Math.sqrt(minWt);
-    var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxWtSize)-minWtSize);
+    var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxGrapeSize)-minGrapeSize);
 
-    // return the box size for a given weight
+    // return the grape radius for a given weight
     function getGrapeRadius(wt) {
-      return (Math.sqrt(wt)-minWt)*wtRatio + minWtSize;
+      return (Math.sqrt(wt)-minWt)*wtRatio + minGrapeSize;
     }
-
-    // y-axis:   -5 = Math.log(.1)
-    //         -515 = Math.log(1000)
-
-    function getY(logVal) {
-      var min = Math.log(.1);
-      var max = Math.log(1000);
-      var minX = -5;
-      var maxX = -515;
-      return (logVal-min)/(max-min)*(maxX-minX);
-    }
-
-    function isTopHalf(logVal) {
-      var min = Math.log(.1);
-      var max = Math.log(1000);
-      var half = (min + max) / 2;
-      return logVal > half;
-    }
-
-    _.setAttrs(plotEl, '.summary .guideline', 'y1', getY(dataAggr.or));
-    _.setAttrs(plotEl, '.summary .guideline', 'y2', getY(dataAggr.or));
 
     var groupT = _.findEl(plotEl, 'template.group-grapes');
     var groupTooltipsT= _.findEl(plotEl, 'template.group-tooltips');
@@ -1517,8 +1581,8 @@
       groupTooltipsEl.setAttribute('transform', 'translate(' + (+plotEl.dataset.firstGroup + plotEl.dataset.groupSpacing*index) + ',550)');
 
       _.fillEls(groupEl, 'text.label', group);
-      _.setAttrs(groupEl, '.guideline', 'y1', getY(dataAggr.perGroup[group].or));
-      _.setAttrs(groupEl, '.guideline', 'y2', getY(dataAggr.perGroup[group].or));
+      _.setAttrs(groupEl, '.guideline', 'y1', getY(perGroup[group].or));
+      _.setAttrs(groupEl, '.guideline', 'y2', getY(perGroup[group].or));
 
       var grapeT = _.findEl(groupEl, 'template.group-grapes-grape');
       var tooltipT = _.findEl(groupTooltipsEl, 'template.group-tooltips-grape');
@@ -1530,7 +1594,7 @@
       finalizePositioning();
 
       groupData.forEach(function (exp, index) {
-        // todo grape
+        // grape
         var grapeEl = _.cloneTemplate(grapeT);
         var tooltipEl = _.cloneTemplate(tooltipT);
         grapeT.parentElement.insertBefore(grapeEl, grapeT);
@@ -1539,7 +1603,7 @@
         grapeEl.setAttribute('r', getGrapeRadius(exp.wt));
         _.setAttrs(tooltipEl, '.grape', 'r', getGrapeRadius(exp.wt));
 
-        // x-position so bubbles don't overlap
+        // x-position so grapes don't overlap
         var grapeX = getPosition(index);
         grapeEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')')
         tooltipEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')')
@@ -1563,6 +1627,24 @@
         _.setAttrs(tooltipEl, '.tooltip rect', 'width', boxWidth + (+plotEl.dataset.tooltipPadding));
       });
     });
+
+
+    // put ticks onto the Y axis
+    var tickT = _.findEl(plotEl, 'template.tick');
+    var tickVal;
+    while ((tickVal = Math.log(startingTickVal)) < maxOr) {
+      var tickEl = _.cloneTemplate(tickT);
+      tickEl.setAttribute('transform', 'translate(0,' + getY(tickVal) + ')');
+      _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
+      tickT.parentElement.insertBefore(tickEl, tickT);
+      startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
+      startingTick += 1;
+    }
+
+    plotEl.onclick = function() {
+      sortingStrategy = (sortingStrategy + 1 ) % sortingStrategies.length;
+      drawGrapeChart();
+    }
   }
 
   var sortingStrategy = 0;
@@ -1593,7 +1675,7 @@
   }
 
   function finalizePositioning() {
-    // sort by current sorting strategy -- todo drop this code
+    // sort by current sorting strategy -- todo drop this code when we decide which strategy is the best
     positionedGrapes.sorted.sort(sortingStrategies[sortingStrategy]);
 
     // compute X coordinates
