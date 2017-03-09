@@ -502,7 +502,17 @@
     }
 
     log('running ' + tests.length + ' tests');
-    tests.forEach(function (test, index) {
+    var testsCopy = tests.slice();
+    var index = 0;
+
+    // run tests asynchronously so browser updates view after every test
+    setTimeout(function runNextTest() {
+      if (testsCopy.length == 0) {
+        log('finished ' + tests.length + ' tests: ' + (tests.length - failedTests) + ' passed, ' + failedTests + ' failed');
+        return;
+      }
+
+      var test = testsCopy.shift();
       successfulAssertions = 0;
       currentAssertion = -1;
       log('running test ' + (test.name || index));
@@ -513,8 +523,10 @@
         failedTests += 1;
       }
       log('   done test ' + (test.name || index) + ' (' + successfulAssertions + ' assertion(s) passed)');
-    });
-    log('finished ' + tests.length + ' tests: ' + (tests.length - failedTests) + ' passed, ' + failedTests + ' failed');
+      index += 1;
+
+      setTimeout(runNextTest, 0);
+    }, 0);
   };
 
   _.addTest = function addTest(f) { tests.push(f); }
