@@ -1481,10 +1481,9 @@
     // todo use per-group aggregates here
     var perGroup = {};
     dataGroups.forEach(function (dataGroup) {
-      perGroup[dataGroup[0].group] = {
-        or: dataGroup.reduce(function sumproduct(acc, line) {return acc+line.or*line.wt;}, 0) /
-            dataGroup.reduce(function sum(acc, line) {return acc+line.wt;}, 0),
-      }
+      perGroup[dataGroup[0].group] = {};
+      perGroup[dataGroup[0].group].wt = dataGroup.reduce(function sum(acc, line) {return acc+line.wt;}, 0);
+      perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return acc+line.or*line.wt;}, 0) / perGroup[dataGroup[0].group].wt;
     });
 
     console.log(JSON.stringify(perGroup));
@@ -1492,14 +1491,12 @@
     // todo highlight the current experiment in forest plot and in grape chart
 
 
-    var sumOfWt = 0;
     var minWt = data[0].wt;
     var maxWt = data[0].wt;
     var minOr = data[0].or;
     var maxOr = data[0].or;
 
     data.forEach(function (exp) {
-      sumOfWt += exp.wt;
       if (exp.wt < minWt) minWt = exp.wt;
       if (exp.wt > maxWt) maxWt = exp.wt;
       if (exp.or < minOr) minOr = exp.or;
@@ -1611,7 +1608,7 @@
         _.fillEls(tooltipEl, 'text.paper', exp.paper);
         _.fillEls(tooltipEl, 'text.exp', exp.exp);
         _.fillEls(tooltipEl, 'text.or', Math.exp(exp.or).toPrecision(3));
-        _.fillEls(tooltipEl, 'text.wt', '' + (exp.wt*100/sumOfWt).toPrecision(3) + '%');
+        _.fillEls(tooltipEl, 'text.wt', '' + (exp.wt*100/perGroup[group].wt).toPrecision(3) + '%');
         _.fillEls(tooltipEl, 'text.ci', "" + exp.lcl.toPrecision(3) + ", " + exp.ucl.toPrecision(3));
 
         if (isTopHalf(exp.or)) {
