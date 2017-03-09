@@ -241,9 +241,9 @@
         parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ],
       },
       {
-        id: 'grapePlotAggr',
-        label: 'Grape Plot',
-        func: grapePlotAggr,
+        id: 'grapeChartAggr',
+        label: 'Grape Chart',
+        func: grapeChartAggr,
         parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ],
       },
       // {
@@ -317,7 +317,7 @@
   function forestPlotAggr () {
     return 'see above';
   }
-  function grapePlotAggr () {
+  function grapeChartAggr () {
     return 'see above';
   }
 

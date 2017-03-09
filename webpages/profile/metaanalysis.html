@@ -646,8 +646,8 @@
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
-    width="600"
-    height="300"
+    width="800"
+    height="600"
     version="1.1"
     data-line-height="30"
     data-font-size="20"
@@ -656,9 +656,15 @@
     data-zero-line-height2="115"
     data-start-height="50"
     data-end-height="65"
-    data-min-wt-size="4"
-    data-max-wt-size="14"
     data-extra-line-len="-10"
+
+    data-min-wt-size="7"
+    data-max-wt-size="14"
+    data-first-group="250"
+    data-group-spacing="300"
+    data-grape-spacing="1.5"
+    data-tooltip-padding="20"
+    data-tooltip-min-width="150"
     >
     <style>
       svg {
@@ -669,7 +675,7 @@
         stroke-linejoin: miter;
         font-size: 16px;
         font-family: "Arial", sans-serif;
-        border: 1px solid red;
+        <!-- border: 1px solid red; -->
       }
 
       text {
@@ -678,58 +684,16 @@
         text-anchor: middle;
       }
 
-      .headings text.or,
-      .experiment text.or,
-      .summary text.or {
-        transform: translate(410px,23px);
-      }
-      .headings text.lcl,
-      .experiment text.lcl,
-      .summary text.lcl {
-        text-anchor: end;
-        transform: translate(490px,23px);
-      }
-      .headings text.ucl,
-      .experiment text.ucl,
-      .summary text.ucl {
-        text-anchor: start;
-        transform: translate(495px,23px);
-      }
-      .headings text.wt,
-      .experiment text.wt,
-      .summary text.wt {
-        transform: translate(580px,23px);
-        text-anchor: end;
-      }
-
-      .experiment .expname {
-        text-anchor: start;
-        transform: translate(0,23px);
-      }
-
-      .experiment .rowgraph {
-        transform: translate(180px,0);
-      }
-
-      .experiment .rowgraph .confidenceinterval {
-        transform: translate(0,15px);
-      }
-
-      .experiment .rowgraph .weightbox {
-        transform: translate(-50%,-50%) translate(0,15px);
-        fill: black;
-      }
-
       .guideline {
         stroke-width: 1px;
-        transform: translate(2.5px,0);
         stroke-dasharray: 5px;
         stroke-linecap: butt;
       }
 
       .summary .guideline {
-        stroke-dasharray: 0;
-        transform: none;
+        stroke-width: 0px;
+        stroke-dasharray: 5px;
+        transform: translate(2.5px,0);
       }
 
       .axes .tick line {
@@ -748,154 +712,153 @@
         transform: scale(1, -1);
       }
 
+      .group .trunk {
+        stroke-width: 1px;
+        stroke-width: 0px;
+      }
+
+      .group text.label {
+        transform: translate(0, 20px);
+        text-anchor: middle;
+      }
+
       .grape {
-        fill: white;
+        fill: #8ddce5;
       }
 
       .tooltips .grape {
         fill: transparent;
         stroke: transparent;
+        stroke-width: 3px;
       }
 
-      .tooltips .grape:not(:hover) + .tooltip {
+      .tooltips .experiment .grape:hover {
+        fill: #f0f033;
+        stroke: black;
+      }
+
+      .tooltips .experiment .grape:not(:hover) + .tooltip {
         display: none
       }
 
       .tooltip {
-        transform: translate(-50px,-120px);
+        transform: translate(-60px,-120px);
+      }
+
+      .tooltip.tophalf {
+        transform: translate(-60px,17px);
       }
 
       .tooltip text {
-        transform: translate(10px,20px);
         text-anchor: start;
+        font-size: 12px;
+      }
+
+      .tooltip text.paper {
+        transform: translate(10px,20px);
+      }
+      .tooltip text.exp   {
+        transform: translate(10px,38px);
+      }
+      .tooltip text._or    {
+        transform: translate(10px,56px);
+      }
+      .tooltip text.or    {
+        transform: translate(60px,56px);
+      }
+      .tooltip text._wt    {
+        transform: translate(10px,74px);
+      }
+      .tooltip text.wt    {
+        transform: translate(60px,74px);
+      }
+      .tooltip text._ci    {
+        transform: translate(10px,92px);
+      }
+      .tooltip text.ci    {
+        transform: translate(60px,92px);
+      }
+
+      .legend text {
+        text-anchor: start;
+        font-size: 14px;
+        transform: translate(0,4px);
       }
 
     </style>
 
-    <g class="axes" transform="translate(100,250)">
-      <line class="yaxis" x1="0" x2="0" y2="200"/>
-      <line class="xaxis" x1="0" x2="400"/>
+    <g class="axes" transform="translate(100,550)">
+      <line class="yaxis" x1="0" x2="0" y2="520"/>
+      <line class="xaxis" x1="0" x2="600"/>
       <!-- should get a number of ticks -->
-      <g class="tick" transform="translate(0,-180)">
+      <g class="tick" transform="translate(0,-515)">
+        <line x2="5"/>
+        <text>1000</text>
+      </g>
+      <g class="tick" transform="translate(0,-387.5)">
+        <line x2="5"/>
+        <text>100</text>
+      </g>
+      <g class="tick" transform="translate(0,-260)">
+        <line x2="5"/>
+        <text>10</text>
+      </g>
+      <g class="tick" transform="translate(0,-132.5)">
         <line x2="5"/>
         <text>1</text>
       </g>
-      <g class="tick" transform="translate(0,-100)">
+      <g class="tick" transform="translate(0,-5)">
         <line x2="5"/>
-        <text>0</text>
+        <text>0.1</text>
       </g>
-      <g class="tick" transform="translate(0,-20)">
-        <line x2="5"/>
-        <text>-1</text>
-      </g>
-    </g>
-
-    <g class="summary" transform="translate(100,250)">
-      <line class="guideline" x1="0" x2="400" y1="-90" y2="-90"/>
-    </g>
-
-    <g class="group" transform="translate(200,250)">
-      <g>
-        <line class="guideline" x1="-100" x2="90" y1="-110" y2="-110"/>
-        <line class="trunk" x1="0" x2="0" y2="200"/>
-        <circle class="experiment grape" r="10" transform="translate(5,-118)"/>
-        <circle class="experiment grape" r="8" transform="translate(-23,-107)"/>
-        <circle class="experiment grape" r="12" transform="translate(25,-103)"/>
-        <circle class="experiment grape" r="7" transform="translate(-6,-102)"/>
+      <text class="ylabel" transform="translate(-40,-260) rotate(-90)">odds ratio</text>
+      <g class="legend">
+        <text x="530" y="-515">Legend:</text>
+        <line class="guideline" x1="540" x2="575" y1="-490" y2="-490"/>
+        <text x="580" y="-490">weighted mean</text>
       </g>
     </g>
 
-    <g class="group" transform="translate(400,250)">
-      <g>
-        <line class="guideline" x1="-100" x2="90" y1="-80" y2="-80"/>
-        <line class="trunk" x1="0" x2="0" y2="200"/>
-        <circle class="experiment grape" r="10" transform="translate(5,-88)"/>
-        <circle class="experiment grape" r="8" transform="translate(-23,-77)"/>
-        <circle class="experiment grape" r="12" transform="translate(25,-73)"/>
-        <circle class="experiment grape" r="7" transform="translate(-6,-72)"/>
-      </g>
+    <g class="summary" transform="translate(100,550)">
+      <line class="guideline" x1="0" x2="600" y1="0" y2="0"/>
     </g>
 
-    <g class="group tooltips" transform="translate(200,250)">
-      <g>
-        <g class="experiment" transform="translate(5,-118)">
-          <circle class="grape" r="10"/>
-          <g class="tooltip">
-            <rect width="100" height="100"/>
-            <text>foo</text>
-          </g>
-        </g>
-        <g class="experiment" transform="translate(-23,-107)">
-          <circle class="grape" r="8"/>
-          <g class="tooltip">
-            <rect width="100" height="100"/>
-            <text>foo</text>
-          </g>
-        </g>
-        <g class="experiment" transform="translate(25,-103)">
-          <circle class="grape" r="12"/>
-          <g class="tooltip">
-            <rect width="100" height="100"/>
-            <text>foo</text>
-          </g>
-        </g>
-        <g class="experiment" transform="translate(-6,-102)">
-          <circle class="grape" r="7"/>
-          <g class="tooltip">
-            <rect width="100" height="100"/>
-            <text>foo</text>
-          </g>
-        </g>
-      </g>
-    </g>
-
-    <g class="group tooltips" transform="translate(400,250)">
-      <g>
-        <g class="experiment" transform="translate(5,-88)">
-          <circle class="grape" r="10"/>
-          <g class="tooltip">
-            <rect width="100" height="100"/>
-            <text>foo</text>
-          </g>
-        </g>
-        <g class="experiment" transform="translate(-23,-77)">
-          <circle class="grape" r="8"/>
-          <g class="tooltip">
-            <rect width="100" height="100"/>
-            <text>foo</text>
-          </g>
-        </g>
-        <g class="experiment" transform="translate(25,-73)">
-          <circle class="grape" r="12"/>
-          <g class="tooltip">
-            <rect width="100" height="100"/>
-            <text>foo</text>
-          </g>
-        </g>
-        <g class="experiment" transform="translate(-6,-72)">
-          <circle class="grape" r="7"/>
-          <g class="tooltip">
-            <rect width="100" height="100"/>
-            <text>foo</text>
-          </g>
-        </g>
-      </g>
-    </g>
-
-    <template class="experiment">
-      <g class="experiment"><!-- should get transform="translate(padding,currY++)" -->
-        <text class="expname">error</text>
-        <text class="or">err</text>
-        <text class="lcl">err,</text>
-        <text class="ucl">err</text>
-        <text class="wt">err</text>
-        <g class="rowgraph">
-          <line class="confidenceinterval"/><!-- should get x1="lcl" x2="ucl" -->
-          <rect class="weightbox"/><!-- should get x="or" width="wt" height="wt" -->
+    <template class="group-grapes">
+      <g class="group"><!-- should get  transform="translate(groupx,550)" -->
+        <g>
+          <line class="guideline" x1="-142.5" x2="142.5"/><!-- should get y1="-110" y2="-110" -->
+          <line class="trunk" x1="0" x2="0" y2="520"/>
+          <text class="label">label</text><!-- should be filled -->
+          <!-- should get some grapes -->
+          <template class="group-grapes-grape">
+            <circle class="experiment grape"/><!-- should get  r="radius" transform="translate(x,getY(or))" -->
+          </template>
         </g>
       </g>
     </template>
 
+    <template class="group-tooltips">
+      <g class="group tooltips"><!-- should get  transform="translate(groupx,550)" -->
+        <g>
+          <template class="group-tooltips-grape">
+            <g class="experiment"><!-- should get transform="translate(x,getY(or))" -->
+              <circle class="grape"/><!-- should get  r="radius" -->
+              <g class="tooltip">
+                <rect height="103"/><!-- should get width="bounding box width"-->
+                <text class="paper">Szpitalak &amp; Polczyk (2010)</text><!-- should be filled -->
+                <text class="exp  ">Exp. 1 high involvement Note 4</text><!-- should be filled -->
+                <text class="or   ">3.10</text><!-- should be filled -->
+                <text class="wt   ">7.75%</text><!-- should be filled -->
+                <text class="ci   ">1.30, 7.37</text><!-- should be filled -->
+                <text class="_or  ">OR:</text>
+                <text class="_wt  ">Wt:</text>
+                <text class="_ci  ">95% CI:</text>
+              </g>
+            </g>
+          </template>
+        </g>
+      </g>
+    </template>
   </svg>
 </template>
 
