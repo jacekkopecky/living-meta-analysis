@@ -1486,10 +1486,10 @@
       perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return acc+line.or*line.wt;}, 0) / perGroup[dataGroup[0].group].wt;
     });
 
-    console.log(JSON.stringify(perGroup));
-
     // todo highlight the current experiment in forest plot and in grape chart
 
+    // set chart width based on number of groups
+    plotEl.setAttribute('width', parseInt(plotEl.dataset.zeroGroupsWidth) + groups.length * parseInt(plotEl.dataset.groupSpacing));
 
     var minWt = data[0].wt;
     var maxWt = data[0].wt;
@@ -1574,12 +1574,13 @@
       groupT.parentElement.insertBefore(groupEl, groupT);
       groupTooltipsT.parentElement.insertBefore(groupTooltipsEl,groupTooltipsT);
 
-      groupEl.setAttribute('transform', 'translate(' + (+plotEl.dataset.firstGroup + plotEl.dataset.groupSpacing*index) + ',550)');
-      groupTooltipsEl.setAttribute('transform', 'translate(' + (+plotEl.dataset.firstGroup + plotEl.dataset.groupSpacing*index) + ',550)');
+      groupEl.setAttribute('transform', 'translate(' + (+plotEl.dataset.firstGroup + plotEl.dataset.groupSpacing*index) + ',0)');
+      groupTooltipsEl.setAttribute('transform', 'translate(' + (+plotEl.dataset.firstGroup + plotEl.dataset.groupSpacing*index) + ',0)');
 
       _.fillEls(groupEl, 'text.label', group);
-      _.setAttrs(groupEl, '.guideline', 'y1', getY(perGroup[group].or));
-      _.setAttrs(groupEl, '.guideline', 'y2', getY(perGroup[group].or));
+      _.setAttrs(groupEl, 'g.guideline', 'transform', 'translate(0,' + getY(perGroup[group].or) + ')');
+
+      if (index === 0) groupEl.classList.add('with-legend');
 
       var grapeT = _.findEl(groupEl, 'template.group-grapes-grape');
       var tooltipT = _.findEl(groupTooltipsEl, 'template.group-tooltips-grape');
@@ -1638,13 +1639,20 @@
       startingTick += 1;
     }
 
-    plotEl.onclick = function() {
-      sortingStrategy = (sortingStrategy + 1 ) % sortingStrategies.length;
+    plotEl.onclick = function(e) {
+      if (!e.shiftKey) {
+        sortingStrategy = (sortingStrategy + 1 ) % sortingStrategies.length;
+        console.log('current sorting strategy: ' + sortingStrategyNames[sortingStrategy]);
+      } else {
+        grapeDistance = grapeDistance + (e.altKey ? -.5 : .5);
+        console.log('current grape distance adjustment: ' + grapeDistance);
+      }
       drawGrapeChart();
     }
   }
 
-  var sortingStrategy = 0;
+  var grapeDistance = 0;
+  var sortingStrategy = 2;
   var sortingStrategies = [
     // start from the top:              a.y - b.y
     function (a,b) { return a.y - b.y; },
@@ -1654,6 +1662,12 @@
     function (a,b) { return b.r - a.r; },
     // start from the smallest grapes:  a.r - b.r
     function (a,b) { return a.r - b.r; },
+  ];
+  var sortingStrategyNames = [
+    'start from the top',
+    'start from the bottom',
+    'start from the biggest grapes',
+    'start from the smallest grapes',
   ];
 
   var positionedGrapes;
@@ -1667,6 +1681,7 @@
   }
 
   function precomputePosition(index, y, r) {
+    r += grapeDistance;
     positionedGrapes.ybounds.add(y-r, y+r);
     positionedGrapes.pre[index] = positionedGrapes.sorted[index] = { index: index, y: y, r: r };
   }

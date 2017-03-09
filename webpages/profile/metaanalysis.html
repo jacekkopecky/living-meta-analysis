@@ -649,18 +649,11 @@
     width="800"
     height="600"
     version="1.1"
-    data-line-height="30"
-    data-font-size="20"
-    data-padding="10"
-    data-zero-line-height2="115"
-    data-start-height="50"
-    data-end-height="65"
-    data-extra-line-len="-10"
-
+    data-zero-groups-width="70"
     data-graph-height="500"
     data-min-grape-size="7"
     data-max-grape-size="14"
-    data-first-group="250"
+    data-first-group="210"
     data-group-spacing="300"
     data-grape-spacing="1.5"
     data-tooltip-padding="20"
@@ -683,7 +676,7 @@
         text-anchor: middle;
       }
 
-      .guideline {
+      line.guideline {
         stroke-width: 1px;
         stroke-dasharray: 5px;
         stroke-linecap: butt;
@@ -700,6 +693,10 @@
         text-anchor: end;
       }
 
+      .group > g {
+        transform: translate(0, 510px);
+      }
+
       .axes .yaxis,
       .group .trunk {
         transform: scale(1, -1);
@@ -711,7 +708,6 @@
       }
 
       .group .trunk {
-        stroke-width: 1px;
         stroke-width: 0px;
       }
 
@@ -783,9 +779,25 @@
         transform: translate(0,4px);
       }
 
+      .group:not(.with-legend) g.guideline .legend {
+        display: none;
+      }
+
+      .group g.guideline .legend text {
+        font-size: 10px;
+      }
+
+      .group g.guideline .legend text:nth-child(1) {
+        transform: translate(-137.5px,-5px)rotate(-90deg);
+      }
+
+      .group g.guideline .legend text:nth-child(2) {
+        transform: translate(-127.5px,-5px)rotate(-90deg);
+      }
+
     </style>
 
-    <g class="axes" transform="translate(100,550)">
+    <g class="axes" transform="translate(60,510)">
       <line class="yaxis" x1="0" x2="0" y2="500"/>
       <!-- should get a number of ticks -->
       <template class="tick">
@@ -795,19 +807,25 @@
         </g>
       </template>
       <text class="ylabel" transform="translate(-40,-260) rotate(-90)">odds ratio</text>
-      <g class="legend">
+      <!-- <g class="legend">
         <text x="530" y="-515">Legend:</text>
         <line class="guideline" x1="540" x2="575" y1="-490" y2="-490"/>
         <text x="580" y="-490">weighted mean</text>
-      </g>
+      </g> -->
     </g>
 
     <template class="group-grapes">
-      <g class="group"><!-- should get transform="translate(groupx,550)" -->
+      <g class="group"><!-- should get transform="translate(groupx,0)" -->
         <g>
           <line class="xaxis" x1="-150" x2="150"/>
-          <line class="guideline" x1="-142.5" x2="142.5"/><!-- should get y1="-110" y2="-110" -->
-          <line class="trunk" x1="0" x2="0" y2="520"/>
+          <g class="guideline"><!-- should get transform="translate(0,getY(group.or))"-->
+            <line class="guideline" x1="-142.5" x2="142.5"/>
+            <g class="legend">
+              <text>weighted</text>
+              <text>mean</text>
+            </g>
+          </g>
+          <line class="trunk" x1="0" x2="0" y2="500"/>
           <text class="label">label</text><!-- should be filled -->
           <!-- should get some grapes -->
           <template class="group-grapes-grape">
@@ -818,7 +836,7 @@
     </template>
 
     <template class="group-tooltips">
-      <g class="group tooltips"><!-- should get  transform="translate(groupx,550)" -->
+      <g class="group tooltips"><!-- should get  transform="translate(groupx,0)" -->
         <g>
           <template class="group-tooltips-grape">
             <g class="experiment"><!-- should get transform="translate(x,getY(or))" -->
