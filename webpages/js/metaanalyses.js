@@ -195,6 +195,14 @@
         }
       }
     });
+    self.columns = self.columns.filter(function (col) {
+      if (typeof col === 'string' && !lima.columns[col]) {
+        console.error('don\'t have column', col);
+        return false;
+      } else {
+        return true;
+      }
+    });
     renumberComputedColumns(self.columns);
 
     self.aggregates.forEach(function (aggr) {
