@@ -395,6 +395,7 @@
 
     var plotEl = _.cloneTemplate('forest-plot-template').children[0];
 
+    // get the data
     var orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
     var wtFunc = { formulaName: "weightNumber", formulaParams: params };
     var lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
@@ -516,8 +517,6 @@
       maxWt = minWt * MIN_WT_SPREAD;
     }
 
-    // todo use the area of the square
-
     // minWt = 0; // todo we can uncomment this to make all weights relative to only the maximum weight
     var minWtSize = parseInt(plotEl.dataset.minWtSize);
     // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
@@ -608,7 +607,6 @@
       startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
       startingTick += 1;
     }
-    // todo add ticks at 2,5, or maybe at 3, increments as well - make sure there are at least 3 ticks and at most 6?
 
     axesT.parentElement.insertBefore(axesEl, axesT);
 
