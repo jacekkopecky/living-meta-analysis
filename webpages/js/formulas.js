@@ -235,15 +235,27 @@
         parameters: ['values'],
       },
       {
-        id: 'forestPlotAggr',
-        label: 'Forest Plot',
-        func: forestPlotAggr,
+        id: 'forestPlotPercentAggr',
+        label: 'Forest Plot (percentages)',
+        func: forestPlotPercentAggr,
+        parameters: [ 'group 1 (e.g. experimental percentage)', 'group 1 N', 'group 2 (e.g. control percentage)', 'group 2 N' ],
+      },
+      {
+        id: 'forestPlotNumberAggr',
+        label: 'Forest Plot (numbers affected)',
+        func: forestPlotNumberAggr,
         parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ],
       },
       {
-        id: 'grapeChartAggr',
-        label: 'Grape Chart',
-        func: grapeChartAggr,
+        id: 'grapeChartPercentAggr',
+        label: 'Grape Chart (percentages)',
+        func: grapeChartPercentAggr,
+        parameters: [ 'group 1 (e.g. experimental percentage)', 'group 1 N', 'group 2 (e.g. control percentage)', 'group 2 N', 'moderator' ],
+      },
+      {
+        id: 'grapeChartNumberAggr',
+        label: 'Grape Chart (numbers affected)',
+        func: grapeChartNumberAggr,
         parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N', 'moderator' ],
       },
       // {
@@ -314,10 +326,16 @@
   }
 
   // todo this is just a placeholder
-  function forestPlotAggr () {
+  function forestPlotPercentAggr () {
     return 'see above';
   }
-  function grapeChartAggr () {
+  function grapeChartPercentAggr () {
+    return 'see above';
+  }
+  function forestPlotNumberAggr () {
+    return 'see above';
+  }
+  function grapeChartNumberAggr () {
     return 'see above';
   }
 

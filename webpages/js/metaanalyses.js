@@ -375,17 +375,30 @@
     //     lcl
     //     ucl
 
+    var orFunc, wtFunc, lclFunc, uclFunc, params;
+
     // todo the plot should be associated with its parameters differently, not through an aggregate
     // todo there should be the possibility to have more forest plots
-    var params;
     for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
-      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotNumberAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
         params = currentMetaanalysis.aggregates[i].formulaParams;
+        orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
+        wtFunc = { formulaName: "weightNumber", formulaParams: params };
+        lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
+        uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: params };
+        break;
+      }
+      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotPercentAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+        params = currentMetaanalysis.aggregates[i].formulaParams;
+        orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [params[0], params[2]] };
+        wtFunc = { formulaName: "weightPercent", formulaParams: params };
+        lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: params };
+        uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: params };
         break;
       }
     }
 
-    if (!params) {
+    if (i === currentMetaanalysis.aggregates.length) {
       // we don't have any parameters for the forestPlot
       return;
     }
@@ -396,11 +409,6 @@
     var plotEl = _.cloneTemplate('forest-plot-template').children[0];
 
     // get the data
-    var orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
-    var wtFunc = { formulaName: "weightNumber", formulaParams: params };
-    var lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
-    var uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: params };
-
     orFunc.formula = lima.createFormulaString(orFunc);
     wtFunc.formula = lima.createFormulaString(wtFunc);
     lclFunc.formula = lima.createFormulaString(lclFunc);
@@ -633,15 +641,32 @@
     //     lcl
     //     ucl
 
-    var params;
+    var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params, dataParams;
+
     for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
-      if (currentMetaanalysis.aggregates[i].formulaName === 'grapeChartAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+      if (currentMetaanalysis.aggregates[i].formulaName === 'grapeChartNumberAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
         params = currentMetaanalysis.aggregates[i].formulaParams;
+        dataParams = params.slice(0, 4); // the first param is for grouping
+        orFunc = { formulaName: "logOddsRatioNumber", formulaParams: dataParams };
+        wtFunc = { formulaName: "weightNumber", formulaParams: dataParams };
+        lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: dataParams };
+        uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: dataParams };
+        moderatorParam = params[4];
+        break;
+      }
+      if (currentMetaanalysis.aggregates[i].formulaName === 'grapeChartPercentAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+        params = currentMetaanalysis.aggregates[i].formulaParams;
+        dataParams = params.slice(0, 4); // the first param is for grouping
+        orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [dataParams[0], dataParams[2]] };
+        wtFunc = { formulaName: "weightPercent", formulaParams: dataParams };
+        lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: dataParams };
+        uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: dataParams };
+        moderatorParam = params[4];
         break;
       }
     }
 
-    if (!params) {
+    if (i === currentMetaanalysis.aggregates.length) {
       // we don't have any parameters for the grapeChart
       return;
     }
@@ -652,13 +677,6 @@
     var plotEl = _.cloneTemplate('grape-plot-template').children[0];
 
     // get the data
-    var dataParams = params.slice(0, 4); // the first param is for grouping
-    var orFunc = { formulaName: "logOddsRatioNumber", formulaParams: dataParams };
-    var wtFunc = { formulaName: "weightNumber", formulaParams: dataParams };
-    var lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: dataParams };
-    var uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: dataParams };
-    var moderatorParam = params[4];
-
     orFunc.formula = lima.createFormulaString(orFunc);
     wtFunc.formula = lima.createFormulaString(wtFunc);
     lclFunc.formula = lima.createFormulaString(lclFunc);
