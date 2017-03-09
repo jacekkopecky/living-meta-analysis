@@ -133,7 +133,12 @@
         gauth.currentUser.listen(onSignIn);
         _.findEls('a.signout').forEach(function (el){el.addEventListener('click', signOut)});
         if (gauth.isSignedIn.get()) onSignIn(gauth.currentUser.get());
-        if (lima.initPage) lima.initPage();
+        try {
+          if (lima.initPage) lima.initPage();
+        } catch (e) {
+          console.error(e);
+          _.apiFail();
+        }
       },
       function (err) {
         console.log('failed getting gapi auth instance');
