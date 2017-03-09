@@ -715,7 +715,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Bodner et al. (2009), Exps. 1&amp;2 (co-witness paradigm) Notes 1, 6',
+        paper: 'Bodner et al. (2009), Exps. 1&2 (co-witness paradigm) Notes 1, 6',
         exp: 'not titled',
         group: "warning",
         or: 1.30184053,
@@ -724,7 +724,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Bodner et al. (2009), Exps. 1&amp;2 (co-witness paradigm) Notes 1, 6',
+        paper: 'Bodner et al. (2009), Exps. 1&2 (co-witness paradigm) Notes 1, 6',
         exp: 'not titled',
         group: "no warning",
         or: 2.860518795,
@@ -733,7 +733,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Bodner et al. (2009), Exps. 1&amp;2 (stand. misinfo paradigm) Notes 1, 7',
+        paper: 'Bodner et al. (2009), Exps. 1&2 (stand. misinfo paradigm) Notes 1, 7',
         exp: 'not titled',
         group: "warning",
         or: 0.872299163,
@@ -742,7 +742,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Bodner et al. (2009), Exps. 1&amp;2 (stand. misinfo paradigm) Notes 1, 7',
+        paper: 'Bodner et al. (2009), Exps. 1&2 (stand. misinfo paradigm) Notes 1, 7',
         exp: 'not titled',
         group: "no warning",
         or: 2.157219243,
@@ -751,7 +751,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Christiaansen &amp; Ochalek (1983), Exp. 1 (delayed warning: 45min afer PEI) Note 10',
+        paper: 'Christiaansen & Ochalek (1983), Exp. 1 (delayed warning: 45min afer PEI) Note 10',
         exp: 'not titled',
         group: "warning",
         or: 0,
@@ -760,7 +760,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Christiaansen &amp; Ochalek (1983), Exp. 1 (delayed warning: 45min afer PEI) Note 10',
+        paper: 'Christiaansen & Ochalek (1983), Exp. 1 (delayed warning: 45min afer PEI) Note 10',
         exp: 'not titled',
         group: "no warning",
         or: 3.308404356,
@@ -769,7 +769,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Christiaansen &amp; Ochalek (1983), Exp. 2 (delayed warning: 30min afer PEI)',
+        paper: 'Christiaansen & Ochalek (1983), Exp. 2 (delayed warning: 30min afer PEI)',
         exp: 'not titled',
         group: "warning",
         or: 0.633627491,
@@ -778,7 +778,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Christiaansen &amp; Ochalek (1983), Exp. 2 (delayed warning: 30min afer PEI)',
+        paper: 'Christiaansen & Ochalek (1983), Exp. 2 (delayed warning: 30min afer PEI)',
         exp: 'not titled',
         group: "no warning",
         or: 1.799740358,
@@ -967,7 +967,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Frost et al. (2002), Exps. 1&amp;2 (placement of the warning: 10min after PEI) Note 11',
+        paper: 'Frost et al. (2002), Exps. 1&2 (placement of the warning: 10min after PEI) Note 11',
         exp: 'not titled',
         group: "warning",
         or: 2.564949357,
@@ -976,7 +976,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Frost et al. (2002), Exps. 1&amp;2 (placement of the warning: 10min after PEI) Note 11',
+        paper: 'Frost et al. (2002), Exps. 1&2 (placement of the warning: 10min after PEI) Note 11',
         exp: 'not titled',
         group: "no warning",
         or: 2.816263786,
@@ -985,7 +985,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Frost et al. (2002), Exps. 1&amp;2 (placement of the warning: 1week after PEI) Note 11',
+        paper: 'Frost et al. (2002), Exps. 1&2 (placement of the warning: 1week after PEI) Note 11',
         exp: 'not titled',
         group: "warning",
         or: 3.044522438,
@@ -994,7 +994,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Frost et al. (2002), Exps. 1&amp;2 (placement of the warning: 1week after PEI) Note 11',
+        paper: 'Frost et al. (2002), Exps. 1&2 (placement of the warning: 1week after PEI) Note 11',
         exp: 'not titled',
         group: "no warning",
         or: 3.174013421,
@@ -1003,7 +1003,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Highhouse &amp; Bottrill (1995) Note 2',
+        paper: 'Highhouse & Bottrill (1995) Note 2',
         exp: 'not titled',
         group: "warning",
         or: 0.162430742,
@@ -1012,7 +1012,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Highhouse &amp; Bottrill (1995) Note 2',
+        paper: 'Highhouse & Bottrill (1995) Note 2',
         exp: 'not titled',
         group: "no warning",
         or: 1.425284614,
@@ -1093,7 +1093,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Meade &amp; Roediger (2002), Exp. 1 Note 3',
+        paper: 'Meade & Roediger (2002), Exp. 1 Note 3',
         exp: 'not titled',
         group: "warning",
         or: 1.222365491,
@@ -1102,7 +1102,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Meade &amp; Roediger (2002), Exp. 1 Note 3',
+        paper: 'Meade & Roediger (2002), Exp. 1 Note 3',
         exp: 'not titled',
         group: "no warning",
         or: 2.090795114,
@@ -1111,7 +1111,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Oeberst &amp; Blank (2012), Exp. 2',
+        paper: 'Oeberst & Blank (2012), Exp. 2',
         exp: 'not titled',
         group: "warning",
         or: -0.148973792,
@@ -1120,7 +1120,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Oeberst &amp; Blank (2012), Exp. 2',
+        paper: 'Oeberst & Blank (2012), Exp. 2',
         exp: 'not titled',
         group: "no warning",
         or: 0.917793362,
@@ -1129,7 +1129,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Paterson &amp; Kemp (2009), Exp. 1 Note 8',
+        paper: 'Paterson & Kemp (2009), Exp. 1 Note 8',
         exp: 'not titled',
         group: "warning",
         or: 1.034203714,
@@ -1138,7 +1138,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Paterson &amp; Kemp (2009), Exp. 1 Note 8',
+        paper: 'Paterson & Kemp (2009), Exp. 1 Note 8',
         exp: 'not titled',
         group: "no warning",
         or: 0.965683767,
@@ -1147,7 +1147,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Paterson &amp; Kemp (2009), Exp. 2 ("delayed warning") Note 8',
+        paper: 'Paterson & Kemp (2009), Exp. 2 ("delayed warning") Note 8',
         exp: 'not titled',
         group: "warning",
         or: 2.422097381,
@@ -1156,7 +1156,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Paterson &amp; Kemp (2009), Exp. 2 ("delayed warning") Note 8',
+        paper: 'Paterson & Kemp (2009), Exp. 2 ("delayed warning") Note 8',
         exp: 'not titled',
         group: "no warning",
         or: 2.057672697,
@@ -1165,7 +1165,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Paterson, Kemp, &amp; McIntyre (2012), Exp. 1 ("specific warning")',
+        paper: 'Paterson, Kemp, & McIntyre (2012), Exp. 1 ("specific warning")',
         exp: 'not titled',
         group: "warning",
         or: 2.794582895,
@@ -1174,7 +1174,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Paterson, Kemp, &amp; McIntyre (2012), Exp. 1 ("specific warning")',
+        paper: 'Paterson, Kemp, & McIntyre (2012), Exp. 1 ("specific warning")',
         exp: 'not titled',
         group: "no warning",
         or: 2.5407747,
@@ -1183,7 +1183,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Paterson, Kemp, &amp; McIntyre (2012), Exp. 2 ',
+        paper: 'Paterson, Kemp, & McIntyre (2012), Exp. 2 ',
         exp: 'not titled',
         group: "warning",
         or: 2.60183907,
@@ -1192,7 +1192,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Paterson, Kemp, &amp; McIntyre (2012), Exp. 2 ',
+        paper: 'Paterson, Kemp, & McIntyre (2012), Exp. 2 ',
         exp: 'not titled',
         group: "no warning",
         or: 2.819868692,
@@ -1201,7 +1201,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Price &amp; Connolly (2004), "repeated event"',
+        paper: 'Price & Connolly (2004), "repeated event"',
         exp: 'not titled',
         group: "warning",
         or: 0.081744836,
@@ -1210,7 +1210,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Price &amp; Connolly (2004), "repeated event"',
+        paper: 'Price & Connolly (2004), "repeated event"',
         exp: 'not titled',
         group: "no warning",
         or: 0.524524468,
@@ -1219,7 +1219,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Price &amp; Connolly (2004), "single event"',
+        paper: 'Price & Connolly (2004), "single event"',
         exp: 'not titled',
         group: "warning",
         or: 0.836771447,
@@ -1228,7 +1228,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Price &amp; Connolly (2004), "single event"',
+        paper: 'Price & Connolly (2004), "single event"',
         exp: 'not titled',
         group: "no warning",
         or: -0.547463952,
@@ -1309,7 +1309,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Szpitalak &amp; Polczyk (2010), Exp. 1 high involvement Note 4',
+        paper: 'Szpitalak & Polczyk (2010), Exp. 1 high involvement Note 4',
         exp: 'not titled',
         group: "warning",
         or: -0.371559763,
@@ -1318,7 +1318,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Szpitalak &amp; Polczyk (2010), Exp. 1 high involvement Note 4',
+        paper: 'Szpitalak & Polczyk (2010), Exp. 1 high involvement Note 4',
         exp: 'not titled',
         group: "no warning",
         or: 1.131062098,
@@ -1327,7 +1327,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Szpitalak &amp; Polczyk (2010), Exp. 1 low involvement Note 4',
+        paper: 'Szpitalak & Polczyk (2010), Exp. 1 low involvement Note 4',
         exp: 'not titled',
         group: "warning",
         or: 0.664009361,
@@ -1336,7 +1336,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Szpitalak &amp; Polczyk (2010), Exp. 1 low involvement Note 4',
+        paper: 'Szpitalak & Polczyk (2010), Exp. 1 low involvement Note 4',
         exp: 'not titled',
         group: "no warning",
         or: 0.414048852,
@@ -1345,7 +1345,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Szpitalak &amp; Polczyk (2011)',
+        paper: 'Szpitalak & Polczyk (2011)',
         exp: 'not titled',
         group: "warning",
         or: 0.179051026,
@@ -1354,7 +1354,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Szpitalak &amp; Polczyk (2011)',
+        paper: 'Szpitalak & Polczyk (2011)',
         exp: 'not titled',
         group: "no warning",
         or: 1.257284923,
@@ -1453,7 +1453,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Zaragoza &amp; Lane (1994), Exp. 4 ("explicit-warning")',
+        paper: 'Zaragoza & Lane (1994), Exp. 4 ("explicit-warning")',
         exp: 'not titled',
         group: "warning",
         or: 1.115561847,
@@ -1462,7 +1462,7 @@
         ucl: 2.222222222,
       },
       {
-        paper: 'Zaragoza &amp; Lane (1994), Exp. 4 ("explicit-warning")',
+        paper: 'Zaragoza & Lane (1994), Exp. 4 ("explicit-warning")',
         exp: 'not titled',
         group: "no warning",
         or: 0.810930216,
