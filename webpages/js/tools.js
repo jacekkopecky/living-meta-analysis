@@ -287,6 +287,102 @@
     return true;
   }
 
+  /* bounds arrays
+   *
+   *
+   *   #####   ####  #    # #    # #####   ####       ##   #####  #####    ##   #   #  ####
+   *   #    # #    # #    # ##   # #    # #          #  #  #    # #    #  #  #   # #  #
+   *   #####  #    # #    # # #  # #    #  ####     #    # #    # #    # #    #   #    ####
+   *   #    # #    # #    # #  # # #    #      #    ###### #####  #####  ######   #        #
+   *   #    # #    # #    # #   ## #    # #    #    #    # #   #  #   #  #    #   #   #    #
+   *   #####   ####   ####  #    # #####   ####     #    # #    # #    # #    #   #    ####
+   *
+   *
+   */
+
+  _.Bounds = function() {
+    if (this == null) return new _.Bounds();
+
+    this.limits = [];
+  }
+
+  _.Bounds.prototype.add = function(min, max) {
+    for (var i=0; i<this.limits.length; i+=1) {
+      if (max < this.limits[i].min) {
+        // this bound fits wholly before the next bound, insert it
+        this.limits.splice(i, 0, { min: min, max: max});
+        break;
+      } else if (min <= this.limits[i].max) {
+        // this bound overlaps the next one, merge them
+        this.limits[i].min = Math.min(min, this.limits[i].min);
+        this.limits[i].max = Math.max(max, this.limits[i].max);
+
+        // merge subsequent bounds if they now overlap with the current one
+        while (i<this.limits.length-1 && this.limits[i+1].min <= this.limits[i].max) {
+          this.limits[i].max = Math.max(this.limits[i].max, this.limits[i+1].max);
+          this.limits.splice(i+1, 1);
+        }
+        break;
+      }
+      // else this bound comes later, loop
+    }
+    // if we didn't break above, the current bound is the last one
+    if (i == this.limits.length) this.limits.push({ min: min, max: max });
+  }
+
+  _.Bounds.prototype.isEmpty = function() {
+    return !this.limits.length;
+  }
+
+  _.Bounds.prototype.getNearestOutsideValue = function(val) {
+    // choose the value outside of the given bounds that's closest to the given val
+
+    // find the first bounds that ends after val
+    for (var i=0; i<this.limits.length; i+=1) {
+      if (this.limits[i].max > val) break;
+    }
+
+    // no bounds end after val
+    if (i == this.limits.length) {
+      return val;
+    }
+
+    // the first bounds that ends after val also start after val
+    if (this.limits[i].min >= val) {
+      return val;
+    }
+
+    // the found bounds contains val, get the nearer edge
+    var d1 = val - this.limits[i].min;
+    var d2 = this.limits[i].max - val;
+
+    if (d1 < d2) {
+      return this.limits[i].min;
+    } else {
+      return this.limits[i].max;
+    }
+  }
+
+  // find the index of the bounds that contains val, or -1 if no bounds contains val
+  _.Bounds.prototype.indexOf = function(val) {
+    // find the first bounds that ends after val
+    for (var i=0; i<this.limits.length; i+=1) {
+      if (this.limits[i].max >= val) break;
+    }
+
+    // no bounds end after val
+    if (i == this.limits.length) {
+      return -1;
+    }
+
+    // the first bounds that ends after val also start after val
+    if (this.limits[i].min > val) {
+      return -1;
+    }
+
+    return i;
+  }
+
   /* input validation
    *
    *
@@ -729,5 +825,119 @@
       return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
     }
   });
+
+  /* tests
+   *
+   *
+   *   ##### ######  ####  #####  ####
+   *     #   #      #        #   #
+   *     #   #####   ####    #    ####
+   *     #   #           #   #        #
+   *     #   #      #    #   #   #    #
+   *     #   ######  ####    #    ####
+   *
+   *
+   */
+
+  _.addTest(function testBounds(assert) {
+    var b = new _.Bounds();
+
+    assert(b.limits);
+    assert(b.isEmpty());
+
+    assert(b.getNearestOutsideValue(0) == 0);
+    assert(b.getNearestOutsideValue(.9) == .9);
+    assert(b.getNearestOutsideValue(1) == 1);
+    assert(b.getNearestOutsideValue(1.1) == 1.1);
+
+    assert(b.indexOf(0) == -1);
+    assert(b.indexOf(1) == -1);
+    assert(b.indexOf(1.1) == -1);
+    assert(b.indexOf(1.9) == -1);
+    assert(b.indexOf(2) == -1);
+    assert(b.indexOf(3.5) == -1);
+    assert(b.indexOf(4.1) == -1);
+
+    b.add(1,2);
+    assert(!b.isEmpty());
+
+    assert(b.getNearestOutsideValue(0) == 0);
+    assert(b.getNearestOutsideValue(.9) == .9);
+    assert(b.getNearestOutsideValue(1) == 1);
+    assert(b.getNearestOutsideValue(1.1) == 1);
+
+    assert(b.indexOf(0) == -1);
+    assert(b.indexOf(1) == 0);
+    assert(b.indexOf(1.1) == 0);
+    assert(b.indexOf(1.9) == 0);
+    assert(b.indexOf(2) == 0);
+    assert(b.indexOf(3.5) == -1);
+    assert(b.indexOf(4.1) == -1);
+
+    b.add(3,4);
+    assert(!b.isEmpty());
+
+    assert(b.indexOf(0) == -1);
+    assert(b.indexOf(1) == 0);
+    assert(b.indexOf(1.1) == 0);
+    assert(b.indexOf(1.9) == 0);
+    assert(b.indexOf(2) == 0);
+    assert(b.indexOf(3.5) == 1);
+    assert(b.indexOf(4.1) == -1);
+
+    assert(b.getNearestOutsideValue(0) == 0);
+    assert(b.getNearestOutsideValue(.9) == .9);
+    assert(b.getNearestOutsideValue(1) == 1);
+    assert(b.getNearestOutsideValue(1.1) == 1);
+    assert(b.getNearestOutsideValue(1.4) == 1);
+    assert(b.getNearestOutsideValue(1.6) == 2);
+    assert(b.getNearestOutsideValue(2) == 2);
+    assert(b.getNearestOutsideValue(2.6) == 2.6);
+    assert(b.getNearestOutsideValue(3.6) == 4);
+
+    var old = JSON.stringify(b.limits);
+    b.add(3,4);
+    assert(JSON.stringify(b.limits) == old);
+
+    b.add(3.2,4);
+    assert(JSON.stringify(b.limits) == old);
+
+    b.add(3.2,4.4);
+    assert(JSON.stringify(b.limits) != old);
+
+    assert(b.getNearestOutsideValue(0) == 0);
+    assert(b.getNearestOutsideValue(3.6) == 3);
+    assert(b.getNearestOutsideValue(3.8) == 4.4);
+
+    assert(b.indexOf(0) == -1);
+    assert(b.indexOf(1) == 0);
+    assert(b.indexOf(1.1) == 0);
+    assert(b.indexOf(1.9) == 0);
+    assert(b.indexOf(2) == 0);
+    assert(b.indexOf(3.5) == 1);
+    assert(b.indexOf(4.1) == 1);
+
+    b.add(-.3,.4);
+    assert(b.getNearestOutsideValue(0) == -.3);
+    assert(b.getNearestOutsideValue(.2) == .4);
+    assert(b.getNearestOutsideValue(3.6) == 3);
+    assert(b.getNearestOutsideValue(3.8) == 4.4);
+
+    assert(b.limits.length == 3);
+
+    b.add(2,2.5);
+
+    assert(b.limits.length == 3);
+
+    assert(b.indexOf(0) == 0);
+    assert(b.indexOf(1) == 1);
+    assert(b.indexOf(1.1) == 1);
+    assert(b.indexOf(1.9) == 1);
+    assert(b.indexOf(2) == 1);
+    assert(b.indexOf(3.5) == 2);
+    assert(b.indexOf(4.1) == 2);
+
+  });
+
 
 })(document, window);

@@ -38,7 +38,14 @@
 <script src="/js/metaanalyses.js"></script>
 <script src="/js/version.js"></script>
 <script>
+window.testoutput.textContent = 'waiting...\nif this takes long, see console output';
 window.lima.initPage = function () {
-  _.runTests();
+  window.testoutput.textContent = 'testing\n';
+  try {
+    _.runTests();
+  } catch(e) {
+    console.error(e);
+    window.testoutput.textContent += 'error, see console output\n';
+  }
 };
 </script>
