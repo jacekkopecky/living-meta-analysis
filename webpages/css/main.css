@@ -1061,6 +1061,26 @@ body:not(.page-about-you).signed-on #paper > header .edityourcopy {
   display: inline-block;
 }
 
+#metaanalysis table.experiments th.papertitle > div > .exclude,
+#metaanalysis table.experiments th.experimenttitle > div > .exclude {
+  display:none;
+}
+
+#metaanalysis table.experiments th.papertitle:hover > div > .exclude,
+#metaanalysis table.experiments th.experimenttitle:hover > div > .exclude{
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  margin-right: .3em;
+}
+
+#metaanalysis table.experiments tr.papexcluded th > *:not(.popupbox),
+#metaanalysis table.experiments tr.excluded th:not(.papertitle) > *:not(.popupbox),
+#metaanalysis table.experiments tr.excluded td > *:not(.popupbox){
+  color: grey;
+  font-style: italic;
+}
+
 #metaanalysis .unhide {
   display: none;
 }

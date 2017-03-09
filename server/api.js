@@ -419,6 +419,7 @@ function extractMetaanalysisForSending(storageMetaanalysis, includePapers, email
     paperOrder: storageMetaanalysis.paperOrder,
     hiddenCols: storageMetaanalysis.hiddenCols,
     hiddenExperiments: storageMetaanalysis.hiddenExperiments,
+    excludedExperiments: storageMetaanalysis.excludedExperiments,
     aggregates: storageMetaanalysis.aggregates,
     // todo comments in various places?
   };
@@ -436,19 +437,20 @@ function extractMetaanalysisForSending(storageMetaanalysis, includePapers, email
 function extractReceivedMetaanalysis(receivedMetaanalysis) {
   // expecting receivedMetaanalysis to come from JSON.parse()
   const retval = {
-    id:                tools.string(receivedMetaanalysis.id),        // identifies the MA to be changed
-    title:             tools.string(receivedMetaanalysis.title),
-    CHECKenteredBy:    tools.string(receivedMetaanalysis.enteredBy), // can't be changed but should be checked
-    CHECKctime:        tools.number(receivedMetaanalysis.ctime),     // can't be changed but should be checked
+    id:                  tools.string(receivedMetaanalysis.id),        // identifies the MA to be changed
+    title:               tools.string(receivedMetaanalysis.title),
+    CHECKenteredBy:      tools.string(receivedMetaanalysis.enteredBy), // can't be changed but should be checked
+    CHECKctime:          tools.number(receivedMetaanalysis.ctime),     // can't be changed but should be checked
     // mtime: tools.number(receivedMetaanalysis.mtime),              // will be updated
-    published:         tools.string(receivedMetaanalysis.published),
-    description:       tools.string(receivedMetaanalysis.description),
-    tags:              tools.array(receivedMetaanalysis.tags, tools.string),
-    columns:           tools.array(receivedMetaanalysis.columns, extractReceivedColumnEntry),
-    paperOrder:        tools.array(receivedMetaanalysis.paperOrder, tools.string),
-    hiddenCols:        tools.array(receivedMetaanalysis.hiddenCols, tools.string),
-    hiddenExperiments: tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
-    aggregates:        tools.array(receivedMetaanalysis.aggregates, extractReceivedAggregate),
+    published:           tools.string(receivedMetaanalysis.published),
+    description:         tools.string(receivedMetaanalysis.description),
+    tags:                tools.array(receivedMetaanalysis.tags, tools.string),
+    columns:             tools.array(receivedMetaanalysis.columns, extractReceivedColumnEntry),
+    paperOrder:          tools.array(receivedMetaanalysis.paperOrder, tools.string),
+    hiddenCols:          tools.array(receivedMetaanalysis.hiddenCols, tools.string),
+    hiddenExperiments:   tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
+    excludedExperiments: tools.array(receivedMetaanalysis.excludedExperiments, tools.string),
+    aggregates:          tools.array(receivedMetaanalysis.aggregates, extractReceivedAggregate),
   };
 
   return retval;
