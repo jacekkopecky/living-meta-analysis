@@ -91,6 +91,7 @@
     <!-- when not editing, show something for empty doi and link (or nothing at all?) -->
     <!-- todo comments -->
     <div class="experiments"></div>
+    <div class="plots"></div>
     <div class="aggregates"></div>
     <p class='no-table'>No data has been entered for this meta-analysis yet.
       <span class="only-if-page-about-you">Turn editing on to add data.</span><!-- todo instruction to clone the paper? --></p>
@@ -469,6 +470,448 @@
     <p><span class="text only-if-yours needs-owner" contenteditable placeholder="enter your comment"></span></p>
     <p><span class="text only-not-yours needs-owner"></span></p>
   </div>
+</template>
+<template id="forest-plot-template">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    width="800"
+    height="200"
+    version="1.1"
+    data-line-height="30"
+    data-padding="10"
+    data-graph-width="300"
+    data-start-height="50"
+    data-end-height="65"
+    data-min-wt-size="4"
+    data-max-wt-size="14"
+    data-extra-line-len="-10"
+    data-min-diamond-width="14"
+    >
+    <style>
+      svg {
+        stroke-width: 2px;
+        fill: white;
+        stroke: black;
+        stroke-linecap: butt;
+        stroke-linejoin: miter;
+        font-size: 14px;
+        font-family: "Arial", sans-serif;
+      }
+
+      text {
+        stroke-width: 0;
+        fill: black;
+        text-anchor: middle;
+      }
+
+      .headings text.or,
+      .experiment text.or,
+      .summary text.or {
+        transform: translate(610px,20px);
+      }
+      .headings text.lcl,
+      .experiment text.lcl,
+      .summary text.lcl {
+        text-anchor: end;
+        transform: translate(690px,20px);
+      }
+      .headings text.ucl,
+      .experiment text.ucl,
+      .summary text.ucl {
+        text-anchor: start;
+        transform: translate(695px,20px);
+      }
+      .headings text.wt,
+      .experiment text.wt,
+      .summary text.wt {
+        transform: translate(780px,20px);
+        text-anchor: end;
+      }
+
+      .experiment .expname {
+        text-anchor: start;
+        transform: translate(0,20px);
+      }
+
+      .experiment .rowgraph {
+        transform: translate(280px,0);
+      }
+
+      .experiment .rowgraph .confidenceinterval {
+        transform: translate(0,15px);
+      }
+
+      .experiment .rowgraph .weightbox {
+        transform: translate(-50%,-50%) translate(0,15px);
+        fill: black;
+      }
+
+      .summary > g {
+        transform: translate(0, 20px);
+      }
+
+      .summary .sumname {
+        text-anchor: start;
+        transform: translate(0,20px);
+      }
+
+      .summary .sumgraph {
+        transform: translate(280px,0);
+      }
+
+      .summary .sumgraph .confidenceinterval {
+        transform: translate(0,15px);
+      }
+
+      .summary .guideline {
+        stroke-width: 1px;
+        transform: translate(280px,42.5px) scale(1,-1);
+        stroke-dasharray: 5px;
+        stroke-linecap: butt;
+      }
+
+      .axes > g {
+        transform: translate(280px,32.5px);
+      }
+
+      .axes .tick text {
+        font-size: 11px;
+        transform: translate(0, 19px);
+      }
+
+      .axes .yaxis {
+        transform: translate(0px, 5px) scale(1, -1);
+      }
+
+      .positioningbutton {
+        transform: translate(495px, 17px);
+        opacity: .2;
+      }
+
+      .positioningbutton:not(:hover) line {
+        display: none;
+      }
+
+      .positioningbutton:hover {
+        opacity: 1;
+        cursor: pointer;
+      }
+
+      .positioningbutton line {
+        stroke-width: 1.5px;
+      }
+    </style>
+
+    <g transform="translate(10,0)" class="headings">
+      <text class="or">OR</text>
+      <text class="lcl">LCL,</text>
+      <text class="ucl">UCL</text>
+      <text class="wt">WT</text>
+    </g>
+
+    <template class="experiment">
+      <g class="experiment"><!-- should get transform="translate(padding,currY++)" -->
+        <text class="expname">error</text>
+        <text class="or">err</text>
+        <text class="lcl">err,</text>
+        <text class="ucl">err</text>
+        <text class="wt">err</text>
+        <g class="rowgraph">
+          <line class="confidenceinterval"/><!-- should get x1="lcl" x2="ucl" -->
+          <rect class="weightbox"/><!-- should get x="or" width="wt" height="wt" -->
+        </g>
+      </g>
+    </template>
+
+    <template class="axes">
+      <g class="axes"><!-- should get transform="translate(padding,currY)" -->
+        <g>
+          <line class="yaxis"/><!-- should get x1="getX(0)" x2="getX(0)" y2="currY+parseInt(plotEl.dataset.extraLineLen)" -->
+          <line class="xaxis" x1="0" x2="300"/>
+          <!-- should get a number of ticks -->
+          <template class="tick">
+            <g class="tick"><!-- should get transform="translate(x,0)" -->
+              <line y2="5"/>
+              <text>val</text>
+            </g>
+          </template>
+          <g class="positioningbutton">
+            <circle r="8"/>
+            <line x1="-5" y1="-5" x2="5" y2="5"/>
+            <line x1="5" y1="5" x2="4" y2="0"/>
+            <line x1="5" y1="5" x2="0" y2="4"/>
+            <line x1="-5" y1="-5" x2="-4" y2="0"/>
+            <line x1="-5" y1="-5" x2="0" y2="-4"/>
+          </g>
+        </g>
+      </g>
+    </template>
+
+    <template class="summary">
+      <g class="summary"><!-- should get transform="translate(padding,currY)" -->
+        <g>
+          <text class="sumname">Total</text>
+          <text class="or">err</text>
+          <text class="lcl">err,</text>
+          <text class="ucl">err</text>
+          <line class="guideline"/><!-- should get x1="or" x2="or" y2="currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen)" -->
+          <g class="sumgraph">
+            <polygon class="confidenceinterval"/><!-- should get points="lcl,0 or,-10 ucl,0 or,10" -->
+          </g>
+        </g>
+      </g>
+    </template>
+
+  </svg>
+</template>
+<template id="grape-chart-template">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 800 550"
+    width="800"
+    height="550"
+    version="1.1"
+    data-zero-groups-width="70"
+    data-graph-height="500"
+    data-min-grape-size="7"
+    data-max-grape-size="14"
+    data-first-group="210"
+    data-group-spacing="300"
+    data-grape-spacing="1.5"
+    data-tooltip-padding="20"
+    data-tooltip-min-width="150"
+    >
+    <style>
+      svg {
+        stroke-width: 2px;
+        fill: white;
+        stroke: black;
+        stroke-linecap: butt;
+        stroke-linejoin: miter;
+        font-size: 16px;
+        font-family: "Arial", sans-serif;
+      }
+
+      text {
+        stroke-width: 0;
+        fill: black;
+        text-anchor: middle;
+      }
+
+      line.guideline {
+        stroke-width: 1px;
+        stroke-dasharray: 5px;
+        stroke-linecap: butt;
+      }
+
+      .axes .tick line {
+        font-size: 12px;
+        transform: translate(-5px, 0);
+      }
+
+      .axes .tick text {
+        font-size: 12px;
+        transform: translate(-10px, 4px);
+        text-anchor: end;
+      }
+
+      .group > g {
+        transform: translate(0, 510px);
+      }
+
+      .axes .yaxis,
+      .group .trunk {
+        transform: scale(1, -1);
+        stroke-linecap: round;
+      }
+
+      .group .xaxis {
+        stroke-linecap: round;
+      }
+
+      .group .trunk {
+        stroke-width: 0px;
+      }
+
+      .group text.label {
+        transform: translate(0, 20px);
+        text-anchor: middle;
+      }
+
+      .grape {
+        fill: #8ddce5;
+      }
+
+      .tooltips .grape {
+        fill: transparent;
+        stroke: transparent;
+        stroke-width: 3px;
+      }
+
+      .tooltips .experiment .grape:hover {
+        fill: #f0f033;
+        stroke: black;
+      }
+
+      .tooltips .experiment .grape:not(:hover) + .tooltip {
+        display: none
+      }
+
+      .tooltip {
+        transform: translate(-60px,-120px);
+      }
+
+      .tooltip.tophalf {
+        transform: translate(-60px,17px);
+      }
+
+      .tooltip text {
+        text-anchor: start;
+        font-size: 12px;
+      }
+
+      .tooltip text.paper {
+        transform: translate(10px,20px);
+      }
+      .tooltip text.exp   {
+        transform: translate(10px,38px);
+      }
+      .tooltip text._or    {
+        transform: translate(10px,56px);
+      }
+      .tooltip text.or    {
+        transform: translate(60px,56px);
+      }
+      .tooltip text._wt    {
+        transform: translate(10px,74px);
+      }
+      .tooltip text.wt    {
+        transform: translate(60px,74px);
+      }
+      .tooltip text._ci    {
+        transform: translate(10px,92px);
+      }
+      .tooltip text.ci    {
+        transform: translate(60px,92px);
+      }
+
+      .legend text {
+        text-anchor: start;
+        font-size: 14px;
+        transform: translate(0,4px);
+      }
+
+      .group:not(.with-legend) g.guideline .legend {
+        display: none;
+      }
+
+      .group g.guideline .legend text {
+        font-size: 10px;
+      }
+
+      .group g.guideline .legend text:nth-child(1) {
+        transform: translate(-137.5px,-5px)rotate(-90deg);
+      }
+
+      .group g.guideline .legend text:nth-child(2) {
+        transform: translate(-127.5px,-5px)rotate(-90deg);
+      }
+
+      .group:not(.with-pos-button) .positioningbutton {
+        display: none;
+      }
+
+      .positioningbutton {
+        transform: translate(140px, 20px);
+        opacity: .2;
+      }
+
+      .positioningbutton:not(:hover) line {
+        display: none;
+      }
+
+      .positioningbutton:hover {
+        opacity: 1;
+        cursor: pointer;
+      }
+
+      .positioningbutton line {
+        stroke-width: 1.5px;
+      }
+    </style>
+
+    <g class="axes" transform="translate(60,510)">
+      <line class="yaxis" x1="0" x2="0" y2="500"/>
+      <!-- should get a number of ticks -->
+      <template class="tick">
+        <g class="tick"><!-- should get transform="translate(0,-y)"-->
+          <line x2="5"/>
+          <text>1000</text>
+        </g>
+      </template>
+      <text class="ylabel" transform="translate(-40,-260) rotate(-90)">odds ratio</text>
+      <!-- <g class="legend">
+        <text x="530" y="-515">Legend:</text>
+        <line class="guideline" x1="540" x2="575" y1="-490" y2="-490"/>
+        <text x="580" y="-490">weighted mean</text>
+      </g> -->
+    </g>
+
+    <template class="group-grapes">
+      <g class="group"><!-- should get transform="translate(groupx,0)" -->
+        <g>
+          <line class="xaxis" x1="-150" x2="150"/>
+          <g class="guideline"><!-- should get transform="translate(0,getY(group.or))"-->
+            <line class="guideline" x1="-142.5" x2="142.5"/>
+            <g class="legend">
+              <text>weighted</text>
+              <text>mean</text>
+            </g>
+          </g>
+          <line class="trunk" x1="0" x2="0" y2="500"/>
+          <text class="label">label</text><!-- should be filled -->
+          <!-- should get some grapes -->
+          <template class="group-grapes-grape">
+            <circle class="experiment grape"/><!-- should get  r="radius" transform="translate(x,getY(or))" -->
+          </template>
+
+          <g class="positioningbutton">
+            <circle r="8"/>
+            <line x1="-5" y1="-5" x2="5" y2="5"/>
+            <line x1="5" y1="5" x2="4" y2="0"/>
+            <line x1="5" y1="5" x2="0" y2="4"/>
+            <line x1="-5" y1="-5" x2="-4" y2="0"/>
+            <line x1="-5" y1="-5" x2="0" y2="-4"/>
+          </g>
+        </g>
+      </g>
+    </template>
+
+    <template class="group-tooltips">
+      <g class="group tooltips"><!-- should get  transform="translate(groupx,0)" -->
+        <g>
+          <template class="group-tooltips-grape">
+            <g class="experiment"><!-- should get transform="translate(x,getY(or))" -->
+              <circle class="grape"/><!-- should get  r="radius" -->
+              <g class="tooltip">
+                <rect height="103"/><!-- should get width="bounding box width"-->
+                <text class="paper">Szpitalak &amp; Polczyk (2010)</text><!-- should be filled -->
+                <text class="exp  ">Exp. 1 high involvement Note 4</text><!-- should be filled -->
+                <text class="or   ">3.10</text><!-- should be filled -->
+                <text class="wt   ">7.75%</text><!-- should be filled -->
+                <text class="ci   ">1.30, 7.37</text><!-- should be filled -->
+                <text class="_or  ">OR:</text>
+                <text class="_wt  ">Wt:</text>
+                <text class="_ci  ">95% CI:</text>
+              </g>
+            </g>
+          </template>
+        </g>
+      </g>
+    </template>
+  </svg>
 </template>
 
 <p class="savingspinner">saving&hellip;</p>

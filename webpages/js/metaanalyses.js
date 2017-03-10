@@ -340,18 +340,1479 @@
     setValidationErrorClass();
     setUnsavedClass();
 
+    addComputedDatumSetter(drawForestPlot);
+    addComputedDatumSetter(drawGrapeChart);
+
     recalculateComputedData();
   }
 
-  /* editTags
+  /* forest plot
    *
-   *                         #######
-   *   ###### #####  # #####    #      ##    ####   ####
-   *   #      #    # #   #      #     #  #  #    # #
-   *   #####  #    # #   #      #    #    # #       ####
-   *   #      #    # #   #      #    ###### #  ###      #
-   *   #      #    # #   #      #    #    # #    # #    #
-   *   ###### #####  #   #      #    #    #  ####   ####
+   *
+   *   ######  ####  #####  ######  ####  #####    #####  #       ####  #####
+   *   #      #    # #    # #      #        #      #    # #      #    #   #
+   *   #####  #    # #    # #####   ####    #      #    # #      #    #   #
+   *   #      #    # #####  #           #   #      #####  #      #    #   #
+   *   #      #    # #   #  #      #    #   #      #      #      #    #   #
+   *   #       ####  #    # ######  ####    #      #      ######  ####    #
+   *
+   *
+   */
+
+  function drawForestPlot() {
+    // prepare data:
+    // first find the forestPlot aggregate, it gives us the parameters
+    // then for every paper and every experiment, call appropriate functions to get or,lcl,ucl,wt
+    // then get the aggregates or,lcl,ucl
+    //   lines (array)
+    //     title (paper and maybe experiment)
+    //     or
+    //     lcl
+    //     ucl
+    //     wt
+    //   aggregated
+    //     or
+    //     lcl
+    //     ucl
+
+    var orFunc, wtFunc, lclFunc, uclFunc, params;
+
+    // todo the plot should be associated with its parameters differently, not through an aggregate
+    // todo there should be the possibility to have more forest plots
+    for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
+      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotNumberAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+        params = currentMetaanalysis.aggregates[i].formulaParams;
+        orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
+        wtFunc = { formulaName: "weightNumber", formulaParams: params };
+        lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
+        uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: params };
+        break;
+      }
+      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotPercentAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+        params = currentMetaanalysis.aggregates[i].formulaParams;
+        orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [params[0], params[2]] };
+        wtFunc = { formulaName: "weightPercent", formulaParams: params };
+        lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: params };
+        uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: params };
+        break;
+      }
+    }
+
+    if (i === currentMetaanalysis.aggregates.length) {
+      // we don't have any parameters for the forestPlot
+      return;
+    }
+
+    var plotsContainer = _.findEl('#metaanalysis > .plots');
+    plotsContainer.innerHTML = '';
+
+    var plotEl = _.cloneTemplate('forest-plot-template').children[0];
+    plotEl.classList.toggle('maximized', localStorage.plotMaximized);
+
+    // get the data
+    orFunc.formula = lima.createFormulaString(orFunc);
+    wtFunc.formula = lima.createFormulaString(wtFunc);
+    lclFunc.formula = lima.createFormulaString(lclFunc);
+    uclFunc.formula = lima.createFormulaString(uclFunc);
+
+    var lines=[];
+
+    for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
+      for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
+        if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
+        var line = {};
+        line.title = currentMetaanalysis.papers[i].title;
+        if (currentMetaanalysis.papers[i].experiments.length > 1) {
+          line.title += ' (' + currentMetaanalysis.papers[i].experiments[j].title + ')';
+        }
+        line.or = getDatumValue(orFunc, j, i);
+        line.wt = getDatumValue(wtFunc, j, i);
+        line.lcl = getDatumValue(lclFunc, j, i);
+        line.ucl = getDatumValue(uclFunc, j, i);
+        lines.push(line);
+
+        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0)) {
+          line.lcl = 0;
+          line.ucl = 0;
+          line.wt = 0;
+        }
+      }
+    }
+
+    if (lines.length === 0) return;
+
+    var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
+    var lclAggrFunc = { formulaName: "lowerConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
+    var uclAggrFunc = { formulaName: "upperConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
+
+    orAggrFunc.formula = lima.createFormulaString(orAggrFunc);
+    lclAggrFunc.formula = lima.createFormulaString(lclAggrFunc);
+    uclAggrFunc.formula = lima.createFormulaString(uclAggrFunc);
+
+    var aggregates = {
+      or: getDatumValue(orAggrFunc),
+      lcl: getDatumValue(lclAggrFunc),
+      ucl: getDatumValue(uclAggrFunc),
+    }
+
+    if (isNaN(aggregates.or*0) || isNaN(aggregates.lcl*0) || isNaN(aggregates.ucl*0)) {
+      aggregates.lcl = 0;
+      aggregates.ucl = 0;
+    }
+
+    // compute
+    //   sum of wt
+    //   min and max of wt
+    //   min of lcl and aggr lcl
+    //   max of ucl and aggr ucl
+    var sumOfWt = 0;
+    var minWt = lines[0].wt;
+    var maxWt = lines[0].wt;
+    var minLcl = aggregates.lcl;
+    var maxUcl = aggregates.ucl;
+
+    if (isNaN(minLcl)) minLcl = 0;
+    if (isNaN(maxUcl)) maxUcl = 0;
+
+    lines.forEach(function (line) {
+      sumOfWt += line.wt;
+      if (line.wt < minWt) minWt = line.wt;
+      if (line.wt > maxWt) maxWt = line.wt;
+      if (line.lcl < minLcl) minLcl = line.lcl;
+      if (line.ucl > maxUcl) maxUcl = line.ucl;
+    });
+
+    if (minLcl < -10) minLcl = -10;
+    if (maxUcl > 10) maxUcl = 10;
+
+    var TICK_SPACING;
+
+
+    // select tick spacing based on a rough estimate of how many ticks we'll need anyway
+    var clSpread = (maxUcl - minLcl) / Math.LN10; // how many orders of magnitude we cover
+    if (clSpread > 3) TICK_SPACING = [100];
+    else if (clSpread > 1.3) TICK_SPACING = [10];
+    else TICK_SPACING = [ 2, 2.5, 2 ]; // ticks at 1, 2, 5, 10, 20, 50, 100...
+
+
+    // adjust minimum and maximum around decimal non-logarithmic values
+    var newBound = 1;
+    var tickNo = 0;
+    while (Math.log(newBound) > minLcl) {
+      tickNo -= 1;
+      newBound /= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)]; // JS % can be negative
+    }
+    minLcl = Math.log(newBound) - .1;
+
+    var startingTickVal = newBound;
+    var startingTick = tickNo;
+
+    newBound = 1;
+    tickNo = 0;
+    while (Math.log(newBound) < maxUcl) {
+      newBound *= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)];
+      tickNo += 1;
+    }
+    maxUcl = Math.log(newBound) + .1;
+
+    var xRatio = 1/(maxUcl-minLcl)*parseInt(plotEl.dataset.graphWidth);
+
+    // return the X coordinate on the graph that corresponds to the given logarithmic value
+    function getX(val) {
+      return (val-minLcl)*xRatio;
+    }
+
+    // adjust weights so that in case of very similar weights they don't range from minimum to maximum
+    var MIN_WT_SPREAD=2.5;
+    if (maxWt/minWt < MIN_WT_SPREAD) {
+      minWt = (maxWt + minWt) / 2 / Math.sqrt(MIN_WT_SPREAD);
+      maxWt = minWt * MIN_WT_SPREAD;
+    }
+
+    // minWt = 0; // todo we can uncomment this to make all weights relative to only the maximum weight
+    var minWtSize = parseInt(plotEl.dataset.minWtSize);
+    // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
+    maxWt = Math.sqrt(maxWt);
+    minWt = Math.sqrt(minWt);
+    var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxWtSize)-minWtSize);
+
+    // return the box size for a given weight
+    function getBoxSize(wt) {
+      return (Math.sqrt(wt)-minWt)*wtRatio + minWtSize;
+    }
+
+    var currY = parseInt(plotEl.dataset.startHeight);
+
+    // put experiments into the plot
+    lines.forEach(function (line) {
+      if (isNaN(line.or*0)) return;
+
+      var expT = _.findEl(plotEl, 'template.experiment');
+      var expEl = _.cloneTemplate(expT);
+
+      expEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+      _.fillEls(expEl, '.expname', line.title);
+      _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
+      _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
+      _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
+      _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
+
+      _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
+      _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
+
+      _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
+      _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
+      _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
+
+      expT.parentElement.insertBefore(expEl, expT);
+
+      currY += parseInt(plotEl.dataset.lineHeight);
+    })
+
+
+
+    // put summary into the plot
+    if (!isNaN(aggregates.or*0)) {
+      var sumT = _.findEl(plotEl, 'template.summary');
+      var sumEl = _.cloneTemplate(sumT);
+
+      sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+      _.fillEls(sumEl, '.or', Math.exp(aggregates.or).toPrecision(3));
+      _.fillEls(sumEl, '.lcl', "" + Math.exp(aggregates.lcl).toPrecision(3) + ",");
+      _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toPrecision(3));
+
+      var lclX = getX(aggregates.lcl);
+      var uclX = getX(aggregates.ucl);
+      var orX = getX(aggregates.or);
+      if ((uclX - lclX) < parseInt(plotEl.dataset.minDiamondWidth)) {
+        var ratio = (uclX - lclX) / parseInt(plotEl.dataset.minDiamondWidth);
+        lclX = orX + (lclX - orX) / ratio;
+        uclX = orX + (uclX - orX) / ratio;
+      }
+
+      var confidenceInterval = "" + lclX + ",0 " + orX + ",-10 " + uclX + ",0 " + orX + ",10";
+
+      _.setAttrs(sumEl, 'polygon.confidenceinterval', 'points', confidenceInterval);
+
+      _.setAttrs(sumEl, 'line.guideline', 'x1', getX(aggregates.or));
+      _.setAttrs(sumEl, 'line.guideline', 'x2', getX(aggregates.or));
+      _.setAttrs(sumEl, 'line.guideline', 'y2', currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen));
+
+      sumT.parentElement.insertBefore(sumEl, sumT);
+      currY += parseInt(plotEl.dataset.lineHeight);
+    }
+
+
+    // put axes into the plot
+    var axesT = _.findEl(plotEl, 'template.axes');
+    var axesEl = _.cloneTemplate(axesT);
+
+    axesEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+    _.setAttrs(axesEl, 'line.yaxis', 'y2', currY+parseInt(plotEl.dataset.extraLineLen));
+    _.setAttrs(axesEl, 'line.yaxis', 'x1', getX(0));
+    _.setAttrs(axesEl, 'line.yaxis', 'x2', getX(0));
+
+    var tickT = _.findEl(axesEl, 'template.tick');
+    var tickVal;
+    while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
+      var tickEl = _.cloneTemplate(tickT);
+      tickEl.setAttribute('transform', 'translate(' + getX(tickVal) + ',0)');
+      _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
+      tickT.parentElement.insertBefore(tickEl, tickT);
+      startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
+      startingTick += 1;
+    }
+
+    axesT.parentElement.insertBefore(axesEl, axesT);
+
+    _.addEventListener(axesEl, '.positioningbutton', 'click', function (e) {
+      plotEl.classList.toggle('maximized');
+      localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
+      e.stopPropagation();
+    })
+
+    plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
+    plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
+    // todo set plot widths based on maximum text sizes
+
+    plotsContainer.appendChild(plotEl);
+  }
+
+  /* grape chart
+   *
+   *
+   *    ####  #####    ##   #####  ######     ####  #    #   ##   #####  #####
+   *   #    # #    #  #  #  #    # #         #    # #    #  #  #  #    #   #
+   *   #      #    # #    # #    # #####     #      ###### #    # #    #   #
+   *   #  ### #####  ###### #####  #         #      #    # ###### #####    #
+   *   #    # #   #  #    # #      #         #    # #    # #    # #   #    #
+   *    ####  #    # #    # #      ######     ####  #    # #    # #    #   #
+   *
+   *
+   */
+
+  function drawGrapeChart() {
+    // prepare data:
+    // first find the grapeChart aggregate, it gives us the parameters
+    // then for every paper and every experiment, call appropriate functions to get or,lcl,ucl,wt
+    //   data (array)
+    //     paper
+    //     exp
+    //     group
+    //     or
+    //     lcl
+    //     ucl
+    //     wt
+    //   aggregated
+    //     or
+    //     lcl
+    //     ucl
+
+    var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params, dataParams;
+
+    for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
+      if (currentMetaanalysis.aggregates[i].formulaName === 'grapeChartNumberAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+        params = currentMetaanalysis.aggregates[i].formulaParams;
+        dataParams = params.slice(0, 4); // the first param is for grouping
+        orFunc = { formulaName: "logOddsRatioNumber", formulaParams: dataParams };
+        wtFunc = { formulaName: "weightNumber", formulaParams: dataParams };
+        lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: dataParams };
+        uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: dataParams };
+        moderatorParam = params[4];
+        break;
+      }
+      if (currentMetaanalysis.aggregates[i].formulaName === 'grapeChartPercentAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
+        params = currentMetaanalysis.aggregates[i].formulaParams;
+        dataParams = params.slice(0, 4); // the first param is for grouping
+        orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [dataParams[0], dataParams[2]] };
+        wtFunc = { formulaName: "weightPercent", formulaParams: dataParams };
+        lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: dataParams };
+        uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: dataParams };
+        moderatorParam = params[4];
+        break;
+      }
+    }
+
+    if (i === currentMetaanalysis.aggregates.length) {
+      // we don't have any parameters for the grapeChart
+      return;
+    }
+
+    var plotsContainer = _.findEl('#metaanalysis > .plots');
+    plotsContainer.innerHTML = '';
+
+    var plotEl = _.cloneTemplate('grape-chart-template').children[0];
+    plotEl.classList.toggle('maximized', localStorage.plotMaximized);
+
+    // get the data
+    orFunc.formula = lima.createFormulaString(orFunc);
+    wtFunc.formula = lima.createFormulaString(wtFunc);
+    lclFunc.formula = lima.createFormulaString(lclFunc);
+    uclFunc.formula = lima.createFormulaString(uclFunc);
+
+    var data = [];
+    var groups = [];
+
+    for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
+      for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
+        if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
+        var line = {};
+        line.paper = currentMetaanalysis.papers[i].title;
+        line.exp = currentMetaanalysis.papers[i].experiments[j].title;
+        line.or = getDatumValue(orFunc, j, i);
+        line.wt = getDatumValue(wtFunc, j, i);
+        line.lcl = getDatumValue(lclFunc, j, i);
+        line.ucl = getDatumValue(uclFunc, j, i);
+        line.group = getDatumValue(moderatorParam, j, i);
+        data.push(line);
+
+        if (line.group != null && groups.indexOf(line.group) === -1) groups.push(line.group);
+
+        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0)) {
+          line.lcl = 0;
+          line.ucl = 0;
+          line.wt = 0;
+        }
+      }
+    }
+
+    if (data.length == 0) return;
+    plotsContainer.appendChild(plotEl);
+
+    groups.sort(); // alphabetically
+
+    var groups2 = ["warning", "no warning"]
+    var data2 = [
+      {
+        paper: 'Blank (1998), Exp. 1',
+        exp: 'not titled',
+        group: "warning",
+        or: 0,
+        wt: 1.8876,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Blank (1998), Exp. 1',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.265666373,
+        wt: 2.442125237,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Bodner et al. (2009), Exps. 1&2 (co-witness paradigm) Notes 1, 6',
+        exp: 'not titled',
+        group: "warning",
+        or: 1.30184053,
+        wt: 1.383070608,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Bodner et al. (2009), Exps. 1&2 (co-witness paradigm) Notes 1, 6',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.860518795,
+        wt: 1.464387819,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Bodner et al. (2009), Exps. 1&2 (stand. misinfo paradigm) Notes 1, 7',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.872299163,
+        wt: 1.309915143,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Bodner et al. (2009), Exps. 1&2 (stand. misinfo paradigm) Notes 1, 7',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.157219243,
+        wt: 1.519385767,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Christiaansen & Ochalek (1983), Exp. 1 (delayed warning: 45min afer PEI) Note 10',
+        exp: 'not titled',
+        group: "warning",
+        or: 0,
+        wt: 0.402352941,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Christiaansen & Ochalek (1983), Exp. 1 (delayed warning: 45min afer PEI) Note 10',
+        exp: 'not titled',
+        group: "no warning",
+        or: 3.308404356,
+        wt: 0.628383274,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Christiaansen & Ochalek (1983), Exp. 2 (delayed warning: 30min afer PEI)',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.633627491,
+        wt: 2.315267755,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Christiaansen & Ochalek (1983), Exp. 2 (delayed warning: 30min afer PEI)',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.799740358,
+        wt: 2.191105496,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 1 ("incompetent source")',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.748279251,
+        wt: 1.954735431,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 1 ("incompetent source")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.784096329,
+        wt: 1.355748564,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 1 ("untrustworthy source")',
+        exp: 'not titled',
+        group: "warning",
+        or: 1.559863127,
+        wt: 1.725615225,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 1 ("untrustworthy source")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.784096329,
+        wt: 1.355748564,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 2 ("social postwarning")',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.541388274,
+        wt: 0.891715051,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 2 ("social postwarning")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.705566758,
+        wt: 0.87229582,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 3 ("explicit monitoring") Note 12',
+        exp: 'not titled',
+        group: "warning",
+        or: 1.301525138,
+        wt: 0.949306134,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 3 ("explicit monitoring") Note 12',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.580473602,
+        wt: 0.913185038,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 3 ("social postwarning")',
+        exp: 'not titled',
+        group: "warning",
+        or: 1.791759469,
+        wt: 0.90446281,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 3 ("social postwarning")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.580473602,
+        wt: 0.913185038,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 4 ("explicit monitoring") Note 12',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.24169897,
+        wt: 2.387960755,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 4 ("explicit monitoring") Note 12',
+        exp: 'not titled',
+        group: "no warning",
+        or: 0.942892981,
+        wt: 2.919679769,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 4 ("social postwarning")',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.219697818,
+        wt: 2.721085714,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2005), Exp. 4 ("social postwarning")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 0.942892981,
+        wt: 2.919679769,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2007), Exp. 1 ("explicit warning")',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.651300071,
+        wt: 1.887429478,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2007), Exp. 1 ("explicit warning")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.346289027,
+        wt: 2.0484606,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2007), Exp. 1 ("social warning")',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.513751741,
+        wt: 2.108034783,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2007), Exp. 1 ("social warning")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.346289027,
+        wt: 2.0484606,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2007), Exp. 2 ("social warning")',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.429541368,
+        wt: 2.756224583,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Echterhoff et al. (2007), Exp. 2 ("social warning")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.098612289,
+        wt: 3,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Frost et al. (2002), Exps. 1&2 (placement of the warning: 10min after PEI) Note 11',
+        exp: 'not titled',
+        group: "warning",
+        or: 2.564949357,
+        wt: 0.517699115,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Frost et al. (2002), Exps. 1&2 (placement of the warning: 10min after PEI) Note 11',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.816263786,
+        wt: 0.52416,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Frost et al. (2002), Exps. 1&2 (placement of the warning: 1week after PEI) Note 11',
+        exp: 'not titled',
+        group: "warning",
+        or: 3.044522438,
+        wt: 0.528387097,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Frost et al. (2002), Exps. 1&2 (placement of the warning: 1week after PEI) Note 11',
+        exp: 'not titled',
+        group: "no warning",
+        or: 3.174013421,
+        wt: 0.530150976,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Highhouse & Bottrill (1995) Note 2',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.162430742,
+        wt: 3.444605693,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Highhouse & Bottrill (1995) Note 2',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.425284614,
+        wt: 3.122335824,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Lindsay et al. (1995), Exp. 2 (3rd graders, high discriminability)',
+        exp: 'not titled',
+        group: "warning",
+        or: 2.830373442,
+        wt: 0.221973882,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Lindsay et al. (1995), Exp. 2 (3rd graders, high discriminability)',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.411837639,
+        wt: 0.533092016,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Lindsay et al. (1995), Exp. 2 (3rd graders, low discriminability)',
+        exp: 'not titled',
+        group: "warning",
+        or: 0,
+        wt: 0.24639125,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Lindsay et al. (1995), Exp. 2 (3rd graders, low discriminability)',
+        exp: 'not titled',
+        group: "no warning",
+        or: 0.713090728,
+        wt: 0.376796681,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Lindsay et al. (1995), Exp. 2 (preschoolers, high discriminability)',
+        exp: 'not titled',
+        group: "warning",
+        or: 1.360853588,
+        wt: 0.730068216,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Lindsay et al. (1995), Exp. 2 (preschoolers, high discriminability)',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.439152926,
+        wt: 1.690326299,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Lindsay et al. (1995), Exp. 2 (preschoolers, low discriminability)',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.545999042,
+        wt: 0.867311848,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Lindsay et al. (1995), Exp. 2 (preschoolers, low discriminability)',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.97921903,
+        wt: 0.602398566,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Meade & Roediger (2002), Exp. 1 Note 3',
+        exp: 'not titled',
+        group: "warning",
+        or: 1.222365491,
+        wt: 0.679290652,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Meade & Roediger (2002), Exp. 1 Note 3',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.090795114,
+        wt: 0.865617172,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Oeberst & Blank (2012), Exp. 2',
+        exp: 'not titled',
+        group: "warning",
+        or: -0.148973792,
+        wt: 1.741424051,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Oeberst & Blank (2012), Exp. 2',
+        exp: 'not titled',
+        group: "no warning",
+        or: 0.917793362,
+        wt: 2.410145581,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Paterson & Kemp (2009), Exp. 1 Note 8',
+        exp: 'not titled',
+        group: "warning",
+        or: 1.034203714,
+        wt: 0.415947407,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Paterson & Kemp (2009), Exp. 1 Note 8',
+        exp: 'not titled',
+        group: "no warning",
+        or: 0.965683767,
+        wt: 0.40923499,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Paterson & Kemp (2009), Exp. 2 ("delayed warning") Note 8',
+        exp: 'not titled',
+        group: "warning",
+        or: 2.422097381,
+        wt: 0.339321066,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Paterson & Kemp (2009), Exp. 2 ("delayed warning") Note 8',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.057672697,
+        wt: 0.330104715,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Paterson, Kemp, & McIntyre (2012), Exp. 1 ("specific warning")',
+        exp: 'not titled',
+        group: "warning",
+        or: 2.794582895,
+        wt: 0.117601976,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Paterson, Kemp, & McIntyre (2012), Exp. 1 ("specific warning")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.5407747,
+        wt: 0.115752285,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Paterson, Kemp, & McIntyre (2012), Exp. 2 ',
+        exp: 'not titled',
+        group: "warning",
+        or: 2.60183907,
+        wt: 0.109398995,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Paterson, Kemp, & McIntyre (2012), Exp. 2 ',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.819868692,
+        wt: 0.110836683,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Price & Connolly (2004), "repeated event"',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.081744836,
+        wt: 0.15275509,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Price & Connolly (2004), "repeated event"',
+        exp: 'not titled',
+        group: "no warning",
+        or: 0.524524468,
+        wt: 0.18280446,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Price & Connolly (2004), "single event"',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.836771447,
+        wt: 0.201912105,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Price & Connolly (2004), "single event"',
+        exp: 'not titled',
+        group: "no warning",
+        or: -0.547463952,
+        wt: 0.10889569,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Principe et al. (2010), 3-4 year olds, "overheard"',
+        exp: 'not titled',
+        group: "warning",
+        or: 4.366278278,
+        wt: 0.437055573,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Principe et al. (2010), 3-4 year olds, "overheard"',
+        exp: 'not titled',
+        group: "no warning",
+        or: 6.135564891,
+        wt: 0.378526004,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Principe et al. (2010), 3-4 year olds, "rumor"',
+        exp: 'not titled',
+        group: "warning",
+        or: 6.828712072,
+        wt: 0.318286202,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Principe et al. (2010), 3-4 year olds, "rumor"',
+        exp: 'not titled',
+        group: "no warning",
+        or: 5.988961417,
+        wt: 0.377500451,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Principe et al. (2010), 5-6 year olds, "overheard"',
+        exp: 'not titled',
+        group: "warning",
+        or: 3.938340314,
+        wt: 0.453905355,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Principe et al. (2010), 5-6 year olds, "overheard"',
+        exp: 'not titled',
+        group: "no warning",
+        or: 6.682108597,
+        wt: 0.327470109,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Principe et al. (2010), 5-6 year olds, "rumor"',
+        exp: 'not titled',
+        group: "warning",
+        or: 4.297285406,
+        wt: 0.45506033,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Principe et al. (2010), 5-6 year olds, "rumor"',
+        exp: 'not titled',
+        group: "no warning",
+        or: 6.682108597,
+        wt: 0.327470109,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Szpitalak & Polczyk (2010), Exp. 1 high involvement Note 4',
+        exp: 'not titled',
+        group: "warning",
+        or: -0.371559763,
+        wt: 4.495915637,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Szpitalak & Polczyk (2010), Exp. 1 high involvement Note 4',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.131062098,
+        wt: 5.113282924,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Szpitalak & Polczyk (2010), Exp. 1 low involvement Note 4',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.664009361,
+        wt: 5.760479368,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Szpitalak & Polczyk (2010), Exp. 1 low involvement Note 4',
+        exp: 'not titled',
+        group: "no warning",
+        or: 0.414048852,
+        wt: 5.24335984,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Szpitalak & Polczyk (2011)',
+        exp: 'not titled',
+        group: "warning",
+        or: 0.179051026,
+        wt: 5.095677246,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Szpitalak & Polczyk (2011)',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.257284923,
+        wt: 4.894772462,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Thomas et al. (2010), Exp. 1 ("repeated testing")',
+        exp: 'not titled',
+        group: "warning",
+        or: 2.023201823,
+        wt: 0.519034853,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Thomas et al. (2010), Exp. 1 ("repeated testing")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.773470479,
+        wt: 0.854238122,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Thomas et al. (2010), Exp. 1 ("single testing)',
+        exp: 'not titled',
+        group: "warning",
+        or: 1.408365096,
+        wt: 0.769578044,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Thomas et al. (2010), Exp. 1 ("single testing)',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.924185122,
+        wt: 0.398173442,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Thomas et al. (2010), Exp. 2 ("repeated testing")',
+        exp: 'not titled',
+        group: "warning",
+        or: 1.004631613,
+        wt: 0.861753495,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Thomas et al. (2010), Exp. 2 ("repeated testing")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.474123559,
+        wt: 1.021829895,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Thomas et al. (2010), Exp. 2 ("single testing)',
+        exp: 'not titled',
+        group: "warning",
+        or: 1.489935192,
+        wt: 1.080963015,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Thomas et al. (2010), Exp. 2 ("single testing)',
+        exp: 'not titled',
+        group: "no warning",
+        or: 1.342744068,
+        wt: 1.109935177,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Wright (1993)',
+        exp: 'not titled',
+        group: "warning",
+        or: -0.713766468,
+        wt: 0.530907884,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Wright (1993)',
+        exp: 'not titled',
+        group: "no warning",
+        or: 2.896202678,
+        wt: 1.988210997,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Zaragoza & Lane (1994), Exp. 4 ("explicit-warning")',
+        exp: 'not titled',
+        group: "warning",
+        or: 1.115561847,
+        wt: 5.392711268,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+      {
+        paper: 'Zaragoza & Lane (1994), Exp. 4 ("explicit-warning")',
+        exp: 'not titled',
+        group: "no warning",
+        or: 0.810930216,
+        wt: 5.408780488,
+        lcl: 1.11111111,
+        ucl: 2.222222222,
+      },
+    ];
+
+    var dataGroups =
+      groups.map(function (group) {
+        return data.filter(function (exp) { return exp.group == group; });
+      });
+
+
+    // todo use per-group aggregates here
+    var perGroup = {};
+    dataGroups.forEach(function (dataGroup) {
+      perGroup[dataGroup[0].group] = {};
+      perGroup[dataGroup[0].group].wt = dataGroup.reduce(function sum(acc, line) {return acc+line.wt;}, 0);
+      perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return acc+line.or*line.wt;}, 0) / perGroup[dataGroup[0].group].wt;
+    });
+
+    // todo highlight the current experiment in forest plot and in grape chart
+
+    // set chart width based on number of groups
+    plotEl.setAttribute('width', parseInt(plotEl.dataset.zeroGroupsWidth) + groups.length * parseInt(plotEl.dataset.groupSpacing));
+    plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
+
+    var minWt = data[0].wt;
+    var maxWt = data[0].wt;
+    var minOr = data[0].or;
+    var maxOr = data[0].or;
+
+    data.forEach(function (exp) {
+      if (exp.wt < minWt) minWt = exp.wt;
+      if (exp.wt > maxWt) maxWt = exp.wt;
+      if (exp.or < minOr) minOr = exp.or;
+      if (exp.or > maxOr) maxOr = exp.or;
+    });
+
+    if (minOr < -10) minOr = -10;
+    if (maxOr > 10) maxOr = 10;
+
+    var TICK_SPACING;
+
+    // select tick spacing based on a rough estimate of how many ticks we'll need anyway
+    var clSpread = (maxOr - minOr) / Math.LN10; // how many orders of magnitude we cover
+    if (clSpread > 5) TICK_SPACING = [100];
+    else if (clSpread > 2) TICK_SPACING = [10];
+    else TICK_SPACING = [ 2, 2.5, 2 ]; // ticks at 1, 2, 5, 10, 20, 50, 100...
+
+    // adjust minimum and maximum around decimal non-logarithmic values
+    var newBound = 1;
+    var tickNo = 0;
+    while (Math.log(newBound) > minOr) {
+      tickNo -= 1;
+      newBound /= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)]; // JS % can be negative
+    }
+    minOr = Math.log(newBound) - .1;
+
+    var startingTickVal = newBound;
+    var startingTick = tickNo;
+
+    newBound = 1;
+    tickNo = 0;
+    while (Math.log(newBound) < maxOr) {
+      newBound *= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)];
+      tickNo += 1;
+    }
+    maxOr = Math.log(newBound) + .1;
+
+    var midOr = (minOr + maxOr) / 2;
+
+    var yRatio = 1/(maxOr-minOr)*parseInt(plotEl.dataset.graphHeight);
+    function getY(logVal) {
+      return -(logVal-minOr)*yRatio;
+    }
+
+    function isTopHalf(logVal) {
+      return logVal > midOr;
+    }
+
+
+    var MIN_WT_SPREAD=2.5;
+    if (maxWt/minWt < MIN_WT_SPREAD) {
+      minWt = (maxWt + minWt) / 2 / Math.sqrt(MIN_WT_SPREAD);
+      maxWt = minWt * MIN_WT_SPREAD;
+    }
+
+    // minWt = 0; // todo we can uncomment this to make all weights relative to only the maximum weight
+    var minGrapeSize = parseInt(plotEl.dataset.minGrapeSize);
+    // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
+    maxWt = Math.sqrt(maxWt);
+    minWt = Math.sqrt(minWt);
+    var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxGrapeSize)-minGrapeSize);
+
+    // return the grape radius for a given weight
+    function getGrapeRadius(wt) {
+      return (Math.sqrt(wt)-minWt)*wtRatio + minGrapeSize;
+    }
+
+    var groupT = _.findEl(plotEl, 'template.group-grapes');
+    var groupTooltipsT= _.findEl(plotEl, 'template.group-tooltips');
+    groups.forEach(function (group, index) {
+      var groupData = dataGroups[index];
+
+      var groupEl = _.cloneTemplate(groupT);
+      var groupTooltipsEl = _.cloneTemplate(groupTooltipsT);
+      groupT.parentElement.insertBefore(groupEl, groupT);
+      groupTooltipsT.parentElement.insertBefore(groupTooltipsEl,groupTooltipsT);
+
+      groupEl.setAttribute('transform', 'translate(' + (+plotEl.dataset.firstGroup + plotEl.dataset.groupSpacing*index) + ',0)');
+      groupTooltipsEl.setAttribute('transform', 'translate(' + (+plotEl.dataset.firstGroup + plotEl.dataset.groupSpacing*index) + ',0)');
+
+      _.fillEls(groupEl, 'text.label', group);
+      _.setAttrs(groupEl, 'g.guideline', 'transform', 'translate(0,' + getY(perGroup[group].or) + ')');
+
+      if (index === 0) groupEl.classList.add('with-legend');
+      if (index === groups.length - 1) {
+        groupEl.classList.add('with-pos-button');
+        _.addEventListener(groupEl, '.positioningbutton', 'click', function (e) {
+          plotEl.classList.toggle('maximized');
+          localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
+          e.stopPropagation();
+        })
+      }
+
+      var grapeT = _.findEl(groupEl, 'template.group-grapes-grape');
+      var tooltipT = _.findEl(groupTooltipsEl, 'template.group-tooltips-grape');
+
+      resetPositioning();
+      groupData.forEach(function (exp, index) {
+        precomputePosition(index, getY(exp.or), getGrapeRadius(exp.wt) + +plotEl.dataset.grapeSpacing); // distance the bubbles a bit
+      });
+      finalizePositioning();
+
+      groupData.forEach(function (exp, index) {
+        // grape
+        var grapeEl = _.cloneTemplate(grapeT);
+        var tooltipEl = _.cloneTemplate(tooltipT);
+        grapeT.parentElement.insertBefore(grapeEl, grapeT);
+        tooltipT.parentElement.insertBefore(tooltipEl, tooltipT);
+
+        grapeEl.setAttribute('r', getGrapeRadius(exp.wt));
+        _.setAttrs(tooltipEl, '.grape', 'r', getGrapeRadius(exp.wt));
+
+        // x-position so grapes don't overlap
+        var grapeX = getPosition(index);
+        grapeEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')')
+        tooltipEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')')
+
+        _.fillEls(tooltipEl, 'text.paper', exp.paper);
+        _.fillEls(tooltipEl, 'text.exp', exp.exp);
+        _.fillEls(tooltipEl, 'text.or', Math.exp(exp.or).toPrecision(3));
+        _.fillEls(tooltipEl, 'text.wt', '' + (exp.wt*100/perGroup[group].wt).toPrecision(3) + '%');
+        _.fillEls(tooltipEl, 'text.ci', "" + exp.lcl.toPrecision(3) + ", " + exp.ucl.toPrecision(3));
+
+        if (isTopHalf(exp.or)) {
+          _.addClass(tooltipEl, '.tooltip', 'tophalf');
+        }
+
+        var boxWidth = +plotEl.dataset.tooltipMinWidth;
+        _.findEls(tooltipEl, '.tooltip text').forEach(function (text) {
+          var w = text.getBBox().width;
+          if (boxWidth < w) boxWidth = w;
+        });
+
+        _.setAttrs(tooltipEl, '.tooltip rect', 'width', boxWidth + (+plotEl.dataset.tooltipPadding));
+      });
+    });
+
+
+    // put ticks onto the Y axis
+    var tickT = _.findEl(plotEl, 'template.tick');
+    var tickVal;
+    while ((tickVal = Math.log(startingTickVal)) < maxOr) {
+      var tickEl = _.cloneTemplate(tickT);
+      tickEl.setAttribute('transform', 'translate(0,' + getY(tickVal) + ')');
+      _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
+      tickT.parentElement.insertBefore(tickEl, tickT);
+      startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
+      startingTick += 1;
+    }
+
+    plotEl.onclick = function(e) {
+      if (!e.shiftKey) {
+        sortingStrategy = (sortingStrategy + 1 ) % sortingStrategies.length;
+        console.log('current sorting strategy: ' + sortingStrategyNames[sortingStrategy]);
+      } else {
+        grapeDistance = grapeDistance + (e.altKey ? -.5 : .5);
+        console.log('current grape distance adjustment: ' + grapeDistance);
+      }
+      drawGrapeChart();
+    }
+  }
+
+  var grapeDistance = 0;
+  var sortingStrategy = 2;
+  var sortingStrategies = [
+    // start from the top:              a.y - b.y
+    function (a,b) { return a.y - b.y; },
+    // start from the bottom:           b.y - a.y
+    function (a,b) { return b.y - a.y; },
+    // start from the biggest grapes:   b.r - a.r
+    function (a,b) { return b.r - a.r; },
+    // start from the smallest grapes:  a.r - b.r
+    function (a,b) { return a.r - b.r; },
+  ];
+  var sortingStrategyNames = [
+    'start from the top',
+    'start from the bottom',
+    'start from the biggest grapes',
+    'start from the smallest grapes',
+  ];
+
+  var positionedGrapes;
+  function resetPositioning() {
+    positionedGrapes = {
+      pre: [],
+      sorted: [],
+      post: [],
+      ybounds: new _.Bounds(), // this helps us center blocks of grapes
+    };
+  }
+
+  function precomputePosition(index, y, r) {
+    r += grapeDistance;
+    positionedGrapes.ybounds.add(y-r, y+r);
+    positionedGrapes.pre[index] = positionedGrapes.sorted[index] = { index: index, y: y, r: r };
+  }
+
+  function finalizePositioning() {
+    // sort by current sorting strategy -- todo drop this code when we decide which strategy is the best
+    positionedGrapes.sorted.sort(sortingStrategies[sortingStrategy]);
+
+    // compute X coordinates
+    positionedGrapes.sorted.forEach(function (g1, index) {
+      var xbounds = new _.Bounds();
+      positionedGrapes.post.forEach(function (g2) {
+        // check that the current grape is close enough to g on the y axis that they can touch
+        if (Math.abs(g1.y - g2.y) < (g1.r + g2.r)) {
+
+          // presence of g means current grape cannot be at g.x ± delta
+          var delta = Math.sqrt((g1.r + g2.r)*(g1.r + g2.r) - (g1.y - g2.y)*(g1.y - g2.y));
+          var min = g2.x - delta;
+          var max = g2.x + delta;
+
+          xbounds.add(min, max);
+        }
+      });
+
+      // choose the nearest available x to 0
+      g1.x = xbounds.getNearestOutsideValue(0);
+
+      // todo? if 0, maybe keep left- and right-slack so we can move things around a bit afterwards
+
+      positionedGrapes.post[index] = g1;
+    });
+
+    // center connecting groups
+    // use ybounds to group grapes in buckets so we can center them together
+    var buckets = [];
+    positionedGrapes.pre.forEach(function (g) {
+      var bucketNo = positionedGrapes.ybounds.indexOf(g.y);
+      if (bucketNo == -1) throw new Error('assertion failed: grape not in ybounds'); // should never happen
+      if (!buckets[bucketNo]) buckets[bucketNo] = [];
+      buckets[bucketNo].push(g);
+    });
+
+    buckets.forEach(function (bucket) {
+      var min = Infinity;
+      var max = -Infinity;
+      bucket.forEach(function (g) {
+        min = Math.min(min, g.x - g.r);
+        max = Math.max(max, g.x + g.r);
+      })
+
+      if (min < Infinity && Math.abs(min + max) > 1) {
+        // got a connecting group that wants to be moved, move it to center
+        var dx = (max + min) / 2;
+        bucket.forEach(function (g) { g.x -= dx; });
+      }
+    })
+  }
+
+  function getPosition(i) {
+    return positionedGrapes.pre[i].x;
+  }
+
+
+  /* edit tags
+   *
+   *
+   *   ###### #####  # #####    #####   ##    ####   ####
+   *   #      #    # #   #        #    #  #  #    # #
+   *   #####  #    # #   #        #   #    # #       ####
+   *   #      #    # #   #        #   ###### #  ###      #
+   *   #      #    # #   #        #   #    # #    # #    #
+   *   ###### #####  #   #        #   #    #  ####   ####
    *
    *
    */
@@ -1014,6 +2475,7 @@
 
     if (isColCompletelyDefined(aggregate)) {
       var formula = lima.getAggregateFormulaById(aggregate.formulaName);
+      if (formula == null) return NaN;
 
       // compute the value
       // if anything here throws an exception, value cannot be computed
@@ -1068,6 +2530,7 @@
 
       if (isColCompletelyDefined(col)) {
         var formula = lima.getFormulaById(col.formulaName);
+        if (formula == null) return NaN;
 
         // compute the value
         // if anything here throws an exception, value cannot be computed
