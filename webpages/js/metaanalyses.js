@@ -418,6 +418,7 @@
 
     for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
       for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
+        if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
         var line = {};
         line.title = currentMetaanalysis.papers[i].title;
         if (currentMetaanalysis.papers[i].experiments.length > 1) {
@@ -696,6 +697,7 @@
 
     for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
       for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
+        if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
         var line = {};
         line.paper = currentMetaanalysis.papers[i].title;
         line.exp = currentMetaanalysis.papers[i].experiments[j].title;
