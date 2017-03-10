@@ -407,6 +407,7 @@
     plotsContainer.innerHTML = '';
 
     var plotEl = _.cloneTemplate('forest-plot-template').children[0];
+    plotEl.classList.toggle('maximized', localStorage.plotMaximized);
 
     // get the data
     orFunc.formula = lima.createFormulaString(orFunc);
@@ -627,7 +628,14 @@
 
     axesT.parentElement.insertBefore(axesEl, axesT);
 
+    _.addEventListener(axesEl, '.positioningbutton', 'click', function (e) {
+      plotEl.classList.toggle('maximized');
+      localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
+      e.stopPropagation();
+    })
+
     plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
+    plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
     // todo set plot widths based on maximum text sizes
 
     plotsContainer.appendChild(plotEl);
@@ -684,7 +692,8 @@
     var plotsContainer = _.findEl('#metaanalysis > .plots');
     plotsContainer.innerHTML = '';
 
-    var plotEl = _.cloneTemplate('grape-plot-template').children[0];
+    var plotEl = _.cloneTemplate('grape-chart-template').children[0];
+    plotEl.classList.toggle('maximized', localStorage.plotMaximized);
 
     // get the data
     orFunc.formula = lima.createFormulaString(orFunc);
@@ -1519,6 +1528,7 @@
 
     // set chart width based on number of groups
     plotEl.setAttribute('width', parseInt(plotEl.dataset.zeroGroupsWidth) + groups.length * parseInt(plotEl.dataset.groupSpacing));
+    plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
 
     var minWt = data[0].wt;
     var maxWt = data[0].wt;
@@ -1610,6 +1620,14 @@
       _.setAttrs(groupEl, 'g.guideline', 'transform', 'translate(0,' + getY(perGroup[group].or) + ')');
 
       if (index === 0) groupEl.classList.add('with-legend');
+      if (index === groups.length - 1) {
+        groupEl.classList.add('with-pos-button');
+        _.addEventListener(groupEl, '.positioningbutton', 'click', function (e) {
+          plotEl.classList.toggle('maximized');
+          localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
+          e.stopPropagation();
+        })
+      }
 
       var grapeT = _.findEl(groupEl, 'template.group-grapes-grape');
       var tooltipT = _.findEl(groupTooltipsEl, 'template.group-tooltips-grape');

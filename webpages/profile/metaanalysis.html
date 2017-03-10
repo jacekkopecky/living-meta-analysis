@@ -90,8 +90,8 @@
     <!-- todo show history -->
     <!-- when not editing, show something for empty doi and link (or nothing at all?) -->
     <!-- todo comments -->
-    <div class="plots"></div>
     <div class="experiments"></div>
+    <div class="plots"></div>
     <div class="aggregates"></div>
     <p class='no-table'>No data has been entered for this meta-analysis yet.
       <span class="only-if-page-about-you">Turn editing on to add data.</span><!-- todo instruction to clone the paper? --></p>
@@ -497,7 +497,6 @@
         stroke-linejoin: miter;
         font-size: 14px;
         font-family: "Arial", sans-serif;
-        border: 1px solid red;
       }
 
       text {
@@ -585,6 +584,23 @@
         transform: translate(0px, 5px) scale(1, -1);
       }
 
+      .positioningbutton {
+        transform: translate(495px, 17px);
+        opacity: .2;
+      }
+
+      .positioningbutton:not(:hover) line {
+        display: none;
+      }
+
+      .positioningbutton:hover {
+        opacity: 1;
+        cursor: pointer;
+      }
+
+      .positioningbutton line {
+        stroke-width: 1.5px;
+      }
     </style>
 
     <g transform="translate(10,0)" class="headings">
@@ -620,6 +636,14 @@
               <text>val</text>
             </g>
           </template>
+          <g class="positioningbutton">
+            <circle r="8"/>
+            <line x1="-5" y1="-5" x2="5" y2="5"/>
+            <line x1="5" y1="5" x2="4" y2="0"/>
+            <line x1="5" y1="5" x2="0" y2="4"/>
+            <line x1="-5" y1="-5" x2="-4" y2="0"/>
+            <line x1="-5" y1="-5" x2="0" y2="-4"/>
+          </g>
         </g>
       </g>
     </template>
@@ -641,12 +665,13 @@
 
   </svg>
 </template>
-<template id="grape-plot-template">
+<template id="grape-chart-template">
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 800 550"
     width="800"
-    height="600"
+    height="550"
     version="1.1"
     data-zero-groups-width="70"
     data-graph-height="500"
@@ -794,6 +819,27 @@
         transform: translate(-127.5px,-5px)rotate(-90deg);
       }
 
+      .group:not(.with-pos-button) .positioningbutton {
+        display: none;
+      }
+
+      .positioningbutton {
+        transform: translate(140px, 20px);
+        opacity: .2;
+      }
+
+      .positioningbutton:not(:hover) line {
+        display: none;
+      }
+
+      .positioningbutton:hover {
+        opacity: 1;
+        cursor: pointer;
+      }
+
+      .positioningbutton line {
+        stroke-width: 1.5px;
+      }
     </style>
 
     <g class="axes" transform="translate(60,510)">
@@ -830,6 +876,15 @@
           <template class="group-grapes-grape">
             <circle class="experiment grape"/><!-- should get  r="radius" transform="translate(x,getY(or))" -->
           </template>
+
+          <g class="positioningbutton">
+            <circle r="8"/>
+            <line x1="-5" y1="-5" x2="5" y2="5"/>
+            <line x1="5" y1="5" x2="4" y2="0"/>
+            <line x1="5" y1="5" x2="0" y2="4"/>
+            <line x1="-5" y1="-5" x2="-4" y2="0"/>
+            <line x1="-5" y1="-5" x2="0" y2="-4"/>
+          </g>
         </g>
       </g>
     </template>
