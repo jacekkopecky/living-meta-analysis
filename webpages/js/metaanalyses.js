@@ -552,7 +552,7 @@
       _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
       _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
       _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
-      _.fillEls(expEl, '.wt', '' + Math.round(line.wt / sumOfWt * 100) + '%');
+      _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
 
       _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
       _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
@@ -579,10 +579,16 @@
       _.fillEls(sumEl, '.lcl', "" + Math.exp(aggregates.lcl).toPrecision(3) + ",");
       _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toPrecision(3));
 
-      var confidenceInterval = "" + getX(aggregates.lcl) + ",0 " +
-                                  + getX(aggregates.or) + ",-10 " +
-                                  + getX(aggregates.ucl) + ",0 " +
-                                  + getX(aggregates.or) + ",10";
+      var lclX = getX(aggregates.lcl);
+      var uclX = getX(aggregates.ucl);
+      var orX = getX(aggregates.or);
+      if ((uclX - lclX) < parseInt(plotEl.dataset.minDiamondWidth)) {
+        var ratio = (uclX - lclX) / parseInt(plotEl.dataset.minDiamondWidth);
+        lclX = orX + (lclX - orX) / ratio;
+        uclX = orX + (uclX - orX) / ratio;
+      }
+
+      var confidenceInterval = "" + lclX + ",0 " + orX + ",-10 " + uclX + ",0 " + orX + ",10";
 
       _.setAttrs(sumEl, 'polygon.confidenceinterval', 'points', confidenceInterval);
 
@@ -619,6 +625,7 @@
     axesT.parentElement.insertBefore(axesEl, axesT);
 
     plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
+    // todo set plot widths based on maximum text sizes
 
     plotsContainer.appendChild(plotEl);
   }

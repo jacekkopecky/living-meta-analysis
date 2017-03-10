@@ -475,19 +475,18 @@
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
-    width="600"
+    width="800"
     height="200"
     version="1.1"
     data-line-height="30"
-    data-font-size="20"
     data-padding="10"
-    data-graph-width="200"
-    data-zero-line-height2="115"
+    data-graph-width="300"
     data-start-height="50"
     data-end-height="65"
     data-min-wt-size="4"
     data-max-wt-size="14"
     data-extra-line-len="-10"
+    data-min-diamond-width="14"
     >
     <style>
       svg {
@@ -496,7 +495,7 @@
         stroke: black;
         stroke-linecap: butt;
         stroke-linejoin: miter;
-        font-size: 16px;
+        font-size: 14px;
         font-family: "Arial", sans-serif;
         border: 1px solid red;
       }
@@ -510,34 +509,34 @@
       .headings text.or,
       .experiment text.or,
       .summary text.or {
-        transform: translate(410px,23px);
+        transform: translate(610px,20px);
       }
       .headings text.lcl,
       .experiment text.lcl,
       .summary text.lcl {
         text-anchor: end;
-        transform: translate(490px,23px);
+        transform: translate(690px,20px);
       }
       .headings text.ucl,
       .experiment text.ucl,
       .summary text.ucl {
         text-anchor: start;
-        transform: translate(495px,23px);
+        transform: translate(695px,20px);
       }
       .headings text.wt,
       .experiment text.wt,
       .summary text.wt {
-        transform: translate(580px,23px);
+        transform: translate(780px,20px);
         text-anchor: end;
       }
 
       .experiment .expname {
         text-anchor: start;
-        transform: translate(0,23px);
+        transform: translate(0,20px);
       }
 
       .experiment .rowgraph {
-        transform: translate(180px,0);
+        transform: translate(280px,0);
       }
 
       .experiment .rowgraph .confidenceinterval {
@@ -555,11 +554,11 @@
 
       .summary .sumname {
         text-anchor: start;
-        transform: translate(0,23px);
+        transform: translate(0,20px);
       }
 
       .summary .sumgraph {
-        transform: translate(180px,0);
+        transform: translate(280px,0);
       }
 
       .summary .sumgraph .confidenceinterval {
@@ -568,18 +567,18 @@
 
       .summary .guideline {
         stroke-width: 1px;
-        transform: translate(180px,42.5px) scale(1,-1);
+        transform: translate(280px,42.5px) scale(1,-1);
         stroke-dasharray: 5px;
         stroke-linecap: butt;
       }
 
       .axes > g {
-        transform: translate(180px,32.5px);
+        transform: translate(280px,32.5px);
       }
 
       .axes .tick text {
-        font-size: 12px;
-        transform: translate(0, 20px);
+        font-size: 11px;
+        transform: translate(0, 19px);
       }
 
       .axes .yaxis {
@@ -613,7 +612,7 @@
       <g class="axes"><!-- should get transform="translate(padding,currY)" -->
         <g>
           <line class="yaxis"/><!-- should get x1="getX(0)" x2="getX(0)" y2="currY+parseInt(plotEl.dataset.extraLineLen)" -->
-          <line class="xaxis" x1="0" x2="200"/>
+          <line class="xaxis" x1="0" x2="300"/>
           <!-- should get a number of ticks -->
           <template class="tick">
             <g class="tick"><!-- should get transform="translate(x,0)" -->
