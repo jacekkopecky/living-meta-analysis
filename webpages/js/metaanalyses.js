@@ -437,6 +437,8 @@
       }
     }
 
+    if (lines.length === 0) return;
+
     var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
     var lclAggrFunc = { formulaName: "lowerConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
     var uclAggrFunc = { formulaName: "upperConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
@@ -714,10 +716,10 @@
       }
     }
 
-    groups.sort(); // alphabetically
-
-    if (data.length == 0) return null;
+    if (data.length == 0) return;
     plotsContainer.appendChild(plotEl);
+
+    groups.sort(); // alphabetically
 
     var groups2 = ["warning", "no warning"]
     var data2 = [
