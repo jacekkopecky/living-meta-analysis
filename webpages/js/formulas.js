@@ -34,13 +34,13 @@
       },
       {
         id: 'lowerConfidenceLimit',
-        label: 'Lower Confidence Limit',
+        label: 'Lower Log Confidence Limit',
         func: lowerConfidenceLimit,
         parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N' ]
       },
       {
         id: 'upperConfidenceLimit',
-        label: 'Upper Confidence Limit',
+        label: 'Upper Log Confidence Limit',
         func: upperConfidenceLimit,
         parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N' ]
       },
@@ -58,13 +58,13 @@
       },
       {
         id: 'lowerConfidenceLimitPercent',
-        label: 'Lower Confidence Limit (percentages)',
+        label: 'Lower Log Confidence Limit (percentages)',
         func: lowerConfidenceLimitPercent,
         parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
       },
       {
         id: 'upperConfidenceLimitPercent',
-        label: 'Upper Confidence Limit (percentages)',
+        label: 'Upper Log Confidence Limit (percentages)',
         func: upperConfidenceLimitPercent,
         parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
       },
@@ -82,13 +82,13 @@
       },
       {
         id: 'lowerConfidenceLimitNumber',
-        label: 'Lower Confidence Limit (numbers affected)',
+        label: 'Lower Log Confidence Limit (numbers affected)',
         func: lowerConfidenceLimitNumber,
         parameters: [ 'group 1 outcome (affected)', 'group 1 N', 'group 2 outcome (affected)', 'group 2 N' ]
       },
       {
         id: 'upperConfidenceLimitNumber',
-        label: 'Upper Confidence Limit (numbers affected)',
+        label: 'Upper Log Confidence Limit (numbers affected)',
         func: upperConfidenceLimitNumber,
         parameters: [ 'group 1 outcome (affected)', 'group 1 N', 'group 2 outcome (affected)', 'group 2 N' ]
       },
