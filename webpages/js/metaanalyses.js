@@ -424,7 +424,9 @@
         var line = {};
         line.title = currentMetaanalysis.papers[i].title;
         if (currentMetaanalysis.papers[i].experiments.length > 1) {
-          line.title += ' (' + currentMetaanalysis.papers[i].experiments[j].title + ')';
+          var expTitle = currentMetaanalysis.papers[i].experiments[j].title;
+          if (expTitle.match(/^\d+$/)) expTitle = 'Exp. ' + expTitle;
+          line.title += ' (' + expTitle + ')';
         }
         line.or = getDatumValue(orFunc, j, i);
         line.wt = getDatumValue(wtFunc, j, i);
@@ -723,6 +725,7 @@
         var line = {};
         line.paper = currentMetaanalysis.papers[i].title;
         line.exp = currentMetaanalysis.papers[i].experiments[j].title;
+        if (line.exp.match(/^\d+$/)) line.exp = 'Exp. ' + line.exp;
         line.or = getDatumValue(orFunc, j, i);
         line.wt = getDatumValue(wtFunc, j, i);
         line.lcl = getDatumValue(lclFunc, j, i);
