@@ -44,11 +44,11 @@ api.get(`/profile/:email(${config.EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUser
 
 api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})`,
         REGISTER_USER, listPapersForUser);
-api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
+api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         REGISTER_USER, getPaperVersion);
-api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/:time([0-9]+)/`,
+api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
         REGISTER_USER, getPaperVersion);
-api.post(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
+api.post(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         GUARD, SAME_USER, jsonBodyParser, savePaper);
 // todo above, a user that isn't SAME_USER should be able to submit new comments
 
@@ -57,11 +57,11 @@ api.post('/columns', GUARD, REGISTER_USER, jsonBodyParser, saveColumn);
 
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})`,
         REGISTER_USER, listMetaanalysesForUser);
-api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
+api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         REGISTER_USER, getMetaanalysisVersion);
-api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/:time([0-9]+)/`,
+api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
         REGISTER_USER, getMetaanalysisVersion);
-api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.TITLE_RE})/`,
+api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         GUARD, SAME_USER, jsonBodyParser, saveMetaanalysis);
 
 
