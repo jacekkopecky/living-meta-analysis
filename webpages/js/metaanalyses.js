@@ -1275,7 +1275,7 @@
         addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
 
         _.setDataProps(tr, '.exptitle.editing', 'origTitle', experiment.title);
-        addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', '.exptitle.editing ~ * .exprenamecancel', 'textContent', checkExperimentTitleUnique, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
+        addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', '.exptitle.editing ~ * .exprenamecancel', 'textContent', checkExperimentTitle, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
 
         // Now we track paperinfo@<index> and experimentinfo@<paper>,<exp>
         setupPopupBoxPinning(tr, '.paperinfo.popupbox', papIndex);
@@ -2345,13 +2345,8 @@
     return title;
   }
 
-  function checkExperimentTitleUnique(title, editingEl) {
+  function checkExperimentTitle(title) {
     if (title === '') throw null; // no message necessary
-    var titles = currentMetaanalysis.papers.map(function(paper){paper.experiments.map(function (exp) { return paper.title+'-'+exp.title; })});
-
-    if (title !== editingEl.dataset.origTitle && titles.indexOf(title) !== -1) {
-      throw 'must be unique';
-    }
     if (!title.match(_.lettersAndNumberRE)) throw 'only characters and digits';
     return title;
   }

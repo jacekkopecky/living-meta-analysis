@@ -521,7 +521,7 @@
       addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
 
       _.setDataProps(tr, '.exptitle.editing', 'origTitle', experiment.title);
-      addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitleUnique, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
+      addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitle, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
 
       setupPopupBoxPinning(tr, '.fullrowinfo.popupbox', expIndex);
 
@@ -1301,13 +1301,9 @@
     return title;
   }
 
-  function checkExperimentTitleUnique(title, editingEl) {
+  function checkExperimentTitle(title) {
     if (title === '') throw null; // no message necessary
     if (!title.match(_.lettersAndNumbersRE)) throw 'only characters and digits';
-    var titles = currentPaper.experiments.map(function (exp) { return exp.title; });
-    if (title !== editingEl.dataset.origTitle && titles.indexOf(title) !== -1) {
-      throw 'must be unique';
-    }
     return title;
   }
 
