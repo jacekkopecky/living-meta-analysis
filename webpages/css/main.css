@@ -2401,6 +2401,10 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
  *
  *
  */
+#metaanalysis .plots {
+  margin-top: 2em;
+}
+
 #metaanalysis .plots svg.maximized {
   position: fixed;
   bottom: 0;
