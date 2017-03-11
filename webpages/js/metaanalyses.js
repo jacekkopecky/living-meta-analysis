@@ -2390,7 +2390,7 @@
 
     // every 60s update the screen to say something like "it's been minutes without saving, take a break!"
     savePendingStart = Date.now();
-    savePendingInterval = setInterval(savePendingTick, 60000);
+    if (!savePendingInterval) savePendingInterval = setInterval(savePendingTick, 60000);
   }
 
   function savePendingTick() {
