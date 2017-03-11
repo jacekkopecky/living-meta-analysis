@@ -566,7 +566,7 @@ section.list > ul > li > ul.tags > li {
 #paper .link .editing:focus {
   white-space: pre-line;
   overflow: visible;
-  text-overflow: unset;
+  text-overflow: initial;
 }
 
 #paper > header {
@@ -1573,7 +1573,7 @@ body.addnewcolumn #metaanalysis table.experiments {
 body:not(.page-about-you) #paper.no-data .no-table,
 body:not(.editing) #paper.no-data .no-table,
 body:not(.page-about-you) #metaanalysis.no-data .no-table,
-body:not(.editing) #metaanalysis.no-data .no-table, {
+body:not(.editing) #metaanalysis.no-data .no-table {
   display: block;
   padding: .5em;
   border: 1px solid black;
@@ -2442,7 +2442,7 @@ select.validationerror {
   position: relative;
 }
 
-[contenteditable].validationerror[data-validationmessage]:after {
+[contenteditable].validationerror[data-validationmessage]:after,
 select.validationerror[data-validationmessage]:after {
   font-size: .8rem;
   font-weight: normal;
