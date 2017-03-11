@@ -1502,7 +1502,7 @@ body:not(.page-about-you).signed-on #metaanalysis > header .edityourcopy {
   vertical-align: top;
 }
 
-#metaanalysis table.experiments tr:not(.add) .papertitle {
+#metaanalysis table.experiments tr:not(.add) th.papertitle {
   position: relative;
 }
 
@@ -2333,9 +2333,8 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
   display: none;
 }
 
-#metaanalysis table.experiments th.papertitle > span {
-    margin-bottom: 1.5em;
-    display: block;
+body.editing #metaanalysis table.experiments th.papertitle {
+  padding-bottom: 1.5em; /* to give space to the "add" buttons */
 }
 
 /* aggregates
@@ -2405,7 +2404,11 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
   margin-top: 2em;
 }
 
-#metaanalysis .plots svg.maximized {
+#metaanalysis .plots > svg:not(.maximized) {
+  margin-right: 17rem; /* 15em for width of popupbox and 2em for extra gap */
+}
+
+#metaanalysis .plots > svg.maximized {
   position: fixed;
   bottom: 0;
   right: 0;
