@@ -330,6 +330,7 @@
     _.addEventListener(metaanalysisEl, '[data-focuses]', 'click', focusAnotherElementOnClick);
 
     _.addEventListener(metaanalysisEl, '.savingerror', 'click', _.manualSave);
+    _.addEventListener(metaanalysisEl, '.savepending', 'click', _.manualSave);
     _.addEventListener(metaanalysisEl, '.validationerrormessage', 'click', focusFirstValidationError);
     _.addEventListener(metaanalysisEl, '.unsavedmessage', 'click', focusFirstUnsaved);
 

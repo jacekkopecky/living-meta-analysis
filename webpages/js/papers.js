@@ -299,6 +299,7 @@
     _.addEventListener(paperEl, '[data-focuses]', 'click', focusAnotherElementOnClick);
 
     _.addEventListener(paperEl, '.savingerror', 'click', _.manualSave);
+    _.addEventListener(paperEl, '.savepending', 'click', _.manualSave);
     _.addEventListener(paperEl, '.validationerrormessage', 'click', focusFirstValidationError);
     _.addEventListener(paperEl, '.unsavedmessage', 'click', focusFirstUnsaved);
 
