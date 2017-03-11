@@ -6,6 +6,8 @@
 
 'use strict';
 
+console.log('LiMA server starting at ' + new Date());
+
 const express = require('express');
 const googleOpenID = require('simple-google-openid');
 const http = require('http');
