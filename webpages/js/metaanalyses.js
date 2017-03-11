@@ -411,7 +411,7 @@
     plotsContainer.innerHTML = '';
 
     var plotEl = _.cloneTemplate('forest-plot-template').children[0];
-    plotEl.classList.toggle('maximized', localStorage.plotMaximized);
+    plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
 
     // get the data
     orFunc.formula = lima.createFormulaString(orFunc);
