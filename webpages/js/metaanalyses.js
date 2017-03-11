@@ -2327,11 +2327,11 @@
   function checkTitleUnique(title, el) {
     if (title === '') throw null; // no message necessary
     if (title === 'paper' || title === 'metaanalysis') throw '"paper/metaanalysis" are reserved titles';
-    if (!title.match(/^[a-zA-Z0-9.-]+$/)) throw 'metaanalysis short name cannot contain spaces or special characters';
+    if (!title.match(_.lettersAndNumberRE)) throw 'metaanalysis short name cannot contain spaces or special characters';
     loadAllTitles();
     if (title !== el.dataset.origTitle && allTitles.indexOf(title) !== -1) {
       // try to give a useful suggestion for common names like Juliet94a
-      var match = title.match(/(^[a-zA-Z0-9]*[0-9]+)([a-zA-Z]?)$/);
+      var match = title.match(/(^.*[0-9]+)([a-zA-Z]?)$/);
       if (match) {
         var suggestion = match[1];
         var postfix = 97; // 97 is 'a'; 123 is beyond 'z'
@@ -2347,12 +2347,12 @@
 
   function checkExperimentTitleUnique(title, editingEl) {
     if (title === '') throw null; // no message necessary
-    if (!title.match(/^[a-zA-Z0-9.-]+$/)) throw 'only characters and digits';
     var titles = currentMetaanalysis.papers.map(function(paper){paper.experiments.map(function (exp) { return paper.title+'-'+exp.title; })});
 
     if (title !== editingEl.dataset.origTitle && titles.indexOf(title) !== -1) {
       throw 'must be unique';
     }
+    if (!title.match(_.lettersAndNumberRE)) throw 'only characters and digits';
     return title;
   }
 
