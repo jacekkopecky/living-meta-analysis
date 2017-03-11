@@ -1506,7 +1506,7 @@ body:not(.page-about-you).signed-on #metaanalysis > header .edityourcopy {
   position: relative;
 }
 
-#metaanalysis table.experiments tr:not(.paperstart) .papertitle {
+#metaanalysis table.experiments tr:not(.paperstart) th.papertitle {
   display: none;
 }
 
