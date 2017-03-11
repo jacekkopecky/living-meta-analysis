@@ -254,8 +254,6 @@
   function updateMetaanalysisView() {
     if (!currentMetaanalysis) return;
 
-    // check for papers that we don't have in paperOrder
-    // those will be newly added papers that just got saved and now have an ID
     updatePaperOrder();
 
     fillMetaanalysis(currentMetaanalysis);
@@ -264,6 +262,8 @@
     if (!currentMetaanalysis.id) focusFirstValidationError();
   }
 
+  // check for papers that we don't have in paperOrder
+  // those will be newly added papers that just got saved and now have an ID
   function updatePaperOrder() {
     currentMetaanalysis.papers.forEach(function(paper){
       if (paper.id && currentMetaanalysis.paperOrder.indexOf(paper.id) == -1) {
