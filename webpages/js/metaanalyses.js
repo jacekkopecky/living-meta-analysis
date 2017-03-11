@@ -288,9 +288,12 @@
 
     if (!metaanalysis.id) {
       _.addClass('body', 'new');
-      lima.toggleEditing(true);
     } else {
       _.removeClass('body', 'new');
+    }
+
+    if (!metaanalysis.id || lima.userLocalStorage) {
+      lima.toggleEditing(true);
     }
 
     var metaanalysisTemplate = _.byId('metaanalysis-template');

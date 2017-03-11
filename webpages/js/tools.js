@@ -618,8 +618,8 @@
 
     var currentUser = lima.getAuthenticatedUserEmail();
 
-    var y = (currentUser == lima.userPageIsAbout.email);
-    var n = lima.userPageIsAbout.name.givenName || 'User';
+    var y = (currentUser == lima.userPageIsAbout.email || lima.userLocalStorage);
+    var n = !lima.userLocalStorage && lima.userPageIsAbout.name.givenName || 'User';
 
     lima.pageAboutYou = y;
 
@@ -633,8 +633,11 @@
     _.fillEls('.blankOrYour', y ? 'Your ' : '' );
 
     _.findEls('.needs-owner').forEach(function (el) {
-      if (el.dataset.owner === currentUser) el.classList.add('yours');
-      else                                  el.classList.remove('yours');
+      if (lima.userLocalStorage || el.dataset.owner === currentUser) {
+        el.classList.add('yours');
+      } else {
+        el.classList.remove('yours');
+      }
     });
   }
 
