@@ -743,8 +743,8 @@
       for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
         if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
         var line = {};
-        line.paper = currentMetaanalysis.papers[i].title;
-        line.exp = currentMetaanalysis.papers[i].experiments[j].title;
+        line.paper = currentMetaanalysis.papers[i].title || 'new paper';
+        line.exp = currentMetaanalysis.papers[i].experiments[j].title || 'new experiment';
         if (line.exp.match(/^\d+$/)) line.exp = 'Exp. ' + line.exp;
         line.or = getDatumValue(orFunc, j, i);
         line.wt = getDatumValue(wtFunc, j, i);
@@ -752,7 +752,7 @@
         line.ucl = getDatumValue(uclFunc, j, i);
         line.group = getDatumValue(moderatorParam, j, i);
 
-        if (line.group != null && groups.indexOf(line.group) === -1) groups.push(line.group);
+        if (line.group != null && line.group != '' && groups.indexOf(line.group) === -1) groups.push(line.group);
 
         // if any of the values is NaN or ±Infinity, disregard this experiment
         if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
