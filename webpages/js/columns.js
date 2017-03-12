@@ -31,7 +31,7 @@
   }
 
   lima.newColumn = function() {
-    return storeColumn({id: 'new_' + Date.now(), type: lima.columnTypes[0], new: true});
+    return storeColumn({id: _.createId('col'), type: lima.columnTypes[0], new: true});
   }
 
   function storeColumns(columns) {

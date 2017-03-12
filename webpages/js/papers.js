@@ -164,11 +164,20 @@
     var self = this;
     if (!(self instanceof Paper)) self = new Paper();
 
+    var oldId = self.id;
+
     // clean all properties of this paper
     for (var prop in self) { if (self.hasOwnProperty(prop)) { delete self[prop]; } }
 
     // get data from the new paper
     Object.assign(self, newPaper);
+
+    if (!self.id) {
+      self.id = oldId || _.createId('paper');
+      self.new = true;
+    } else if (oldId != self.id) {
+      self.oldTemporaryId = oldId;
+    }
 
     // if paper doesn't have experiments or column order, add empty arrays for ease of handling
     if (!Array.isArray(self.experiments)) self.experiments = [];
@@ -223,7 +232,7 @@
     fillPaper(currentPaper);
 
     // for a new paper, go to editing the title
-    if (!currentPaper.id) focusFirstValidationError();
+    if (currentPaper.new) focusFirstValidationError();
   }
 
   var startNewTag = null;
@@ -239,13 +248,13 @@
 
     resetComputedDataSetters();
 
-    if (!paper.id) {
+    if (paper.new) {
       _.addClass('body', 'new');
     } else {
       _.removeClass('body', 'new');
     }
 
-    if (!paper.id || lima.userLocalStorage) {
+    if (paper.new || lima.userLocalStorage) {
       lima.toggleEditing(true);
     }
 
@@ -1384,16 +1393,26 @@
     var self = this;
     return lima.getGapiIDToken()
       .then(function(idToken) {
+        var toSend;
+        if (self.new) {
+          var oldId = self.id;
+          delete self.id;
+          toSend = JSON.stringify(self);
+          self.id = oldId;
+        } else {
+          toSend = JSON.stringify(self);
+        }
         return fetch(self.apiurl, {
           method: 'POST',
           headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
-          body: JSON.stringify(self),
+          body: toSend,
         });
       })
       .then(_.fetchJson)
       .then(function(paper) {
         return self.init(paper);
       })
+      .then(lima.updateAfterPaperSave) // will be a no-op if the function is undefined
       .then(lima.updateView)
       .then(lima.updatePageURL)
       .catch(function(err) {

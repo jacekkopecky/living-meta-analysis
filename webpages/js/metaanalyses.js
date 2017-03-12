@@ -252,20 +252,30 @@
   function updateMetaanalysisView() {
     if (!currentMetaanalysis) return;
 
-    updatePaperOrder();
-
     fillMetaanalysis(currentMetaanalysis);
 
     // for a new metaanalysis, go to editing the title
     if (!currentMetaanalysis.id) focusFirstValidationError();
   }
 
-  // check for papers that we don't have in paperOrder
-  // those will be newly added papers that just got saved and now have an ID
-  function updatePaperOrder() {
+  function updateAfterPaperSave() {
     currentMetaanalysis.papers.forEach(function(paper){
-      if (paper.id && currentMetaanalysis.paperOrder.indexOf(paper.id) == -1) {
-        currentMetaanalysis.paperOrder.push(paper.id);
+      // check for papers that we don't have in paperOrder
+      // those will be newly added papers that just got saved and now have a new ID
+      if (currentMetaanalysis.paperOrder.indexOf(paper.id) == -1) {
+        var oldIndex = currentMetaanalysis.paperOrder.indexOf(paper.oldTemporaryId);
+        if (oldIndex !== -1) {
+          currentMetaanalysis.paperOrder[oldIndex] = paper.id;
+        } else {
+          // old ID not found, strange, just add the paper to the end
+          console.error(new Error('did not have paper in the metaanalysis paperorder: ' + paper.id));
+          currentMetaanalysis.paperOrder.push(paper.id);
+        }
+        _.scheduleSave(currentMetaanalysis);
+      }
+
+      // also replace oldTemporaryId with the new id in excludedExperiments
+      if (replaceExcludedPaperId(paper.oldTemporaryId, paper.id)) {
         _.scheduleSave(currentMetaanalysis);
       }
     });
@@ -2029,7 +2039,7 @@
 
     var paper = currentMetaanalysis.papers[paperIndex];
     // don't delete if the paper is already saved
-    if (paper.id) return;
+    if (!paper.new) return;
 
     // if the user has been able to add a second experiment, the paper is no longer empty.
     if (paper.experiments.length > 1) return;
@@ -2066,8 +2076,8 @@
     .then(function (newPaper) {
       // Populate an empty experiment
       newPaper.experiments.push({});
-      // Fill in missing user information
       currentMetaanalysis.papers.push(newPaper);
+      currentMetaanalysis.paperOrder.push(newPaper.id);
       updateMetaanalysisView();
       setTimeout(focusFirstValidationError, 0);
     });
@@ -2608,6 +2618,21 @@
 
     return excluded;
   }
+
+  function replaceExcludedPaperId(oldId, newId) {
+    var retval = false;
+    if (oldId == null) return false;
+    currentMetaanalysis.excludedExperiments.forEach(function (expId, index) {
+      var split = expId.split(',');
+      if (split[0] == oldId) {
+        currentMetaanalysis.excludedExperiments[index] = newId + ',' + split[1];
+        retval = true;
+      }
+    });
+    return retval;
+  }
+
+
   /* changing cols
    *
    *
@@ -3384,6 +3409,7 @@
     lima.saveStarted = saveStarted;
     lima.saveStopped = saveStopped;
     lima.updateAfterColumnSave = updateAfterColumnSave;
+    lima.updateAfterPaperSave = updateAfterPaperSave;
     lima.updatePageURL = updatePageURL;
     lima.updateView = updateMetaanalysisView;
 

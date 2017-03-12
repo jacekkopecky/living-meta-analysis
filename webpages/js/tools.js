@@ -820,6 +820,18 @@
     );
   }
 
+  var lastTime = 0;
+
+  // unsaved new things (e.g. papers) have temporary IDs, this function generates them
+  _.createId = function createId(type) {
+    var currTime = Date.now();
+    if (lastTime >= currTime) {
+      currTime = lastTime + 1;
+    }
+    lastTime = currTime;
+    return 'new_' + type + '_' + currTime;
+  }
+
   /* page leave
    *
    *
