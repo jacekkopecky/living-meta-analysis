@@ -557,6 +557,11 @@
           fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', paper, ['experiments', expIndex, 'data', col, 'comments']);
 
           td.classList.add(lima.columns[col].type);
+
+          if (lima.columns[col].new) {
+            td.classList.add('newcol');
+          }
+
         } else {
           // computed column
           td.classList.add('computed');
@@ -588,10 +593,6 @@
           setupPopupBoxPinning(td, '.datum.popupbox', expIndex + ',' + col.formula);
 
           td.classList.add('result');
-        }
-
-        if (col.new) {
-          td.classList.add('newcol');
         }
 
       });
