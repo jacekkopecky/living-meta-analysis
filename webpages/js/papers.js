@@ -155,12 +155,7 @@
     });
 
     // clean columns the same way
-    if (Array.isArray(currentPaper.columns)) currentPaper.columns.forEach(function (key, index) {
-      var col = lima.columns[key];
-      if (col && col.id !== key) {
-        currentPaper.columns[index] = col.id;
-      }
-    });
+    lima.updateColumnListAfterColumnSave(currentPaper.columns);
 
     updatePaperView();
   }

@@ -157,12 +157,9 @@
       // don't clean columns the same way - in metaanalyses.js, we shouldn't be touching papers' columns
     });
 
-    if (Array.isArray(currentMetaanalysis.columns)) currentMetaanalysis.columns.forEach(function (key, index) {
-      var col = lima.columns[key];
-      if (col && col.id !== key) {
-        currentMetaanalysis.columns[index] = col.id;
-      }
-    });
+    // clean metaanalysis columns, aggregates and plots
+    lima.updateColumnListAfterColumnSave(currentMetaanalysis.columns);
+    lima.updateColumnListAfterColumnSave(currentMetaanalysis.aggregates);
 
     updateMetaanalysisView();
   }

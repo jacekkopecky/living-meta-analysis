@@ -83,4 +83,24 @@
       })
   }
 
+  lima.updateColumnListAfterColumnSave = function updateColumnListAfterColumnSave(list) {
+    if (!Array.isArray(list)) return;
+
+    list.forEach(function (key, index) {
+      if (typeof key === 'string') {
+        // data column
+        var col = lima.columns[key];
+        if (col && col.id !== key) {
+          list[index] = col.id;
+        }
+      } else {
+        // computed column
+        updateColumnListAfterColumnSave(key.formulaParams);
+        if (key.formula) {
+          key.formula = lima.createFormulaString(key);
+        }
+      }
+    });
+  }
+
 })(window, document);
