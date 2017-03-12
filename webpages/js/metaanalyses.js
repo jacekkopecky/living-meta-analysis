@@ -139,6 +139,7 @@
   function Metaanalysis() {}
   Metaanalysis.prototype.save = saveMetaanalysis;
   Metaanalysis.prototype.init = initMetaanalysis;
+  Metaanalysis.prototype.saveOrder = 3; // after columns and papers
 
   function updateAfterColumnSave() {
     // clean experiment data of new columns that got new ID when they were saved

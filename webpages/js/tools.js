@@ -780,8 +780,14 @@
       return;
     }
 
-    // call the next saved saving function, on its success come to the rest
-    currentSavingFunction = pendingSaveFunctions.shift();
+    // call the next saving function, on its success come to the rest
+    // find saving function with minimum saveOrder so dependencies don't break
+    var next = 0;
+    for (var i=1; i<pendingSaveFunctions.length; i+=1) {
+      if (pendingSaveFunctions[i].saveOrder < pendingSaveFunctions[next].saveOrder) next = i;
+    }
+    currentSavingFunction = pendingSaveFunctions[next];
+    pendingSaveFunctions.splice(next, 1);
 
     if (lima.saveStarted) lima.saveStarted();
 

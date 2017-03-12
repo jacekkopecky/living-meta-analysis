@@ -50,6 +50,7 @@
   }
 
   function Column() {}
+  Column.prototype.saveOrder = 1; // this will be saved first
   Column.prototype.save = function saveColumn() {
     var col = this;
     var oldId = col.id;

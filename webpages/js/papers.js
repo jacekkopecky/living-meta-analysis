@@ -140,6 +140,7 @@
   function Paper() {}
   Paper.prototype.save = savePaper;
   Paper.prototype.init = initPaper;
+  Paper.prototype.saveOrder = 2; // between columns and metaanalyses
 
   function updateAfterColumnSave() {
     // clean experiment data of new columns that got new ID when they were saved
