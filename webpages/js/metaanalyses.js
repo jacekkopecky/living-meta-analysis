@@ -1344,7 +1344,7 @@
               _.fillEls(td, '.value', val.value);
             }
 
-            addOnInputUpdater(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', col, 'value'], recalculateComputedData);
+            addOnInputUpdater(td, '.value', 'textContent', trimmingSanitizer, paper, ['experiments', expIndex, 'data', col, 'value'], recalculateComputedData);
 
             var user = lima.getAuthenticatedUserEmail();
             _.fillEls (td, '.valenteredby', val && val.enteredBy || user);
@@ -2909,6 +2909,8 @@
    *
    */
   var identity = null; // special value to use as validatorSanitizer
+
+  function trimmingSanitizer(val) { if (typeof val === 'string') return val.trim(); else return val; }
 
   function addOnInputUpdater(root, selector, property, validatorSanitizer, target, targetProp, onchange) {
     if (!(root instanceof Node)) {
