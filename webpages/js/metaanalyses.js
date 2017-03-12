@@ -435,10 +435,13 @@
         line.ucl = getDatumValue(uclFunc, j, i);
         lines.push(line);
 
-        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0)) {
-          line.lcl = 0;
-          line.ucl = 0;
-          line.wt = 0;
+        // if any of the values is NaN or ±Infinity, disregard this experiment
+        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
+            line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
+          delete line.or;
+          delete line.lcl;
+          delete line.ucl;
+          delete line.wt;
         }
       }
     }
@@ -470,8 +473,8 @@
     //   min of lcl and aggr lcl
     //   max of ucl and aggr ucl
     var sumOfWt = 0;
-    var minWt = lines[0].wt;
-    var maxWt = lines[0].wt;
+    var minWt = Infinity;
+    var maxWt = -Infinity;
     var minLcl = aggregates.lcl;
     var maxUcl = aggregates.ucl;
 
@@ -479,6 +482,7 @@
     if (isNaN(maxUcl)) maxUcl = 0;
 
     lines.forEach(function (line) {
+      if (line.or == null) return;
       sumOfWt += line.wt;
       if (line.wt < minWt) minWt = line.wt;
       if (line.wt > maxWt) maxWt = line.wt;
@@ -488,6 +492,9 @@
 
     if (minLcl < -10) minLcl = -10;
     if (maxUcl > 10) maxUcl = 10;
+
+    if (minWt == Infinity) minWt = maxWt = 1;
+    if (sumOfWt == 0) sumOfWt = 1;
 
     var TICK_SPACING;
 
@@ -549,25 +556,27 @@
 
     // put experiments into the plot
     lines.forEach(function (line) {
-      if (isNaN(line.or*0)) return;
-
       var expT = _.findEl(plotEl, 'template.experiment');
       var expEl = _.cloneTemplate(expT);
 
       expEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
 
       _.fillEls(expEl, '.expname', line.title);
-      _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
-      _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
-      _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
-      _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
+      if (line.or != null) {
+        _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
+        _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
+        _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
+        _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
 
-      _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
-      _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
+        _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
+        _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
 
-      _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
-      _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
-      _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
+        _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
+        _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
+        _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
+      } else {
+        expEl.classList.add('invalid');
+      }
 
       expT.parentElement.insertBefore(expEl, expT);
 
@@ -732,15 +741,18 @@
         line.lcl = getDatumValue(lclFunc, j, i);
         line.ucl = getDatumValue(uclFunc, j, i);
         line.group = getDatumValue(moderatorParam, j, i);
-        data.push(line);
 
         if (line.group != null && groups.indexOf(line.group) === -1) groups.push(line.group);
 
-        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0)) {
-          line.lcl = 0;
-          line.ucl = 0;
-          line.wt = 0;
+        // if any of the values is NaN or ±Infinity, disregard this experiment
+        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
+            line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
+          delete line.or;
+          delete line.lcl;
+          delete line.ucl;
+          delete line.wt;
         }
+        data.push(line);
       }
     }
 
@@ -759,8 +771,9 @@
     var perGroup = {};
     dataGroups.forEach(function (dataGroup) {
       perGroup[dataGroup[0].group] = {};
-      perGroup[dataGroup[0].group].wt = dataGroup.reduce(function sum(acc, line) {return acc+line.wt;}, 0);
-      perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return acc+line.or*line.wt;}, 0) / perGroup[dataGroup[0].group].wt;
+      perGroup[dataGroup[0].group].wt = dataGroup.reduce(function sum(acc, line) {return line.wt != null ? acc+line.wt : acc;}, 0);
+      if (perGroup[dataGroup[0].group].wt == 0) perGroup[dataGroup[0].group].wt = 1;
+      perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return line.wt != null ? acc+line.or*line.wt : acc;}, 0) / perGroup[dataGroup[0].group].wt;
     });
 
     // todo highlight the current experiment in forest plot and in grape chart
@@ -769,12 +782,13 @@
     plotEl.setAttribute('width', parseInt(plotEl.dataset.zeroGroupsWidth) + groups.length * parseInt(plotEl.dataset.groupSpacing));
     plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
 
-    var minWt = data[0].wt;
-    var maxWt = data[0].wt;
-    var minOr = data[0].or;
-    var maxOr = data[0].or;
+    var minWt = Infinity;
+    var maxWt = -Infinity;
+    var minOr = Infinity;
+    var maxOr = -Infinity;
 
     data.forEach(function (exp) {
+      if (exp.or == null) return;
       if (exp.wt < minWt) minWt = exp.wt;
       if (exp.wt > maxWt) maxWt = exp.wt;
       if (exp.or < minOr) minOr = exp.or;
@@ -783,6 +797,9 @@
 
     if (minOr < -10) minOr = -10;
     if (maxOr > 10) maxOr = 10;
+
+    if (minOr == Infinity) minOr = maxOr = 0;
+    if (minWt == Infinity) minWt = maxWt = 1;
 
     var TICK_SPACING;
 
@@ -816,6 +833,7 @@
 
     var yRatio = 1/(maxOr-minOr)*parseInt(plotEl.dataset.graphHeight);
     function getY(logVal) {
+      if (logVal == null) return 0;
       return -(logVal-minOr)*yRatio;
     }
 
@@ -839,6 +857,7 @@
 
     // return the grape radius for a given weight
     function getGrapeRadius(wt) {
+      if (wt == null) return minGrapeSize;
       return (Math.sqrt(wt)-minWt)*wtRatio + minGrapeSize;
     }
 
@@ -894,9 +913,14 @@
 
         _.fillEls(tooltipEl, 'text.paper', exp.paper);
         _.fillEls(tooltipEl, 'text.exp', exp.exp);
-        _.fillEls(tooltipEl, 'text.or', Math.exp(exp.or).toPrecision(3));
-        _.fillEls(tooltipEl, 'text.wt', '' + (exp.wt*100/perGroup[group].wt).toPrecision(3) + '%');
-        _.fillEls(tooltipEl, 'text.ci', "" + exp.lcl.toPrecision(3) + ", " + exp.ucl.toPrecision(3));
+        if (exp.or != null) {
+          _.fillEls(tooltipEl, 'text.or', Math.exp(exp.or).toPrecision(3));
+          _.fillEls(tooltipEl, 'text.wt', '' + (exp.wt*100/perGroup[group].wt).toPrecision(3) + '%');
+          _.fillEls(tooltipEl, 'text.ci', "" + exp.lcl.toPrecision(3) + ", " + exp.ucl.toPrecision(3));
+        } else {
+          grapeEl.classList.add('invalid');
+          tooltipEl.classList.add('invalid');
+        }
 
         if (isTopHalf(exp.or)) {
           _.addClass(tooltipEl, '.tooltip', 'tophalf');
