@@ -3,10 +3,12 @@
   var lima = window.lima;
   var _ = lima._;
 
+  lima.localStorageUserEmailAddress = 'lima@local';
+
   lima.requestAndFillUserProfile = function requestAndFillUserProfile() {
     var email = lima.extractUserProfileEmailFromUrl();
 
-    if (email == 'lima@local') {
+    if (email == lima.localStorageUserEmailAddress) {
       lima.userLocalStorage = true;
       lima.userPageIsAbout = {};
       return;

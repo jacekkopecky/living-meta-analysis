@@ -265,7 +265,9 @@
     fillTags(paperEl, paper);
     fillPaperExperimentTable(paper);
 
-    var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), paper.title);
+    // for now, do local storage "edit your copy"
+    // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), paper.title);
+    var ownURL = createPageURL(lima.localStorageUserEmailAddress, paper.title);
     _.setProps(paperEl, '.edityourcopy a', 'href', ownURL);
 
     _.fillEls(paperEl, '.title', paper.title);

@@ -312,7 +312,9 @@
     fillMetaanalysisExperimentTable(metaanalysis);
     fillAggregateTable(metaanalysis);
 
-    var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), metaanalysis.title);
+    // for now, do local storage "edit your copy"
+    // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), metaanalysis.title);
+    var ownURL = createPageURL(lima.localStorageUserEmailAddress, metaanalysis.title);
     _.setProps(metaanalysisEl, '.edityourcopy a', 'href', ownURL);
 
     _.fillEls(metaanalysisEl, '.title', metaanalysis.title);

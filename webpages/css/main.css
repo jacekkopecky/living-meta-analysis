@@ -927,7 +927,8 @@ body.page-about-you.editing .fullcolinfo header {
   display: none;
 }
 
-#paper > header .edityourcopy {
+#paper > header .edityourcopy,
+#metaanalysis > header .edityourcopy {
   color: black;
   font-style: italic;
   padding: .5em .8em;
@@ -942,16 +943,19 @@ body.page-about-you.editing .fullcolinfo header {
   display: none;
 }
 
-#paper > header .edityourcopy a {
+#paper > header .edityourcopy a,
+#metaanalysis > header .edityourcopy a {
   text-decoration: none;
   color: inherit;
 }
 
-#paper > header .edityourcopy:hover {
+#paper > header .edityourcopy:hover,
+#metaanalysis > header .edityourcopy:hover {
   background: #ddf;
 }
 
-body:not(.page-about-you).signed-on #paper > header .edityourcopy {
+body:not(.page-about-you) #paper > header .edityourcopy,
+body:not(.page-about-you) #metaanalysis > header .edityourcopy {
   display: block;
 }
 
@@ -1433,34 +1437,6 @@ body.page-about-you.editing .fullcolinfo header {
   right: 0;
   bottom: 100%;
   display: none;
-}
-
-#metaanalysis > header .edityourcopy {
-  color: black;
-  font-style: italic;
-  padding: .5em .8em;
-  margin: .5em 0 0 0;
-  border-radius: .4em;
-  background: white;
-  border: 2px solid #ddf;
-  position: absolute;
-  right: 0;
-  top: 100%;
-  font-size: 80%;
-  display: none;
-}
-
-#metaanalysis > header .edityourcopy a {
-  text-decoration: none;
-  color: inherit;
-}
-
-#metaanalysis > header .edityourcopy:hover {
-  background: #ddf;
-}
-
-body:not(.page-about-you).signed-on #metaanalysis > header .edityourcopy {
-  display: block;
 }
 
 #metaanalysis.saving > header .saving,
