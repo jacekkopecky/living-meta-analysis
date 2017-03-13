@@ -3,17 +3,24 @@
   var lima = window.lima;
   var _ = lima._;
 
-  function extractPaperTitleFromUrl() {
+  function extractPaperTitleFromUrl(path) {
     // the path of a page for a paper will be '/email/title/*',
     // so extract the 'title' portion here:
 
-    var start = window.location.pathname.indexOf('/', 1) + 1;
+    if (!path) path = window.location.pathname;
+
+    var start = path.indexOf('/', 1) + 1;
     if (start === 0) throw new Error('page url doesn\'t have a title');
 
-    return window.location.pathname.substring(start, window.location.pathname.indexOf('/', start));
+    var rest = path.indexOf('/', start);
+    if (rest === -1) rest = Infinity;
+
+    return path.substring(start, rest);
   }
 
   function updatePageURL() {
+    if (extractPaperTitleFromUrl() == currentPaper.title) return; // all done
+
     // the path of a page for a paper will be '/email/title/*',
     // so update the 'title' portion here from the current paper (in case the user changes the title)
     var start = window.location.pathname.indexOf('/', 1) + 1;
@@ -54,6 +61,9 @@
       if (response.status === 404) return [];
       else return _.fetchJson(response);
     })
+    .then(function (papers) {
+      return papers.concat(loadAllLocalPapers());
+    })
     .then(fillPapersList)
     .catch(function (err) {
       console.error("problem getting papers");
@@ -69,13 +79,19 @@
     if (papers.length) {
       // todo sort
       papers.forEach(function (paper) {
-        var li = _.cloneTemplate('paper-list-item-template');
+        var li = _.cloneTemplate('paper-list-item-template').children[0];
         _.fillEls(li, '.name', paper.title);
         _.fillEls(li, '.reference', paper.reference);
         _.setProps(li, '.reference', 'title', paper.reference);
         _.fillEls(li, '.description', paper.description);
         _.setProps(li, '.description', 'title', paper.description);
-        _.setProps(li, 'a.mainlink', 'href', paper.title);
+        if (!paper.storedLocally) {
+          _.setProps(li, 'a.mainlink', 'href', paper.title);
+        } else {
+          _.setProps(li, 'a.mainlink', 'href', '/' + lima.localStorageUserEmailAddress + '/' + paper.title + '?type=paper'); // hint in case of local storage
+          li.classList.add('local');
+          // todo do something with the above class - highlight local papers
+        }
         _.fillTags(li, '.tags', paper.tags);
         list.appendChild(li);
       });
@@ -104,6 +120,17 @@
 
   function requestPaper(title) {
     var email = lima.extractUserProfileEmailFromUrl();
+
+    if (lima.userLocalStorage) {
+      return Promise.resolve()
+      .then(loadLocalPapersList)
+      .then(function() { return loadLocalPaper('/' + email + '/' + title); })
+      .catch(function (err) {
+        console.error("problem getting local paper ", title);
+        console.error(err);
+        _.notFound();
+      });
+    }
 
     return lima.getGapiIDToken()
     .then(function (idToken) {
@@ -269,6 +296,8 @@
     // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), paper.title);
     var ownURL = createPageURL(lima.localStorageUserEmailAddress, paper.title);
     _.setProps(paperEl, '.edityourcopy a', 'href', ownURL);
+
+    paperEl.classList.toggle('localsaving', !!paper.storedLocally);
 
     _.fillEls(paperEl, '.title', paper.title);
     _.fillEls (paperEl, '.reference .value', paper.reference);
@@ -1281,7 +1310,16 @@
       allTitlesNextUpdate = curtime + 5 * 60 * 1000; // update titles no less than 5 minutes from now
       fetch('/api/titles')
       .then(_.fetchJson)
-      .then(function (titles) { allTitles = titles; })
+      .then(function (titles) {
+        allTitles = titles;
+        if (lima.userLocalStorage) {
+          loadLocalPapersList();
+          Object.keys(localPapers).forEach(function (localURL) {
+            var title = extractPaperTitleFromUrl(localURL);
+            if (allTitles.indexOf(title) === -1) allTitles.push(title);
+          })
+        }
+      })
       .catch(function (err) {
         console.error('problem getting paper titles');
         console.error(err);
@@ -1393,6 +1431,9 @@
 
   function savePaper() {
     var self = this;
+
+    if (lima.userLocalStorage) return savePaperLocally(self);
+
     return lima.getGapiIDToken()
       .then(function(idToken) {
         var toSend;
@@ -1423,6 +1464,48 @@
         else console.error(err);
         throw err;
       })
+  }
+
+  var localPapers;
+
+  function loadLocalPapersList() {
+    if (!localPapers) {
+      if (localStorage.papers) {
+        localPapers = JSON.parse(localStorage.papers);
+      } else {
+        localPapers = {};
+      }
+    }
+    return localPapers;
+  }
+
+  function loadAllLocalPapers() {
+    loadLocalPapersList();
+    return Object.keys(localPapers).map(loadLocalPaper);
+  }
+
+  function loadLocalPaper(path) {
+    var val = localStorage[localPapers[path]];
+    if (!val) throw new Error('cannot find local paper at ' + path);
+    return initPaper(JSON.parse(val));
+    // todo also load the paper from the server and check if it is outdated
+  }
+
+  function savePaperLocally(paper) {
+    try {
+      loadLocalPapersList();
+      if (lima.updatePageURL && paper.new) updatePageURL();
+      var localURL = createPageURL(lima.localStorageUserEmailAddress, paper.title);
+      localPapers[localURL] = paper.id;
+
+      paper.storedLocally = Date.now();
+
+      localStorage[paper.id] = JSON.stringify(paper);
+      localStorage.papers = JSON.stringify(localPapers);
+      console.log('paper ' + paper.id + ' saved locally');
+    } catch (e) {
+      return Promise.reject(new Error('failed to save paper ' + paper.id + ' locally', e));
+    }
   }
 
   /* changing cols
@@ -2130,6 +2213,7 @@
   lima.Paper = Paper;
 
   lima.initPapersJS = function () {
+    // this happens in paper.html
     lima.checkToPreventForcedSaving = checkToPreventForcedSaving;
     lima.checkToPreventLeaving = checkToPreventSaving;
     lima.checkToPreventSaving = checkToPreventSaving;

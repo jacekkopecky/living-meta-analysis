@@ -894,6 +894,7 @@ body.page-about-you.editing .fullcolinfo header {
   color: black;
 }
 
+#paper > header .localsaving,
 #paper > header .savepending,
 #paper > header .saving {
   font-style: italic;
@@ -962,7 +963,8 @@ body:not(.page-about-you) #metaanalysis > header .edityourcopy {
 #paper.saving > header .saving,
 #paper.savepending:not(.saving) > header .savepending,
 #paper.validationerror > header .validationerrormessage,
-#paper:not(.validationerror):not(.saving):not(.savepending).unsaved > header .unsavedmessage {
+#paper:not(.validationerror):not(.saving):not(.savepending).unsaved > header .unsavedmessage,
+#paper:not(.validationerror):not(.saving):not(.savepending):not(.unsaved).localsaving > header .localsaving {
   display: block;
 }
 
