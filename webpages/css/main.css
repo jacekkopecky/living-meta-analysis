@@ -1074,8 +1074,8 @@ body:not(.page-about-you) #metaanalysis > header .edityourcopy {
   right: .3em;
 }
 
-#metaanalysis table.experiments th.papertitle:hover .exclude,
-#metaanalysis table.experiments th.experimenttitle:hover .exclude {
+body.editing.page-about-you #metaanalysis table.experiments th.papertitle:hover .exclude,
+body.editing.page-about-you #metaanalysis table.experiments th.experimenttitle:hover .exclude {
   display: inline-block;
 }
 
@@ -2288,8 +2288,14 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
   display: none;
 }
 
-body.editing #metaanalysis table.experiments th.papertitle {
+body.editing.page-about-you #metaanalysis table.experiments th.papertitle {
   padding-bottom: 1.5em; /* to give space to the "add" buttons */
+}
+
+body.editing.page-about-you #metaanalysis table.experiments th.papertitle,
+body.editing.page-about-you #metaanalysis table.experiments tr.row th.experimenttitle {
+  padding-right: 1.5em; /* to give space to the "exclude" checkbox */
+  padding-left: 1.5em; /* for symmetry */
 }
 
 /* aggregates
