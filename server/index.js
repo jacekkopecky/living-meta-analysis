@@ -149,10 +149,17 @@ app.get(`/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         });
 
 function SLASH_URL(req, res, next) {
-  if (req.originalUrl[req.originalUrl.length - 1] === '/') {
+  let end = req.originalUrl.indexOf('?');
+  let query = '';
+  if (end === -1) {
+    end = req.originalUrl.length;
+  } else {
+    query = req.originalUrl.substring(end);
+  }
+  if (req.originalUrl[end - 1] === '/') {
     next();
   } else {
-    res.redirect(req.originalUrl + '/');
+    res.redirect(req.originalUrl.substring(0, end) + '/' + query);
   }
 }
 
