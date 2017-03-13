@@ -20,6 +20,7 @@
       })
       .then(_.fetchJson)
       .then(storeColumns)
+      .then(loadLocalColumnsIfLocalUser)
       .catch(function (err) {
         console.error("problem getting columns");
         console.error(err);
@@ -44,9 +45,54 @@
 
   function storeColumn(column) {
     if (!(column instanceof Column)) column = Object.assign(new Column(), column);
-    if (!column.formulaColumns) column.formulaColumns = [];
     lima.columns[column.id] = column;
     return column;
+  }
+
+  var localColumns = {};
+
+  function loadLocalColumnsIfLocalUser() {
+    if (!lima.userLocalStorage) return;
+
+    if (!localStorage.columns) return;
+
+    try {
+      localColumns = JSON.parse(localStorage.columns);
+    } catch (e) {
+      var badColumns = localStorage.columns;
+      localStorage.columns = '';
+      // save the bad columns in case a user wants to recover the data
+      localStorage.badColumns = badColumns;
+      throw new Error("cannot parse localStorage.columns '" + badColumns + "'", e);
+    }
+
+    // similar to storeColumns in that it needs to call storeColumn
+    // the locally-stored columns will replace any columns from the server,
+    Object.keys(localColumns).forEach(function (id) {
+      var serverColumn = lima.columns[id];
+      var localColumn = storeColumn(localColumns[id]);
+
+      // if the server's mtime is after the local copy's mtime (which must never get updated),
+      // mark it as .outdated then later do something with that marker
+      if (serverColumn.mtime > localColumn.mtime) {
+        localColumn.outdated = serverColumn.mtime;
+        console.info('column ' + id + ' outdated version in local storage');
+      }
+
+      // todo do something with the outdated columns, and storedLocally columns, e.g. allow reverting them
+    });
+
+  }
+
+  function saveColumnLocally(col) {
+    // wrapped in a promise to catch exceptions
+    try {
+      localColumns[col.id] = col;
+      col.storedLocally = Date.now();
+      localStorage.columns = JSON.stringify(localColumns);
+    } catch (e) {
+      return Promise.reject(new Error('failed to save column ' + col.id + ' locally', e));
+    }
   }
 
   function Column() {}
@@ -54,7 +100,9 @@
   Column.prototype.save = function saveColumn() {
     var col = this;
     var oldId = col.id;
-    console.info('saving column');
+
+    if (lima.userLocalStorage) return saveColumnLocally(col);
+
     return lima.getGapiIDToken()
       .then(function(idToken) {
         var toSend = JSON.stringify(col);
