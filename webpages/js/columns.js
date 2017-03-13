@@ -74,7 +74,7 @@
 
       // if the server's mtime is after the local copy's mtime (which must never get updated),
       // mark it as .outdated then later do something with that marker
-      if (serverColumn.mtime > localColumn.mtime) {
+      if (serverColumn && serverColumn.mtime > localColumn.mtime) {
         localColumn.outdated = serverColumn.mtime;
         console.info('column ' + id + ' outdated version in local storage');
       }
@@ -82,6 +82,7 @@
       // todo do something with the outdated columns, and storedLocally columns, e.g. allow reverting them
     });
 
+    return lima.columns;
   }
 
   function saveColumnLocally(col) {
@@ -90,6 +91,7 @@
       localColumns[col.id] = col;
       col.storedLocally = Date.now();
       localStorage.columns = JSON.stringify(localColumns);
+      console.log('column ' + col.id + ' saved locally');
     } catch (e) {
       return Promise.reject(new Error('failed to save column ' + col.id + ' locally', e));
     }
