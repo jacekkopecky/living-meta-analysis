@@ -222,10 +222,10 @@ module.exports.listTitles = () =>
 const LOCAL_STORAGE_SPECIAL_USER = {
   emails: [
     {
-      value: "lima@local"
-    }
-  ]
-}
+      value: 'lima@local',
+    },
+  ],
+};
 
 let userCache;
 
