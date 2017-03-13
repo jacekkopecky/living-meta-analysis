@@ -2040,31 +2040,6 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
   position: relative;
 }
 
-#paper table.experiments td.newcol,
-#metaanalysis table.experiments td.newcol {
-  background-color: #ddd;
-}
-
-#paper table.experiments td.newcol > *:not(.newcol),
-#metaanalysis table.experiments td.newcol > *:not(.newcol) {
-  display: none !important;
-}
-
-#paper table.experiments td.newcol > .newcol,
-#metaanalysis table.experiments td.newcol > .newcol {
-  display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-#paper table.experiments td:not(.newcol) > .newcol,
-#metaanalysis table.experiments td:not(.newcol) > .newcol {
-  display: none;
-}
-
 #paper table.experiments td span[contenteditable],
 #metaanalysis table.experiments td span[contenteditable] {
   min-width: 1em;
