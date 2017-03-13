@@ -3,17 +3,24 @@
   var lima = window.lima;
   var _ = lima._;
 
-  function extractMetaanalysisTitleFromUrl() {
+  function extractMetaanalysisTitleFromUrl(path) {
     // the path of a page for a metaanalysis will be '/email/title/*',
     // so extract the 'title' portion here:
 
-    var start = window.location.pathname.indexOf('/', 1) + 1;
+    if (!path) path = window.location.pathname;
+
+    var start = path.indexOf('/', 1) + 1;
     if (start === 0) throw new Error('page url doesn\'t have a title');
 
-    return window.location.pathname.substring(start, window.location.pathname.indexOf('/', start));
+    var rest = path.indexOf('/', start);
+    if (rest === -1) rest = Infinity;
+
+    return path.substring(start, rest);
   }
 
   function updatePageURL() {
+    if (extractMetaanalysisTitleFromUrl() == currentMetaanalysis.title) return; // all done
+
     // the path of a page for a metaanalysis will be '/email/title/*',
     // so update the 'title' portion here from the current metaanalysis (in case the user changes the title)
     var start = window.location.pathname.indexOf('/', 1) + 1;
@@ -57,6 +64,9 @@
       if (response.status === 404) return [];
       else return _.fetchJson(response);
     })
+    .then(function (papers) {
+      return papers.concat(loadAllLocalMetaanalyses());
+    })
     .then(fillMetaanalysissList)
     .catch(function (err) {
       console.error("problem getting metaanalyses");
@@ -72,13 +82,19 @@
     if (metaanalyses.length) {
       // todo sort
       metaanalyses.forEach(function (metaanalysis) {
-        var li = _.cloneTemplate('metaanalysis-list-item-template');
+        var li = _.cloneTemplate('metaanalysis-list-item-template').children[0];
         _.fillEls(li, '.name', metaanalysis.title);
         _.fillEls(li, '.published', metaanalysis.published);
         _.setProps(li, '.published', 'title', metaanalysis.published);
         _.fillEls(li, '.description', metaanalysis.description);
         _.setProps(li, '.description', 'title', metaanalysis.description);
-        _.setProps(li, 'a.mainlink', 'href', metaanalysis.title);
+        if (!metaanalysis.storedLocally) {
+          _.setProps(li, 'a.mainlink', 'href', metaanalysis.title);
+        } else {
+          _.setProps(li, 'a.mainlink', 'href', '/' + lima.localStorageUserEmailAddress + '/' + metaanalysis.title + '?type=metaanalysis'); // hint in case of local storage
+          li.classList.add('local');
+          // todo do something with the above class - highlight local papers
+        }
         _.fillTags(li, '.tags', metaanalysis.tags);
         list.appendChild(li);
       });
@@ -104,15 +120,30 @@
 
   var currentMetaanalysisUrl, currentMetaanalysis;
 
-  function requestAndFillMetaanalysis() {
+  function requestMetaanalysis(title) {
     var email = lima.extractUserProfileEmailFromUrl();
-    var title = lima.extractMetaanalysisTitleFromUrl();
-    _.fillEls('#metaanalysis .title', title);
 
-    // lima.getPapers(); // TODO: not yet implemented
+    if (lima.userLocalStorage) {
+      return Promise.resolve()
+      .then(loadLocalMetaanalysesList)
+      .then(function() { return loadLocalMetaanalysis('/' + email + '/' + title); })
+      .catch(function (err) {
+        console.log("problem getting local metaanalysis, trying server for " + title, err);
+        return requestServerMetaanalysis(email, title)
+        .then(function(ma) {
+          // force saving in local storage
+          // then all papers are also saved in local storage
+          ma.save();
+          return ma;
+        });
+      });
+    }
 
-    lima.getColumns() // todo getColumns could run in parallel with everything before updateMetaanalysisView
-    .then(lima.getGapiIDToken)
+    return requestServerMetaanalysis(email, title);
+  }
+
+  function requestServerMetaanalysis(email, title) {
+    return lima.getGapiIDToken()
     .then(function (idToken) {
       currentMetaanalysisUrl = '/api/metaanalyses/' + email + '/' + title;
       return fetch(currentMetaanalysisUrl, _.idTokenToFetchOptions(idToken));
@@ -122,6 +153,14 @@
       else return _.fetchJson(response);
     })
     .then(initMetaanalysis)
+  }
+
+  function requestAndFillMetaanalysis() {
+    var title = lima.extractMetaanalysisTitleFromUrl();
+    _.fillEls('#metaanalysis .title', title);
+
+    lima.getColumns() // todo getColumns could run in parallel with everything before updateMetaanalysisView
+    .then(function() { return requestMetaanalysis(title); })
     .then(setCurrentMetaanalysis)
     .then(updateMetaanalysisView)
     .then(function() {
@@ -315,7 +354,9 @@
     // for now, do local storage "edit your copy"
     // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), metaanalysis.title);
     var ownURL = createPageURL(lima.localStorageUserEmailAddress, metaanalysis.title);
-    _.setProps(metaanalysisEl, '.edityourcopy a', 'href', ownURL);
+    _.setProps(metaanalysisEl, '.edityourcopy a', 'href', ownURL + '?type=metaanalysis');
+
+    metaanalysisEl.classList.toggle('localsaving', !!lima.userLocalStorage);
 
     _.fillEls(metaanalysisEl, '.title', metaanalysis.title);
     _.fillEls (metaanalysisEl, '.authors .value', metaanalysis.authors);
@@ -730,7 +771,7 @@
     plotsContainer.innerHTML = '';
 
     var plotEl = _.cloneTemplate('grape-chart-template').children[0];
-    plotEl.classList.toggle('maximized', localStorage.plotMaximized);
+    plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
 
     // get the data
     orFunc.formula = lima.createFormulaString(orFunc);
@@ -2347,16 +2388,25 @@
   }
 
   var allTitles = [];
-  var titlesNextUpdate = 0;
+  var allTitlesNextUpdate = 0;
 
   // now retrieve the list of all titles for checking uniqueness
   function loadAllTitles() {
     var curtime = Date.now();
-    if (titlesNextUpdate < curtime) {
-      titlesNextUpdate = curtime + 5 * 60 * 1000; // update titles no less than 5 minutes from now
+    if (allTitlesNextUpdate < curtime) {
+      allTitlesNextUpdate = curtime + 5 * 60 * 1000; // update titles no less than 5 minutes from now
       fetch('/api/titles')
       .then(_.fetchJson)
-      .then(function (titles) { allTitles = titles; })
+      .then(function (titles) {
+        allTitles = titles;
+        if (lima.userLocalStorage) {
+          loadLocalMetaanalysesList();
+          Object.keys(localMetaanalyses).forEach(function (localURL) {
+            var title = extractMetaanalysisTitleFromUrl(localURL);
+            if (allTitles.indexOf(title) === -1) allTitles.push(title);
+          })
+        }
+      })
       .catch(function (err) {
         console.error('problem getting metaanalysis titles');
         console.error(err);
@@ -2466,12 +2516,21 @@
 
   function saveMetaanalysis() {
     var self = this;
+
+    if (lima.userLocalStorage) return saveMetaanalysisLocally(self);
+
     return lima.getGapiIDToken()
       .then(function(idToken) {
+
+        // don't send paper data unnecessarily, it'd get ignored by the server anyway
+        // so create a shallow copy without the papers and send that
+        var toSend = Object.assign({}, currentMetaanalysis);
+        delete toSend.papers;
+
         return fetch(currentMetaanalysisUrl, {
           method: 'POST',
           headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
-          body: JSON.stringify(currentMetaanalysis),
+          body: JSON.stringify(toSend),
         });
       })
       .then(_.fetchJson)
@@ -2490,6 +2549,80 @@
         else console.error(err);
         throw err;
       })
+  }
+
+  var localMetaanalyses;
+
+  function loadLocalMetaanalysesList() {
+    if (!localMetaanalyses) {
+      if (localStorage.metaanalyses) {
+        localMetaanalyses = JSON.parse(localStorage.metaanalyses);
+      } else {
+        localMetaanalyses = {};
+      }
+    }
+    return localMetaanalyses;
+  }
+
+  function loadAllLocalMetaanalyses() {
+    loadLocalMetaanalysesList();
+    return Object.keys(localMetaanalyses).map(loadLocalMetaanalysisWithoutPapers);
+  }
+
+  function loadLocalMetaanalysisWithoutPapers(path) {
+    var val = localStorage[localMetaanalyses[path]];
+    if (!val) throw new Error('cannot find local metaanalysis at ' + path);
+
+    return JSON.parse(val);
+  }
+
+  function loadLocalMetaanalysis(path) {
+    var val = loadLocalMetaanalysisWithoutPapers(path);
+
+    val.papers = [];
+
+    var loadingPromises = [];
+
+    // load all the papers in this metaanalysis
+    if (Array.isArray(val.paperOrder)) {
+      val.paperOrder.forEach(function (id, index) {
+        loadingPromises.push(
+          Promise.resolve(id)
+          .then(lima.requestPaperById)
+          .then(function (paper) { val.papers[index] = paper; }));
+      });
+    }
+
+    return Promise.all(loadingPromises)
+      .then(function() { return initMetaanalysis(val); });
+    // todo also load the metaanalysis from the server and check if it is outdated
+  }
+
+  function saveMetaanalysisLocally(metaanalysis) {
+    try {
+      loadLocalMetaanalysesList();
+      if (lima.updatePageURL && metaanalysis.new) updatePageURL();
+      var localURL = createPageURL(lima.localStorageUserEmailAddress, metaanalysis.title);
+      localMetaanalyses[localURL] = metaanalysis.id;
+
+      if (!metaanalysis.storedLocally) {
+        console.log('forcing save of all papers');
+        metaanalysis.papers.forEach(function (paper) { paper.save(); });
+      }
+
+      metaanalysis.storedLocally = Date.now();
+
+      // don't save paper data, it's saved elsewhere
+      // so create a shallow copy without the papers and save that
+      var toSave = Object.assign({}, metaanalysis);
+      delete toSave.papers;
+
+      localStorage[metaanalysis.id] = JSON.stringify(toSave);
+      localStorage.metaanalyses = JSON.stringify(localMetaanalyses);
+      console.log('metaanalysis ' + metaanalysis.id + ' saved locally');
+    } catch (e) {
+      return Promise.reject(new Error('failed to save metaanalysis ' + metaanalysis.id + ' locally', e));
+    }
   }
 
   /* excluding
@@ -3404,6 +3537,7 @@
   lima.Metaanalysis = Metaanalysis;
 
   lima.initMetaanalysesJS = function () {
+    // this happens in metaanalysis.html
     lima.checkToPreventForcedSaving = checkToPreventForcedSaving;
     lima.checkToPreventLeaving = checkToPreventSaving;
     lima.checkToPreventSaving = checkToPreventSaving;
@@ -3420,7 +3554,6 @@
     // for testing
     lima.pinPopupBox = pinPopupBox;
     lima.unpinPopupBox = unpinPopupBox;
-    lima.updateMetaanalysisView = updateMetaanalysisView;
     lima.assignDeepValue = assignDeepValue;
     lima.getDeepValue = getDeepValue;
     lima.getAllTitles = function(){return allTitles;};
