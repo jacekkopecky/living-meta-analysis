@@ -129,7 +129,7 @@
       .then(function() { return loadLocalPaper('/' + email + '/' + title); })
       .then(initPaper)
       .catch(function (err) {
-        console.log("problem getting local paper, trying server for " + title, err);
+        console.log("could not get local paper, trying server for " + title, err);
         return requestServerPaper(email, title);
       });
     }

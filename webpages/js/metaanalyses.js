@@ -130,7 +130,7 @@
       .then(loadLocalMetaanalysesList)
       .then(function() { return loadLocalMetaanalysis('/' + email + '/' + title); })
       .catch(function (err) {
-        console.log("problem getting local metaanalysis, trying server for " + title, err);
+        console.log("could not get local metaanalysis, trying server for " + title, err);
         return requestServerMetaanalysis(email, title)
         .then(function(ma) {
           // force saving in local storage
@@ -309,6 +309,7 @@
   }
 
   function updateAfterPaperSave() {
+    if (!currentMetaanalysis) return;
     currentMetaanalysis.papers.forEach(function(paper){
       // check for papers that we don't have in paperOrder
       // those will be newly added papers that just got saved and now have a new ID
