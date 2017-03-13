@@ -618,8 +618,8 @@
 
     var currentUser = lima.getAuthenticatedUserEmail();
 
-    var y = (currentUser == lima.userPageIsAbout.email);
-    var n = lima.userPageIsAbout.name.givenName || 'User';
+    var y = (currentUser == lima.userPageIsAbout.email || lima.userLocalStorage);
+    var n = !lima.userLocalStorage && lima.userPageIsAbout.name.givenName || 'User';
 
     lima.pageAboutYou = y;
 
@@ -633,8 +633,11 @@
     _.fillEls('.blankOrYour', y ? 'Your ' : '' );
 
     _.findEls('.needs-owner').forEach(function (el) {
-      if (el.dataset.owner === currentUser) el.classList.add('yours');
-      else                                  el.classList.remove('yours');
+      if (lima.userLocalStorage || el.dataset.owner === currentUser) {
+        el.classList.add('yours');
+      } else {
+        el.classList.remove('yours');
+      }
     });
   }
 
@@ -777,8 +780,14 @@
       return;
     }
 
-    // call the next saved saving function, on its success come to the rest
-    currentSavingFunction = pendingSaveFunctions.shift();
+    // call the next saving function, on its success come to the rest
+    // find saving function with minimum saveOrder so dependencies don't break
+    var next = 0;
+    for (var i=1; i<pendingSaveFunctions.length; i+=1) {
+      if (pendingSaveFunctions[i].saveOrder < pendingSaveFunctions[next].saveOrder) next = i;
+    }
+    currentSavingFunction = pendingSaveFunctions[next];
+    pendingSaveFunctions.splice(next, 1);
 
     if (lima.saveStarted) lima.saveStarted();
 
@@ -809,6 +818,18 @@
         if (lima.saveError) lima.saveError();
       }
     );
+  }
+
+  var lastTime = 0;
+
+  // unsaved new things (e.g. papers) have temporary IDs, this function generates them
+  _.createId = function createId(type) {
+    var currTime = Date.now();
+    if (lastTime >= currTime) {
+      currTime = lastTime + 1;
+    }
+    lastTime = currTime;
+    return 'new_' + type + '_' + currTime;
   }
 
   /* page leave

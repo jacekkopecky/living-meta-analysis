@@ -6,6 +6,8 @@
 
 'use strict';
 
+console.log('LiMA server starting at ' + new Date());
+
 const express = require('express');
 const googleOpenID = require('simple-google-openid');
 const http = require('http');
@@ -134,7 +136,7 @@ app.get(`/:email(${config.EMAIL_ADDRESS_RE})/${config.NEW_META_TITLE}/`,
 app.get(`/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         api.checkUserExists,
         (req, res, next) => {
-          api.getKindForTitle(req.params.email, req.params.title)
+          Promise.resolve(req.query.type || api.getKindForTitle(req.params.email, req.params.title))
           .then((kind) => {
             if (kind === 'paper' || kind === 'metaanalysis') {
               const file = `profile/${kind}.html`;
@@ -147,10 +149,17 @@ app.get(`/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         });
 
 function SLASH_URL(req, res, next) {
-  if (req.originalUrl[req.originalUrl.length - 1] === '/') {
+  let end = req.originalUrl.indexOf('?');
+  let query = '';
+  if (end === -1) {
+    end = req.originalUrl.length;
+  } else {
+    query = req.originalUrl.substring(end);
+  }
+  if (req.originalUrl[end - 1] === '/') {
     next();
   } else {
-    res.redirect(req.originalUrl + '/');
+    res.redirect(req.originalUrl.substring(0, end) + '/' + query);
   }
 }
 

@@ -3,17 +3,24 @@
   var lima = window.lima;
   var _ = lima._;
 
-  function extractMetaanalysisTitleFromUrl() {
+  function extractMetaanalysisTitleFromUrl(path) {
     // the path of a page for a metaanalysis will be '/email/title/*',
     // so extract the 'title' portion here:
 
-    var start = window.location.pathname.indexOf('/', 1) + 1;
+    if (!path) path = window.location.pathname;
+
+    var start = path.indexOf('/', 1) + 1;
     if (start === 0) throw new Error('page url doesn\'t have a title');
 
-    return window.location.pathname.substring(start, window.location.pathname.indexOf('/', start));
+    var rest = path.indexOf('/', start);
+    if (rest === -1) rest = Infinity;
+
+    return path.substring(start, rest);
   }
 
   function updatePageURL() {
+    if (extractMetaanalysisTitleFromUrl() == currentMetaanalysis.title) return; // all done
+
     // the path of a page for a metaanalysis will be '/email/title/*',
     // so update the 'title' portion here from the current metaanalysis (in case the user changes the title)
     var start = window.location.pathname.indexOf('/', 1) + 1;
@@ -23,6 +30,8 @@
 
     var url = window.location.pathname.substring(0, start) + currentMetaanalysis.title;
     if (rest > -1) url += window.location.pathname.substring(rest);
+
+    if (lima.userLocalStorage) url += '?type=metaanalysis';
 
     window.history.replaceState({}, currentMetaanalysis.title, url);
 
@@ -57,6 +66,9 @@
       if (response.status === 404) return [];
       else return _.fetchJson(response);
     })
+    .then(function (papers) {
+      return papers.concat(loadAllLocalMetaanalyses());
+    })
     .then(fillMetaanalysissList)
     .catch(function (err) {
       console.error("problem getting metaanalyses");
@@ -72,13 +84,19 @@
     if (metaanalyses.length) {
       // todo sort
       metaanalyses.forEach(function (metaanalysis) {
-        var li = _.cloneTemplate('metaanalysis-list-item-template');
+        var li = _.cloneTemplate('metaanalysis-list-item-template').children[0];
         _.fillEls(li, '.name', metaanalysis.title);
         _.fillEls(li, '.published', metaanalysis.published);
         _.setProps(li, '.published', 'title', metaanalysis.published);
         _.fillEls(li, '.description', metaanalysis.description);
         _.setProps(li, '.description', 'title', metaanalysis.description);
-        _.setProps(li, 'a.mainlink', 'href', metaanalysis.title);
+        if (!metaanalysis.storedLocally) {
+          _.setProps(li, 'a.mainlink', 'href', metaanalysis.title);
+        } else {
+          _.setProps(li, 'a.mainlink', 'href', '/' + lima.localStorageUserEmailAddress + '/' + metaanalysis.title + '?type=metaanalysis'); // hint in case of local storage
+          li.classList.add('local');
+          // todo do something with the above class - highlight local papers
+        }
         _.fillTags(li, '.tags', metaanalysis.tags);
         list.appendChild(li);
       });
@@ -104,15 +122,30 @@
 
   var currentMetaanalysisUrl, currentMetaanalysis;
 
-  function requestAndFillMetaanalysis() {
+  function requestMetaanalysis(title) {
     var email = lima.extractUserProfileEmailFromUrl();
-    var title = lima.extractMetaanalysisTitleFromUrl();
-    _.fillEls('#metaanalysis .title', title);
 
-    // lima.getPapers(); // TODO: not yet implemented
+    if (lima.userLocalStorage) {
+      return Promise.resolve()
+      .then(loadLocalMetaanalysesList)
+      .then(function() { return loadLocalMetaanalysis('/' + email + '/' + title); })
+      .catch(function (err) {
+        console.log("could not get local metaanalysis, trying server for " + title, err);
+        return requestServerMetaanalysis(email, title)
+        .then(function(ma) {
+          // force saving in local storage
+          // then all papers are also saved in local storage
+          ma.save();
+          return ma;
+        });
+      });
+    }
 
-    lima.getColumns() // todo getColumns could run in parallel with everything before updateMetaanalysisView
-    .then(lima.getGapiIDToken)
+    return requestServerMetaanalysis(email, title);
+  }
+
+  function requestServerMetaanalysis(email, title) {
+    return lima.getGapiIDToken()
     .then(function (idToken) {
       currentMetaanalysisUrl = '/api/metaanalyses/' + email + '/' + title;
       return fetch(currentMetaanalysisUrl, _.idTokenToFetchOptions(idToken));
@@ -122,6 +155,14 @@
       else return _.fetchJson(response);
     })
     .then(initMetaanalysis)
+  }
+
+  function requestAndFillMetaanalysis() {
+    var title = lima.extractMetaanalysisTitleFromUrl();
+    _.fillEls('#metaanalysis .title', title);
+
+    lima.getColumns() // todo getColumns could run in parallel with everything before updateMetaanalysisView
+    .then(function() { return requestMetaanalysis(title); })
     .then(setCurrentMetaanalysis)
     .then(updateMetaanalysisView)
     .then(function() {
@@ -139,6 +180,7 @@
   function Metaanalysis() {}
   Metaanalysis.prototype.save = saveMetaanalysis;
   Metaanalysis.prototype.init = initMetaanalysis;
+  Metaanalysis.prototype.saveOrder = 3; // after columns and papers
 
   function updateAfterColumnSave() {
     // clean experiment data of new columns that got new ID when they were saved
@@ -156,12 +198,9 @@
       // don't clean columns the same way - in metaanalyses.js, we shouldn't be touching papers' columns
     });
 
-    if (Array.isArray(currentMetaanalysis.columns)) currentMetaanalysis.columns.forEach(function (key, index) {
-      var col = lima.columns[key];
-      if (col && col.id !== key) {
-        currentMetaanalysis.columns[index] = col.id;
-      }
-    });
+    // clean metaanalysis columns, aggregates and plots
+    lima.updateColumnListAfterColumnSave(currentMetaanalysis.columns);
+    lima.updateColumnListAfterColumnSave(currentMetaanalysis.aggregates);
 
     updateMetaanalysisView();
   }
@@ -170,11 +209,20 @@
     var self = this;
     if (!(self instanceof Metaanalysis)) self = new Metaanalysis();
 
+    var oldId = self.id;
+
     // clean all properties of this paper
     for (var prop in self) { if (self.hasOwnProperty(prop)) { delete self[prop]; } }
 
     // get data from the new paper
     Object.assign(self, newMetaanalysis);
+
+    if (!self.id) {
+      self.id = oldId || _.createId('metaanalysis');
+      self.new = true;
+    } else if (oldId != self.id) {
+      self.oldTemporaryId = oldId;
+    }
 
     if (!Array.isArray(self.paperOrder)) self.paperOrder = [];
     if (!Array.isArray(self.papers)) self.papers = [];
@@ -254,23 +302,38 @@
   function updateMetaanalysisView() {
     if (!currentMetaanalysis) return;
 
-    // check for papers that we don't have in paperOrder
-    // those will be newly added papers that just got saved and now have an ID
-    updatePaperOrder();
-
     fillMetaanalysis(currentMetaanalysis);
 
     // for a new metaanalysis, go to editing the title
-    if (!currentMetaanalysis.id) focusFirstValidationError();
+    if (currentMetaanalysis.new) focusFirstValidationError();
   }
 
-  function updatePaperOrder() {
+  function updateAfterPaperSave() {
+    if (!currentMetaanalysis) return;
     currentMetaanalysis.papers.forEach(function(paper){
-      if (paper.id && currentMetaanalysis.paperOrder.indexOf(paper.id) == -1) {
-        currentMetaanalysis.paperOrder.push(paper.id);
+      // check for papers that we don't have in paperOrder
+      // those will be newly added papers that just got saved and now have a new ID
+      if (currentMetaanalysis.paperOrder.indexOf(paper.id) == -1) {
+        var oldIndex = currentMetaanalysis.paperOrder.indexOf(paper.oldTemporaryId);
+        if (oldIndex !== -1) {
+          currentMetaanalysis.paperOrder[oldIndex] = paper.id;
+        } else {
+          // old ID not found, strange, just add the paper to the end
+          console.error(new Error('did not have paper in the metaanalysis paperorder: ' + paper.id));
+          currentMetaanalysis.paperOrder.push(paper.id);
+        }
+        _.scheduleSave(currentMetaanalysis);
+      }
+
+      // also replace oldTemporaryId with the new id in excludedExperiments
+      if (replaceExcludedPaperId(paper.oldTemporaryId, paper.id)) {
         _.scheduleSave(currentMetaanalysis);
       }
     });
+
+    // also schedule save in localStorage mode - it's cheap and it may save new papers
+    // as with localStorage, they don't get a new ID on save
+    if (lima.userLocalStorage) _.scheduleSave(currentMetaanalysis);
   }
 
   var startNewTag = null;
@@ -286,11 +349,14 @@
 
     resetComputedDataSetters();
 
-    if (!metaanalysis.id) {
+    if (metaanalysis.new) {
       _.addClass('body', 'new');
-      lima.toggleEditing(true);
     } else {
       _.removeClass('body', 'new');
+    }
+
+    if (metaanalysis.new || lima.userLocalStorage) {
+      lima.toggleEditing(true);
     }
 
     var metaanalysisTemplate = _.byId('metaanalysis-template');
@@ -301,8 +367,12 @@
     fillMetaanalysisExperimentTable(metaanalysis);
     fillAggregateTable(metaanalysis);
 
-    var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), metaanalysis.title);
-    _.setProps(metaanalysisEl, '.edityourcopy a', 'href', ownURL);
+    // for now, do local storage "edit your copy"
+    // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), metaanalysis.title);
+    var ownURL = createPageURL(lima.localStorageUserEmailAddress, metaanalysis.title);
+    _.setProps(metaanalysisEl, '.edityourcopy a', 'href', ownURL + '?type=metaanalysis');
+
+    metaanalysisEl.classList.toggle('localsaving', !!lima.userLocalStorage);
 
     _.fillEls(metaanalysisEl, '.title', metaanalysis.title);
     _.fillEls (metaanalysisEl, '.authors .value', metaanalysis.authors);
@@ -408,7 +478,7 @@
     plotsContainer.innerHTML = '';
 
     var plotEl = _.cloneTemplate('forest-plot-template').children[0];
-    plotEl.classList.toggle('maximized', localStorage.plotMaximized);
+    plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
 
     // get the data
     orFunc.formula = lima.createFormulaString(orFunc);
@@ -422,9 +492,9 @@
       for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
         if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
         var line = {};
-        line.title = currentMetaanalysis.papers[i].title;
+        line.title = currentMetaanalysis.papers[i].title || 'new paper';
         if (currentMetaanalysis.papers[i].experiments.length > 1) {
-          var expTitle = currentMetaanalysis.papers[i].experiments[j].title;
+          var expTitle = currentMetaanalysis.papers[i].experiments[j].title || 'new experiment';
           if (expTitle.match(/^\d+$/)) expTitle = 'Exp. ' + expTitle;
           line.title += ' (' + expTitle + ')';
         }
@@ -434,10 +504,13 @@
         line.ucl = getDatumValue(uclFunc, j, i);
         lines.push(line);
 
-        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0)) {
-          line.lcl = 0;
-          line.ucl = 0;
-          line.wt = 0;
+        // if any of the values is NaN or ±Infinity, disregard this experiment
+        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
+            line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
+          delete line.or;
+          delete line.lcl;
+          delete line.ucl;
+          delete line.wt;
         }
       }
     }
@@ -469,8 +542,8 @@
     //   min of lcl and aggr lcl
     //   max of ucl and aggr ucl
     var sumOfWt = 0;
-    var minWt = lines[0].wt;
-    var maxWt = lines[0].wt;
+    var minWt = Infinity;
+    var maxWt = -Infinity;
     var minLcl = aggregates.lcl;
     var maxUcl = aggregates.ucl;
 
@@ -478,6 +551,7 @@
     if (isNaN(maxUcl)) maxUcl = 0;
 
     lines.forEach(function (line) {
+      if (line.or == null) return;
       sumOfWt += line.wt;
       if (line.wt < minWt) minWt = line.wt;
       if (line.wt > maxWt) maxWt = line.wt;
@@ -487,6 +561,9 @@
 
     if (minLcl < -10) minLcl = -10;
     if (maxUcl > 10) maxUcl = 10;
+
+    if (minWt == Infinity) minWt = maxWt = 1;
+    if (sumOfWt == 0) sumOfWt = 1;
 
     var TICK_SPACING;
 
@@ -548,25 +625,27 @@
 
     // put experiments into the plot
     lines.forEach(function (line) {
-      if (isNaN(line.or*0)) return;
-
       var expT = _.findEl(plotEl, 'template.experiment');
       var expEl = _.cloneTemplate(expT);
 
       expEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
 
       _.fillEls(expEl, '.expname', line.title);
-      _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
-      _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
-      _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
-      _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
+      if (line.or != null) {
+        _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
+        _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
+        _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
+        _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
 
-      _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
-      _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
+        _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
+        _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
 
-      _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
-      _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
-      _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
+        _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
+        _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
+        _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
+      } else {
+        expEl.classList.add('invalid');
+      }
 
       expT.parentElement.insertBefore(expEl, expT);
 
@@ -708,7 +787,7 @@
     plotsContainer.innerHTML = '';
 
     var plotEl = _.cloneTemplate('grape-chart-template').children[0];
-    plotEl.classList.toggle('maximized', localStorage.plotMaximized);
+    plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
 
     // get the data
     orFunc.formula = lima.createFormulaString(orFunc);
@@ -723,23 +802,26 @@
       for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
         if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
         var line = {};
-        line.paper = currentMetaanalysis.papers[i].title;
-        line.exp = currentMetaanalysis.papers[i].experiments[j].title;
+        line.paper = currentMetaanalysis.papers[i].title || 'new paper';
+        line.exp = currentMetaanalysis.papers[i].experiments[j].title || 'new experiment';
         if (line.exp.match(/^\d+$/)) line.exp = 'Exp. ' + line.exp;
         line.or = getDatumValue(orFunc, j, i);
         line.wt = getDatumValue(wtFunc, j, i);
         line.lcl = getDatumValue(lclFunc, j, i);
         line.ucl = getDatumValue(uclFunc, j, i);
         line.group = getDatumValue(moderatorParam, j, i);
-        data.push(line);
 
-        if (line.group != null && groups.indexOf(line.group) === -1) groups.push(line.group);
+        if (line.group != null && line.group != '' && groups.indexOf(line.group) === -1) groups.push(line.group);
 
-        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0)) {
-          line.lcl = 0;
-          line.ucl = 0;
-          line.wt = 0;
+        // if any of the values is NaN or ±Infinity, disregard this experiment
+        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
+            line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
+          delete line.or;
+          delete line.lcl;
+          delete line.ucl;
+          delete line.wt;
         }
+        data.push(line);
       }
     }
 
@@ -758,8 +840,9 @@
     var perGroup = {};
     dataGroups.forEach(function (dataGroup) {
       perGroup[dataGroup[0].group] = {};
-      perGroup[dataGroup[0].group].wt = dataGroup.reduce(function sum(acc, line) {return acc+line.wt;}, 0);
-      perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return acc+line.or*line.wt;}, 0) / perGroup[dataGroup[0].group].wt;
+      perGroup[dataGroup[0].group].wt = dataGroup.reduce(function sum(acc, line) {return line.wt != null ? acc+line.wt : acc;}, 0);
+      if (perGroup[dataGroup[0].group].wt == 0) perGroup[dataGroup[0].group].wt = 1;
+      perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return line.wt != null ? acc+line.or*line.wt : acc;}, 0) / perGroup[dataGroup[0].group].wt;
     });
 
     // todo highlight the current experiment in forest plot and in grape chart
@@ -768,12 +851,13 @@
     plotEl.setAttribute('width', parseInt(plotEl.dataset.zeroGroupsWidth) + groups.length * parseInt(plotEl.dataset.groupSpacing));
     plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
 
-    var minWt = data[0].wt;
-    var maxWt = data[0].wt;
-    var minOr = data[0].or;
-    var maxOr = data[0].or;
+    var minWt = Infinity;
+    var maxWt = -Infinity;
+    var minOr = Infinity;
+    var maxOr = -Infinity;
 
     data.forEach(function (exp) {
+      if (exp.or == null) return;
       if (exp.wt < minWt) minWt = exp.wt;
       if (exp.wt > maxWt) maxWt = exp.wt;
       if (exp.or < minOr) minOr = exp.or;
@@ -782,6 +866,9 @@
 
     if (minOr < -10) minOr = -10;
     if (maxOr > 10) maxOr = 10;
+
+    if (minOr == Infinity) minOr = maxOr = 0;
+    if (minWt == Infinity) minWt = maxWt = 1;
 
     var TICK_SPACING;
 
@@ -815,6 +902,7 @@
 
     var yRatio = 1/(maxOr-minOr)*parseInt(plotEl.dataset.graphHeight);
     function getY(logVal) {
+      if (logVal == null) return 0;
       return -(logVal-minOr)*yRatio;
     }
 
@@ -838,6 +926,7 @@
 
     // return the grape radius for a given weight
     function getGrapeRadius(wt) {
+      if (wt == null) return minGrapeSize;
       return (Math.sqrt(wt)-minWt)*wtRatio + minGrapeSize;
     }
 
@@ -893,9 +982,14 @@
 
         _.fillEls(tooltipEl, 'text.paper', exp.paper);
         _.fillEls(tooltipEl, 'text.exp', exp.exp);
-        _.fillEls(tooltipEl, 'text.or', Math.exp(exp.or).toPrecision(3));
-        _.fillEls(tooltipEl, 'text.wt', '' + (exp.wt*100/perGroup[group].wt).toPrecision(3) + '%');
-        _.fillEls(tooltipEl, 'text.ci', "" + exp.lcl.toPrecision(3) + ", " + exp.ucl.toPrecision(3));
+        if (exp.or != null) {
+          _.fillEls(tooltipEl, 'text.or', Math.exp(exp.or).toPrecision(3));
+          _.fillEls(tooltipEl, 'text.wt', '' + (exp.wt*100/perGroup[group].wt).toPrecision(3) + '%');
+          _.fillEls(tooltipEl, 'text.ci', "" + exp.lcl.toPrecision(3) + ", " + exp.ucl.toPrecision(3));
+        } else {
+          grapeEl.classList.add('invalid');
+          tooltipEl.classList.add('invalid');
+        }
 
         if (isTopHalf(exp.or)) {
           _.addClass(tooltipEl, '.tooltip', 'tophalf');
@@ -1309,7 +1403,7 @@
               _.fillEls(td, '.value', val.value);
             }
 
-            addOnInputUpdater(td, '.value', 'textContent', identity, paper, ['experiments', expIndex, 'data', col, 'value'], recalculateComputedData);
+            addOnInputUpdater(td, '.value', 'textContent', trimmingSanitizer, paper, ['experiments', expIndex, 'data', col, 'value'], recalculateComputedData);
 
             var user = lima.getAuthenticatedUserEmail();
             _.fillEls (td, '.valenteredby', val && val.enteredBy || user);
@@ -1322,6 +1416,11 @@
             fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', paper, ['experiments', expIndex, 'data', col, 'comments']);
 
             td.classList.add(lima.columns[col].type);
+
+            if (lima.columns[col].new) {
+              td.classList.add('newcol');
+            }
+
           } else {
             // computed column
             td.classList.add('computed');
@@ -1354,10 +1453,6 @@
             setupPopupBoxPinning(td, '.datum.popupbox', papIndex + ',' + expIndex + ',' + col.formula);
 
             td.classList.add('result');
-          }
-
-          if (col.new) {
-            td.classList.add('newcol');
           }
 
         });
@@ -2003,7 +2098,7 @@
 
     var paper = currentMetaanalysis.papers[paperIndex];
     // don't delete if the paper is already saved
-    if (paper.id) return;
+    if (!paper.new) return;
 
     // if the user has been able to add a second experiment, the paper is no longer empty.
     if (paper.experiments.length > 1) return;
@@ -2040,8 +2135,8 @@
     .then(function (newPaper) {
       // Populate an empty experiment
       newPaper.experiments.push({});
-      // Fill in missing user information
       currentMetaanalysis.papers.push(newPaper);
+      currentMetaanalysis.paperOrder.push(newPaper.id);
       updateMetaanalysisView();
       setTimeout(focusFirstValidationError, 0);
     });
@@ -2309,16 +2404,25 @@
   }
 
   var allTitles = [];
-  var titlesNextUpdate = 0;
+  var allTitlesNextUpdate = 0;
 
   // now retrieve the list of all titles for checking uniqueness
   function loadAllTitles() {
     var curtime = Date.now();
-    if (titlesNextUpdate < curtime) {
-      titlesNextUpdate = curtime + 5 * 60 * 1000; // update titles no less than 5 minutes from now
+    if (allTitlesNextUpdate < curtime) {
+      allTitlesNextUpdate = curtime + 5 * 60 * 1000; // update titles no less than 5 minutes from now
       fetch('/api/titles')
       .then(_.fetchJson)
-      .then(function (titles) { allTitles = titles; })
+      .then(function (titles) {
+        allTitles = titles;
+        if (lima.userLocalStorage) {
+          loadLocalMetaanalysesList();
+          Object.keys(localMetaanalyses).forEach(function (localURL) {
+            var title = extractMetaanalysisTitleFromUrl(localURL);
+            if (allTitles.indexOf(title) === -1) allTitles.push(title);
+          })
+        }
+      })
       .catch(function (err) {
         console.error('problem getting metaanalysis titles');
         console.error(err);
@@ -2428,12 +2532,22 @@
 
   function saveMetaanalysis() {
     var self = this;
+
+    if (lima.userLocalStorage) return saveMetaanalysisLocally(self);
+
     return lima.getGapiIDToken()
       .then(function(idToken) {
+
+        // don't send paper data unnecessarily, it'd get ignored by the server anyway
+        // so create a shallow copy without the papers and send that
+        var toSend = Object.assign({}, currentMetaanalysis);
+        delete toSend.papers;
+        if (toSend.new) delete toSend.id;
+
         return fetch(currentMetaanalysisUrl, {
           method: 'POST',
           headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
-          body: JSON.stringify(currentMetaanalysis),
+          body: JSON.stringify(toSend),
         });
       })
       .then(_.fetchJson)
@@ -2452,6 +2566,81 @@
         else console.error(err);
         throw err;
       })
+  }
+
+  var localMetaanalyses;
+
+  function loadLocalMetaanalysesList() {
+    if (!localMetaanalyses) {
+      if (localStorage.metaanalyses) {
+        localMetaanalyses = JSON.parse(localStorage.metaanalyses);
+      } else {
+        localMetaanalyses = {};
+      }
+    }
+    return localMetaanalyses;
+  }
+
+  function loadAllLocalMetaanalyses() {
+    loadLocalMetaanalysesList();
+    return Object.keys(localMetaanalyses).map(loadLocalMetaanalysisWithoutPapers);
+  }
+
+  function loadLocalMetaanalysisWithoutPapers(path) {
+    var val = localStorage[localMetaanalyses[path]];
+    if (!val) throw new Error('cannot find local metaanalysis at ' + path);
+
+    return JSON.parse(val);
+  }
+
+  function loadLocalMetaanalysis(path) {
+    var val = loadLocalMetaanalysisWithoutPapers(path);
+
+    val.papers = [];
+
+    var loadingPromises = [];
+
+    // load all the papers in this metaanalysis
+    if (Array.isArray(val.paperOrder)) {
+      val.paperOrder.forEach(function (id, index) {
+        loadingPromises.push(
+          Promise.resolve(id)
+          .then(lima.requestPaperById)
+          .then(function (paper) { val.papers[index] = paper; }));
+      });
+    }
+
+    return Promise.all(loadingPromises)
+      .then(function() { return initMetaanalysis(val); });
+    // todo also load the metaanalysis from the server and check if it is outdated
+  }
+
+  function saveMetaanalysisLocally(metaanalysis) {
+    try {
+      loadLocalMetaanalysesList();
+      if (lima.updatePageURL && metaanalysis.new) lima.updatePageURL();
+      var localURL = createPageURL(lima.localStorageUserEmailAddress, metaanalysis.title);
+      localMetaanalyses[localURL] = metaanalysis.id;
+
+      if (!metaanalysis.storedLocally) {
+        console.log('forcing save of all papers');
+        metaanalysis.papers.forEach(function (paper) { paper.save(); });
+      }
+
+      metaanalysis.storedLocally = Date.now();
+
+      // don't save paper data, it's saved elsewhere
+      // so create a shallow copy without the papers and save that
+      var toSave = Object.assign({}, metaanalysis);
+      delete toSave.papers;
+
+      localStorage[metaanalysis.id] = JSON.stringify(toSave);
+      localStorage.metaanalyses = JSON.stringify(localMetaanalyses);
+      console.log('metaanalysis ' + metaanalysis.id + ' saved locally');
+    } catch (e) {
+      console.error(e);
+      return Promise.reject(new Error('failed to save metaanalysis ' + metaanalysis.id + ' locally'));
+    }
   }
 
   /* excluding
@@ -2582,6 +2771,21 @@
 
     return excluded;
   }
+
+  function replaceExcludedPaperId(oldId, newId) {
+    var retval = false;
+    if (oldId == null) return false;
+    currentMetaanalysis.excludedExperiments.forEach(function (expId, index) {
+      var split = expId.split(',');
+      if (split[0] == oldId) {
+        currentMetaanalysis.excludedExperiments[index] = newId + ',' + split[1];
+        retval = true;
+      }
+    });
+    return retval;
+  }
+
+
   /* changing cols
    *
    *
@@ -2858,6 +3062,8 @@
    *
    */
   var identity = null; // special value to use as validatorSanitizer
+
+  function trimmingSanitizer(val) { if (typeof val === 'string') return val.trim(); else return val; }
 
   function addOnInputUpdater(root, selector, property, validatorSanitizer, target, targetProp, onchange) {
     if (!(root instanceof Node)) {
@@ -3349,6 +3555,7 @@
   lima.Metaanalysis = Metaanalysis;
 
   lima.initMetaanalysesJS = function () {
+    // this happens in metaanalysis.html
     lima.checkToPreventForcedSaving = checkToPreventForcedSaving;
     lima.checkToPreventLeaving = checkToPreventSaving;
     lima.checkToPreventSaving = checkToPreventSaving;
@@ -3358,13 +3565,13 @@
     lima.saveStarted = saveStarted;
     lima.saveStopped = saveStopped;
     lima.updateAfterColumnSave = updateAfterColumnSave;
+    lima.updateAfterPaperSave = updateAfterPaperSave;
     lima.updatePageURL = updatePageURL;
     lima.updateView = updateMetaanalysisView;
 
     // for testing
     lima.pinPopupBox = pinPopupBox;
     lima.unpinPopupBox = unpinPopupBox;
-    lima.updateMetaanalysisView = updateMetaanalysisView;
     lima.assignDeepValue = assignDeepValue;
     lima.getDeepValue = getDeepValue;
     lima.getAllTitles = function(){return allTitles;};

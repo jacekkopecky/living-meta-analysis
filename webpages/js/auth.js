@@ -49,7 +49,7 @@
       localStorage.limaEditing = lima.editing = val;
     }
 
-    document.body.classList[lima.editing ? 'add' : 'remove']('editing');
+    document.body.classList.toggle('editing', !!lima.editing);
   }
 
   if (toggleButton) {

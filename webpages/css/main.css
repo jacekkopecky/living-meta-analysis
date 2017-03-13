@@ -894,6 +894,7 @@ body.page-about-you.editing .fullcolinfo header {
   color: black;
 }
 
+#paper > header .localsaving,
 #paper > header .savepending,
 #paper > header .saving {
   font-style: italic;
@@ -927,7 +928,8 @@ body.page-about-you.editing .fullcolinfo header {
   display: none;
 }
 
-#paper > header .edityourcopy {
+#paper > header .edityourcopy,
+#metaanalysis > header .edityourcopy {
   color: black;
   font-style: italic;
   padding: .5em .8em;
@@ -942,23 +944,27 @@ body.page-about-you.editing .fullcolinfo header {
   display: none;
 }
 
-#paper > header .edityourcopy a {
+#paper > header .edityourcopy a,
+#metaanalysis > header .edityourcopy a {
   text-decoration: none;
   color: inherit;
 }
 
-#paper > header .edityourcopy:hover {
+#paper > header .edityourcopy:hover,
+#metaanalysis > header .edityourcopy:hover {
   background: #ddf;
 }
 
-body:not(.page-about-you).signed-on #paper > header .edityourcopy {
+body:not(.page-about-you) #paper > header .edityourcopy,
+body:not(.page-about-you) #metaanalysis > header .edityourcopy {
   display: block;
 }
 
 #paper.saving > header .saving,
 #paper.savepending:not(.saving) > header .savepending,
 #paper.validationerror > header .validationerrormessage,
-#paper:not(.validationerror):not(.saving):not(.savepending).unsaved > header .unsavedmessage {
+#paper:not(.validationerror):not(.saving):not(.savepending).unsaved > header .unsavedmessage,
+#paper:not(.validationerror):not(.saving):not(.savepending):not(.unsaved).localsaving > header .localsaving {
   display: block;
 }
 
@@ -1068,8 +1074,8 @@ body:not(.page-about-you).signed-on #paper > header .edityourcopy {
   right: .3em;
 }
 
-#metaanalysis table.experiments th.papertitle:hover .exclude,
-#metaanalysis table.experiments th.experimenttitle:hover .exclude {
+body.editing.page-about-you #metaanalysis table.experiments th.papertitle:hover .exclude,
+body.editing.page-about-you #metaanalysis table.experiments th.experimenttitle:hover .exclude {
   display: inline-block;
 }
 
@@ -1402,6 +1408,7 @@ body.page-about-you.editing .fullcolinfo header {
   color: black;
 }
 
+#metaanalysis > header .localsaving,
 #metaanalysis > header .savepending,
 #metaanalysis > header .saving {
   font-style: italic;
@@ -1435,38 +1442,11 @@ body.page-about-you.editing .fullcolinfo header {
   display: none;
 }
 
-#metaanalysis > header .edityourcopy {
-  color: black;
-  font-style: italic;
-  padding: .5em .8em;
-  margin: .5em 0 0 0;
-  border-radius: .4em;
-  background: white;
-  border: 2px solid #ddf;
-  position: absolute;
-  right: 0;
-  top: 100%;
-  font-size: 80%;
-  display: none;
-}
-
-#metaanalysis > header .edityourcopy a {
-  text-decoration: none;
-  color: inherit;
-}
-
-#metaanalysis > header .edityourcopy:hover {
-  background: #ddf;
-}
-
-body:not(.page-about-you).signed-on #metaanalysis > header .edityourcopy {
-  display: block;
-}
-
 #metaanalysis.saving > header .saving,
 #metaanalysis.savepending:not(.saving) > header .savepending,
 #metaanalysis.validationerror > header .validationerrormessage,
-#metaanalysis:not(.validationerror):not(.saving):not(.savepending).unsaved > header .unsavedmessage {
+#metaanalysis:not(.validationerror):not(.saving):not(.savepending).unsaved > header .unsavedmessage,
+#metaanalysis:not(.validationerror):not(.saving):not(.savepending):not(.unsaved).localsaving > header .localsaving {
   display: block;
 }
 
@@ -1502,7 +1482,7 @@ body:not(.page-about-you).signed-on #metaanalysis > header .edityourcopy {
   vertical-align: top;
 }
 
-#metaanalysis table.experiments tr:not(.add) .papertitle {
+#metaanalysis table.experiments tr:not(.add) th.papertitle {
   position: relative;
 }
 
@@ -2060,31 +2040,6 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
   position: relative;
 }
 
-#paper table.experiments td.newcol,
-#metaanalysis table.experiments td.newcol {
-  background-color: #ddd;
-}
-
-#paper table.experiments td.newcol > *:not(.newcol),
-#metaanalysis table.experiments td.newcol > *:not(.newcol) {
-  display: none !important;
-}
-
-#paper table.experiments td.newcol > .newcol,
-#metaanalysis table.experiments td.newcol > .newcol {
-  display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-#paper table.experiments td:not(.newcol) > .newcol,
-#metaanalysis table.experiments td:not(.newcol) > .newcol {
-  display: none;
-}
-
 #paper table.experiments td span[contenteditable],
 #metaanalysis table.experiments td span[contenteditable] {
   min-width: 1em;
@@ -2333,9 +2288,14 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
   display: none;
 }
 
-#metaanalysis table.experiments th.papertitle > span {
-    margin-bottom: 1.5em;
-    display: block;
+body.editing.page-about-you #metaanalysis table.experiments th.papertitle {
+  padding-bottom: 1.5em; /* to give space to the "add" buttons */
+}
+
+body.editing.page-about-you #metaanalysis table.experiments th.papertitle,
+body.editing.page-about-you #metaanalysis table.experiments tr.row th.experimenttitle {
+  padding-right: 1.5em; /* to give space to the "exclude" checkbox */
+  padding-left: 1.5em; /* for symmetry */
 }
 
 /* aggregates
@@ -2405,7 +2365,11 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
   margin-top: 2em;
 }
 
-#metaanalysis .plots svg.maximized {
+#metaanalysis .plots > svg:not(.maximized) {
+  margin-right: 17rem; /* 15em for width of popupbox and 2em for extra gap */
+}
+
+#metaanalysis .plots > svg.maximized {
   position: fixed;
   bottom: 0;
   right: 0;

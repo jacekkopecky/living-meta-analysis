@@ -3,11 +3,19 @@
   var lima = window.lima;
   var _ = lima._;
 
+  lima.localStorageUserEmailAddress = 'lima@local';
+
   lima.requestAndFillUserProfile = function requestAndFillUserProfile() {
-    lima.whenUserPageIsAboutIsKnown = whenUserPageIsAboutIsKnown;
+    var email = lima.extractUserProfileEmailFromUrl();
+
+    if (email == lima.localStorageUserEmailAddress) {
+      lima.userLocalStorage = true;
+      lima.userPageIsAbout = {};
+      return;
+    }
+
     lima.getGapiIDToken()
     .then(function (idToken) {
-      var email = lima.extractUserProfileEmailFromUrl();
       return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
     })
     .then(_.fetchJson)
@@ -48,7 +56,7 @@
 
   var functionsWaiting = [];
 
-  function whenUserPageIsAboutIsKnown(f) {
+  lima.whenUserPageIsAboutIsKnown = function whenUserPageIsAboutIsKnown(f) {
     if (functionsWaiting.indexOf(f) === -1) functionsWaiting.push(f);
   }
 
