@@ -125,13 +125,31 @@
       return Promise.resolve()
       .then(loadLocalPapersList)
       .then(function() { return loadLocalPaper('/' + email + '/' + title); })
+      .then(initPaper)
       .catch(function (err) {
-        console.error("problem getting local paper ", title);
-        console.error(err);
-        _.notFound();
+        console.log("problem getting local paper, trying server for " + title, err);
+        return requestServerPaper(email, title);
       });
     }
 
+    return requestServerPaper(email, title);
+  }
+
+  function requestPaperById(id) {
+    if (lima.userLocalStorage) {
+      return Promise.resolve()
+      .then(function() { return loadLocalPaperById(id); })
+      .then(initPaper)
+      .catch(function (err) {
+        console.log("problem getting local paper by id " + id, err);
+        _.apiFail();
+      });
+    }
+
+    return Promise.reject(new Error('cannot request paper by id from server yet'));
+  }
+
+  function requestServerPaper(email, title) {
     return lima.getGapiIDToken()
     .then(function (idToken) {
       var currentPaperUrl = '/api/papers/' + email + '/' + title;
@@ -295,9 +313,9 @@
     // for now, do local storage "edit your copy"
     // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), paper.title);
     var ownURL = createPageURL(lima.localStorageUserEmailAddress, paper.title);
-    _.setProps(paperEl, '.edityourcopy a', 'href', ownURL);
+    _.setProps(paperEl, '.edityourcopy a', 'href', ownURL + '?type=paper');
 
-    paperEl.classList.toggle('localsaving', !!paper.storedLocally);
+    paperEl.classList.toggle('localsaving', !!lima.userLocalStorage);
 
     _.fillEls(paperEl, '.title', paper.title);
     _.fillEls (paperEl, '.reference .value', paper.reference);
@@ -1485,9 +1503,13 @@
   }
 
   function loadLocalPaper(path) {
-    var val = localStorage[localPapers[path]];
-    if (!val) throw new Error('cannot find local paper at ' + path);
-    return initPaper(JSON.parse(val));
+    return loadLocalPaperById(localPapers[path]);
+  }
+
+  function loadLocalPaperById(id) {
+    var val = localStorage[id];
+    if (!val) throw new Error('cannot find local paper id ' + id);
+    return JSON.parse(val);
     // todo also load the paper from the server and check if it is outdated
   }
 
@@ -2209,6 +2231,8 @@
   lima.requestAndFillPaperList = requestAndFillPaperList;
   lima.requestAndFillPaper = requestAndFillPaper;
   lima.requestPaper = requestPaper;
+  // todo this needs to be not only local
+  lima.requestPaperById = requestPaperById;
 
   lima.Paper = Paper;
 
