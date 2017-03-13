@@ -492,9 +492,9 @@
       for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
         if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
         var line = {};
-        line.title = currentMetaanalysis.papers[i].title;
+        line.title = currentMetaanalysis.papers[i].title || 'new paper';
         if (currentMetaanalysis.papers[i].experiments.length > 1) {
-          var expTitle = currentMetaanalysis.papers[i].experiments[j].title;
+          var expTitle = currentMetaanalysis.papers[i].experiments[j].title || 'new experiment';
           if (expTitle.match(/^\d+$/)) expTitle = 'Exp. ' + expTitle;
           line.title += ' (' + expTitle + ')';
         }
