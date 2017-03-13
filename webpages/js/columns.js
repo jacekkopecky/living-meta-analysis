@@ -131,6 +131,8 @@
       })
   }
 
+  // when a column is saved and its ID changes, this function helps
+  // update to the new ID wherever columns are used
   lima.updateColumnListAfterColumnSave = function updateColumnListAfterColumnSave(list) {
     if (!Array.isArray(list)) return;
 
