@@ -2,6 +2,8 @@
 
 const express = require('express');
 const jsonBodyParser = require('body-parser').json();
+
+// guard middleware enforcing that a user is logged in
 const GUARD = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
 
 const NotFoundError = require('./errors/NotFoundError');

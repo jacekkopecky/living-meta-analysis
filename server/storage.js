@@ -219,13 +219,7 @@ module.exports.listTitles = () =>
  * }
  */
 
-const LOCAL_STORAGE_SPECIAL_USER = {
-  emails: [
-    {
-      value: 'lima@local',
-    },
-  ],
-};
+const LOCAL_STORAGE_SPECIAL_USER = 'lima@local';
 
 let userCache;
 
@@ -259,7 +253,14 @@ function getAllUsers() {
   .then((users) => {
     // add a special user for local storage
     // - after all other users are loaded so datastore never overrides this one
-    users[LOCAL_STORAGE_SPECIAL_USER.emails[0].value] = LOCAL_STORAGE_SPECIAL_USER;
+    // - we expect our auth providers never go issue this email address so no user can use it
+    users[LOCAL_STORAGE_SPECIAL_USER] = {
+      emails: [
+        {
+          value: LOCAL_STORAGE_SPECIAL_USER,
+        },
+      ],
+    };
     return users;
   });
 }
