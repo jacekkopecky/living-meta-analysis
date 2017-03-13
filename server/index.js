@@ -136,7 +136,7 @@ app.get(`/:email(${config.EMAIL_ADDRESS_RE})/${config.NEW_META_TITLE}/`,
 app.get(`/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         api.checkUserExists,
         (req, res, next) => {
-          api.getKindForTitle(req.params.email, req.params.title)
+          Promise.resolve(req.query.type || api.getKindForTitle(req.params.email, req.params.title))
           .then((kind) => {
             if (kind === 'paper' || kind === 'metaanalysis') {
               const file = `profile/${kind}.html`;
