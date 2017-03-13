@@ -31,6 +31,8 @@
     var url = window.location.pathname.substring(0, start) + currentPaper.title;
     if (rest > -1) url += window.location.pathname.substring(rest);
 
+    if (lima.userLocalStorage) url += '?type=paper';
+
     window.history.replaceState({}, currentPaper.title, url);
   }
 
@@ -1516,7 +1518,7 @@
   function savePaperLocally(paper) {
     try {
       loadLocalPapersList();
-      if (lima.updatePageURL && paper.new) updatePageURL();
+      if (lima.updatePageURL && paper.new) lima.updatePageURL();
       var localURL = createPageURL(lima.localStorageUserEmailAddress, paper.title);
       localPapers[localURL] = paper.id;
 
@@ -1525,8 +1527,10 @@
       localStorage[paper.id] = JSON.stringify(paper);
       localStorage.papers = JSON.stringify(localPapers);
       console.log('paper ' + paper.id + ' saved locally');
+      if (lima.updateAfterPaperSave) lima.updateAfterPaperSave();
     } catch (e) {
-      return Promise.reject(new Error('failed to save paper ' + paper.id + ' locally', e));
+      console.error(e);
+      return Promise.reject(new Error('failed to save paper ' + paper.id + ' locally'));
     }
   }
 

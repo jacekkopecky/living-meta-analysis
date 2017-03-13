@@ -31,6 +31,8 @@
     var url = window.location.pathname.substring(0, start) + currentMetaanalysis.title;
     if (rest > -1) url += window.location.pathname.substring(rest);
 
+    if (lima.userLocalStorage) url += '?type=metaanalysis';
+
     window.history.replaceState({}, currentMetaanalysis.title, url);
 
     if (currentMetaanalysis.apiurl) currentMetaanalysisUrl = currentMetaanalysis.apiurl;
@@ -207,11 +209,20 @@
     var self = this;
     if (!(self instanceof Metaanalysis)) self = new Metaanalysis();
 
+    var oldId = self.id;
+
     // clean all properties of this paper
     for (var prop in self) { if (self.hasOwnProperty(prop)) { delete self[prop]; } }
 
     // get data from the new paper
     Object.assign(self, newMetaanalysis);
+
+    if (!self.id) {
+      self.id = oldId || _.createId('metaanalysis');
+      self.new = true;
+    } else if (oldId != self.id) {
+      self.oldTemporaryId = oldId;
+    }
 
     if (!Array.isArray(self.paperOrder)) self.paperOrder = [];
     if (!Array.isArray(self.papers)) self.papers = [];
@@ -294,7 +305,7 @@
     fillMetaanalysis(currentMetaanalysis);
 
     // for a new metaanalysis, go to editing the title
-    if (!currentMetaanalysis.id) focusFirstValidationError();
+    if (currentMetaanalysis.new) focusFirstValidationError();
   }
 
   function updateAfterPaperSave() {
@@ -318,6 +329,10 @@
         _.scheduleSave(currentMetaanalysis);
       }
     });
+
+    // also schedule save in localStorage mode - it's cheap and it may save new papers
+    // as with localStorage, they don't get a new ID on save
+    if (lima.userLocalStorage) _.scheduleSave(currentMetaanalysis);
   }
 
   var startNewTag = null;
@@ -333,13 +348,13 @@
 
     resetComputedDataSetters();
 
-    if (!metaanalysis.id) {
+    if (metaanalysis.new) {
       _.addClass('body', 'new');
     } else {
       _.removeClass('body', 'new');
     }
 
-    if (!metaanalysis.id || lima.userLocalStorage) {
+    if (metaanalysis.new || lima.userLocalStorage) {
       lima.toggleEditing(true);
     }
 
@@ -2526,6 +2541,7 @@
         // so create a shallow copy without the papers and send that
         var toSend = Object.assign({}, currentMetaanalysis);
         delete toSend.papers;
+        if (toSend.new) delete toSend.id;
 
         return fetch(currentMetaanalysisUrl, {
           method: 'POST',
@@ -2601,7 +2617,7 @@
   function saveMetaanalysisLocally(metaanalysis) {
     try {
       loadLocalMetaanalysesList();
-      if (lima.updatePageURL && metaanalysis.new) updatePageURL();
+      if (lima.updatePageURL && metaanalysis.new) lima.updatePageURL();
       var localURL = createPageURL(lima.localStorageUserEmailAddress, metaanalysis.title);
       localMetaanalyses[localURL] = metaanalysis.id;
 
@@ -2621,7 +2637,8 @@
       localStorage.metaanalyses = JSON.stringify(localMetaanalyses);
       console.log('metaanalysis ' + metaanalysis.id + ' saved locally');
     } catch (e) {
-      return Promise.reject(new Error('failed to save metaanalysis ' + metaanalysis.id + ' locally', e));
+      console.error(e);
+      return Promise.reject(new Error('failed to save metaanalysis ' + metaanalysis.id + ' locally'));
     }
   }
 
