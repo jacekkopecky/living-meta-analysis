@@ -53,6 +53,8 @@
 
   </section>
 
+  <img class="scrollhint" src="/img/arrowdown.svg" alt="hint that page can be scrolled down"/>
+
   <section>
     <p>
       <strong>&lsquo;Living Meta-Analysis&rsquo;</strong> is a free online platform developed to make meta-analysis and meta-analytic findings more <strong>intuitive</strong> and <strong>accessible</strong>. It hosts open meta­-analytic databases, runs flexible meta­-analyses in real time and visualizes the results. In effect, it makes the use of meta-analytic evidence as easy as it can be, enhancing the openness, reliability and cumulativeness of research.
@@ -1506,4 +1508,60 @@
       window.location.href="/?closedbeta";
     }
   }
+
+  window.addEventListener('scroll', debounce(updateScrollHint, 200));
+  updateScrollHint();
+
+  function updateScrollHint() {
+    [].slice.apply(document.querySelectorAll('.scrollhint')).forEach(function (hintEl) {
+      var triggerEl = hintEl.nextElementSibling;
+
+      if (triggerEl) {
+        // todo calculate whether triggerEl's top edge is visible on screen by some margin (e.g. 1%? 5%? of screen height)
+        // then toggle hintEl's class hide
+        hintEl.classList.toggle('hide', !isElementBelowScreen(triggerEl));
+      }
+    });
+  }
+
+  // simplified from http://stackoverflow.com/questions/123999/how-to-tell-if-a-dom-element-is-visible-in-the-current-viewport/7557433#7557433
+  function isElementBelowScreen(el) {
+    var rect = el.getBoundingClientRect();
+    return rect.top >= (window.innerHeight || document.documentElement.clientHeight)*.97;
+  }
+
+  // adapted from underscore http://underscorejs.org/docs/underscore.html
+  // copied from tools.js because we don't load that script here
+  function debounce(func, wait, immediate) {
+    var timeout, args, context, timestamp, result;
+
+    var later = function() {
+      var last = Date.now() - timestamp;
+
+      if (last < wait && last >= 0) {
+        timeout = setTimeout(later, wait - last);
+      } else {
+        timeout = null;
+        if (!immediate) {
+          result = func.apply(context, args);
+          if (!timeout) context = args = null;
+        }
+      }
+    };
+
+    return function() {
+      context = this;
+      args = arguments;
+      timestamp = Date.now();
+      var callNow = immediate && !timeout;
+      if (!timeout) timeout = setTimeout(later, wait);
+      if (callNow) {
+        result = func.apply(context, args);
+        context = args = null;
+      }
+
+      return result;
+    };
+  };
+
 </script>

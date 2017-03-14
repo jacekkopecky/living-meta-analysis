@@ -156,6 +156,28 @@ main.index {
   margin: 0;
 }
 
+main.index > img.scrollhint {
+  display: block;
+  position: fixed;
+  bottom: 1rem;
+  right: .5rem;
+  width: 100px;
+  height: 100px;
+  background-image: url(/img/arrowdown.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: .1;
+  transition: 1s;
+}
+main.index > img.scrollhint:hover {
+  bottom: 0;
+}
+
+main.index > img.scrollhint.hide {
+  opacity: 0;
+}
+
+
 main.index > section {
   display: block;
   padding: 4rem 2rem;
