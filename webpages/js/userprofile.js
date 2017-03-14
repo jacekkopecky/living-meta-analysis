@@ -11,6 +11,7 @@
     if (email == lima.localStorageUserEmailAddress) {
       lima.userLocalStorage = true;
       lima.userPageIsAbout = {};
+      hideUserProfile();
       return;
     }
 
@@ -35,6 +36,18 @@
     // the path of a page attributed to a user will be '/email/something',
     // so extract the 'email' portion here:
     return window.location.pathname.substring(1, window.location.pathname.indexOf('/', 1));
+  }
+
+  function hideUserProfile() {
+    _.removeClass('#personalinfo', 'loading');
+    _.addClass('#personalinfo', 'localediting');
+    _.addEventListener('#personalinfo .resetlocalstorage', 'click', function () {
+      if (window.confirm('Really reset local storage? All your locally-saved changes will be gone. This cannot be undone.')) {
+        localStorage.clear();
+        console.info('cleared local storage');
+        window.location.reload();
+      }
+    })
   }
 
   function fillUserProfile(user) {

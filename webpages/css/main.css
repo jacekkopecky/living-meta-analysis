@@ -478,6 +478,17 @@ section#personalinfo {
   text-align: center;
 }
 
+#personalinfo.localediting > *:not(.localediting),
+#personalinfo:not(.localediting) > .only.localediting {
+  display: none;
+}
+
+#personalinfo .resetlocalstorage {
+  font-style: italic;
+  color: #444;
+  cursor: pointer;
+}
+
 #personalinfo .photo {
   border-radius: .5em;
   border: 1px solid white;
