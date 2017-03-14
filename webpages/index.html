@@ -6,11 +6,11 @@
 <link rel="stylesheet" href="/css/main.css">
 
 <header>
-  <h1>LiMA (Living Meta-Analysis)</h1>
+  <h1 class="logo">LiMA</h1> <h2>Living Meta-Analysis</h2>
 
   <!-- this puts a sign-in button, and a sign-out link, in the page -->
   <div class="userinfo signedoff">
-    <img src="/img/user.png" class="userphoto">
+    <img src="/img/user.png" alt="user photo or icon" class="userphoto">
     <div class="actions">
       <div class="name when-signed-on">Signed in as: <span class="username"></span></div>
       <div class="g-signin2 signin"></div>
@@ -20,32 +20,1476 @@
   </div>
 </header>
 
-<p class="alert">
-  LiMA is now in testing, thank you for taking part. Please send your thoughts and feedback to
-  <a href="mailto:jacek.kopecky@port.ac.uk">jacek.kopecky@port.ac.uk</a>, or
-  <a href="https://github.com/jacekkopecky/living-meta-analysis/issues">report and discuss issues on GitHub</a>.
-</p>
+<main class="index">
+
+  <aside class="alert">
+    LiMA is now in testing, thank you for taking part. Please send your thoughts and feedback to
+    <a href="mailto:lima@port.ac.uk">lima@port.ac.uk</a>, or
+    <a href="https://github.com/jacekkopecky/living-meta-analysis/issues">report and discuss issues on GitHub</a>.
+  </aside>
+
+  <section class="columns">
+    <h1>Quick Start</h1>
+
+    <section>
+      <h2>First actions:</h2>
+      <ul>
+        <li class="when-signed-on"><a href="/profile">your profile</a>
+        <li><a href="/lima@local/new-metaanalysis">try a new meta-analysis</a>
+        <!-- <li class="when-signed-out"><a href="/lima@local/new-paper">try a new paper</a> -->
+        <li><a href="/lima@local/">see the meta-analyses and papers you've edited locally</a>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Showcase meta-analyses:</h2>
+      <ol class="topmetaanalyses">
+        <li><a href="/tomas.rubin@port.ac.uk/Misinfo2/">Misinformation effect</a></li>
+        <li><a href="/tomas.rubin@port.ac.uk/Testing02/">Simple testing metaanalysis</a></li>
+      </ol>
+    </section>
+
+  </section>
+
+  <section>
+    <p>
+      <strong>&lsquo;Living Meta-Analysis&rsquo;</strong> is a free online platform developed to make meta-analysis and meta-analytic findings more <strong>intuitive</strong> and <strong>accessible</strong>. It hosts open meta­-analytic databases, runs flexible meta­-analyses in real time and visualizes the results. In effect, it makes the use of meta-analytic evidence as easy as it can be, enhancing the openness, reliability and cumulativeness of research.
+    </p>
+  </section>
+
+  <section class="columns">
+    <h1>The LiMA Philosophy</h1>
+    <section>
+      <h2>Living meta-analytic databases</h2>
+      <ul>
+        <li>Easy to set and evolve
+        <li>Community editing and commenting
+        <li>Exportability (data plots and tables)
+      </ul>
+    </section>
+    <section>
+      <h2>&hellip;in a user-friendly Web platform</h2>
+      <ul>
+        <li>Intuitively explore existing meta-analyses
+        <li>Openly share and comment on data
+        <li>Let the community help and contribute
+      </ul>
+    </section>
+    <section>
+      <h2>&hellip;for research, practice and education</h2>
+      <ul>
+        <li>Use updated meta-analytic evidence for new research
+        <li>Facilitate putting evidence into practice
+        <li>Develop meta-analytic thinking by making it easy and intuitive
+      </ul>
+    </section>
+  </section>
+
+  <section class="columns">
+    <h1>Key Features</h1>
+    <section>
+      <h2>Available features</h2>
+      <ul>
+        <li>Fixed-effect meta-analysis
+        <li>Dynamic forest plot visualization
+        <li>Novel grape chart visualization
+      </ul>
+    </section>
+    <section>
+      <h2>Features in development</h2>
+      <ul>
+        <li>Advanced filtering of studies for meta-analysis
+        <li>Random-effects meta-analysis
+        <li>Moderator analysis
+      </ul>
+    </section>
+      <section>
+      <h2>Planned features</h2>
+      <ul>
+        <li>Meta-regression
+        <li>Teaching support
+      </ul>
+    </section>
+  </section>
+
+  <section>
+    <h1>Grape Chart</h1>
+    <p>
+      Novel visualization of a meta-analysis – groups studies according to moderator variables and provides intuitive displays of the study distributions and weights. Grape Charts are interactive analysis tools in their own right (every study-grape links to more study information).
+    </p>
+
+    <p>Example from a <a href="/tomas.rubin@port.ac.uk/Misinfo2">misinformation-effect meta-analysis</a>:</p>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 670 550" width="670" height="550" version="1.1" data-zero-groups-width="70" data-graph-height="500" data-min-grape-size="7" data-max-grape-size="14" data-first-group="210" data-group-spacing="300" data-grape-spacing="1.5" data-tooltip-padding="20" data-tooltip-min-width="150">
+      <style>
+        svg {
+          stroke-width: 2px;
+          fill: white;
+          stroke: black;
+          stroke-linecap: butt;
+          stroke-linejoin: miter;
+          font-size: 16px;
+          font-family: "Arial", sans-serif;
+        }
+
+        text {
+          stroke-width: 0;
+          fill: black;
+          text-anchor: middle;
+          dominant-baseline: alphabetic;
+        }
+
+        line.guideline {
+          stroke-width: 1px;
+          stroke-dasharray: 5px;
+          stroke-linecap: butt;
+        }
+
+        .axes .tick line {
+          font-size: 12px;
+          transform: translate(-5px, 0);
+        }
+
+        .axes .tick text {
+          font-size: 12px;
+          transform: translate(-10px, 4px);
+          text-anchor: end;
+        }
+
+        .group &gt; g {
+          transform: translate(0, 510px);
+        }
+
+        .axes .yaxis,
+        .group .trunk {
+          transform: scale(1, -1);
+          stroke-linecap: round;
+        }
+
+        .group .xaxis {
+          stroke-linecap: round;
+        }
+
+        .group .trunk {
+          stroke-width: 0px;
+        }
+
+        .group text.label {
+          transform: translate(0, 20px);
+          text-anchor: middle;
+        }
+
+        .grape {
+          fill: #8ddce5;
+        }
+
+        .grape.invalid {
+          fill: #aa4444;
+        }
+
+        .tooltips .grape {
+          fill: transparent;
+          stroke: transparent;
+          stroke-width: 3px;
+        }
+
+        .tooltips .experiment .grape:hover {
+          fill: #f0f033;
+          stroke: black;
+        }
+
+        .tooltips .experiment .grape:not(:hover) + .tooltip {
+          display: none
+        }
+
+        .tooltip {
+          transform: translate(-60px,-120px);
+        }
+
+        .tooltip.tophalf {
+          transform: translate(-60px,17px);
+        }
+
+        .tooltip text {
+          text-anchor: start;
+          font-size: 12px;
+        }
+
+        .tooltip text.paper {
+          transform: translate(10px,20px);
+        }
+        .tooltip text.exp   {
+          transform: translate(10px,38px);
+        }
+        .tooltip text._or    {
+          transform: translate(10px,56px);
+        }
+        .tooltip text.or    {
+          transform: translate(60px,56px);
+        }
+        .tooltip text._wt    {
+          transform: translate(10px,74px);
+        }
+        .tooltip text.wt    {
+          transform: translate(60px,74px);
+        }
+        .tooltip text._ci    {
+          transform: translate(10px,92px);
+        }
+        .tooltip text.ci    {
+          transform: translate(60px,92px);
+        }
+
+        .invalid .tooltip text.wt,
+        .invalid .tooltip text.ci {
+          display: none;
+        }
+
+        .legend text {
+          text-anchor: start;
+          font-size: 14px;
+          transform: translate(0,4px);
+        }
+
+        .group:not(.with-legend) g.guideline .legend {
+          display: none;
+        }
+
+        .group g.guideline .legend text {
+          font-size: 10px;
+        }
+
+        .group g.guideline .legend text:nth-child(1) {
+          transform: translate(-137.5px,-5px)rotate(-90deg);
+        }
+
+        .group g.guideline .legend text:nth-child(2) {
+          transform: translate(-127.5px,-5px)rotate(-90deg);
+        }
+
+        .positioningbutton {
+          display: none;
+        }
+
+      </style>
+
+      <g class="axes" transform="translate(60,510)">
+        <line class="yaxis" x1="0" x2="0" y2="500"></line>
+
+        <g class="tick" transform="translate(0,-5.313304091411944)">
+            <line x2="5"></line>
+            <text>0.1</text>
+          </g><g class="tick" transform="translate(0,-127.65665204570597)">
+            <line x2="5"></line>
+            <text>1</text>
+          </g><g class="tick" transform="translate(0,-250)">
+            <line x2="5"></line>
+            <text>10</text>
+          </g><g class="tick" transform="translate(0,-372.3433479542941)">
+            <line x2="5"></line>
+            <text>100</text>
+          </g><g class="tick" transform="translate(0,-494.686695908588)">
+            <line x2="5"></line>
+            <text>1000</text>
+          </g>
+        <text class="ylabel" transform="translate(-40,-260) rotate(-90)">odds ratio</text>
+      </g>
+
+      <g class="group with-legend" transform="translate(210,0)">
+          <g>
+            <line class="xaxis" x1="-150" x2="150"></line>
+            <g class="guideline" transform="translate(0,-211.39767468282463)">
+              <line class="guideline" x1="-142.5" x2="142.5"></line>
+              <g class="legend">
+                <text>weighted</text>
+                <text>mean</text>
+              </g>
+            </g>
+            <line class="trunk" x1="0" x2="0" y2="500"></line>
+            <text class="label">no warning</text>
+
+            <circle class="experiment grape" r="11.168460155657655" transform="translate(-68.65378496790115, -194.90535524354175)"></circle><circle class="experiment grape" r="9.976116632888072" transform="translate(26.36160488267233, -279.64471420257837)"></circle><circle class="experiment grape" r="10.052249534368881" transform="translate(17.38480676798666, -242.27627033000726)"></circle><circle class="experiment grape" r="8.564648869036718" transform="translate(6.538991245428251, -303.44223607304986)"></circle><circle class="experiment grape" r="10.889516932245039" transform="translate(2.80953949665372, -223.28233009868376)"></circle><circle class="experiment grape" r="9.821405092814963" transform="translate(-42.538487688814406, -275.5841562081615)"></circle><circle class="experiment grape" r="9.821405092814963" transform="translate(-19.895677503184476, -275.5841562081615)"></circle><circle class="experiment grape" r="9.042320167732802" transform="translate(25.188812085597895, -218.27860037280408)"></circle><circle class="experiment grape" r="9.11549303337493" transform="translate(63.921557652637624, -264.76506151671884)"></circle><circle class="experiment grape" r="9.11549303337493" transform="translate(42.69057158588777, -264.76506151671884)"></circle><circle class="experiment grape" r="11.662076775515047" transform="translate(81.15127534496358, -177.75542338643993)"></circle><circle class="experiment grape" r="11.662076775515047" transform="translate(-49.338079558845, -177.75542338643993)"></circle><circle class="experiment grape" r="10.723845588453836" transform="translate(-95.91019828751811, -199.1890819732894)"></circle><circle class="experiment grape" r="10.723845588453836" transform="translate(94.75433874450081, -199.1890819732894)"></circle><circle class="experiment grape" r="11.741012976067072" transform="translate(56.07804830040225, -186.02926372826298)"></circle><circle class="experiment grape" r="8.33228330562717" transform="translate(80.08183370633807, -277.29331099851197)"></circle><circle class="experiment grape" r="8.346234306099165" transform="translate(-13.501300129468255, -296.30163699561774)"></circle><circle class="experiment grape" r="11.859237381402068" transform="translate(-42.52373374402844, -203.38635773784398)"></circle><circle class="experiment grape" r="8.353054166191532" transform="translate(-27.454747506850136, -255.80491998451)"></circle><circle class="experiment grape" r="7.959810181031276" transform="translate(-21.345553213307035, -165.54533087944665)"></circle><circle class="experiment grape" r="10.280471023535634" transform="translate(118.2460705865625, -204.1232233443182)"></circle><circle class="experiment grape" r="8.508641923165515" transform="translate(-33.77135414497012, -232.81857774862573)"></circle><circle class="experiment grape" r="9.030206776880625" transform="translate(-14.106699148738539, -238.74695440691687)"></circle><circle class="experiment grape" r="11.13374700703654" transform="translate(-85.93267472769529, -176.42180428673763)"></circle><circle class="experiment grape" r="7.034593693142361" transform="translate(-78.84692499903608, -262.6557381304337)"></circle><circle class="experiment grape" r="7.00990072878794" transform="translate(-87.25003228587394, -277.48485064686923)"></circle><circle class="experiment grape" r="8.047312805940406" transform="translate(103.82835607303994, -178.96636715665633)"></circle><circle class="experiment grape" r="7.826951372678876" transform="translate(37.582957197888, -236.9870596395601)"></circle><circle class="experiment grape" r="7.3299058125338" transform="translate(-36.646901521593456, -155.52622657448154)"></circle><circle class="experiment grape" r="7" transform="translate(0, -98.56824285408969)"></circle><circle class="experiment grape" r="7.964567774631102" transform="translate(-8.522112077088506, -453.65788400099933)"></circle><circle class="experiment grape" r="7.9631923930719495" transform="translate(8.52348745864766, -445.42941868641014)"></circle><circle class="experiment grape" r="7.819182818567269" transform="translate(9.31918281856727, -482.69741079427564)"></circle><circle class="experiment grape" r="7.819182818567269" transform="translate(-9.319182818567267, -482.69741079427564)"></circle><circle class="experiment grape" r="13.53050694121572" transform="translate(27.859151883945678, -187.75342250013162)"></circle><circle class="experiment grape" r="13.627154238939841" transform="translate(24.672471890758874, -149.65632678787185)"></circle><circle class="experiment grape" r="13.36534362065108" transform="translate(-15.747857910218048, -194.46002332366095)"></circle><circle class="experiment grape" r="9.009459895848487" transform="translate(-64.36205090275993, -275.019572467539)"></circle><circle class="experiment grape" r="8.017877414252125" transform="translate(51.16618094417382, -283.027499787309)"></circle><circle class="experiment grape" r="9.302788710481343" transform="translate(-1.9794655938472925, -259.09089133274176)"></circle><circle class="experiment grape" r="9.446631659950626" transform="translate(-119.07990995014751, -199.00072754821838)"></circle><circle class="experiment grape" r="10.652141328988142" transform="translate(2.80953949665372, -281.5407074424584)"></circle><circle class="experiment grape" r="13.748346469906563" transform="translate(2.80953949665372, -170.74384040242384)"></circle>
+
+            <g class="positioningbutton">
+              <circle r="8"></circle>
+              <line x1="-5" y1="-5" x2="5" y2="5"></line>
+              <line x1="5" y1="5" x2="4" y2="0"></line>
+              <line x1="5" y1="5" x2="0" y2="4"></line>
+              <line x1="-5" y1="-5" x2="-4" y2="0"></line>
+              <line x1="-5" y1="-5" x2="0" y2="-4"></line>
+            </g>
+          </g>
+        </g><g class="group with-pos-button" transform="translate(510,0)">
+          <g>
+            <line class="xaxis" x1="-150" x2="150"></line>
+            <g class="guideline" transform="translate(0,-166.94938826550285)">
+              <line class="guideline" x1="-142.5" x2="142.5"></line>
+              <g class="legend">
+                <text>weighted</text>
+                <text>mean</text>
+              </g>
+            </g>
+            <line class="trunk" x1="0" x2="0" y2="500"></line>
+            <text class="label">warning</text>
+
+            <circle class="experiment grape" r="10.529935722860724" transform="translate(67.3636606522069, -127.65665204570597)"></circle><circle class="experiment grape" r="9.860880561139814" transform="translate(-17.68152694020778, -196.82739820480532)"></circle><circle class="experiment grape" r="9.754279825854722" transform="translate(-23.339614786473298, -174.00455914109176)"></circle><circle class="experiment grape" r="8.029046773548846" transform="translate(-75.4761201688639, -127.65665204570597)"></circle><circle class="experiment grape" r="11.02938147475329" transform="translate(30.966165729549427, -161.32320742457662)"></circle><circle class="experiment grape" r="10.611831423425446" transform="translate(-52.399445664735886, -167.41500411780652)"></circle><circle class="experiment grape" r="10.326125083809035" transform="translate(1.0183701230834785, -210.5369233826224)"></circle><circle class="experiment grape" r="9.077280725914726" transform="translate(87.93217474766746, -156.42225736793225)"></circle><circle class="experiment grape" r="9.178781505467466" transform="translate(-39.721182635957724, -196.8106404291585)"></circle><circle class="experiment grape" r="9.100023963650852" transform="translate(19.756467727565767, -222.85828123246108)"></circle><circle class="experiment grape" r="11.109530436732758" transform="translate(-57.44297102027213, -140.4988532853784)"></circle><circle class="experiment grape" r="11.462111345075755" transform="translate(45.26527810603225, -139.32986520613764)"></circle><circle class="experiment grape" r="10.529725872232946" transform="translate(-75.9846837061958, -162.26220534556344)"></circle><circle class="experiment grape" r="10.79371642992096" transform="translate(65.10836537914346, -154.95384434309207)"></circle><circle class="experiment grape" r="11.49801153276764" transform="translate(-33.8604971393358, -150.4794911094195)"></circle><circle class="experiment grape" r="8.31714839089951" transform="translate(4.44595201920702, -263.94021119835406)"></circle><circle class="experiment grape" r="8.342135039643047" transform="translate(4.44595201920702, -289.42138729321914)"></circle><circle class="experiment grape" r="12.160024591630249" transform="translate(-11.294445687744634, -136.28709131608494)"></circle><circle class="experiment grape" r="7.477286005585836" transform="translate(19.436045721575148, -278.0429999175043)"></circle><circle class="experiment grape" r="7.562624436621968" transform="translate(88.4562208116896, -127.65665204570597)"></circle><circle class="experiment grape" r="8.773400448221564" transform="translate(-60.434872004259276, -199.96294139416858)"></circle><circle class="experiment grape" r="9.033284905018553" transform="translate(-97.84299642065187, -156.6672414840703)"></circle><circle class="experiment grape" r="8.671113093462683" transform="translate(76.077068627246, -192.60464770754083)"></circle><circle class="experiment grape" r="10.346425817194685" transform="translate(-30.706122683579636, -119.74122147895592)"></circle><circle class="experiment grape" r="7.043749257788965" transform="translate(-9.27465417502993, -276.14133934817204)"></circle><circle class="experiment grape" r="7.00257562809973" transform="translate(-22.901751043705254, -265.90027382514137)"></circle><circle class="experiment grape" r="8.10320076726354" transform="translate(-88.68989415094458, -179.77109287574316)"></circle><circle class="experiment grape" r="7.853885846711568" transform="translate(22.050440825093418, -256.35005127757)"></circle><circle class="experiment grape" r="7.205747058451428" transform="translate(-93.18608712272561, -132.0000121031593)"></circle><circle class="experiment grape" r="7.4035877968003705" transform="translate(99.47269352887005, -172.11686359618855)"></circle><circle class="experiment grape" r="8.11963216056878" transform="translate(9.48940572026107, -359.6503029522877)"></circle><circle class="experiment grape" r="7.791855651319926" transform="translate(0, -490.4869002976281)"></circle><circle class="experiment grape" r="8.162317104032915" transform="translate(-6.310428076624155, -336.91265831735245)"></circle><circle class="experiment grape" r="8.165213709299866" transform="translate(-9.443824171529984, -355.984503436605)"></circle><circle class="experiment grape" r="13.054059687108982" transform="translate(1.0183701230834785, -107.91455125683262)"></circle><circle class="experiment grape" r="14" transform="translate(1.0183701230834785, -162.93748815794805)"></circle><circle class="experiment grape" r="13.517331898348464" transform="translate(17.36931075890713, -137.17017773334751)"></circle><circle class="experiment grape" r="8.320285126595921" transform="translate(1.0183701230834785, -235.15551730365226)"></circle><circle class="experiment grape" r="8.855853521543308" transform="translate(57.932566727206826, -202.20326267080742)"></circle><circle class="experiment grape" r="9.023177694733706" transform="translate(45.30703898404622, -181.03578463651252)"></circle><circle class="experiment grape" r="9.399829093223802" transform="translate(37.18463946630224, -206.82143956173798)"></circle><circle class="experiment grape" r="8.347991273198744" transform="translate(17.29281125277918, -89.73206911094495)"></circle><circle class="experiment grape" r="13.736655691371322" transform="translate(20.230574621375602, -186.92984530362494)"></circle>
+
+            <g class="positioningbutton">
+              <circle r="8"></circle>
+              <line x1="-5" y1="-5" x2="5" y2="5"></line>
+              <line x1="5" y1="5" x2="4" y2="0"></line>
+              <line x1="5" y1="5" x2="0" y2="4"></line>
+              <line x1="-5" y1="-5" x2="-4" y2="0"></line>
+              <line x1="-5" y1="-5" x2="0" y2="-4"></line>
+            </g>
+          </g>
+        </g>
+
+      <g class="group tooltips" transform="translate(210,0)">
+          <g>
+            <g class="experiment" transform="translate(-68.65378496790115, -194.90535524354175)">
+                <circle class="grape" r="11.168460155657655"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Blank1998</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">3.55</text>
+                  <text class="wt   ">3.70%</text>
+                  <text class="ci   ">0.0115, 2.52</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(26.36160488267233, -279.64471420257837)">
+                <circle class="grape" r="9.976116632888072"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Bodner2009</text>
+                  <text class="exp  ">1and2</text>
+                  <text class="or   ">17.5</text>
+                  <text class="wt   ">2.22%</text>
+                  <text class="ci   ">1.24, 4.48</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(17.38480676798666, -242.27627033000726)">
+                <circle class="grape" r="10.052249534368881"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Bodner2009</text>
+                  <text class="exp  ">1and2</text>
+                  <text class="or   ">8.65</text>
+                  <text class="wt   ">2.30%</text>
+                  <text class="ci   ">0.567, 3.75</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(6.538991245428251, -303.44223607304986)">
+                <circle class="grape" r="8.564648869036718"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">ChristiansenOchalek1983</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">27.3</text>
+                  <text class="wt   ">0.953%</text>
+                  <text class="ci   ">0.836, 5.78</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(2.80953949665372, -223.28233009868376)">
+                <circle class="grape" r="10.889516932245039"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">ChristiansenOchalek1983</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">6.05</text>
+                  <text class="wt   ">3.32%</text>
+                  <text class="ci   ">0.476, 3.12</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-42.538487688814406, -275.5841562081615)">
+                <circle class="grape" r="9.821405092814963"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">16.2</text>
+                  <text class="wt   ">2.06%</text>
+                  <text class="ci   ">1.10, 4.47</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-19.895677503184476, -275.5841562081615)">
+                <circle class="grape" r="9.821405092814963"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">16.2</text>
+                  <text class="wt   ">2.06%</text>
+                  <text class="ci   ">1.10, 4.47</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(25.188812085597895, -218.27860037280408)">
+                <circle class="grape" r="9.042320167732802"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">5.50</text>
+                  <text class="wt   ">1.32%</text>
+                  <text class="ci   ">-0.393, 3.80</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(63.921557652637624, -264.76506151671884)">
+                <circle class="grape" r="9.11549303337493"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 3</text>
+                  <text class="or   ">13.2</text>
+                  <text class="wt   ">1.38%</text>
+                  <text class="ci   ">0.529, 4.63</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(42.69057158588777, -264.76506151671884)">
+                <circle class="grape" r="9.11549303337493"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 3</text>
+                  <text class="or   ">13.2</text>
+                  <text class="wt   ">1.38%</text>
+                  <text class="ci   ">0.529, 4.63</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(81.15127534496358, -177.75542338643993)">
+                <circle class="grape" r="11.662076775515047"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 4</text>
+                  <text class="or   ">2.57</text>
+                  <text class="wt   ">4.43%</text>
+                  <text class="ci   ">-0.204, 2.09</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-49.338079558845, -177.75542338643993)">
+                <circle class="grape" r="11.662076775515047"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 4</text>
+                  <text class="or   ">2.57</text>
+                  <text class="wt   ">4.43%</text>
+                  <text class="ci   ">-0.204, 2.09</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-95.91019828751811, -199.1890819732894)">
+                <circle class="grape" r="10.723845588453836"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2007</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">3.84</text>
+                  <text class="wt   ">3.11%</text>
+                  <text class="ci   ">-0.0231, 2.72</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(94.75433874450081, -199.1890819732894)">
+                <circle class="grape" r="10.723845588453836"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2007</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">3.84</text>
+                  <text class="wt   ">3.11%</text>
+                  <text class="ci   ">-0.0231, 2.72</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(56.07804830040225, -186.02926372826298)">
+                <circle class="grape" r="11.741012976067072"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2007</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">3.00</text>
+                  <text class="wt   ">4.55%</text>
+                  <text class="ci   ">-0.0330, 2.23</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(80.08183370633807, -277.29331099851197)">
+                <circle class="grape" r="8.33228330562717"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Frost2002</text>
+                  <text class="exp  ">1and2</text>
+                  <text class="or   ">16.7</text>
+                  <text class="wt   ">0.795%</text>
+                  <text class="ci   ">0.109, 5.52</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-13.501300129468255, -296.30163699561774)">
+                <circle class="grape" r="8.346234306099165"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Frost2002</text>
+                  <text class="exp  ">1and2</text>
+                  <text class="or   ">23.9</text>
+                  <text class="wt   ">0.804%</text>
+                  <text class="ci   ">0.482, 5.87</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-42.52373374402844, -203.38635773784398)">
+                <circle class="grape" r="11.859237381402068"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">HighhouseBotrill1995</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">4.16</text>
+                  <text class="wt   ">4.73%</text>
+                  <text class="ci   ">0.316, 2.53</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-27.454747506850136, -255.80491998451)">
+                <circle class="grape" r="8.353054166191532"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Lindsay1995</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">11.2</text>
+                  <text class="wt   ">0.808%</text>
+                  <text class="ci   ">-0.273, 5.10</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-21.345553213307035, -165.54533087944665)">
+                <circle class="grape" r="7.959810181031276"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Lindsay1995</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">2.04</text>
+                  <text class="wt   ">0.571%</text>
+                  <text class="ci   ">-2.48, 3.91</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(118.2460705865625, -204.1232233443182)">
+                <circle class="grape" r="10.280471023535634"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Lindsay1995</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">4.22</text>
+                  <text class="wt   ">2.56%</text>
+                  <text class="ci   ">-0.0684, 2.95</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-33.77135414497012, -232.81857774862573)">
+                <circle class="grape" r="8.508641923165515"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Lindsay1995</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">7.24</text>
+                  <text class="wt   ">0.913%</text>
+                  <text class="ci   ">-0.546, 4.50</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-14.106699148738539, -238.74695440691687)">
+                <circle class="grape" r="9.030206776880625"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">MaedeRoediger2002</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">8.09</text>
+                  <text class="wt   ">1.31%</text>
+                  <text class="ci   ">-0.0159, 4.20</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-85.93267472769529, -176.42180428673763)">
+                <circle class="grape" r="11.13374700703654"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">OebrstBlank2012</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">2.50</text>
+                  <text class="wt   ">3.65%</text>
+                  <text class="ci   ">-0.345, 2.18</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-78.84692499903608, -262.6557381304337)">
+                <circle class="grape" r="7.034593693142361"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="172.078125"></rect>
+                  <text class="paper">PatersonKempMcIntyre2012</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">12.7</text>
+                  <text class="wt   ">0.176%</text>
+                  <text class="ci   ">-3.22, 8.30</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-87.25003228587394, -277.48485064686923)">
+                <circle class="grape" r="7.00990072878794"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="172.078125"></rect>
+                  <text class="paper">PatersonKempMcIntyre2012</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">16.8</text>
+                  <text class="wt   ">0.168%</text>
+                  <text class="ci   ">-3.07, 8.71</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(103.82835607303994, -178.96636715665633)">
+                <circle class="grape" r="8.047312805940406"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">PatersonKemp2009</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">2.63</text>
+                  <text class="wt   ">0.621%</text>
+                  <text class="ci   ">-2.10, 4.03</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(37.582957197888, -236.9870596395601)">
+                <circle class="grape" r="7.826951372678876"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">PatersonKemp2009</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">7.83</text>
+                  <text class="wt   ">0.501%</text>
+                  <text class="ci   ">-1.35, 5.47</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-36.646901521593456, -155.52622657448154)">
+                <circle class="grape" r="7.3299058125338"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">PriceConnolly2004</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">1.69</text>
+                  <text class="wt   ">0.277%</text>
+                  <text class="ci   ">-4.06, 5.11</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(0, -98.56824285408969)">
+                <circle class="grape" r="7"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">PriceConnolly2004</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">0.578</text>
+                  <text class="wt   ">0.165%</text>
+                  <text class="ci   ">-6.49, 5.39</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-8.522112077088506, -453.65788400099933)">
+                <circle class="grape" r="7.964567774631102"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Principe2001</text>
+                  <text class="exp  ">3to4</text>
+                  <text class="or   ">462</text>
+                  <text class="wt   ">0.574%</text>
+                  <text class="ci   ">2.95, 9.32</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(8.52348745864766, -445.42941868641014)">
+                <circle class="grape" r="7.9631923930719495"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Principe2001</text>
+                  <text class="exp  ">3to4</text>
+                  <text class="or   ">396</text>
+                  <text class="wt   ">0.573%</text>
+                  <text class="ci   ">2.79, 9.17</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(9.31918281856727, -482.69741079427564)">
+                <circle class="grape" r="7.819182818567269"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Principe2001</text>
+                  <text class="exp  ">5to6</text>
+                  <text class="or   ">798</text>
+                  <text class="wt   ">0.497%</text>
+                  <text class="ci   ">3.26, 10.1</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-9.319182818567267, -482.69741079427564)">
+                <circle class="grape" r="7.819182818567269"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Principe2001</text>
+                  <text class="exp  ">5to6</text>
+                  <text class="or   ">798</text>
+                  <text class="wt   ">0.497%</text>
+                  <text class="ci   ">3.26, 10.1</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(27.859151883945678, -187.75342250013162)">
+                <circle class="grape" r="13.53050694121572"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">SzpitalakPolczyk2010</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">3.10</text>
+                  <text class="wt   ">7.75%</text>
+                  <text class="ci   ">0.264, 2.00</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(24.672471890758874, -149.65632678787185)">
+                <circle class="grape" r="13.627154238939841"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">SzpitalakPolczyk2010</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">1.51</text>
+                  <text class="wt   ">7.95%</text>
+                  <text class="ci   ">-0.442, 1.27</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-15.747857910218048, -194.46002332366095)">
+                <circle class="grape" r="13.36534362065108"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">SzpitalakPolczyk2011</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">3.52</text>
+                  <text class="wt   ">7.42%</text>
+                  <text class="ci   ">0.371, 2.14</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-64.36205090275993, -275.019572467539)">
+                <circle class="grape" r="9.009459895848487"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Thomas2010</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">16.0</text>
+                  <text class="wt   ">1.30%</text>
+                  <text class="ci   ">0.653, 4.89</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(51.16618094417382, -283.027499787309)">
+                <circle class="grape" r="8.017877414252125"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Thomas2010</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">18.6</text>
+                  <text class="wt   ">0.604%</text>
+                  <text class="ci   ">-0.182, 6.03</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-1.9794655938472925, -259.09089133274176)">
+                <circle class="grape" r="9.302788710481343"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Thomas2010</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">11.9</text>
+                  <text class="wt   ">1.55%</text>
+                  <text class="ci   ">0.535, 4.41</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-119.07990995014751, -199.00072754821838)">
+                <circle class="grape" r="9.446631659950626"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Thomas2010</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">3.83</text>
+                  <text class="wt   ">1.68%</text>
+                  <text class="ci   ">-0.518, 3.20</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(2.80953949665372, -281.5407074424584)">
+                <circle class="grape" r="10.652141328988142"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Wrigh1993</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">18.1</text>
+                  <text class="wt   ">3.01%</text>
+                  <text class="ci   ">1.51, 4.29</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(2.80953949665372, -170.74384040242384)">
+                <circle class="grape" r="13.748346469906563"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">ZaragozaLane1994</text>
+                  <text class="exp  ">Exp. 4</text>
+                  <text class="or   ">2.25</text>
+                  <text class="wt   ">8.20%</text>
+                  <text class="ci   ">-0.0318, 1.65</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g>
+          </g>
+        </g><g class="group tooltips" transform="translate(510,0)">
+          <g>
+            <g class="experiment" transform="translate(67.3636606522069, -127.65665204570597)">
+                <circle class="grape" r="10.529935722860724"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Blank1998</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">1.00</text>
+                  <text class="wt   ">3.04%</text>
+                  <text class="ci   ">-1.43, 1.43</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-17.68152694020778, -196.82739820480532)">
+                <circle class="grape" r="9.860880561139814"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Bodner2009</text>
+                  <text class="exp  ">1and2</text>
+                  <text class="or   ">3.68</text>
+                  <text class="wt   ">2.23%</text>
+                  <text class="ci   ">-0.365, 2.97</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-23.339614786473298, -174.00455914109176)">
+                <circle class="grape" r="9.754279825854722"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Bodner2009</text>
+                  <text class="exp  ">1and2</text>
+                  <text class="or   ">2.39</text>
+                  <text class="wt   ">2.11%</text>
+                  <text class="ci   ">-0.840, 2.58</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-75.4761201688639, -127.65665204570597)">
+                <circle class="grape" r="8.029046773548846"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">ChristiansenOchalek1983</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">1.00</text>
+                  <text class="wt   ">0.648%</text>
+                  <text class="ci   ">-3.09, 3.09</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(30.966165729549427, -161.32320742457662)">
+                <circle class="grape" r="11.02938147475329"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">ChristiansenOchalek1983</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">1.88</text>
+                  <text class="wt   ">3.73%</text>
+                  <text class="ci   ">-0.654, 1.92</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-52.399445664735886, -167.41500411780652)">
+                <circle class="grape" r="10.611831423425446"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">2.11</text>
+                  <text class="wt   ">3.15%</text>
+                  <text class="ci   ">-0.654, 2.15</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(1.0183701230834785, -210.5369233826224)">
+                <circle class="grape" r="10.326125083809035"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">4.76</text>
+                  <text class="wt   ">2.78%</text>
+                  <text class="ci   ">0.0678, 3.05</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(87.93217474766746, -156.42225736793225)">
+                <circle class="grape" r="9.077280725914726"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">1.72</text>
+                  <text class="wt   ">1.44%</text>
+                  <text class="ci   ">-1.53, 2.62</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-39.721182635957724, -196.8106404291585)">
+                <circle class="grape" r="9.178781505467466"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 3</text>
+                  <text class="or   ">3.67</text>
+                  <text class="wt   ">1.53%</text>
+                  <text class="ci   ">-0.710, 3.31</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(19.756467727565767, -222.85828123246108)">
+                <circle class="grape" r="9.100023963650852"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 3</text>
+                  <text class="or   ">6.00</text>
+                  <text class="wt   ">1.46%</text>
+                  <text class="ci   ">-0.269, 3.85</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-57.44297102027213, -140.4988532853784)">
+                <circle class="grape" r="11.109530436732758"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 4</text>
+                  <text class="or   ">1.27</text>
+                  <text class="wt   ">3.85%</text>
+                  <text class="ci   ">-1.03, 1.51</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(45.26527810603225, -139.32986520613764)">
+                <circle class="grape" r="11.462111345075755"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2005</text>
+                  <text class="exp  ">Exp. 4</text>
+                  <text class="or   ">1.25</text>
+                  <text class="wt   ">4.38%</text>
+                  <text class="ci   ">-0.968, 1.41</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-75.9846837061958, -162.26220534556344)">
+                <circle class="grape" r="10.529725872232946"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2007</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">1.92</text>
+                  <text class="wt   ">3.04%</text>
+                  <text class="ci   ">-0.775, 2.08</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(65.10836537914346, -154.95384434309207)">
+                <circle class="grape" r="10.79371642992096"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2007</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">1.67</text>
+                  <text class="wt   ">3.40%</text>
+                  <text class="ci   ">-0.836, 1.86</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-33.8604971393358, -150.4794911094195)">
+                <circle class="grape" r="11.49801153276764"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Echterhoff2007</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">1.54</text>
+                  <text class="wt   ">4.44%</text>
+                  <text class="ci   ">-0.751, 1.61</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(4.44595201920702, -263.94021119835406)">
+                <circle class="grape" r="8.31714839089951"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Frost2002</text>
+                  <text class="exp  ">1and2</text>
+                  <text class="or   ">13.0</text>
+                  <text class="wt   ">0.834%</text>
+                  <text class="ci   ">-0.159, 5.29</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(4.44595201920702, -289.42138729321914)">
+                <circle class="grape" r="8.342135039643047"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Frost2002</text>
+                  <text class="exp  ">1and2</text>
+                  <text class="or   ">21.0</text>
+                  <text class="wt   ">0.851%</text>
+                  <text class="ci   ">0.348, 5.74</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-11.294445687744634, -136.28709131608494)">
+                <circle class="grape" r="12.160024591630249"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">HighhouseBotrill1995</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">1.18</text>
+                  <text class="wt   ">5.55%</text>
+                  <text class="ci   ">-0.894, 1.22</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(19.436045721575148, -278.0429999175043)">
+                <circle class="grape" r="7.477286005585836"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Lindsay1995</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">17.0</text>
+                  <text class="wt   ">0.358%</text>
+                  <text class="ci   ">-1.33, 6.99</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(88.4562208116896, -127.65665204570597)">
+                <circle class="grape" r="7.562624436621968"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Lindsay1995</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">1.00</text>
+                  <text class="wt   ">0.397%</text>
+                  <text class="ci   ">-3.95, 3.95</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-60.434872004259276, -199.96294139416858)">
+                <circle class="grape" r="8.773400448221564"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Lindsay1995</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">3.90</text>
+                  <text class="wt   ">1.18%</text>
+                  <text class="ci   ">-0.933, 3.65</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-97.84299642065187, -156.6672414840703)">
+                <circle class="grape" r="9.033284905018553"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Lindsay1995</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">1.73</text>
+                  <text class="wt   ">1.40%</text>
+                  <text class="ci   ">-1.56, 2.65</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(76.077068627246, -192.60464770754083)">
+                <circle class="grape" r="8.671113093462683"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">MaedeRoediger2002</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">3.40</text>
+                  <text class="wt   ">1.09%</text>
+                  <text class="ci   ">-1.16, 3.60</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-30.706122683579636, -119.74122147895592)">
+                <circle class="grape" r="10.346425817194685"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">OebrstBlank2012</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">0.862</text>
+                  <text class="wt   ">2.80%</text>
+                  <text class="ci   ">-1.63, 1.34</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-9.27465417502993, -276.14133934817204)">
+                <circle class="grape" r="7.043749257788965"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="172.078125"></rect>
+                  <text class="paper">PatersonKempMcIntyre2012</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">16.4</text>
+                  <text class="wt   ">0.189%</text>
+                  <text class="ci   ">-2.92, 8.51</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-22.901751043705254, -265.90027382514137)">
+                <circle class="grape" r="7.00257562809973"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="172.078125"></rect>
+                  <text class="paper">PatersonKempMcIntyre2012</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">13.5</text>
+                  <text class="wt   ">0.176%</text>
+                  <text class="ci   ">-3.32, 8.53</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-88.68989415094458, -179.77109287574316)">
+                <circle class="grape" r="8.10320076726354"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">PatersonKemp2009</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">2.67</text>
+                  <text class="wt   ">0.694%</text>
+                  <text class="ci   ">-2.01, 3.97</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(22.050440825093418, -256.35005127757)">
+                <circle class="grape" r="7.853885846711568"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">PatersonKemp2009</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">11.3</text>
+                  <text class="wt   ">0.547%</text>
+                  <text class="ci   ">-0.943, 5.79</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-93.18608712272561, -132.0000121031593)">
+                <circle class="grape" r="7.205747058451428"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">PriceConnolly2004</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">1.09</text>
+                  <text class="wt   ">0.246%</text>
+                  <text class="ci   ">-4.93, 5.10</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(99.47269352887005, -172.11686359618855)">
+                <circle class="grape" r="7.4035877968003705"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">PriceConnolly2004</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">2.31</text>
+                  <text class="wt   ">0.325%</text>
+                  <text class="ci   ">-3.53, 5.20</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(9.48940572026107, -359.6503029522877)">
+                <circle class="grape" r="8.11963216056878"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Principe2001</text>
+                  <text class="exp  ">3to4</text>
+                  <text class="or   ">78.8</text>
+                  <text class="wt   ">0.704%</text>
+                  <text class="ci   ">1.40, 7.33</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(0, -490.4869002976281)">
+                <circle class="grape" r="7.791855651319926"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Principe2001</text>
+                  <text class="exp  ">3to4</text>
+                  <text class="or   ">924</text>
+                  <text class="wt   ">0.513%</text>
+                  <text class="ci   ">3.35, 10.3</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-6.310428076624155, -336.91265831735245)">
+                <circle class="grape" r="8.162317104032915"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Principe2001</text>
+                  <text class="exp  ">5to6</text>
+                  <text class="or   ">51.3</text>
+                  <text class="wt   ">0.731%</text>
+                  <text class="ci   ">1.03, 6.85</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(-9.443824171529984, -355.984503436605)">
+                <circle class="grape" r="8.165213709299866"></circle>
+                <g class="tooltip tophalf">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Principe2001</text>
+                  <text class="exp  ">5to6</text>
+                  <text class="or   ">73.5</text>
+                  <text class="wt   ">0.733%</text>
+                  <text class="ci   ">1.39, 7.20</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(1.0183701230834785, -107.91455125683262)">
+                <circle class="grape" r="13.054059687108982"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">SzpitalakPolczyk2010</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">0.690</text>
+                  <text class="wt   ">7.24%</text>
+                  <text class="ci   ">-1.30, 0.553</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(1.0183701230834785, -162.93748815794805)">
+                <circle class="grape" r="14"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">SzpitalakPolczyk2010</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">1.94</text>
+                  <text class="wt   ">9.28%</text>
+                  <text class="ci   ">-0.153, 1.48</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(17.36931075890713, -137.17017773334751)">
+                <circle class="grape" r="13.517331898348464"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">SzpitalakPolczyk2011</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">1.20</text>
+                  <text class="wt   ">8.21%</text>
+                  <text class="ci   ">-0.689, 1.05</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(1.0183701230834785, -235.15551730365226)">
+                <circle class="grape" r="8.320285126595921"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Thomas2010</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">7.56</text>
+                  <text class="wt   ">0.836%</text>
+                  <text class="ci   ">-0.697, 4.74</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(57.932566727206826, -202.20326267080742)">
+                <circle class="grape" r="8.855853521543308"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Thomas2010</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">4.07</text>
+                  <text class="wt   ">1.24%</text>
+                  <text class="ci   ">-0.827, 3.63</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(45.30703898404622, -181.03578463651252)">
+                <circle class="grape" r="9.023177694733706"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Thomas2010</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">2.73</text>
+                  <text class="wt   ">1.39%</text>
+                  <text class="ci   ">-1.11, 3.12</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(37.18463946630224, -206.82143956173798)">
+                <circle class="grape" r="9.399829093223802"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Thomas2010</text>
+                  <text class="exp  ">Exp. 2</text>
+                  <text class="or   ">4.44</text>
+                  <text class="wt   ">1.74%</text>
+                  <text class="ci   ">-0.395, 3.38</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(17.29281125277918, -89.73206911094495)">
+                <circle class="grape" r="8.347991273198744"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">Wrigh1993</text>
+                  <text class="exp  ">Exp. 1</text>
+                  <text class="or   ">0.490</text>
+                  <text class="wt   ">0.855%</text>
+                  <text class="ci   ">-3.40, 1.98</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g><g class="experiment" transform="translate(20.230574621375602, -186.92984530362494)">
+                <circle class="grape" r="13.736655691371322"></circle>
+                <g class="tooltip">
+                  <rect height="103" width="170"></rect>
+                  <text class="paper">ZaragozaLane1994</text>
+                  <text class="exp  ">Exp. 4</text>
+                  <text class="or   ">3.05</text>
+                  <text class="wt   ">8.69%</text>
+                  <text class="ci   ">0.272, 1.96</text>
+                  <text class="_or  ">OR:</text>
+                  <text class="_wt  ">Wt:</text>
+                  <text class="_ci  ">95% CI:</text>
+                </g>
+              </g>
+          </g>
+        </g>
+    </svg>
+  </section>
+
+  <section>
+    <h1>Why not have a look at our showcase meta-analyses:</h1>
+    <ol class="topmetaanalyses">
+      <li><a href="/tomas.rubin@port.ac.uk/Misinfo2/">Misinformation effect</a></li>
+      <li><a href="/tomas.rubin@port.ac.uk/Testing02/">Simple testing metaanalysis</a></li>
+    </ol>
+  </section>
+
+  <section>
+    <h1>Sign up for more information:</h1>
+    <p>Email us at <a href="mailto:lima@port.ac.uk">lima@port.ac.uk</a> if you are interested in further developments of LiMA, or if you have any questions or feedback.</p>
+    <p>LiMA is now in testing, thank you for taking part.</p>
+  </section>
 
 
-
-<a class="when-signed-on" href="/profile">your profile</a>
-
-<p class="when-signed-out"><a href="/lima@local/new-paper">create a new paper</a></p>
-
-<p class="when-signed-out"><a href="/lima@local/new-metaanalysis">create a new meta-analysis</a></p>
-
-<p class="when-signed-out"><a href="/lima@local/">see the meta-analyses and papers you've edited locally</a></p>
-
-<p>top users:</p>
-<ol class="topusers"><li value="0">none</li></ol>
-
-
-<p>top meta-analyses:</p>
-<ol class="topmetaanalyses"><li value="0">none</li></ol>
-
-
-<p>top papers:</p>
-<ol class="toppapers"><li value="0">none</li></ol>
+</main>
 
 <footer>
   <p>LiMA (Living Meta-Analysis) at <a href="http://port.ac.uk/">University of Portsmouth</a>, &copy; 2016–2017</p>
@@ -63,30 +1507,30 @@ window.lima.initPage = function () {
   var lima = window.lima;
   var _ = lima._;
 
-  lima.getGapiIDToken()
-  .then(function (idToken) {
-    return fetch('/api/topusers', _.idTokenToFetchOptions(idToken));
-  })
-  .then(_.fetchJson)
-  .then(showTopUsers)
-  .catch(function (err) {
-    console.error('can\'t load top users');
-    console.error(err);
-    _.apiFail();
-  });
-
-  lima.getGapiIDToken()
-  .then(function (idToken) {
-    return fetch('/api/toppapers', _.idTokenToFetchOptions(idToken));
-  })
-  .then(_.fetchJson)
-  .then(showTopPapers)
-  .catch(function (err) {
-    console.error('can\'t load top papers');
-    console.error(err);
-    _.apiFail();
-  });
-
+  // lima.getGapiIDToken()
+  // .then(function (idToken) {
+  //   return fetch('/api/topusers', _.idTokenToFetchOptions(idToken));
+  // })
+  // .then(_.fetchJson)
+  // .then(showTopUsers)
+  // .catch(function (err) {
+  //   console.error('can\'t load top users');
+  //   console.error(err);
+  //   _.apiFail();
+  // });
+  //
+  // lima.getGapiIDToken()
+  // .then(function (idToken) {
+  //   return fetch('/api/toppapers', _.idTokenToFetchOptions(idToken));
+  // })
+  // .then(_.fetchJson)
+  // .then(showTopPapers)
+  // .catch(function (err) {
+  //   console.error('can\'t load top papers');
+  //   console.error(err);
+  //   _.apiFail();
+  // });
+  //
   lima.getGapiIDToken()
   .then(function (idToken) {
     return fetch('/api/topmetaanalyses', _.idTokenToFetchOptions(idToken));
@@ -114,17 +1558,27 @@ window.lima.initPage = function () {
   }
 
   function showTopMetaanalyses(metaanalyses) {
-    var list = _.findEl('.topmetaanalyses');
-    list.innerHTML = '';
+    var lists = _.findEls('.topmetaanalyses');
 
-    metaanalyses.forEach(function (metaanalysis) {
-      var li = document.createElement('li');
-      var metaanalysislink = document.createElement('a');
-      metaanalysislink.href = '/' + metaanalysis.enteredBy + '/' + metaanalysis.title + '/';
-      metaanalysislink.textContent = metaanalysis.title;
-      li.appendChild(metaanalysislink);
-      list.appendChild(li);
-    });
+    // use only showcase metaanalyses
+    metaanalyses = metaanalyses.filter(function (ma) {
+      return ma.tags && ma.tags.indexOf('showcase');
+    })
+
+    if (!metaanalyses.length) return;
+
+    lists.forEach(function (list) {
+      list.innerHTML = '';
+
+      metaanalyses.forEach(function (metaanalysis) {
+        var li = document.createElement('li');
+        var metaanalysislink = document.createElement('a');
+        metaanalysislink.href = '/' + metaanalysis.enteredBy + '/' + metaanalysis.title + '/';
+        metaanalysislink.textContent = metaanalysis.title;
+        li.appendChild(metaanalysislink);
+        list.appendChild(li);
+      });
+    })
   }
 
   function showTopPapers(papers) {

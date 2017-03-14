@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Gruppo|Raleway:300');
+
 body {
   font-family: "Arial", sans-serif;
   background: white;
@@ -66,22 +68,45 @@ body > * {
 
 body > header {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
   margin: 0;
 }
 
 body > header h1 {
-  margin-bottom: 1em;
-  line-height: 1.1em;
-  margin-left: .5em;
+  font-size: 5rem;
+  margin: .5rem;
+  line-height: 100%;
+  font-weight: normal;
+  font-family: "Gruppo";
+}
+
+body > header .logo a:link,
+body > header .logo a:visited,
+body > header .logo a:hover,
+body > header .logo a:active {
+  text-decoration: none;
+  color: black;
+}
+
+body > header .logo a:hover { color: #00f; }
+body > header .logo a:active { color: #f00; }
+
+
+
+body > header h2 {
+  font-size: 1.3rem;
+  margin: .5rem;
+  margin-right: auto;
+  font-weight: normal;
+  font-family: "Raleway";
 }
 
 body > footer {
   font-size: 85%;
   line-height: 120%;
   height: 5rem;
-  background-color: #ddf;
+  background-color: #c4ebf1; /* from poster */
   box-sizing: border-box;
   padding: 1em;
   margin: 0;
@@ -100,11 +125,128 @@ body > footer > p {
 .alert {
   padding: 1em;
   background-color: #ff8;
-  font-size: 125%;
+  font-size: 120%;
+  line-height: 1.2em;
   border: 1px solid #800;
   margin: 1em;
   border-radius: .6em;
+  font-family: serif;
+  text-align: center;
 }
+
+/* index
+ *
+ *
+ *   # #    # #####  ###### #    #
+ *   # ##   # #    # #       #  #
+ *   # # #  # #    # #####    ##
+ *   # #  # # #    # #        ##
+ *   # #   ## #    # #       #  #
+ *   # #    # #####  ###### #    #
+ *
+ *
+ */
+
+main.index {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+main.index > section {
+  display: block;
+  padding: 4rem 2rem;
+  font-weight: normal;
+  font-family: "Raleway";
+}
+
+main.index > section > * {
+  display: block;
+  max-width: 40rem;
+  margin: auto;
+}
+
+main.index > section:nth-of-type(4n+2) {
+  background-color: #90e8ef; /* from poster */
+  color: black;
+}
+
+main.index > section:nth-of-type(4n+3) {
+  background-color: #177894; /* from poster */
+  color: white;
+}
+
+main.index > section:nth-of-type(4n+4) {
+  background-color: #c4ebf1; /* from poster */
+  color: black;
+}
+
+/* special case when we're just before the footer */
+main.index > section:nth-of-type(4n+4):last-child {
+  background-color: white; /* from poster */
+  color: black;
+}
+
+main.index a,
+main.index a:link,
+main.index a:visited,
+main.index a:hover,
+main.index a:active {
+  color: inherit;
+}
+
+main.index > section > form > p,
+main.index > section > p {
+  font-size: 120%;
+  line-height: 1.4em;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+main.index > section.columns {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding-top: 6rem; /* to accommodate the h1 below */
+  position: relative;
+}
+
+main.index > section.columns > h1 {
+  flex: 1 1 100%;
+  max-width: none;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+main.index > section.columns > section {
+  min-width: 20rem;
+  padding: 1rem;
+  flex: 0 1 25%;
+  margin-top: 0;
+}
+
+main.index > section.columns > section > h2 {
+  font-size: 1.3rem;
+  font-weight: normal;
+}
+
+
+main.index > section.columns > section > ul {
+  line-height: 150%;
+}
+
+main.index > section > h1 {
+  margin-bottom: 2rem;
+}
+main.index > section > ol {
+  line-height: 150%;
+}
+
 
 /* popupbox
  *
@@ -270,12 +412,14 @@ body:not(.boxpinned) .popupboxtrigger:hover .unhide:hover + .popupboxhighlight {
   position: absolute;
   right: .5em;
   transition: .3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .userinfo .actions > * {
   margin: .5em 0;
   display: block;
-  width: 100%;
   box-shadow: 0 0 0 0 rgba(66,133,244,.3);
   text-align: center;
 }
@@ -285,6 +429,7 @@ body:not(.boxpinned) .popupboxtrigger:hover .unhide:hover + .popupboxhighlight {
   text-decoration: none;
   color: black;
   line-height: 200%;
+  align-self: stretch;
 }
 
 .userinfo .actions > a {
@@ -329,6 +474,7 @@ body:not(.editing) #toggle-editing .ifon {
 
 section#personalinfo {
   width: 30em;
+  margin: auto;
   text-align: center;
 }
 
@@ -361,6 +507,7 @@ section#personalinfo {
 section.list {
   display: block;
   border: 1px solid black;
+  margin: auto;
   margin-bottom: 1em;
   position: relative;
   width: 30em;
@@ -570,7 +717,7 @@ section.list > ul > li > ul.tags > li {
 }
 
 #paper > header {
-  background: #ddf;
+  background: #c4ebf1;
   margin: 0;
   padding: .5em;
   position: relative;
@@ -632,6 +779,11 @@ section.list > ul > li > ul.tags > li {
 #paper .coltitle.editing.unsaved:not(.validationerror):not(:focus),
 .linkedit .value.editing.unsaved:not(.validationerror):not(:focus) {
   box-shadow: 0 0 3px 3px rgba(255,0,0,.5);
+}
+
+#metaanalysis > header > .title.notediting,
+#paper > header > .title.notediting {
+  margin-right: auto;
 }
 
 #paper > header button.titlerename,
@@ -1041,7 +1193,7 @@ body:not(.page-about-you) #metaanalysis > header .edityourcopy {
 }
 
 #metaanalysis > header {
-  background: #ddf;
+  background: #c4ebf1;
   margin: 0;
   padding: .5em;
   position: relative;
