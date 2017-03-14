@@ -51,10 +51,10 @@
 
   var localColumns = {};
 
-  function loadLocalColumnsIfLocalUser() {
-    if (!lima.userLocalStorage) return;
+  function loadLocalColumnsIfLocalUser(columns) {
+    if (!lima.userLocalStorage) return columns;
 
-    if (!localStorage.columns) return;
+    if (!localStorage.columns) return columns;
 
     try {
       localColumns = JSON.parse(localStorage.columns);
@@ -82,7 +82,7 @@
       // todo do something with the outdated columns, and storedLocally columns, e.g. allow reverting them
     });
 
-    return lima.columns;
+    return columns;
   }
 
   function saveColumnLocally(col) {
