@@ -997,8 +997,13 @@
 
         var boxWidth = +plotEl.dataset.tooltipMinWidth;
         _.findEls(tooltipEl, '.tooltip text').forEach(function (text) {
-          var w = text.getBBox().width;
-          if (boxWidth < w) boxWidth = w;
+          try {
+            var w = text.getBBox().width;
+            boxWidth = Math.max(boxWidth, w);
+          } catch (e) {
+            // firefox doesn't handle getBBox well, see https://bugzilla.mozilla.org/show_bug.cgi?id=612118
+            // ignore the error, use default width
+          }
         });
 
         _.setAttrs(tooltipEl, '.tooltip rect', 'width', boxWidth + (+plotEl.dataset.tooltipPadding));
