@@ -932,7 +932,6 @@ body.page-about-you.editing .fullcolinfo header {
 #metaanalysis > header .edityourcopy {
   color: black;
   font-style: italic;
-  padding: .5em .8em;
   margin: .5em 0 0 0;
   border-radius: .4em;
   background: white;
@@ -942,12 +941,9 @@ body.page-about-you.editing .fullcolinfo header {
   top: 100%;
   font-size: 80%;
   display: none;
-}
-
-#paper > header .edityourcopy a,
-#metaanalysis > header .edityourcopy a {
   text-decoration: none;
   color: inherit;
+  padding: .75em 1em;
 }
 
 #paper > header .edityourcopy:hover,

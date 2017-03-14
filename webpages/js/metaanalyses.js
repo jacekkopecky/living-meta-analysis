@@ -370,7 +370,7 @@
     // for now, do local storage "edit your copy"
     // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), metaanalysis.title);
     var ownURL = createPageURL(lima.localStorageUserEmailAddress, metaanalysis.title);
-    _.setProps(metaanalysisEl, '.edityourcopy a', 'href', ownURL + '?type=metaanalysis');
+    _.setProps(metaanalysisEl, '.edityourcopy', 'href', ownURL + '?type=metaanalysis');
 
     metaanalysisEl.classList.toggle('localsaving', !!lima.userLocalStorage);
 

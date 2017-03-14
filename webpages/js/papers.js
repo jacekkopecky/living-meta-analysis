@@ -315,7 +315,7 @@
     // for now, do local storage "edit your copy"
     // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), paper.title);
     var ownURL = createPageURL(lima.localStorageUserEmailAddress, paper.title);
-    _.setProps(paperEl, '.edityourcopy a', 'href', ownURL + '?type=paper');
+    _.setProps(paperEl, '.edityourcopy', 'href', ownURL + '?type=paper');
 
     paperEl.classList.toggle('localsaving', !!lima.userLocalStorage);
 
