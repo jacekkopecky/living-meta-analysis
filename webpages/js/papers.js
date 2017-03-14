@@ -144,7 +144,7 @@
       .then(initPaper)
       .catch(function (err) {
         console.log("problem getting local paper by id " + id, err);
-        _.apiFail();
+        throw err;
       });
     }
 
