@@ -30,6 +30,7 @@ app.set('case sensitive routing', true);
 app.set('strict routing', true);
 
 app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
+app.use(cookieParser());
 
 /* logging
  *
@@ -47,6 +48,11 @@ app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
 let loggingMiddleware;
 
 if (config.logDirectory) {
+  morgan.token('invite', (req) => {
+    let retval = req.cookies['lima-beta-code'] || '';
+    if (!storage.betaCodes.hasOwnProperty(req.cookies['lima-beta-code'])) retval = '-' + retval;
+    return retval;
+  });
   // ensure log directory exists
   if (!fs.existsSync(config.logDirectory)) fs.mkdirSync(config.logDirectory);
 
@@ -86,7 +92,7 @@ if (config.logDirectory) {
 // regex for quickly checking for selected paths to be allowed: /css, /js, /img, /api
 const closedBetaAllowedURLs = /^\/(css|js|img|api)\//;
 
-app.use('/', cookieParser(), (req, res, next) => {
+app.use('/', (req, res, next) => {
   if (req.url.match(closedBetaAllowedURLs)) {
     next();
   } else if (storage.betaCodes.hasOwnProperty(req.cookies['lima-beta-code'])) {
