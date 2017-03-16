@@ -12,7 +12,7 @@ module.exports = {
   // where to store Web access logs; relative to project root
   logDirectory: './log',
   // morgan format for access log lines, default is 'combined'
-  logFormat: ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time[0] ms',   // eslint-disable-line
+  logFormat: ':remote-addr :invite :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time[0] ms',   // eslint-disable-line
 
   // this is a delay for demonstration purposes so the server seems slow
   demoApiDelay: 0,
