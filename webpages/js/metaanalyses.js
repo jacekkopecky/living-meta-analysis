@@ -2438,8 +2438,8 @@
   // todo this should be shared with papers.js in tools.js
   function checkTitleUnique(title, el) {
     if (title === '') throw null; // no message necessary
-    if (title === 'paper' || title === 'metaanalysis') throw '"paper/metaanalysis" are reserved titles';
-    if (!title.match(_.lettersAndNumberRE)) throw 'metaanalysis short name cannot contain spaces or special characters';
+    if (title === 'new-paper' || title === 'new-metaanalysis') throw '"new-paper/new-metaanalysis" are reserved titles';
+    if (!title.match(_.lettersAndNumbersRE)) throw 'metaanalysis short name cannot contain spaces or special characters';
     loadAllTitles();
     if (title !== el.dataset.origTitle && allTitles.indexOf(title) !== -1) {
       // try to give a useful suggestion for common names like Juliet94a
@@ -2459,7 +2459,7 @@
 
   function checkExperimentTitle(title) {
     if (title === '') throw null; // no message necessary
-    if (!title.match(_.lettersAndNumberRE)) throw 'only characters and digits';
+    if (!title.match(_.lettersAndNumbersRE)) throw 'only characters and digits';
     return title;
   }
 
