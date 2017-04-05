@@ -61,3 +61,13 @@ done
 
 echo $code '#' `date +"%Y-%m-%d %H:%M"` $1
 ```
+
+## database dumps and restores
+
+To dump the currently configured data store:
+
+`npm run db-dump > dumpfile`
+
+To restore from a dumpfile:
+
+`npm run db-add < dumpfile`
