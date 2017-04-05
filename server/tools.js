@@ -97,6 +97,7 @@ module.exports.deleteCHECKvalues = function deleteCHECKvalues(obj) {
   }
 };
 
+// resolves when the given promise is done, regardless of whether resolved or rejected
 module.exports.waitForPromise = function waitForPromise(p) {
   return new Promise((resolve /* ignoring the reject function */) => {
     Promise.resolve(p).then(() => resolve(), () => resolve());

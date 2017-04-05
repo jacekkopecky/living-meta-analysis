@@ -6,7 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server",
     "nodemon": "node_modules/.bin/nodemon -i webpages/ server",
-    "forever": "node_modules/.bin/nodemon -i webpages/ server"
+    "forever": "node_modules/.bin/nodemon -i webpages/ server",
+    "db-dump": "node server/storage-dump",
+    "db-add": "node server/storage-add"
   },
   "repository": {
     "type": "git",
