@@ -64,10 +64,14 @@ echo $code '#' `date +"%Y-%m-%d %H:%M"` $1
 
 ## database dumps and restores
 
+We have server-side datastore dump and restore scripts. They communicate directly with the datastore as configured in `config.js`; the LiMA server should be down while the restore script is running.
+
 To dump the currently configured data store:
 
 `npm run db-dump > dumpfile`
 
-To restore from a dumpfile:
+To restore from a dumpfile, first stop LiMA server, then run the following:
 
 `npm run db-add < dumpfile`
+
+After restoring data, start LiMA server again and it should see the new data.
