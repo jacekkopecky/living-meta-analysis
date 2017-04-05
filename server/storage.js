@@ -283,6 +283,10 @@ module.exports.addUser = (email, user) => {
     throw new Error('email/user parameters required');
   }
 
+  if (email === LOCAL_STORAGE_SPECIAL_USER) {
+    return Promise.reject(new Error('must not add the user ' + LOCAL_STORAGE_SPECIAL_USER));
+  }
+
   return userCache.then(
     (users) => new Promise((resolve, reject) => {
       users[email] = user;
@@ -482,7 +486,7 @@ module.exports.listPapers = () => paperCache;
 
 let currentPaperSave = Promise.resolve();
 
-module.exports.savePaper = (paper, email, origTitle) => {
+module.exports.savePaper = (paper, email, origTitle, options) => {
   // todo multiple users' views on one paper
   // compute this user's version of this paper, as it is in the database
   // compute a diff between what's submitted and the user's version of this paper
@@ -525,23 +529,32 @@ module.exports.savePaper = (paper, email, origTitle) => {
         }
       }
 
-      if (!original || origTitle !== original.title) {
-        throw new ValidationError(
-          `failed savePaper: did not find id ${paper.id} with title ${origTitle}`);
-      }
-      if (email !== original.enteredBy) {
-        throw new NotImplementedError('not implemented saving someone else\'s paper');
+      if (options && options.restoring) {
+        // paper is a paper we're restoring from some other datastore
+        // reject the save if we already have it
+        if (original) return Promise.reject(new Error(`paper ${paper.id} already exists`));
+        // otherwise save unchanged
+      } else {
+        // paper overwrites an existing paper
+        if (!original || origTitle !== original.title) {
+          throw new ValidationError(
+            `failed savePaper: did not find id ${paper.id} with title ${origTitle}`);
+        }
+        if (email !== original.enteredBy) {
+          throw new NotImplementedError('not implemented saving someone else\'s paper');
+        }
+
+        paper.enteredBy = original.enteredBy;
+        paper.ctime = original.ctime;
+        paper.mtime = tools.uniqueNow();
       }
 
-      paper.enteredBy = original.enteredBy;
-      paper.ctime = original.ctime;
-      paper.mtime = tools.uniqueNow();
       doAddPaperToCache = () => {
         // put the paper in the cache where the original paper was
         // todo this can be broken by deletion - the `i` would then change
         papers[i] = paper;
         // replace in allTitles the old title of the paper with the new title
-        if (original.title !== paper.title) {
+        if (original && original.title !== paper.title) {
           let titleIndex = allTitles.indexOf(original.title);
           if (titleIndex === -1) {
             titleIndex = allTitles.length;
@@ -738,7 +751,7 @@ module.exports.listMetaanalyses = () => metaanalysisCache;
 
 let currentMetaanalysisSave = Promise.resolve();
 
-module.exports.saveMetaanalysis = (metaanalysis, email, origTitle) => {
+module.exports.saveMetaanalysis = (metaanalysis, email, origTitle, options) => {
   // todo multiple users' views on one metaanalysis
   // compute this user's version of this metaanalysis, as it is in the database
   // compute a diff between what's submitted and the user's version of this metaanalysis
@@ -777,23 +790,32 @@ module.exports.saveMetaanalysis = (metaanalysis, email, origTitle) => {
         }
       }
 
-      if (!original || origTitle !== original.title) {
-        throw new ValidationError(
-          `failed saveMetaanalysis: did not find id ${metaanalysis.id} with title ${origTitle}`);
-      }
-      if (email !== original.enteredBy) {
-        throw new NotImplementedError('not implemented saving someone else\'s metaanalysis');
+      if (options && options.restoring) {
+        // metaanalysis is a metaanalysis we're restoring from some other datastore
+        // reject the save if we already have it
+        if (original) return Promise.reject(new Error(`metaanalysis ${metaanalysis.id} already exists`));
+        // otherwise save unchanged
+      } else {
+        // metaanalysis overwrites an existing metaanalysis
+        if (!original || origTitle !== original.title) {
+          throw new ValidationError(
+            `failed saveMetaanalysis: did not find id ${metaanalysis.id} with title ${origTitle}`);
+        }
+        if (email !== original.enteredBy) {
+          throw new NotImplementedError('not implemented saving someone else\'s metaanalysis');
+        }
+
+        metaanalysis.enteredBy = original.enteredBy;
+        metaanalysis.ctime = original.ctime;
+        metaanalysis.mtime = tools.uniqueNow();
       }
 
-      metaanalysis.enteredBy = original.enteredBy;
-      metaanalysis.ctime = original.ctime;
-      metaanalysis.mtime = tools.uniqueNow();
       doAddMetaanalysisToCache = () => {
         // put the metaanalysis in the cache where the original metaanalysis was
         // todo this can be broken by deletion - the `i` would then change
         metaanalyses[i] = metaanalysis;
         // replace in allTitles the old title of the metaanalysis with the new title
-        if (original.title !== metaanalysis.title) {
+        if (original && original.title !== metaanalysis.title) {
           let titleIndex = allTitles.indexOf(original.title);
           if (titleIndex === -1) {
             titleIndex = allTitles.length;
@@ -904,7 +926,7 @@ function getAllColumns() {
   });
 }
 
-module.exports.saveColumn = (recvCol, email) => {
+module.exports.saveColumn = (recvCol, email, options) => {
   // todo identify the columns to be saved and actually save them
   return columnCache
   .then((columns) => {
@@ -915,7 +937,12 @@ module.exports.saveColumn = (recvCol, email) => {
 
     const origCol = columns[recvCol.id];
 
-    if (!origCol) {
+    if (options && options.restoring) {
+      // recvCol is a column we're restoring from some other datastore
+      // reject the save if we already have it
+      if (origCol) return Promise.reject(new Error(`column ${recvCol.id} already exists`));
+      // otherwise save unchanged
+    } else if (!origCol) {
       // recvCol is a new column
       if (recvCol.id != null) {
         console.warn('new column should not have an ID');
