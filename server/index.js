@@ -91,7 +91,7 @@ if (config.logDirectory) {
 // we will redirect to a coming-soon page
 
 // regex for quickly checking for selected paths to be allowed: /css, /js, /img, /api
-const closedBetaAllowedURLs = /^\/(css|js|img|api)\//;
+const closedBetaAllowedURLs = /^\/(css|js|img|api|\.well-known)\//;
 
 app.use('/', (req, res, next) => {
   if (req.url.match(closedBetaAllowedURLs)) {
