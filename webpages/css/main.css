@@ -81,16 +81,22 @@ body > header h1 {
   font-family: "Gruppo";
 }
 
-body > header .logo a:link,
-body > header .logo a:visited,
-body > header .logo a:hover,
-body > header .logo a:active {
+body > header #logo-box h1,
+body > header #logo-box h2 {
+  display:inline-block;
+}
+
+body > header a#logo-box:link,
+body > header a#logo-box:visited,
+body > header a#logo-box:hover,
+body > header a#logo-box:active {
   text-decoration: none;
   color: black;
 }
 
-body > header .logo a:hover { color: #00f; }
-body > header .logo a:active { color: #f00; }
+body > header a#logo-box:hover { color: #00f; }
+body > header a#logo-box:active { color: #f00; }
+
 
 
 
