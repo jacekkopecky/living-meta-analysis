@@ -515,7 +515,11 @@
       }
     }
 
-    if (lines.length === 0) return;
+    // add indication to the graph when there is no data
+    if (lines.length === 0) {
+      var line = {title: "No data"};
+      lines.push(line);
+    }
 
     var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
     var lclAggrFunc = { formulaName: "lowerConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
@@ -825,7 +829,17 @@
       }
     }
 
-    if (data.length == 0) return;
+    // add indications to the graph when there is no data
+    if (data.length == 0) {
+      var line = {
+        paper: "No paper",
+        exp: "No experiment",
+        group: "No data"
+      };
+      groups.push(line.group);
+      data.push(line);
+    }
+
     plotsContainer.appendChild(plotEl);
 
     groups.sort(); // alphabetically
