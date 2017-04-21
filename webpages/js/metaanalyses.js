@@ -2984,7 +2984,7 @@
     var element = _.findEl(_.findPrecedingEl(e.target, 'th'), '.fullcolinfo.popupbox');
     var index = 0;
 
-    // If element == null or we don't have a colIndex, it's the 'add column' button, so start at the end.
+    // If element == null, it's the 'add column' button, so start at the end.
     if (element == null) {
       index = currentMetaanalysis.columns.length-1;
     } else {
