@@ -1710,13 +1710,14 @@
   // e.g. ['hidden0', 'col1', 'hidden2', 'hidden3', 'col4'].
   // Passing col1 will unhide hidden0, and passing col4 will unhide 2 and 3.
   function unhideColumns (e) {
-    var index = parseInt(_.findEl(_.findPrecedingEl(e.target, 'th'), '.fullcolinfo.popupbox').dataset.index);
+    var element = _.findEl(_.findPrecedingEl(e.target, 'th'), '.fullcolinfo.popupbox');
+    var index = 0;
 
-    // If we don't have a colIndex, it's the 'add column' button, so start at the end.
-    if (isNaN(index)) {
+    // If element == null, it's the 'add column' button, so start at the end.
+    if (element == null) {
       index = currentPaper.columns.length-1;
     } else {
-      index -= 1;
+      index = parseInt(element.dataset.index)-1;
     }
 
     for (var i = index; i >= 0; i--) {
