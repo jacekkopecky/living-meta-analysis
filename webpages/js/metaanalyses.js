@@ -2985,11 +2985,10 @@
     var index = 0;
 
     // If element == null or we don't have a colIndex, it's the 'add column' button, so start at the end.
-    if (element == null || ((index = parseInt(element.dataset.index)) && isNaN(index))) {
+    if (element == null) {
       index = currentMetaanalysis.columns.length-1;
-    }
-    else {
-      index -= 1;
+    } else {
+      index = parseInt(element.dataset.index)-1;
     }
 
     for (var i = index; i >= 0; i--) {
