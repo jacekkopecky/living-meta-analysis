@@ -517,8 +517,8 @@
 
     // add indication to the graph when there is no data
     if (lines.length === 0) {
-      var line = {title: "No data"};
-      lines.push(line);
+      var noDataLine = {title: "No data"};
+      lines.push(noDataLine);
     }
 
     var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
@@ -829,15 +829,15 @@
       }
     }
 
-    // add indications to the graph when there is no data
+    // add indication to the graph when there is no data
     if (data.length == 0) {
-      var line = {
+      var noDataLine = {
         paper: "No paper",
         exp: "No experiment",
         group: "No data"
       };
-      groups.push(line.group);
-      data.push(line);
+      groups.push(noDataLine.group);
+      data.push(noDataLine);
     }
 
     plotsContainer.appendChild(plotEl);
