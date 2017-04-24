@@ -2,7 +2,7 @@
   'use strict';
 
   var lima = window.lima;
-  var _ = lima._;
+  var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
 
   /* simple formulas
    *

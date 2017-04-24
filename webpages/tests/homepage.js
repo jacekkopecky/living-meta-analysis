@@ -1,8 +1,8 @@
 // these are tests that support the home page
 (function (window, document) { // eslint-disable-line no-unused-vars
-
+  'use strict';
   var lima = window.lima;
-  var _ = lima._;
+  var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
 
   function test200(assert, url) {
     var xhr = new XMLHttpRequest();
