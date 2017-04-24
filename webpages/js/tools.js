@@ -1,6 +1,7 @@
 (function (document, window) {
+  'use strict';
   var lima = window.lima = window.lima || {};
-  var _ = window.lima._ = {};
+  var _ = window.lima._ = {};  // underscore symbol is used for brevity, inspired by the underscore.js library
 
   /* dom functions
    *
