@@ -1324,7 +1324,7 @@
     _.addEventListener(root, 'span.value.editing.oneline', 'focusout', function() {
       var unfocusSpan = _.findEl(root, 'span.value.editing.oneline');
 
-      if (spanValue != unfocusSpan.innerHTML) {
+      if (spanValue != unfocusSpan.innerHTML && spanValue != "") {
         // Calculate the selected line position
         var experimentRow = unfocusSpan.parentNode.parentNode;
         var line = 0;

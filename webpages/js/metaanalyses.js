@@ -2426,7 +2426,7 @@
     _.addEventListener(root, 'span.value.editing.oneline', 'focusout', function() {
       var unfocusSpan = _.findEl(root, 'span.value.editing.oneline');
 
-      if (spanValue != unfocusSpan.innerHTML) {
+      if (spanValue != unfocusSpan.innerHTML && spanValue != "") {
         // Get the current paper, and then calculate the selected line
         var paperRow = _.findPrecedingEl(root, 'tr');
         var currentPaper = currentMetaanalysis.papers[paperRow.getAttribute('data-paper-index')];
