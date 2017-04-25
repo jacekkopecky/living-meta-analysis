@@ -1313,6 +1313,53 @@
       }
     });
 
+    // Add a comment when a value is changed
+    var spanValue = null;
+
+    _.addEventListener(root, 'span.value.editing.oneline', 'focusin', function() {
+      var focusSpan = _.findEl(root, 'span.value.editing.oneline');
+      spanValue = focusSpan.innerHTML;
+    });
+
+    _.addEventListener(root, 'span.value.editing.oneline', 'focusout', function() {
+      var unfocusSpan = _.findEl(root, 'span.value.editing.oneline');
+
+      if (spanValue != unfocusSpan.innerHTML) {
+        // Calculate the selected line position
+        var experimentRow = unfocusSpan.parentNode.parentNode;
+        var line = 0;
+
+        while (experimentRow.className != null) {
+          experimentRow = experimentRow.previousSibling;
+          line++;
+        }
+
+        // The first tr is an empty line, so we need to remove it
+        line--;
+
+        // Get the column id, and then compare it with every other column ids to get the previous user name
+        var originalUser = null;
+        var currentUser = lima.getAuthenticatedUserEmail();
+        var columnId = _.findEl(root, '.datum.popupbox').getAttribute('data-boxid').split(',')[1];
+        var columnsInfos = Object.entries(currentPaper.experiments[line].data);
+
+        for (var i=0; i<columnsInfos.length; i++) {
+          if (columnsInfos[i][0] === columnId) {
+            originalUser = columnsInfos[i][1].enteredBy;
+            break;
+          }
+        }
+
+        // Add an update comment
+        var updateComment = "Previous value was \"" + spanValue + "\" (by " + originalUser + "), changed by " + currentUser + ".";
+        var comments = getDeepValue(paper, commentsPropPath, []);
+        comments.push({ text: updateComment });
+        fillComments(templateId, root, countSelector, textSelector, paper, commentsPropPath);
+        _.setYouOrName();
+        _.scheduleSave(paper);
+      }
+    });
+
     // cancel
     _.addEventListener(root, '.comment.new .buttons .cancel', 'click', function() {
       newComment.textContent = '';
