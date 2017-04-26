@@ -484,15 +484,28 @@
    */
 
   var tests = [];
+  var globalErrors = [];
 
   _.runTests = function runTests() {
+    // as the last test, add reporting of global errors
+    _.addTest(reportGlobalErrors);
+
     var successfulAssertions;
     var currentAssertion;
     var failedTests = 0;
 
+    var AssertionError = function (message) {
+      Error.call(this, message);
+      this.name = 'AssertionError';
+      this.message = message;
+    };
+
+    AssertionError.prototype = Object.create(Error.prototype);
+    AssertionError.prototype.constructor = AssertionError;
+
     function assert(cond, msg) {
       currentAssertion += 1;
-      if (!cond) throw new Error(msg);
+      if (!cond) throw new AssertionError(msg);
       successfulAssertions += 1;
     }
 
@@ -500,9 +513,13 @@
     if (window.testoutput) {
       log = function() {
         console.log.apply(console, arguments);
-        window.testoutput.textContent += Array.prototype.join.call(arguments, ' ');
-        if (arguments[arguments.length - 1].stack) window.testoutput.textContent += '\n  ' + arguments[arguments.length - 1].stack;
-        window.testoutput.textContent += '\n';
+        if (arguments[arguments.length - 1] instanceof AssertionError) {
+          window.testoutput.textContent += arguments[0] + arguments[1].message + '\n';
+        } else {
+          window.testoutput.textContent += Array.prototype.join.call(arguments, ' ');
+          if (arguments[arguments.length - 1].stack) window.testoutput.textContent += '\n  ' + arguments[arguments.length - 1].stack;
+          window.testoutput.textContent += '\n';
+        }
       };
     }
 
@@ -534,7 +551,24 @@
     }, 0);
   };
 
+  // call _.addTest(function) to add a test that will be run in tests/index.html
+  // the function takes one parameter `assert` which is a function:
+  // function assert(condition, errorMessage) - reports errorMessage if condition is falsy
   _.addTest = function addTest(f) { tests.push(f); }
+
+  window.onerror = function globalError(msg, source) {
+    globalErrors.push(source + ': ' + msg);
+  }
+
+  var GLOBAL_ERROR_SEP = "\n    ";
+
+  function reportGlobalErrors(assert) {
+    var message = globalErrors.length + ' global error(s):';
+    for (var i=0; i<globalErrors.length; i+=1) {
+      message += GLOBAL_ERROR_SEP + (i+1) + ': ' + globalErrors[i];
+    }
+    assert(globalErrors.length === 0, message);
+  }
 
 
   /* formatting
