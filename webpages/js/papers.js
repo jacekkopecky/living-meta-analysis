@@ -2265,6 +2265,4 @@
     lima.savePendingMax = 0;
   }
 
-  window._ = _;
-
 })(window, document);
