@@ -238,13 +238,13 @@
         id: 'forestPlotPercentAggr',
         label: 'Forest Plot (percentages)',
         func: forestPlotPercentAggr,
-        parameters: [ 'group 1 (e.g. experimental percentage)', 'group 1 N', 'group 2 (e.g. control percentage)', 'group 2 N' ],
+        parameters: [ 'group 1 (e.g. experimental percentage)', 'group 1 N', 'group 2 (e.g. control percentage)', 'group 2 N', 'moderator' ],
       },
       {
         id: 'forestPlotNumberAggr',
         label: 'Forest Plot (numbers affected)',
         func: forestPlotNumberAggr,
-        parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ],
+        parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N', 'moderator' ],
       },
       {
         id: 'grapeChartPercentAggr',

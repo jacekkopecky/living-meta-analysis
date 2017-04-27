@@ -446,7 +446,7 @@
     //     lcl
     //     ucl
 
-    var orFunc, wtFunc, lclFunc, uclFunc, params;
+    var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params;
 
     // todo the plot should be associated with its parameters differently, not through an aggregate
     // todo there should be the possibility to have more forest plots
@@ -457,6 +457,7 @@
         wtFunc = { formulaName: "weightNumber", formulaParams: params };
         lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
         uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: params };
+        moderatorParam = params[4];
         break;
       }
       if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotPercentAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
@@ -465,6 +466,7 @@
         wtFunc = { formulaName: "weightPercent", formulaParams: params };
         lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: params };
         uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: params };
+        moderatorParam = params[4];
         break;
       }
     }
@@ -486,7 +488,8 @@
     lclFunc.formula = lima.createFormulaString(lclFunc);
     uclFunc.formula = lima.createFormulaString(uclFunc);
 
-    var lines=[];
+    var lines = [];
+    var groups = [];
 
     for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
       for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
@@ -502,8 +505,9 @@
         line.wt = getDatumValue(wtFunc, j, i);
         line.lcl = getDatumValue(lclFunc, j, i);
         line.ucl = getDatumValue(uclFunc, j, i);
-        lines.push(line);
+        line.group = getDatumValue(moderatorParam, j, i);
 
+        if (line.group != null && line.group != '' && groups.indexOf(line.group) === -1) groups.push(line.group);
         // if any of the values is NaN or ±Infinity, disregard this experiment
         if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
             line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
@@ -512,14 +516,42 @@
           delete line.ucl;
           delete line.wt;
         }
+
+        lines.push(line);
       }
     }
 
     // add indication to the graph when there is no data
     if (lines.length === 0) {
-      var noDataLine = {title: "No data"};
+      var noDataLine = {
+        title: "No data",
+        group: "No data"
+      };
+      groups.push(noDataLine.group)
       lines.push(noDataLine);
     }
+
+    groups.sort(); // alphabetically
+
+    var dataGroups =
+      groups.map(function (group) {
+        return lines.filter(function (exp) { return exp.group == group; });
+      });
+
+
+    // todo use per-group aggregates here
+    var perGroup = {};
+    dataGroups.forEach(function (dataGroup) {
+      perGroup[dataGroup[0].group] = {};
+      perGroup[dataGroup[0].group].wt = dataGroup.reduce(function sum(acc, line) {return line.wt != null ? acc+line.wt : acc;}, 0);
+      if (perGroup[dataGroup[0].group].wt == 0) perGroup[dataGroup[0].group].wt = 1;
+      perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return line.wt != null ? acc+line.or*line.wt : acc;}, 0) / perGroup[dataGroup[0].group].wt;
+    });
+
+    // todo highlight the current experiment in forest plot and in grape chart
+    // set chart width based on number of groups
+    plotEl.setAttribute('width', parseInt(plotEl.dataset.zeroGroupsWidth) + groups.length * parseInt(plotEl.dataset.groupSpacing));
+    plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
 
     var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
     var lclAggrFunc = { formulaName: "lowerConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
@@ -626,40 +658,132 @@
     }
 
     var currY = parseInt(plotEl.dataset.startHeight);
+    var currGY = 10;
 
-    // put experiments into the plot
-    lines.forEach(function (line) {
-      var expT = _.findEl(plotEl, 'template.experiment');
-      var expEl = _.cloneTemplate(expT);
+    groups.forEach(function (group) {
+      var groupAggregates = {
+        or: 0,
+        lcl: 0,
+        ucl: 0
+      };
 
-      expEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+      var groupMembers = 0; // counter
 
-      _.fillEls(expEl, '.expname', line.title);
-      if (line.or != null) {
-        _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
-        _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
-        _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
-        _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
+      var forestGroupT = _.findEl(plotEl, 'template.forest-group');
+      var forestGroupEl = _.cloneTemplate(forestGroupT);
 
-        _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
-        _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
+      currGY = 10;
 
-        _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
-        _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
-        _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
-      } else {
-        expEl.classList.add('invalid');
+      forestGroupEl.setAttribute('transform', 'translate(' + plotEl.dataset.headingOffset + ',' + currY + ')');
+
+      _.fillEls(forestGroupEl, '.label', group);
+
+      var groupExperimentsEl = _.findEl(forestGroupEl, '.group-experiments');
+      forestGroupT.parentElement.insertBefore(forestGroupEl, forestGroupT);
+
+      // put experiments into the plot
+      lines.forEach(function (line) {
+        if (line.group === group) {
+          var expT = _.findEl(plotEl, 'template.experiment');
+          var expEl = _.cloneTemplate(expT);
+
+          expEl.setAttribute('transform', 'translate(' + plotEl.dataset.groupLineOffset + ',' + currGY + ')');
+
+          _.fillEls(expEl, '.expname', line.title);
+          if (line.or != null) {
+            groupMembers += 1;
+            _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
+            _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
+            _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
+            _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
+            _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
+            _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
+
+            _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
+            _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
+            _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
+
+            groupAggregates.or += line.or;
+            groupAggregates.lcl += line.lcl;
+            groupAggregates.ucl += line.ucl;
+          } else {
+            expEl.classList.add('invalid');
+          }
+
+          groupExperimentsEl.appendChild(expEl);
+
+          currGY += parseInt(plotEl.dataset.lineHeight);
+        }
+      });
+
+      // divide the groupAggregate sums by the number of valid lines in the group.
+      for (var stat in groupAggregates) {
+        groupAggregates[stat] /= groupMembers;
       }
 
-      expT.parentElement.insertBefore(expEl, expT);
+      // put group summary into the plot
+      if (!isNaN(aggregates.or*0)) {
+        var sumT = _.findEl(plotEl, 'template.group-summary');
+        var sumEl = _.cloneTemplate(sumT);
 
-      currY += parseInt(plotEl.dataset.lineHeight);
+        _.fillEls(sumEl, '.sumname', "Total for " + group);
+        sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.groupLineOffset + ',' + currGY + ')');
+
+        _.fillEls(sumEl, '.or', Math.exp(groupAggregates.or).toPrecision(3));
+        _.fillEls(sumEl, '.lcl', "" + Math.exp(groupAggregates.lcl).toPrecision(3) + ",");
+        _.fillEls(sumEl, '.ucl', Math.exp(groupAggregates.ucl).toPrecision(3));
+
+        var lclX = getX(groupAggregates.lcl);
+        var uclX = getX(groupAggregates.ucl);
+        var orX = getX(groupAggregates.or);
+        if ((uclX - lclX) < parseInt(plotEl.dataset.minDiamondWidth)) {
+          var ratio = (uclX - lclX) / parseInt(plotEl.dataset.minDiamondWidth);
+          lclX = orX + (lclX - orX) / ratio;
+          uclX = orX + (uclX - orX) / ratio;
+        }
+
+        var confidenceInterval = "" + lclX + ",0 " + orX + ",-10 " + uclX + ",0 " + orX + ",10";
+
+        _.setAttrs(sumEl, 'polygon.confidenceinterval', 'points', confidenceInterval);
+
+        var groupSummaryEl = _.findEl(forestGroupEl, '.group-summary');
+        groupSummaryEl.appendChild(sumEl);
+
+        currGY += parseInt(plotEl.dataset.lineHeight);
+        currY += (currGY+ 50); // 10 + 30 for the missed first element, since we reset to 10 10 for spacing.
+      }
     })
 
 
 
+
+    // put axes into the plot
+    var axesT = _.findEl(plotEl, 'template.axes');
+    var axesEl = _.cloneTemplate(axesT);
+
+    axesEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+    _.setAttrs(axesEl, 'line.yaxis', 'y2', currY+parseInt(plotEl.dataset.extraLineLen));
+    _.setAttrs(axesEl, 'line.yaxis', 'x1', getX(0));
+    _.setAttrs(axesEl, 'line.yaxis', 'x2', getX(0));
+
+    var tickT = _.findEl(axesEl, 'template.tick');
+    var tickVal;
+    while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
+      var tickEl = _.cloneTemplate(tickT);
+      tickEl.setAttribute('transform', 'translate(' + getX(tickVal) + ',0)');
+      _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
+      tickT.parentElement.insertBefore(tickEl, tickT);
+      startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
+      startingTick += 1;
+    }
+
+    plotEl.appendChild(axesEl);
+
+
     // put summary into the plot
     if (!isNaN(aggregates.or*0)) {
+      currY += 2 * parseInt(plotEl.dataset.lineHeight);
       var sumT = _.findEl(plotEl, 'template.summary');
       var sumEl = _.cloneTemplate(sumT);
 
@@ -686,40 +810,17 @@
       _.setAttrs(sumEl, 'line.guideline', 'x2', getX(aggregates.or));
       _.setAttrs(sumEl, 'line.guideline', 'y2', currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen));
 
-      sumT.parentElement.insertBefore(sumEl, sumT);
-      currY += parseInt(plotEl.dataset.lineHeight);
+      plotEl.appendChild(sumEl);
+
+      _.addEventListener(sumEl, '.positioningbutton', 'click', function (e) {
+        plotEl.classList.toggle('maximized');
+        localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
+        e.stopPropagation();
+
+      })
     }
 
-
-    // put axes into the plot
-    var axesT = _.findEl(plotEl, 'template.axes');
-    var axesEl = _.cloneTemplate(axesT);
-
-    axesEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
-
-    _.setAttrs(axesEl, 'line.yaxis', 'y2', currY+parseInt(plotEl.dataset.extraLineLen));
-    _.setAttrs(axesEl, 'line.yaxis', 'x1', getX(0));
-    _.setAttrs(axesEl, 'line.yaxis', 'x2', getX(0));
-
-    var tickT = _.findEl(axesEl, 'template.tick');
-    var tickVal;
-    while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
-      var tickEl = _.cloneTemplate(tickT);
-      tickEl.setAttribute('transform', 'translate(' + getX(tickVal) + ',0)');
-      _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
-      tickT.parentElement.insertBefore(tickEl, tickT);
-      startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
-      startingTick += 1;
-    }
-
-    axesT.parentElement.insertBefore(axesEl, axesT);
-
-    _.addEventListener(axesEl, '.positioningbutton', 'click', function (e) {
-      plotEl.classList.toggle('maximized');
-      localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
-      e.stopPropagation();
-    })
-
+    // finish up
     plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
     plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
     // todo set plot widths based on maximum text sizes

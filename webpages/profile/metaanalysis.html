@@ -14,7 +14,7 @@
   <a href="/" id="logo-box">
     <h1>LiMA</h1><h2>Living Meta-Analysis</h2>
   </a>
-  
+
   <!-- this puts a sign-in button, and a sign-out link, in the page -->
   <div class="userinfo signedoff">
     <img src="/img/user.png" alt="user photo or icon" class="userphoto">
@@ -477,9 +477,14 @@
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 800 20"
     width="800"
     height="200"
     version="1.1"
+    data-heading-offset="40"
+    data-group-line-offset="-30"
+    data-zero-groups-width="70"
+    data-group-spacing="800"
     data-line-height="30"
     data-padding="10"
     data-graph-width="300"
@@ -596,8 +601,8 @@
         transform: translate(0px, 5px) scale(1, -1);
       }
 
-      .positioningbutton {
-        transform: translate(495px, 17px);
+      .summary > g.positioningbutton {
+        transform: translate(800px, 55px);
         opacity: .2;
       }
 
@@ -612,6 +617,16 @@
 
       .positioningbutton line {
         stroke-width: 1.5px;
+      }
+
+      .forest-group .group-heading text.label {
+        font-weight: bold;
+        font-size: 120%;
+      }
+
+      .summary .sumname.sumtotal {
+        font-weight: bold;
+        font-size: 125%;
       }
     </style>
 
@@ -636,6 +651,20 @@
       </g>
     </template>
 
+    <template class="forest-group">
+      <g class="forest-group">
+        <g class="group-heading">
+          <text class="label">group</text>
+        </g>
+        <g class="group-experiments">
+        </g>
+          <g class="group-summary"><!-- should get transform="translate(padding,currY)" -->
+          </g>
+        </g>
+      </g>
+    <template/>
+
+
     <template class="axes">
       <g class="axes"><!-- should get transform="translate(padding,currY)" -->
         <g>
@@ -648,14 +677,6 @@
               <text>val</text>
             </g>
           </template>
-          <g class="positioningbutton">
-            <circle r="8"/>
-            <line x1="-5" y1="-5" x2="5" y2="5"/>
-            <line x1="5" y1="5" x2="4" y2="0"/>
-            <line x1="5" y1="5" x2="0" y2="4"/>
-            <line x1="-5" y1="-5" x2="-4" y2="0"/>
-            <line x1="-5" y1="-5" x2="0" y2="-4"/>
-          </g>
         </g>
       </g>
     </template>
@@ -663,7 +684,7 @@
     <template class="summary">
       <g class="summary"><!-- should get transform="translate(padding,currY)" -->
         <g>
-          <text class="sumname">Total</text>
+          <text class="sumname sumtotal">Total</text>
           <text class="or">err</text>
           <text class="lcl">err,</text>
           <text class="ucl">err</text>
@@ -672,8 +693,31 @@
             <polygon class="confidenceinterval"/><!-- should get points="lcl,0 or,-10 ucl,0 or,10" -->
           </g>
         </g>
+        <g class="positioningbutton">
+          <circle r="8"/>
+          <line x1="-5" y1="-5" x2="5" y2="5"/>
+          <line x1="5" y1="5" x2="4" y2="0"/>
+          <line x1="5" y1="5" x2="0" y2="4"/>
+          <line x1="-5" y1="-5" x2="-4" y2="0"/>
+          <line x1="-5" y1="-5" x2="0" y2="-4"/>
+        </g>
       </g>
     </template>
+
+    <template class="group-summary">
+      <g class="summary"><!-- should get transform="translate(padding,currY)" -->
+        <g>
+          <text class="sumname"></text>
+          <text class="or">err</text>
+          <text class="lcl">err,</text>
+          <text class="ucl">err</text>
+          <g class="sumgraph">
+            <polygon class="confidenceinterval"/><!-- should get points="lcl,0 or,-10 ucl,0 or,10" -->
+          </g>
+        </g>
+      </g>
+    </template>
+
 
   </svg>
 </template>
