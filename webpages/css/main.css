@@ -2263,6 +2263,28 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
   font-weight: normal;
 }
 
+#paper table.experiments .datum.popupbox p.changewarning,
+#metaanalysis table.experiments .datum.popupbox p.changewarning {
+  font-style: italic;
+  font-weight: bold;
+  font-size: 80%;
+}
+
+#paper table.experiments .datum.popupbox p.animated,
+#metaanalysis table.experiments .datum.popupbox p.animated {
+  animation-duration: 700ms;
+  animation-name: pulse-red;
+  animation-direction: alternate;
+  animation-iteration-count: 2;
+  animation-timing-function: ease-in-out;
+  animation-delay: 50ms;
+}
+
+@keyframes pulse-red {
+    0%   {color: black;}
+    100%  {color: rgba(169,0,0,1);}
+}
+
 #paper table.experiments .datum.popupbox .computed .computedfrom,
 #paper table.experiments .datum.popupbox .computed .formula,
 #metaanalysis table.experiments .datum.popupbox .computed .computedfrom,

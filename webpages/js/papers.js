@@ -598,10 +598,11 @@
             val = experiment.data[col];
           }
 
-          if (!val || val.value == null) {
+          if (!val || val.value == null || val.value.trim() == '') {
             td.classList.add('empty');
           } else {
             _.fillEls(td, '.value', val.value);
+            _.fillEls(td, '.changewarning', "When updating an existing value, consider leaving a comment justifying the change.")
           }
 
           addOnInputUpdater(td, '.value', 'textContent', trimmingSanitizer, paper, ['experiments', expIndex, 'data', col, 'value'], recalculateComputedData);
@@ -612,6 +613,16 @@
           _.fillEls (td, '.valctime', _.formatDateTime(val && val.ctime || Date.now()));
 
           setupPopupBoxPinning(td, '.datum.popupbox', expIndex +',' + col);
+
+          // Set up a listener to onfocus trigger the animation on the warning element
+          // only if the datum has a saved value.
+          _.addEventListener(td, '.value', 'focus', function(ev){
+            var parentEl = ev.target.parentElement;
+            if (!parentEl.classList.contains('empty')) { // we have a saved value
+              var changeWarningEl = _.findEl(parentEl, '.changewarning');
+              changeWarningEl.classList.add('animated');
+            }
+          })
 
           // populate comments
           fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', paper, ['experiments', expIndex, 'data', col, 'comments']);
