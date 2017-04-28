@@ -659,6 +659,7 @@
 
     var currY = parseInt(plotEl.dataset.startHeight);
     var currGY = 10;
+    var hasInvalid = false;
 
     groups.forEach(function (group) {
       var groupAggregates = {
@@ -668,7 +669,7 @@
       };
 
       var groupMembers = 0; // counter
-      var hasInvalid = false;
+      var groupHasInvalid = false;
 
       var forestGroupT = _.findEl(plotEl, 'template.forest-group');
       var forestGroupEl = _.cloneTemplate(forestGroupT);
@@ -710,6 +711,7 @@
           } else {
             expEl.classList.add('invalid');
             hasInvalid = true;
+            groupHasInvalid = true;
           }
 
           groupExperimentsEl.appendChild(expEl);
@@ -724,7 +726,7 @@
       }
 
       // put group summary into the plot
-      if (!hasInvalid) {
+      if (!groupHasInvalid) {
         var sumT = _.findEl(plotEl, 'template.group-summary');
         var sumEl = _.cloneTemplate(sumT);
 
@@ -784,7 +786,7 @@
 
 
     // put summary into the plot
-    if (!isNaN(aggregates.or*0)) {
+    if (!isNaN(aggregates.or*0) && !hasInvalid) {
       currY += 2 * parseInt(plotEl.dataset.lineHeight);
       var sumT = _.findEl(plotEl, 'template.summary');
       var sumEl = _.cloneTemplate(sumT);
