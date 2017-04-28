@@ -668,6 +668,7 @@
       };
 
       var groupMembers = 0; // counter
+      var hasInvalid = false;
 
       var forestGroupT = _.findEl(plotEl, 'template.forest-group');
       var forestGroupEl = _.cloneTemplate(forestGroupT);
@@ -708,6 +709,7 @@
             groupAggregates.ucl += line.ucl;
           } else {
             expEl.classList.add('invalid');
+            hasInvalid = true;
           }
 
           groupExperimentsEl.appendChild(expEl);
@@ -722,7 +724,7 @@
       }
 
       // put group summary into the plot
-      if (!isNaN(aggregates.or*0)) {
+      if (!hasInvalid) {
         var sumT = _.findEl(plotEl, 'template.group-summary');
         var sumEl = _.cloneTemplate(sumT);
 
@@ -750,8 +752,8 @@
         groupSummaryEl.appendChild(sumEl);
 
         currGY += parseInt(plotEl.dataset.lineHeight);
-        currY += (currGY+ 50); // 10 + 30 for the missed first element, since we reset to 10 10 for spacing.
       }
+      currY += (currGY+ 50); // 10 + 30 for the missed first element, since we reset to 10 10 for spacing.
     })
 
 
