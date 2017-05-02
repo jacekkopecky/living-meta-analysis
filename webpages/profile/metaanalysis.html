@@ -512,34 +512,23 @@
         text-anchor: middle;
       }
 
-      .headings text.or,
-      .experiment text.or,
-      .summary text.or {
-        transform: translate(610px,20px);
+      .headings text.or.lcl.ucl,
+      .experiment text.or.lcl.ucl,
+      .summary text.or.lcl.ucl {
+        transform: translate(610px, 20px);
       }
-      .headings text.lcl,
-      .experiment text.lcl,
-      .summary text.lcl {
-        text-anchor: end;
-        transform: translate(690px,20px);
-      }
-      .headings text.ucl,
-      .experiment text.ucl,
-      .summary text.ucl {
-        text-anchor: start;
-        transform: translate(695px,20px);
-      }
+
       .headings text.wt,
       .experiment text.wt,
       .summary text.wt {
-        transform: translate(780px,20px);
+        transform: translate(800px,20px);
         text-anchor: end;
       }
 
       .headings text.wtg,
       .experiment text.wtg,
       .summary text.wtg {
-        transform: translate(780px,20px);
+        transform: translate(800px,20px);
         text-anchor: start;
       }
 
@@ -638,9 +627,7 @@
     </style>
 
     <g transform="translate(10,0)" class="headings">
-      <text class="or">OR</text>
-      <text class="lcl">LCL,</text>
-      <text class="ucl">UCL</text>
+      <text class="or lcl ucl">OR [LCL, UCL]</text>
       <text class="wt">WT</text>
       <text class="wtg">, WTG</text>
     </g>
@@ -648,9 +635,7 @@
     <template class="experiment">
       <g class="experiment"><!-- should get transform="translate(padding,currY++)" -->
         <text class="expname">error</text>
-        <text class="or">invalid</text>
-        <text class="lcl">n/a,</text>
-        <text class="ucl">n/a</text>
+        <text class="or lcl ucl">invalid [n/a, n/a]</text>
         <text class="wt">n/a</text>
         <text class="wtg">, n/a</text>
         <g class="rowgraph">
@@ -694,9 +679,7 @@
       <g class="summary"><!-- should get transform="translate(padding,currY)" -->
         <g>
           <text class="sumname sumtotal">Total</text>
-          <text class="or">err</text>
-          <text class="lcl">err,</text>
-          <text class="ucl">err</text>
+          <text class="or lcl ucl">err [err, err]</text>
           <line class="guideline"/><!-- should get x1="or" x2="or" y2="currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen)" -->
           <g class="sumgraph">
             <polygon class="confidenceinterval"/><!-- should get points="lcl,0 or,-10 ucl,0 or,10" -->
@@ -717,9 +700,8 @@
       <g class="summary"><!-- should get transform="translate(padding,currY)" -->
         <g>
           <text class="sumname"></text>
-          <text class="or">err</text>
-          <text class="lcl">err,</text>
-          <text class="ucl">err</text>
+          <text class="or lcl ucl">err [err, err]</text>
+          <text class="wt">err</text>
           <g class="sumgraph">
             <polygon class="confidenceinterval"/><!-- should get points="lcl,0 or,-10 ucl,0 or,10" -->
           </g>

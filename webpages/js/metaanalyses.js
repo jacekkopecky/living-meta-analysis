@@ -680,7 +680,8 @@
       var groupAggregates = {
         or: 0,
         lcl: 0,
-        ucl: 0
+        ucl: 0,
+        wt: 0
       };
 
       var groupMembers = 0; // counter
@@ -709,9 +710,7 @@
           _.fillEls(expEl, '.expname', line.title);
           if (line.or != null) {
             groupMembers += 1;
-            _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
-            _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
-            _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
+            _.fillEls(expEl, '.or.lcl.ucl', Math.exp(line.or).toPrecision(3) + ' [' + Math.exp(line.lcl).toPrecision(3) + ", " + Math.exp(line.ucl).toPrecision(3) + ']');
             _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
             _.fillEls(expEl, '.wtg', ', ' + (Math.round(line.wtg)/10) + '%');
             _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
@@ -724,6 +723,7 @@
             groupAggregates.or += line.or;
             groupAggregates.lcl += line.lcl;
             groupAggregates.ucl += line.ucl;
+            groupAggregates.wt += (Math.round(line.wt / sumOfWt * 1000)/10);
           } else {
             expEl.classList.add('invalid');
             hasInvalid = true;
@@ -736,9 +736,18 @@
         }
       });
 
-      // divide the groupAggregate sums by the number of valid lines in the group.
+      // if stat != wt, then divide the groupAggregate sums by the number of valid lines in the group.
       for (var stat in groupAggregates) {
-        groupAggregates[stat] /= groupMembers;
+        if (stat != "wt") {
+          groupAggregates[stat] /= groupMembers;
+        }
+        else {
+          // avoid having too much decimals
+          var splitNumber = (groupAggregates[stat] + "").split(".");
+          if(splitNumber.length == 2 && splitNumber[1].length > 1) {
+            groupAggregates[stat] = Math.round(groupAggregates[stat]*10)/10;
+          }
+        }
       }
 
       // put group summary into the plot
@@ -749,9 +758,8 @@
         _.fillEls(sumEl, '.sumname', "Total for " + group);
         sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.groupLineOffset + ',' + currGY + ')');
 
-        _.fillEls(sumEl, '.or', Math.exp(groupAggregates.or).toPrecision(3));
-        _.fillEls(sumEl, '.lcl', "" + Math.exp(groupAggregates.lcl).toPrecision(3) + ",");
-        _.fillEls(sumEl, '.ucl', Math.exp(groupAggregates.ucl).toPrecision(3));
+        _.fillEls(sumEl, '.or.lcl.ucl', Math.exp(groupAggregates.or).toPrecision(3) + ' [' + Math.exp(groupAggregates.lcl).toPrecision(3) + ", " + Math.exp(groupAggregates.ucl).toPrecision(3) + ']');
+        _.fillEls(sumEl, '.wt', groupAggregates.wt + '%');
 
         var lclX = getX(groupAggregates.lcl);
         var uclX = getX(groupAggregates.ucl);
@@ -809,9 +817,7 @@
 
       sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
 
-      _.fillEls(sumEl, '.or', Math.exp(aggregates.or).toPrecision(3));
-      _.fillEls(sumEl, '.lcl', "" + Math.exp(aggregates.lcl).toPrecision(3) + ",");
-      _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toPrecision(3));
+      _.fillEls(sumEl, '.or.lcl.ucl', Math.exp(aggregates.or).toPrecision(3) + ' [' + Math.exp(aggregates.lcl).toPrecision(3) + ", " + Math.exp(aggregates.ucl).toPrecision(3) + ']');
 
       var lclX = getX(aggregates.lcl);
       var uclX = getX(aggregates.ucl);
