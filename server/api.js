@@ -423,6 +423,7 @@ function extractMetaanalysisForSending(storageMetaanalysis, includePapers, email
     hiddenExperiments: storageMetaanalysis.hiddenExperiments,
     excludedExperiments: storageMetaanalysis.excludedExperiments,
     aggregates: storageMetaanalysis.aggregates,
+    graphs: storageMetaanalysis.graphs,
     // todo comments in various places?
   };
 
@@ -453,6 +454,7 @@ function extractReceivedMetaanalysis(receivedMetaanalysis) {
     hiddenExperiments:   tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
     excludedExperiments: tools.array(receivedMetaanalysis.excludedExperiments, tools.string),
     aggregates:          tools.array(receivedMetaanalysis.aggregates, extractReceivedAggregate),
+    graphs:              tools.array(receivedMetaanalysis.graphs, extractReceivedGraph),
   };
 
   return retval;
@@ -476,6 +478,14 @@ function extractReceivedAggregate(recAggr) {
   return {
     formula: tools.string(recAggr.formula),
     comments: tools.array(recAggr.comments, extractReceivedComment),
+  };
+}
+
+function extractReceivedGraph(recGraph) {
+  // TODO: Maybe this should be different, at the moment a copy paste from above
+  return {
+    formula: tools.string(recGraph.formula),
+    comments: tools.array(recGraph.comments, extractReceivedComment),
   };
 }
 
