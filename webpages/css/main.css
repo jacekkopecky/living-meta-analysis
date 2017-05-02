@@ -112,7 +112,8 @@ body > footer {
   font-size: 85%;
   line-height: 120%;
   height: 5rem;
-  background-color: #c4ebf1; /* from poster */
+  /*background-color: #c4ebf1; /* from poster */
+  background-color: #D6EDFE;
   box-sizing: border-box;
   padding: 1em;
   margin: 0;
@@ -130,7 +131,7 @@ body > footer > p {
 
 .alert {
   padding: 1em;
-  background-color: #ff8;
+  background-color: #EFEF3E;
   font-size: 120%;
   line-height: 1.2em;
   border: 1px solid #800;
@@ -206,17 +207,26 @@ main.index > section > * {
 }
 
 main.index > section:nth-of-type(4n+2) {
-  background-color: #90e8ef; /* from poster */
+  /*background-color: #90e8ef; /* from poster */
+  /*background-color: #D6EDFE; /* from poster */
+  background-image: linear-gradient(to bottom, #D6EDFE, #DADAFE);
+
   color: black;
 }
 
 main.index > section:nth-of-type(4n+3) {
-  background-color: #177894; /* from poster */
+  /*background-color: #177894; /* from poster */
+  /*background-color: #3992D6; /* from poster */
+  background-image: linear-gradient(to bottom, #0484E6, #3992D6);
+
   color: white;
 }
 
 main.index > section:nth-of-type(4n+4) {
-  background-color: #c4ebf1; /* from poster */
+  /*background-color: #c4ebf1; /* from poster */
+  /*background-color: #D7EEFF; /* from poster */
+  background-image: linear-gradient(to bottom, #D7EEFF, #F2F9FF);
+
   color: black;
 }
 
@@ -787,7 +797,9 @@ section.list > ul > li > ul.tags > li {
 }
 
 #paper > header {
-  background: #c4ebf1;
+  /*background: #c4ebf1;*/
+  background-color: #D6EDFE;
+
   margin: 0;
   padding: .5em;
   position: relative;
@@ -1263,7 +1275,8 @@ body:not(.page-about-you) #metaanalysis > header .edityourcopy {
 }
 
 #metaanalysis > header {
-  background: #c4ebf1;
+  /*background: #c4ebf1;*/
+  background-color: #D6EDFE;
   margin: 0;
   padding: .5em;
   position: relative;
