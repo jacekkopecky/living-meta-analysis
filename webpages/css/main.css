@@ -2223,7 +2223,8 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
   position: relative;
 }
 
-#metaanalysis table.aggregates td {
+#metaanalysis table.aggregates td,
+#metaanalysis table.graphs td {
   position: relative;
 }
 
@@ -2236,7 +2237,8 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 
 #paper table.experiments td.hascomments:after,
 #metaanalysis table.experiments td.hascomments:after,
-#metaanalysis table.aggregates td.hascomments:after {
+#metaanalysis table.aggregates td.hascomments:after,
+#metaanalysis table.graphs td.hascomments:after {
   display: block;
   content: ' ';
   position: absolute;
@@ -2280,13 +2282,15 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 
 #paper table.experiments td:not(.hascomments) .datum.popupbox .comment.new,
 #metaanalysis table.experiments td:not(.hascomments) .datum.popupbox .comment.new,
-#metaanalysis table.aggregates td:not(.hascomments) .datum.popupbox .comment.new {
+#metaanalysis table.aggregates td:not(.hascomments) .datum.popupbox .comment.new,
+#metaanalysis table.graphs td:not(.hascomments) .datum.popupbox .comment.new {
   border-top: none;
 }
 
 #paper table.experiments .datum.popupbox .comment header,
 #metaanalysis table.experiments .datum.popupbox .comment header,
-#metaanalysis table.aggregates .datum.popupbox .comment header {
+#metaanalysis table.aggregates .datum.popupbox .comment header,
+#metaanalysis table.graphs .datum.popupbox .comment header {
   font-size: 90%;
   line-height: 120%;
   margin-bottom: .5em;
@@ -2294,32 +2298,37 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 
 #paper table.experiments .datum.popupbox .comment .text,
 #metaanalysis table.experiments .datum.popupbox .comment .text,
-#metaanalysis table.aggregates .datum.popupbox .comment .text {
+#metaanalysis table.aggregates .datum.popupbox .comment .text,
+#metaanalysis table.graphs .datum.popupbox .comment .text {
   display: block;
 }
 
 #paper table.experiments .datum.popupbox .comment .ctime,
 #metaanalysis table.experiments .datum.popupbox .comment .ctime,
-#metaanalysis table.aggregates .datum.popupbox .comment .ctime {
+#metaanalysis table.aggregates .datum.popupbox .comment .ctime,
+#metaanalysis table.graphs .datum.popupbox .comment .ctime {
   white-space: nowrap;
 }
 
 #paper table.experiments .datum.popupbox .comment button.edit-button,
 #metaanalysis table.experiments .datum.popupbox .comment button.edit-button,
-#metaanalysis table.aggregates .datum.popupbox .comment button.edit-button {
+#metaanalysis table.aggregates .datum.popupbox .comment button.edit-button,
+#metaanalysis table.graphs .datum.popupbox .comment button.edit-button {
   float: right;
   visibility: hidden;
 }
 
 #paper table.experiments .datum.popupbox .comment:hover button.edit-button,
 #metaanalysis table.experiments .datum.popupbox .comment:hover button.edit-button,
-#metaanalysis table.aggregates .datum.popupbox .comment:hover button.edit-button {
+#metaanalysis table.aggregates .datum.popupbox .comment:hover button.edit-button,
+#metaanalysis table.graphs .datum.popupbox .comment:hover button.edit-button {
   visibility: visible;
 }
 
 #paper table.experiments .datum.popupbox .comment.new .text:not(:focus):empty + .buttons,
 #metaanalysis table.experiments .datum.popupbox .comment.new .text:not(:focus):empty + .buttons,
-#metaanalysis table.aggregates .datum.popupbox .comment.new .text:not(:focus):empty + .buttons {
+#metaanalysis table.aggregates .datum.popupbox .comment.new .text:not(:focus):empty + .buttons,
+#metaanalysis table.graphs .datum.popupbox .comment.new .text:not(:focus):empty + .buttons {
   display: none;
 }
 
@@ -2411,6 +2420,8 @@ body:not(.editing) #paper table.experiments th.add,
 body.page-about-you.editing #paper.no-data table.experiments th.add,
 body:not(.page-about-you) #metaanalysis table.aggregates tr.add,
 body:not(.editing) #metaanalysis table.aggregates tr.add,
+body:not(.page-about-you) #metaanalysis table.graphs tr.add,
+body:not(.editing) #metaanalysis table.graphs tr.add,
 body:not(.page-about-you) #metaanalysis table.experiments tr.add,
 body:not(.page-about-you) #metaanalysis table.experiments th.add,
 body:not(.editing) #metaanalysis table.experiments tr.add,
@@ -2573,6 +2584,44 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
   border-top: 1px solid black;
 }
 
+/* BANNER FOR 'graphs' HERE
+*/
+
+#metaanalysis table.graphs {
+  margin-top: 2em;
+  border-collapse: collapse;
+}
+
+#metaanalysis table.graphs tr + tr > * {
+  border-top: 1px solid black;
+}
+
+#metaanalysis table.graphs th,
+#metaanalysis table.graphs td {
+  padding: .3em .5em;
+  font-weight: normal;
+}
+
+#metaanalysis table.graphs tr:first-of-type {
+  text-align: left;
+}
+
+#metaanalysis table.graphs tr:first-of-type th {
+  font-weight: bold;
+}
+
+#metaanalysis table.graphs tr:nth-child(2n) {
+  background-color: #eee;
+}
+
+#metaanalysis table.graphs .graphcolumnsselection label {
+  margin-top: .5em;
+  display: block;
+}
+
+#metaanalysis table.graphs .graphcolumnsselection select {
+  display: block;
+}
 
 
 /* validation
