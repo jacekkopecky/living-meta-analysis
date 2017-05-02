@@ -536,6 +536,13 @@
         text-anchor: end;
       }
 
+      .headings text.wtg,
+      .experiment text.wtg,
+      .summary text.wtg {
+        transform: translate(780px,20px);
+        text-anchor: start;
+      }
+
       .experiment .expname {
         text-anchor: start;
         transform: translate(0,20px);
@@ -635,6 +642,7 @@
       <text class="lcl">LCL,</text>
       <text class="ucl">UCL</text>
       <text class="wt">WT</text>
+      <text class="wtg">, WTG</text>
     </g>
 
     <template class="experiment">
@@ -644,6 +652,7 @@
         <text class="lcl">n/a,</text>
         <text class="ucl">n/a</text>
         <text class="wt">n/a</text>
+        <text class="wtg">, n/a</text>
         <g class="rowgraph">
           <line class="confidenceinterval"/><!-- should get x1="lcl" x2="ucl" -->
           <rect class="weightbox"/><!-- should get x="or" width="wt" height="wt" -->

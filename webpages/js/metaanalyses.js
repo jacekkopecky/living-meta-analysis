@@ -533,11 +533,26 @@
 
     groups.sort(); // alphabetically
 
+    // calculating wtg
+    groups.forEach(function (group) {
+      var sumOfWtg = 0;
+      lines.forEach(function (line) {
+        if (line.group == group) {
+          sumOfWtg += line.wt;
+        }
+      });
+
+      lines.forEach(function (line) {
+        if (line.group == group) {
+          line.wtg = line.wt / sumOfWtg * 1000;
+        }
+      });
+    });
+
     var dataGroups =
       groups.map(function (group) {
         return lines.filter(function (exp) { return exp.group == group; });
       });
-
 
     // todo use per-group aggregates here
     var perGroup = {};
@@ -698,6 +713,7 @@
             _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
             _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
             _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
+            _.fillEls(expEl, '.wtg', ', ' + (Math.round(line.wtg)/10) + '%');
             _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
             _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
 
