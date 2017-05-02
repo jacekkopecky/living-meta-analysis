@@ -198,7 +198,7 @@
       // don't clean columns the same way - in metaanalyses.js, we shouldn't be touching papers' columns
     });
 
-    // clean metaanalysis columns, aggregates and plots
+    // clean metaanalysis columns, aggregates, and graphs
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.columns);
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.aggregates);
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.graphs);
@@ -380,6 +380,7 @@
     fillTags(metaanalysisEl, metaanalysis);
     fillMetaanalysisExperimentTable(metaanalysis);
     fillAggregateTable(metaanalysis);
+    fillGraphTable(metaanalysis);
 
     // for now, do local storage "edit your copy"
     // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), metaanalysis.title);
@@ -2127,7 +2128,7 @@
 
     var retval = '';
     if (level != Infinity && col.number !== undefined) retval += '<span>' + col.number + '. </span>';
-    retval += '<span>' + lima.getFormulaOrAggregateLabelById(col.formulaName) + '</span> (';
+    retval += '<span>' + lima.getRichLabelById(col.formulaName) + '</span> (';
 
     if (level == 0) {
       retval += '…';
@@ -2145,7 +2146,7 @@
     if (typeof col === 'string') {
       return col;
     } else if (typeof col === 'object') {
-      if (!col.formula) throw new Error('every computed column / aggregate should always have formula');
+      if (!col.formula) throw new Error('every computed column/aggregate/graph should always have formula');
       return col.formula;
     } else {
       return null;
@@ -2781,14 +2782,158 @@
 
 */
 
-// We likely need...
+// TODO: Revisit, trim unnecessary bits
+function fillGraphTable(metaanalysis) {
+  var table = _.cloneTemplate('graphs-table-template');
+  var addGraphNode = _.findEl(table, 'tr.add');
 
-// fillGraphTable
-// fillGraphInformation
-// fillGraphColumnsSelection
-// addNewGraphToMetaanalysis
+  metaanalysis.graphs.forEach(function (graph, graphIndex) {
+    var graphEl = _.cloneTemplate('graph-row-template').children[0];
+    addGraphNode.parentElement.insertBefore(graphEl, addGraphNode);
 
-// loosely copied from above
+    var graphValTd = _.findEl(graphEl, 'td');
+    // Editing Options
+    // Add an option for every graph formula we know
+    var graphFormulas = lima.listGraphFormulas();
+    var graphFormulasDropdown = _.findEl(graphEl, 'select.graphformulas')
+    for (var i = 0; i < graphFormulas.length; i++){
+      var el = document.createElement("option");
+      el.textContent = graphFormulas[i].label;
+      el.value = graphFormulas[i].id;
+      if (graph.formulaName === el.value) {
+        el.selected = true;
+        graphFormulasDropdown.classList.remove('validationerror');
+      }
+      graphFormulasDropdown.appendChild(el);
+    }
+
+    graphFormulasDropdown.onchange = function(e) {
+      graph.formulaName = e.target.value;
+      graph.formula = lima.createFormulaString(graph);
+
+      var formula = lima.getGraphFormulaById(graph.formulaName);
+      if (formula) {
+        graphFormulasDropdown.classList.remove('validationerror');
+      } else {
+        graphFormulasDropdown.classList.add('validationerror');
+      }
+      // we'll call setValidationErrorClass() in fillGraphColumnsSelection
+
+      // make sure formula columns array matches the number of expected parameters
+      graph.formulaParams.length = formula ? formula.parameters.length : 0;
+
+      // fill in the current formula
+      _.fillEls(graphEl, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
+
+      // fill the columns selection
+      fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula);
+
+      _.scheduleSave(metaanalysis);
+      recalculateComputedData();
+    };
+
+    var graphFormula = lima.getGraphFormulaById(graph.formulaName);
+    fillGraphColumnsSelection(metaanalysis, graph, graphEl, graphFormula);
+
+    setupPopupBoxPinning(graphEl, '.datum.popupbox', graph.formula);
+    _.setDataProps(graphEl, '.datum.popupbox', 'index', graphIndex);
+
+    _.addEventListener(graphEl, 'button.move', 'click', moveGraph);
+    _.addEventListener(graphEl, 'button.delete', 'click', deleteGraph);
+
+    fillGraphInformation(graphEl, graph);
+    fillComments('comment-template', graphValTd, '.commentcount', '.datum.popupbox main', metaanalysis, ['graphs', graphIndex, 'comments']);
+  });
+
+  // Event handlers
+  _.addEventListener(table, 'tr.add button.add', 'click', addNewGraphToMetaanalysis);
+
+  var graphsContainer = _.findEl('#metaanalysis .graphs');
+  graphsContainer.appendChild(table);
+}
+
+function fillGraphInformation(graphEl, graph) {
+  _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
+  _.setProps(graphEl, '.fullgraphlabel', 'innerHTML', getColTitle(graph, Infinity));
+  // todo something for the non-editing case
+}
+
+function fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula) {
+  // editing drop-down boxes for parameter columns
+  var graphColumnsSelectionEl = _.findEl(graphEl, '.graphcolumnsselection');
+  // clear out old children.
+  graphColumnsSelectionEl.innerHTML = '';
+
+  if (!formula) return;
+
+  var noOfParams = formula.parameters.length;
+
+  for (var i = 0; i < noOfParams; i++){
+    // Make a select dropdown
+    var label = document.createElement('label');
+    label.textContent = formula.parameters[i] + ': ';
+    graphColumnsSelectionEl.appendChild(label);
+
+    var select = document.createElement("select");
+    label.appendChild(select);
+
+    // the first option is an instruction
+    var op = document.createElement("option");
+    op.textContent = 'Select a column';
+    op.value = '';
+    select.appendChild(op);
+    select.classList.add('validationerror');
+
+    var foundCurrentValue = false;
+
+    // Now make an option for each column in metaanalysis
+    // account for computed columns in metaanalysis.columns
+    for (var j = 0; j < metaanalysis.columns.length; j++){
+      var colId = metaanalysis.columns[j];
+      var found = makeOption(colId, graph, graph.formulaParams[i], select);
+      foundCurrentValue = foundCurrentValue || found;
+    }
+
+    // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
+    if (!foundCurrentValue) {
+      colId = graph.formulaParams[i];
+      makeOption(colId, graph, colId, select);
+    }
+
+    setValidationErrorClass();
+
+    // listen to changes of the dropdown box
+    // preserve the value of i inside this code
+    (function(i, select){
+      select.onchange = function(e) {
+        graph.formulaParams[i] = lima.parseFormulaString(e.target.value);
+        graph.formula = lima.createFormulaString(graph);
+        if (e.target.value) {
+          select.classList.remove('validationerror');
+        } else {
+          select.classList.add('validationerror');
+        }
+        setValidationErrorClass();
+        _.scheduleSave(metaanalysis);
+        fillAggregateInformation(graphEl, graph);
+        recalculateComputedData();
+      };
+    })(i, select);
+
+  }
+
+  fillGraphInformation(graphEl, graph);
+}
+
+function addNewGraphToMetaanalysis() {
+  var graph = {formulaName: null, formulaParams: []};
+  graph.formula = lima.createFormulaString(graph);
+  currentMetaanalysis.graphs.push(graph);
+  updateMetaanalysisView();
+  _.scheduleSave(currentMetaanalysis);
+  setTimeout(focusFirstValidationError, 0);
+}
+
 
   /* comments
    *
@@ -3507,6 +3652,62 @@
 
     if (!currentMetaanalysis.aggregates[aggregateIndex]) return console.error('aggregate[' + aggregateIndex + '] not found in aggregates!');
     currentMetaanalysis.aggregates.splice(aggregateIndex, 1);
+    unpinPopupBox();
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+  }
+
+/* BANNER FOR 'changing graphs' HERE
+*/
+
+// TODO: Revisit this to make sure it makes sense still
+
+  function moveGraph() {
+    // a click will pin the box,
+    // this timeout makes sure the click gets processed first and then we do the moving
+    setTimeout(doMoveGraph, 0, this);
+  }
+
+  function doMoveGraph(el) {
+    var up = el.classList.contains('up');
+    var most = el.classList.contains('most');
+    var graphIndex = parseInt(_.findPrecedingEl(el, 'div.popupbox').dataset.index);
+    if (isNaN(graphIndex)) return; // we don't know what to move
+
+    if (!currentMetaanalysis.graphs[graphIndex]) return console.error('graph[' + graphIndex + '] not found in graphs!');
+    var newPosition = findNextGraph(graphIndex, up, most);
+    _.moveArrayElement(currentMetaanalysis.graphs, graphIndex, newPosition);
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+  }
+
+  /*
+   * find where to move an graph from its current index;
+   * `up` indicates direction (up meaning left in array order); if `most`, move to the beginning (top) or end (bottom) of the graph list.
+   */
+  function findNextGraph(currentIndex, up, most) {
+    if (up) {
+      if (most || currentIndex <= 0) return 0;
+      currentIndex -= 1;
+    } else {
+      if (most) return currentMetaanalysis.graphs.length - 1;
+      currentIndex += 1;
+    }
+    return currentIndex;
+  }
+
+  function deleteGraph() {
+    // a click will pin the box,
+    // this timeout makes sure the click gets processed first and then we do the moving
+    setTimeout(doDeleteGraph, 0, this);
+  }
+
+  function doDeleteGraph(el) {
+    var graphIndex = parseInt(_.findPrecedingEl(el, 'div.popupbox').dataset.index);
+    if (isNaN(graphIndex)) return; // we don't know what to move
+
+    if (!currentMetaanalysis.graphs[graphIndex]) return console.error('graph[' + graphIndex + '] not found in graphs!');
+    currentMetaanalysis.graphs.splice(graphIndex, 1);
     unpinPopupBox();
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
