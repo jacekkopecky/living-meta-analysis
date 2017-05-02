@@ -466,17 +466,17 @@
     // TODO: HEDGEHOG
     // todo the plot should be associated with its parameters differently, not through an aggregate
     // todo there should be the possibility to have more forest plots
-    for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
-      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotNumberAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
-        params = currentMetaanalysis.aggregates[i].formulaParams;
+    for (var i=0; i<currentMetaanalysis.graphs.length; i++) {
+      if (currentMetaanalysis.graphs[i].formulaName === 'forestPlotNumberGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
+        params = currentMetaanalysis.graphs[i].formulaParams;
         orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
         wtFunc = { formulaName: "weightNumber", formulaParams: params };
         lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
         uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: params };
         break;
       }
-      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotPercentAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
-        params = currentMetaanalysis.aggregates[i].formulaParams;
+      if (currentMetaanalysis.graphs[i].formulaName === 'forestPlotPercentGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
+        params = currentMetaanalysis.graphs[i].formulaParams;
         orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [params[0], params[2]] };
         wtFunc = { formulaName: "weightPercent", formulaParams: params };
         lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: params };
@@ -485,7 +485,7 @@
       }
     }
 
-    if (i === currentMetaanalysis.aggregates.length) {
+    if (i === currentMetaanalysis.graphs.length) {
       // we don't have any parameters for the forestPlot
       return;
     }
@@ -775,9 +775,9 @@
 
     var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params, dataParams;
 
-    for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
-      if (currentMetaanalysis.aggregates[i].formulaName === 'grapeChartNumberAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
-        params = currentMetaanalysis.aggregates[i].formulaParams;
+    for (var i=0; i<currentMetaanalysis.graphs.length; i++) {
+      if (currentMetaanalysis.graphs[i].formulaName === 'grapeChartNumberGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
+        params = currentMetaanalysis.graphs[i].formulaParams;
         dataParams = params.slice(0, 4); // the first param is for grouping
         orFunc = { formulaName: "logOddsRatioNumber", formulaParams: dataParams };
         wtFunc = { formulaName: "weightNumber", formulaParams: dataParams };
@@ -786,8 +786,8 @@
         moderatorParam = params[4];
         break;
       }
-      if (currentMetaanalysis.aggregates[i].formulaName === 'grapeChartPercentAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
-        params = currentMetaanalysis.aggregates[i].formulaParams;
+      if (currentMetaanalysis.graphs[i].formulaName === 'grapeChartPercentGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
+        params = currentMetaanalysis.graphs[i].formulaParams;
         dataParams = params.slice(0, 4); // the first param is for grouping
         orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [dataParams[0], dataParams[2]] };
         wtFunc = { formulaName: "weightPercent", formulaParams: dataParams };
@@ -798,7 +798,7 @@
       }
     }
 
-    if (i === currentMetaanalysis.aggregates.length) {
+    if (i === currentMetaanalysis.graphs.length) {
       // we don't have any parameters for the grapeChart
       return;
     }
@@ -1885,7 +1885,8 @@
     if (typeof col === 'string') return col in lima.columns;
 
     if (!lima.getFormulaById(col.formulaName) &&
-        !lima.getAggregateFormulaById(col.formulaName)) return false;
+        !lima.getAggregateFormulaById(col.formulaName) &&
+        !lima.getGraphFormulaById(col.formulaName)) return false;
 
     for (var i=0; i<col.formulaParams.length; i++) {
       if (!isColCompletelyDefined(col.formulaParams[i])) {
