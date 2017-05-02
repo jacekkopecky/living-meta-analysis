@@ -679,14 +679,34 @@ function getAllMetaanalyses() {
 /*
  * change metaanalysis from an old format to the new one on load from datastore, if need be
  */
-function migrateMetaanalysis(metaanalysis) {
-  // 2017-02-23: move columnOrder to columns
-  if (metaanalysis.columnOrder) {
-    metaanalysis.columns = metaanalysis.columnOrder;
-    delete metaanalysis.columnOrder;
-  }
-  return metaanalysis;
-}
+ function migrateMetaanalysis(metaanalysis) {
+   // 2017-02-23: move columnOrder to columns
+   // 2017-05-02: move graph aggregates to graphs
+   if (metaanalysis.columnOrder) {
+     metaanalysis.columns = metaanalysis.columnOrder;
+     delete metaanalysis.columnOrder;
+   }
+
+   // migrate aggregate graphs to graphs
+   if (metaanalysis.aggregates) {
+     var oldGraphs = ['forestPlotNumberAggr', 'forestPlotPercentAggr', 'grapeChartNumberGraph', 'grapeChartPercentAggr'];
+     for (var i=0; i<metaanalysis.aggregates.length; i++) {
+       var formulaName = metaanalysis.aggregates[i].formula.split("(")[0];
+       if (oldGraphs.indexOf(formulaName) != -1) {
+         var graph = metaanalysis.aggregates[i];
+         metaanalysis.aggregates.splice(i, 1);
+         // change Aggr to Graph
+         graph.formula.replace("Aggr", "Graph");
+         if (!metaanalysis.graphs) {
+           metaanalysis.graphs = [];
+         }
+         metaanalysis.graphs.push(graph);
+       }
+     }
+   }
+
+   return metaanalysis;
+ }
 
 module.exports.getMetaanalysesEnteredBy = (email) => {
   // todo also return metaanalyses contributed to by `email`
