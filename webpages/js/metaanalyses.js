@@ -201,6 +201,7 @@
     // clean metaanalysis columns, aggregates and plots
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.columns);
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.aggregates);
+    lima.updateColumnListAfterColumnSave(currentMetaanalysis.graphs);
 
     updateMetaanalysisView();
   }
@@ -230,6 +231,7 @@
     if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
     if (!Array.isArray(self.tags)) self.tags = [];
     if (!Array.isArray(self.aggregates)) self.aggregates = [];
+    if (!Array.isArray(self.graphs)) self.graphs = [];
     if (!Array.isArray(self.excludedExperiments)) self.excludedExperiments = [];
 
     self.columns.forEach(function (col) {
@@ -262,6 +264,18 @@
       } else {
         aggr.formulaName = null;
         aggr.formulaParams = [];
+      }
+    });
+
+    //TODO: If this stays the same - factor out with above.
+    self.graphs.forEach(function (graph) {
+      var parsed = lima.parseFormulaString(graph.formula);
+      if (parsed != null) {
+        graph.formulaName = parsed.formulaName;
+        graph.formulaParams = parsed.formulaParams;
+      } else {
+        graph.formulaName = null;
+        graph.formulaParams = [];
       }
     });
 
@@ -449,6 +463,7 @@
 
     var orFunc, wtFunc, lclFunc, uclFunc, params;
 
+    // TODO: HEDGEHOG
     // todo the plot should be associated with its parameters differently, not through an aggregate
     // todo there should be the possibility to have more forest plots
     for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
@@ -2762,6 +2777,18 @@
   }
 
 
+/* BANNER HERE FOR 'graphs'
+
+*/
+
+// We likely need...
+
+// fillGraphTable
+// fillGraphInformation
+// fillGraphColumnsSelection
+// addNewGraphToMetaanalysis
+
+// loosely copied from above
 
   /* comments
    *
