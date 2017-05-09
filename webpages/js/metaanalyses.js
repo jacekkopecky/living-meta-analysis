@@ -2305,7 +2305,7 @@
       }
 
       // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
-      if (!foundCurrentValue) {
+      if (!foundCurrentValue && aggregate.formulaParams[i]) {
         colId = aggregate.formulaParams[i];
         makeOption(colId, aggregate, colId, select);
       }
