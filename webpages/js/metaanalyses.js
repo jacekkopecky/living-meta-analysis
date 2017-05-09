@@ -2936,7 +2936,7 @@ function fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula) {
         }
         setValidationErrorClass();
         _.scheduleSave(metaanalysis);
-        fillAggregateInformation(graphEl, graph);
+        fillGraphInformation(graphEl, graph);
         recalculateComputedData();
       };
     })(i, select);
