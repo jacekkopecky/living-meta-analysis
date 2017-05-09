@@ -477,18 +477,18 @@
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
-    viewBox="0 0 800 20"
-    width="800"
+    width="900"
     height="200"
     version="1.1"
     data-heading-offset="40"
     data-group-line-offset="-30"
     data-zero-groups-width="70"
-    data-group-spacing="800"
     data-line-height="30"
     data-padding="10"
-    data-graph-width="300"
+    data-graph-width="200"
     data-start-height="50"
+    data-group-start-height="10"
+    data-height-between-groups="50"
     data-end-height="65"
     data-min-wt-size="4"
     data-max-wt-size="14"
@@ -521,14 +521,14 @@
       .headings text.wt,
       .experiment text.wt,
       .summary text.wt {
-        transform: translate(800px,20px);
+        transform: translate(760px,20px);
         text-anchor: end;
       }
 
       .headings text.wtg,
       .experiment text.wtg,
       .summary text.wtg {
-        transform: translate(800px,20px);
+        transform: translate(780px,20px);
         text-anchor: start;
       }
 
@@ -629,7 +629,7 @@
     <g transform="translate(10,0)" class="headings">
       <text class="or lcl ucl">OR [LCL, UCL]</text>
       <text class="wt">WT</text>
-      <text class="wtg">, WTG</text>
+      <text class="wtg">WTG</text>
     </g>
 
     <template class="experiment">
@@ -637,7 +637,7 @@
         <text class="expname">error</text>
         <text class="or lcl ucl">invalid [n/a, n/a]</text>
         <text class="wt">n/a</text>
-        <text class="wtg">, n/a</text>
+        <text class="wtg">n/a</text>
         <g class="rowgraph">
           <line class="confidenceinterval"/><!-- should get x1="lcl" x2="ucl" -->
           <rect class="weightbox"/><!-- should get x="or" width="wt" height="wt" -->
@@ -656,7 +656,7 @@
           </g>
         </g>
       </g>
-    <template/>
+    </template>
 
 
     <template class="axes">

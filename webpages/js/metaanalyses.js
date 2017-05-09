@@ -563,11 +563,6 @@
       perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return line.wt != null ? acc+line.or*line.wt : acc;}, 0) / perGroup[dataGroup[0].group].wt;
     });
 
-    // todo highlight the current experiment in forest plot and in grape chart
-    // set chart width based on number of groups
-    plotEl.setAttribute('width', parseInt(plotEl.dataset.zeroGroupsWidth) + groups.length * parseInt(plotEl.dataset.groupSpacing));
-    plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
-
     var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
     var lclAggrFunc = { formulaName: "lowerConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
     var uclAggrFunc = { formulaName: "upperConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
@@ -673,7 +668,7 @@
     }
 
     var currY = parseInt(plotEl.dataset.startHeight);
-    var currGY = 10;
+    var currGY = parseInt(plotEl.dataset.groupStartHeight);
     var hasInvalid = false;
 
     groups.forEach(function (group) {
@@ -690,7 +685,7 @@
       var forestGroupT = _.findEl(plotEl, 'template.forest-group');
       var forestGroupEl = _.cloneTemplate(forestGroupT);
 
-      currGY = 10;
+      currGY = parseInt(plotEl.dataset.groupStartHeight);
 
       forestGroupEl.setAttribute('transform', 'translate(' + plotEl.dataset.headingOffset + ',' + currY + ')');
 
@@ -712,7 +707,7 @@
             groupMembers += 1;
             _.fillEls(expEl, '.or.lcl.ucl', Math.exp(line.or).toPrecision(3) + ' [' + Math.exp(line.lcl).toPrecision(3) + ", " + Math.exp(line.ucl).toPrecision(3) + ']');
             _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
-            _.fillEls(expEl, '.wtg', ', ' + (Math.round(line.wtg)/10) + '%');
+            _.fillEls(expEl, '.wtg', (Math.round(line.wtg)/10) + '%');
             _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
             _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
 
@@ -743,10 +738,7 @@
         }
         else {
           // avoid having too much decimals
-          var splitNumber = (groupAggregates[stat] + "").split(".");
-          if(splitNumber.length == 2 && splitNumber[1].length > 1) {
-            groupAggregates[stat] = Math.round(groupAggregates[stat]*10)/10;
-          }
+          groupAggregates[stat] = groupAggregates[stat].toFixed(1);
         }
       }
 
@@ -779,7 +771,7 @@
 
         currGY += parseInt(plotEl.dataset.lineHeight);
       }
-      currY += (currGY+ 50); // 10 + 30 for the missed first element, since we reset to 10 10 for spacing.
+      currY += (currGY+ parseInt(plotEl.dataset.heightBetweenGroups));
     })
 
 
