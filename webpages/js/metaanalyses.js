@@ -466,6 +466,10 @@
     for (var k=0; k<currentMetaanalysis.graphs.length; k++) {
       var orFunc, wtFunc, lclFunc, uclFunc, params;
 
+      if (currentMetaanalysis.graphs[k].formulaName && currentMetaanalysis.graphs[k].formulaName.indexOf('grapeChart') != -1) {
+        continue;
+      }
+
       // TODO: HEDGEHOG
       // todo the plot should be associated with its parameters differently, not through an aggregate
       // todo there should be the possibility to have more forest plots
@@ -534,22 +538,8 @@
         lines.push(noDataLine);
       }
 
-
       var plotEl = _.cloneTemplate('forest-plot-template').children[0];
-      var haveDuplicate = false;
       var forestPlotId = 'forest-plot-' + k;
-
-      // check if we already have this forest plot
-      for (i=0; i<plotsContainer.childNodes.length; i++) {
-        if (plotsContainer.childNodes[i].dataset.graphId === forestPlotId) {
-          haveDuplicate = true;
-          break;
-        }
-      }
-
-      if (haveDuplicate) {
-        continue;
-      }
 
       plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
       plotsContainer.appendChild(plotEl);
@@ -796,6 +786,10 @@
     for (var k=0; k<currentMetaanalysis.graphs.length; k++) {
       var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params, dataParams;
 
+      if (currentMetaanalysis.graphs[k].formulaName && currentMetaanalysis.graphs[k].formulaName.indexOf('forestPlot') != -1) {
+        continue;
+      }
+
       for (var i=k; i<currentMetaanalysis.graphs.length; i++) {
         if (currentMetaanalysis.graphs[i].formulaName === 'grapeChartNumberGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
           params = currentMetaanalysis.graphs[i].formulaParams;
@@ -873,20 +867,7 @@
       }
 
       var plotEl = _.cloneTemplate('grape-chart-template').children[0];
-      var haveDuplicate = false;
       var grapeChartId = 'grape-chart-' + k;
-
-      // check if we already have this grape char
-      for (i=0; i<plotsContainer.childNodes.length; i++) {
-        if (plotsContainer.childNodes[i].dataset.graphId === grapeChartId) {
-          haveDuplicate = true;
-          break;
-        }
-      }
-
-      if (haveDuplicate) {
-        continue;
-      }
 
       plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
       plotsContainer.appendChild(plotEl);
@@ -1089,8 +1070,6 @@
       }
     }
   }
-
-  // FUNCTION END (drawGrapeChart)
 
   var positionedGrapes;
   function resetPositioning() {
@@ -1806,6 +1785,9 @@
   }
 
   function recalculateComputedData() {
+    // we need to empty the content to avoid graphs duplicates and drawing errors
+    var plotsContainer = _.findEl('.plots');
+    plotsContainer.innerHTML = '';
     // clear computation cache
     dataCache = {};
     // call all the calculation functions

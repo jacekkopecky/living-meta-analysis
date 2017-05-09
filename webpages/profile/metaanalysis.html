@@ -653,34 +653,34 @@
         stroke-linecap: butt;
       }
 
-      .axes > g {
+      [data-graph-type="forest-plot"] .axes > g {
         transform: translate(280px,32.5px);
       }
 
-      .axes .tick text {
+      [data-graph-type="forest-plot"] .axes .tick text {
         font-size: 11px;
         transform: translate(0, 19px);
       }
 
       .axes .yaxis {
-        transform: translate(0px, 5px) scale(1, -1);
+        transform: translate(0px, 1px) scale(1, -1);
       }
 
-      .positioningbutton {
+      [data-graph-type="forest-plot"] .positioningbutton {
         transform: translate(495px, 17px);
         opacity: .2;
       }
 
-      .positioningbutton:not(:hover) line {
+      [data-graph-type="forest-plot"] .positioningbutton:not(:hover) line {
         display: none;
       }
 
-      .positioningbutton:hover {
+      [data-graph-type="forest-plot"] .positioningbutton:hover {
         opacity: 1;
         cursor: pointer;
       }
 
-      .positioningbutton line {
+      [data-graph-type="forest-plot"] .positioningbutton line {
         stroke-width: 1.5px;
       }
     </style>
@@ -790,12 +790,12 @@
         stroke-linecap: butt;
       }
 
-      .axes .tick line {
+      [data-type="grape-chart"] .axes .tick line {
         font-size: 12px;
         transform: translate(-5px, 0);
       }
 
-      .axes .tick text {
+      [data-type="grape-chart"] .axes .tick text {
         font-size: 12px;
         transform: translate(-10px, 4px);
         text-anchor: end;
@@ -925,12 +925,12 @@
         display: none;
       }
 
-      .positioningbutton:hover {
+      [data-type="grape-chart"] .positioningbutton:hover {
         opacity: 1;
         cursor: pointer;
       }
 
-      .positioningbutton line {
+      [data-type="grape-chart"] .positioningbutton line {
         stroke-width: 1.5px;
       }
     </style>
