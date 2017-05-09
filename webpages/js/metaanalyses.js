@@ -1480,6 +1480,7 @@
 
     _.addEventListener(table, 'tr:not(.add) .papertitle button.add', 'click', addExperimentRow);
     _.addEventListener(table, 'tr.add button.add', 'click', addPaperRow);
+    _.addEventListener(table, 'tr .paperinfo button.hide', 'click', hidePaper);
 
     _.addEventListener(table, 'th.add button.add', 'click', addExperimentColumn);
     _.addEventListener(table, 'th.add button.cancel', 'click', dismissAddExperimentColumn);
@@ -2939,6 +2940,11 @@
 
   function isHiddenCol(colid) {
     return currentMetaanalysis.hiddenCols.indexOf(colid) !== -1;
+  }
+
+  function hidePaper(e) {
+    var paperIndex = parseInt(_.findPrecedingEl(e.target, 'tr.row').dataset.paperIndex);
+    console.log(currentMetaanalysis);
   }
 
   function hideColumn(e) {
