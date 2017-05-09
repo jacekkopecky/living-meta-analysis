@@ -951,7 +951,7 @@
 
     groups.forEach(function (group, index) {
 
-      currentGroup = currentGroup + 1;
+      currentGroup++;
 
       var groupData = dataGroups[index];
 
@@ -995,7 +995,7 @@
         grapeEl.setAttribute('r', getGrapeRadius(exp.wt));
         _.setAttrs(tooltipEl, '.grape', 'r', getGrapeRadius(exp.wt));
 
-        grapeEl.classList.add('c' + currentGroup%7);
+        grapeEl.classList.add('c' + currentGroup%plotEl.dataset.nbGroups);
 
         // x-position so grapes don't overlap
         var grapeX = getPosition(index);
