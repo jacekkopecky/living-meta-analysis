@@ -247,6 +247,18 @@
         parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ],
       },
       {
+        id: 'forestPlotGroupPercentAggr',
+        label: 'Forest Plot With Groups (percentages)',
+        func: forestPlotGroupPercentAggr,
+        parameters: [ 'group 1 (e.g. experimental percentage)', 'group 1 N', 'group 2 (e.g. control percentage)', 'group 2 N', 'moderator' ],
+      },
+      {
+        id: 'forestPlotGroupNumberAggr',
+        label: 'Forest Plot With Groups (numbers affected)',
+        func: forestPlotGroupNumberAggr,
+        parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N', 'moderator' ],
+      },
+      {
         id: 'grapeChartPercentAggr',
         label: 'Grape Chart (percentages)',
         func: grapeChartPercentAggr,
@@ -329,10 +341,16 @@
   function forestPlotPercentAggr () {
     return 'see above';
   }
+  function forestPlotGroupPercentAggr () {
+    return 'see above';
+  }
   function grapeChartPercentAggr () {
     return 'see above';
   }
   function forestPlotNumberAggr () {
+    return 'see above';
+  }
+  function forestPlotGroupNumberAggr () {
     return 'see above';
   }
   function grapeChartNumberAggr () {
