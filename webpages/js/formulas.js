@@ -103,8 +103,8 @@
     return null;
   }
 
-  lima.getFormulaOrAggregateLabelById = function getFormulaOrAggregateLabelById(id) {
-    var formula = lima.getFormulaById(id) || lima.getAggregateFormulaById(id);
+  lima.getRichLabelById = function getFormulaOrAggregateLabelById(id) {
+    var formula = lima.getFormulaById(id) || lima.getAggregateFormulaById(id) || lima.getGraphFormulaById(id);
     return (formula ? formula.label : 'no formula selected');
   }
 

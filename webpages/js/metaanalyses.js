@@ -198,9 +198,10 @@
       // don't clean columns the same way - in metaanalyses.js, we shouldn't be touching papers' columns
     });
 
-    // clean metaanalysis columns, aggregates and plots
+    // clean metaanalysis columns, aggregates, and graphs
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.columns);
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.aggregates);
+    lima.updateColumnListAfterColumnSave(currentMetaanalysis.graphs);
 
     updateMetaanalysisView();
   }
@@ -230,6 +231,7 @@
     if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
     if (!Array.isArray(self.tags)) self.tags = [];
     if (!Array.isArray(self.aggregates)) self.aggregates = [];
+    if (!Array.isArray(self.graphs)) self.graphs = [];
     if (!Array.isArray(self.excludedExperiments)) self.excludedExperiments = [];
 
     self.columns.forEach(function (col) {
@@ -262,6 +264,18 @@
       } else {
         aggr.formulaName = null;
         aggr.formulaParams = [];
+      }
+    });
+
+    //TODO: If this stays the same - factor out with above.
+    self.graphs.forEach(function (graph) {
+      var parsed = lima.parseFormulaString(graph.formula);
+      if (parsed != null) {
+        graph.formulaName = parsed.formulaName;
+        graph.formulaParams = parsed.formulaParams;
+      } else {
+        graph.formulaName = null;
+        graph.formulaParams = [];
       }
     });
 
@@ -366,6 +380,7 @@
     fillTags(metaanalysisEl, metaanalysis);
     fillMetaanalysisExperimentTable(metaanalysis);
     fillAggregateTable(metaanalysis);
+    fillGraphTable(metaanalysis);
 
     // for now, do local storage "edit your copy"
     // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), metaanalysis.title);
@@ -447,285 +462,294 @@
     //     lcl
     //     ucl
 
-    var orFunc, wtFunc, lclFunc, uclFunc, params;
-
-    // todo the plot should be associated with its parameters differently, not through an aggregate
-    // todo there should be the possibility to have more forest plots
-    for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
-      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotNumberAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
-        params = currentMetaanalysis.aggregates[i].formulaParams;
-        orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
-        wtFunc = { formulaName: "weightNumber", formulaParams: params };
-        lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
-        uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: params };
-        break;
-      }
-      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotPercentAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
-        params = currentMetaanalysis.aggregates[i].formulaParams;
-        orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [params[0], params[2]] };
-        wtFunc = { formulaName: "weightPercent", formulaParams: params };
-        lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: params };
-        uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: params };
-        break;
-      }
-    }
-
-    if (i === currentMetaanalysis.aggregates.length) {
-      // we don't have any parameters for the forestPlot
-      return;
-    }
-
     var plotsContainer = _.findEl('#metaanalysis > .plots');
-    plotsContainer.innerHTML = '';
 
-    var plotEl = _.cloneTemplate('forest-plot-template').children[0];
-    plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
+    for (var k=0; k<currentMetaanalysis.graphs.length; k++) {
+      var orFunc, wtFunc, lclFunc, uclFunc, params;
 
-    // get the data
-    orFunc.formula = lima.createFormulaString(orFunc);
-    wtFunc.formula = lima.createFormulaString(wtFunc);
-    lclFunc.formula = lima.createFormulaString(lclFunc);
-    uclFunc.formula = lima.createFormulaString(uclFunc);
+      if (currentMetaanalysis.graphs[k].formulaName && currentMetaanalysis.graphs[k].formulaName.indexOf('grapeChart') != -1) {
+        continue;
+      }
 
-    var lines=[];
-
-    for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
-      for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
-        if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
-        var line = {};
-        line.title = currentMetaanalysis.papers[i].title || 'new paper';
-        if (currentMetaanalysis.papers[i].experiments.length > 1) {
-          var expTitle = currentMetaanalysis.papers[i].experiments[j].title || 'new experiment';
-          if (expTitle.match(/^\d+$/)) expTitle = 'Exp. ' + expTitle;
-          line.title += ' (' + expTitle + ')';
+      // TODO: HEDGEHOG
+      // todo the plot should be associated with its parameters differently, not through an aggregate
+      // todo there should be the possibility to have more forest plots
+      for (var i=k; i<currentMetaanalysis.graphs.length; i++) {
+        if (currentMetaanalysis.graphs[i].formulaName === 'forestPlotNumberGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
+          params = currentMetaanalysis.graphs[i].formulaParams;
+          orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
+          wtFunc = { formulaName: "weightNumber", formulaParams: params };
+          lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
+          uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: params };
+          break;
         }
-        line.or = getDatumValue(orFunc, j, i);
-        line.wt = getDatumValue(wtFunc, j, i);
-        line.lcl = getDatumValue(lclFunc, j, i);
-        line.ucl = getDatumValue(uclFunc, j, i);
-        lines.push(line);
-
-        // if any of the values is NaN or ±Infinity, disregard this experiment
-        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
-            line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
-          delete line.or;
-          delete line.lcl;
-          delete line.ucl;
-          delete line.wt;
+        if (currentMetaanalysis.graphs[i].formulaName === 'forestPlotPercentGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
+          params = currentMetaanalysis.graphs[i].formulaParams;
+          orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [params[0], params[2]] };
+          wtFunc = { formulaName: "weightPercent", formulaParams: params };
+          lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: params };
+          uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: params };
+          break;
         }
       }
-    }
 
-    // add indication to the graph when there is no data
-    if (lines.length === 0) {
-      var noDataLine = {title: "No data"};
-      lines.push(noDataLine);
-    }
-
-    var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
-    var lclAggrFunc = { formulaName: "lowerConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
-    var uclAggrFunc = { formulaName: "upperConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
-
-    orAggrFunc.formula = lima.createFormulaString(orAggrFunc);
-    lclAggrFunc.formula = lima.createFormulaString(lclAggrFunc);
-    uclAggrFunc.formula = lima.createFormulaString(uclAggrFunc);
-
-    var aggregates = {
-      or: getDatumValue(orAggrFunc),
-      lcl: getDatumValue(lclAggrFunc),
-      ucl: getDatumValue(uclAggrFunc),
-    }
-
-    if (isNaN(aggregates.or*0) || isNaN(aggregates.lcl*0) || isNaN(aggregates.ucl*0)) {
-      aggregates.lcl = 0;
-      aggregates.ucl = 0;
-    }
-
-    // compute
-    //   sum of wt
-    //   min and max of wt
-    //   min of lcl and aggr lcl
-    //   max of ucl and aggr ucl
-    var sumOfWt = 0;
-    var minWt = Infinity;
-    var maxWt = -Infinity;
-    var minLcl = aggregates.lcl;
-    var maxUcl = aggregates.ucl;
-
-    if (isNaN(minLcl)) minLcl = 0;
-    if (isNaN(maxUcl)) maxUcl = 0;
-
-    lines.forEach(function (line) {
-      if (line.or == null) return;
-      sumOfWt += line.wt;
-      if (line.wt < minWt) minWt = line.wt;
-      if (line.wt > maxWt) maxWt = line.wt;
-      if (line.lcl < minLcl) minLcl = line.lcl;
-      if (line.ucl > maxUcl) maxUcl = line.ucl;
-    });
-
-    if (minLcl < -10) minLcl = -10;
-    if (maxUcl > 10) maxUcl = 10;
-
-    if (minWt == Infinity) minWt = maxWt = 1;
-    if (sumOfWt == 0) sumOfWt = 1;
-
-    var TICK_SPACING;
-
-
-    // select tick spacing based on a rough estimate of how many ticks we'll need anyway
-    var clSpread = (maxUcl - minLcl) / Math.LN10; // how many orders of magnitude we cover
-    if (clSpread > 3) TICK_SPACING = [100];
-    else if (clSpread > 1.3) TICK_SPACING = [10];
-    else TICK_SPACING = [ 2, 2.5, 2 ]; // ticks at 1, 2, 5, 10, 20, 50, 100...
-
-
-    // adjust minimum and maximum around decimal non-logarithmic values
-    var newBound = 1;
-    var tickNo = 0;
-    while (Math.log(newBound) > minLcl) {
-      tickNo -= 1;
-      newBound /= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)]; // JS % can be negative
-    }
-    minLcl = Math.log(newBound) - .1;
-
-    var startingTickVal = newBound;
-    var startingTick = tickNo;
-
-    newBound = 1;
-    tickNo = 0;
-    while (Math.log(newBound) < maxUcl) {
-      newBound *= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)];
-      tickNo += 1;
-    }
-    maxUcl = Math.log(newBound) + .1;
-
-    var xRatio = 1/(maxUcl-minLcl)*parseInt(plotEl.dataset.graphWidth);
-
-    // return the X coordinate on the graph that corresponds to the given logarithmic value
-    function getX(val) {
-      return (val-minLcl)*xRatio;
-    }
-
-    // adjust weights so that in case of very similar weights they don't range from minimum to maximum
-    var MIN_WT_SPREAD=2.5;
-    if (maxWt/minWt < MIN_WT_SPREAD) {
-      minWt = (maxWt + minWt) / 2 / Math.sqrt(MIN_WT_SPREAD);
-      maxWt = minWt * MIN_WT_SPREAD;
-    }
-
-    // minWt = 0; // todo we can uncomment this to make all weights relative to only the maximum weight
-    var minWtSize = parseInt(plotEl.dataset.minWtSize);
-    // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
-    maxWt = Math.sqrt(maxWt);
-    minWt = Math.sqrt(minWt);
-    var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxWtSize)-minWtSize);
-
-    // return the box size for a given weight
-    function getBoxSize(wt) {
-      return (Math.sqrt(wt)-minWt)*wtRatio + minWtSize;
-    }
-
-    var currY = parseInt(plotEl.dataset.startHeight);
-
-    // put experiments into the plot
-    lines.forEach(function (line) {
-      var expT = _.findEl(plotEl, 'template.experiment');
-      var expEl = _.cloneTemplate(expT);
-
-      expEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
-
-      _.fillEls(expEl, '.expname', line.title);
-      if (line.or != null) {
-        _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
-        _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
-        _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
-        _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
-
-        _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
-        _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
-
-        _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
-        _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
-        _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
-      } else {
-        expEl.classList.add('invalid');
+      if (i === currentMetaanalysis.graphs.length) {
+        // we don't have any parameters for the forestPlot        console.log(i);
+        return;
       }
 
-      expT.parentElement.insertBefore(expEl, expT);
+      // get the data
+      orFunc.formula = lima.createFormulaString(orFunc);
+      wtFunc.formula = lima.createFormulaString(wtFunc);
+      lclFunc.formula = lima.createFormulaString(lclFunc);
+      uclFunc.formula = lima.createFormulaString(uclFunc);
 
-      currY += parseInt(plotEl.dataset.lineHeight);
-    })
+      var lines=[];
 
+      for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
+        for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
+          if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
+          var line = {};
+          line.title = currentMetaanalysis.papers[i].title || 'new paper';
+          if (currentMetaanalysis.papers[i].experiments.length > 1) {
+            var expTitle = currentMetaanalysis.papers[i].experiments[j].title || 'new experiment';
+            if (expTitle.match(/^\d+$/)) expTitle = 'Exp. ' + expTitle;
+            line.title += ' (' + expTitle + ')';
+          }
+          line.or = getDatumValue(orFunc, j, i);
+          line.wt = getDatumValue(wtFunc, j, i);
+          line.lcl = getDatumValue(lclFunc, j, i);
+          line.ucl = getDatumValue(uclFunc, j, i);
+          lines.push(line);
 
-
-    // put summary into the plot
-    if (!isNaN(aggregates.or*0)) {
-      var sumT = _.findEl(plotEl, 'template.summary');
-      var sumEl = _.cloneTemplate(sumT);
-
-      sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
-
-      _.fillEls(sumEl, '.or', Math.exp(aggregates.or).toPrecision(3));
-      _.fillEls(sumEl, '.lcl', "" + Math.exp(aggregates.lcl).toPrecision(3) + ",");
-      _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toPrecision(3));
-
-      var lclX = getX(aggregates.lcl);
-      var uclX = getX(aggregates.ucl);
-      var orX = getX(aggregates.or);
-      if ((uclX - lclX) < parseInt(plotEl.dataset.minDiamondWidth)) {
-        var ratio = (uclX - lclX) / parseInt(plotEl.dataset.minDiamondWidth);
-        lclX = orX + (lclX - orX) / ratio;
-        uclX = orX + (uclX - orX) / ratio;
+          // if any of the values is NaN or ±Infinity, disregard this experiment
+          if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
+              line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
+            delete line.or;
+            delete line.lcl;
+            delete line.ucl;
+            delete line.wt;
+          }
+        }
       }
 
-      var confidenceInterval = "" + lclX + ",0 " + orX + ",-10 " + uclX + ",0 " + orX + ",10";
+      // add indication to the graph when there is no data
+      if (lines.length === 0) {
+        var noDataLine = {title: "No data"};
+        lines.push(noDataLine);
+      }
 
-      _.setAttrs(sumEl, 'polygon.confidenceinterval', 'points', confidenceInterval);
+      var plotEl = _.cloneTemplate('forest-plot-template').children[0];
+      var forestPlotId = 'forest-plot-' + k;
 
-      _.setAttrs(sumEl, 'line.guideline', 'x1', getX(aggregates.or));
-      _.setAttrs(sumEl, 'line.guideline', 'x2', getX(aggregates.or));
-      _.setAttrs(sumEl, 'line.guideline', 'y2', currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen));
+      plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
+      plotsContainer.appendChild(plotEl);
 
-      sumT.parentElement.insertBefore(sumEl, sumT);
-      currY += parseInt(plotEl.dataset.lineHeight);
+      var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
+      var lclAggrFunc = { formulaName: "lowerConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
+      var uclAggrFunc = { formulaName: "upperConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
+
+      orAggrFunc.formula = lima.createFormulaString(orAggrFunc);
+      lclAggrFunc.formula = lima.createFormulaString(lclAggrFunc);
+      uclAggrFunc.formula = lima.createFormulaString(uclAggrFunc);
+
+      var aggregates = {
+        or: getDatumValue(orAggrFunc),
+        lcl: getDatumValue(lclAggrFunc),
+        ucl: getDatumValue(uclAggrFunc),
+      }
+
+      if (isNaN(aggregates.or*0) || isNaN(aggregates.lcl*0) || isNaN(aggregates.ucl*0)) {
+      /////////////////////////////////////  aggregates.lcl = 0;
+        aggregates.ucl = 0;
+      }
+
+      // compute
+      //   sum of wt
+      //   min and max of wt
+      //   min of lcl and aggr lcl
+      //   max of ucl and aggr ucl
+      var sumOfWt = 0;
+      var minWt = Infinity;
+      var maxWt = -Infinity;
+      var minLcl = aggregates.lcl;
+      var maxUcl = aggregates.ucl;
+
+      if (isNaN(minLcl)) minLcl = 0;
+      if (isNaN(maxUcl)) maxUcl = 0;
+
+      lines.forEach(function (line) {
+        if (line.or == null) return;
+        sumOfWt += line.wt;
+        if (line.wt < minWt) minWt = line.wt;
+        if (line.wt > maxWt) maxWt = line.wt;
+        if (line.lcl < minLcl) minLcl = line.lcl;
+        if (line.ucl > maxUcl) maxUcl = line.ucl;
+      });
+
+      if (minLcl < -10) minLcl = -10;
+      if (maxUcl > 10) maxUcl = 10;
+
+      if (minWt == Infinity) minWt = maxWt = 1;
+      if (sumOfWt == 0) sumOfWt = 1;
+
+      var TICK_SPACING;
+
+
+      // select tick spacing based on a rough estimate of how many ticks we'll need anyway
+      var clSpread = (maxUcl - minLcl) / Math.LN10; // how many orders of magnitude we cover
+      if (clSpread > 3) TICK_SPACING = [100];
+      else if (clSpread > 1.3) TICK_SPACING = [10];
+      else TICK_SPACING = [ 2, 2.5, 2 ]; // ticks at 1, 2, 5, 10, 20, 50, 100...
+
+
+      // adjust minimum and maximum around decimal non-logarithmic values
+      var newBound = 1;
+      var tickNo = 0;
+      while (Math.log(newBound) > minLcl) {
+        tickNo -= 1;
+        newBound /= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)]; // JS % can be negative
+      }
+      minLcl = Math.log(newBound) - .1;
+
+      var startingTickVal = newBound;
+      var startingTick = tickNo;
+
+      newBound = 1;
+      tickNo = 0;
+      while (Math.log(newBound) < maxUcl) {
+        newBound *= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)];
+        tickNo += 1;
+      }
+      maxUcl = Math.log(newBound) + .1;
+
+      var xRatio = 1/(maxUcl-minLcl)*parseInt(plotEl.dataset.graphWidth);
+
+      // return the X coordinate on the graph that corresponds to the given logarithmic value
+      function getX(val) {
+        return (val-minLcl)*xRatio;
+      }
+
+      // adjust weights so that in case of very similar weights they don't range from minimum to maximum
+      var MIN_WT_SPREAD=2.5;
+      if (maxWt/minWt < MIN_WT_SPREAD) {
+        minWt = (maxWt + minWt) / 2 / Math.sqrt(MIN_WT_SPREAD);
+        maxWt = minWt * MIN_WT_SPREAD;
+      }
+
+      // minWt = 0; // todo we can uncomment this to make all weights relative to only the maximum weight
+      var minWtSize = parseInt(plotEl.dataset.minWtSize);
+      // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
+      maxWt = Math.sqrt(maxWt);
+      minWt = Math.sqrt(minWt);
+      var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxWtSize)-minWtSize);
+
+      // return the box size for a given weight
+      function getBoxSize(wt) {
+        return (Math.sqrt(wt)-minWt)*wtRatio + minWtSize;
+      }
+
+      var currY = parseInt(plotEl.dataset.startHeight);
+
+      // put experiments into the plot
+      lines.forEach(function (line) {
+        var expT = _.findEl(plotEl, 'template.experiment');
+        var expEl = _.cloneTemplate(expT);
+
+        expEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+        _.fillEls(expEl, '.expname', line.title);
+        if (line.or != null) {
+          _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
+          _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
+          _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
+          _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
+
+          _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
+          _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
+
+          _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
+          _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
+          _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
+        } else {
+          expEl.classList.add('invalid');
+        }
+
+        expT.parentElement.insertBefore(expEl, expT);
+
+        currY += parseInt(plotEl.dataset.lineHeight);
+      })
+
+
+      // put summary into the plot
+      if (!isNaN(aggregates.or*0)) {
+        var sumT = _.findEl(plotEl, 'template.summary');
+        var sumEl = _.cloneTemplate(sumT);
+
+        sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+        _.fillEls(sumEl, '.or', Math.exp(aggregates.or).toPrecision(3));
+        _.fillEls(sumEl, '.lcl', "" + Math.exp(aggregates.lcl).toPrecision(3) + ",");
+        _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toPrecision(3));
+
+        var lclX = getX(aggregates.lcl);
+        var uclX = getX(aggregates.ucl);
+        var orX = getX(aggregates.or);
+        if ((uclX - lclX) < parseInt(plotEl.dataset.minDiamondWidth)) {
+          var ratio = (uclX - lclX) / parseInt(plotEl.dataset.minDiamondWidth);
+          lclX = orX + (lclX - orX) / ratio;
+          uclX = orX + (uclX - orX) / ratio;
+        }
+
+        var confidenceInterval = "" + lclX + ",0 " + orX + ",-10 " + uclX + ",0 " + orX + ",10";
+
+        _.setAttrs(sumEl, 'polygon.confidenceinterval', 'points', confidenceInterval);
+
+        _.setAttrs(sumEl, 'line.guideline', 'x1', getX(aggregates.or));
+        _.setAttrs(sumEl, 'line.guideline', 'x2', getX(aggregates.or));
+        _.setAttrs(sumEl, 'line.guideline', 'y2', currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen));
+
+        sumT.parentElement.insertBefore(sumEl, sumT);
+        currY += parseInt(plotEl.dataset.lineHeight);
+      }
+
+
+      // put axes into the plot
+      var axesT = _.findEl(plotEl, 'template.axes');
+      var axesEl = _.cloneTemplate(axesT);
+
+      axesEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+      _.setAttrs(axesEl, 'line.yaxis', 'y2', currY+parseInt(plotEl.dataset.extraLineLen));
+      _.setAttrs(axesEl, 'line.yaxis', 'x1', getX(0));
+      _.setAttrs(axesEl, 'line.yaxis', 'x2', getX(0));
+
+      var tickT = _.findEl(axesEl, 'template.tick');
+      var tickVal;
+      while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
+        var tickEl = _.cloneTemplate(tickT);
+        tickEl.setAttribute('transform', 'translate(' + getX(tickVal) + ',0)');
+        _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
+        tickT.parentElement.insertBefore(tickEl, tickT);
+        startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
+        startingTick += 1;
+      }
+
+
+      axesT.parentElement.insertBefore(axesEl, axesT);
+
+      _.addEventListener(axesEl, '.positioningbutton', 'click', function (e) {
+        plotEl.classList.toggle('maximized');
+        localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
+        e.stopPropagation();
+      })
+      // add an id to the current graph
+      plotEl.setAttribute('data-graph-id', forestPlotId);
+
+      plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
+      plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
+      // todo set plot widths based on maximum text sizes
     }
-
-
-    // put axes into the plot
-    var axesT = _.findEl(plotEl, 'template.axes');
-    var axesEl = _.cloneTemplate(axesT);
-
-    axesEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
-
-    _.setAttrs(axesEl, 'line.yaxis', 'y2', currY+parseInt(plotEl.dataset.extraLineLen));
-    _.setAttrs(axesEl, 'line.yaxis', 'x1', getX(0));
-    _.setAttrs(axesEl, 'line.yaxis', 'x2', getX(0));
-
-    var tickT = _.findEl(axesEl, 'template.tick');
-    var tickVal;
-    while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
-      var tickEl = _.cloneTemplate(tickT);
-      tickEl.setAttribute('transform', 'translate(' + getX(tickVal) + ',0)');
-      _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
-      tickT.parentElement.insertBefore(tickEl, tickT);
-      startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
-      startingTick += 1;
-    }
-
-    axesT.parentElement.insertBefore(axesEl, axesT);
-
-    _.addEventListener(axesEl, '.positioningbutton', 'click', function (e) {
-      plotEl.classList.toggle('maximized');
-      localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
-      e.stopPropagation();
-    })
-
-    plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
-    plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
-    // todo set plot widths based on maximum text sizes
-
-    plotsContainer.appendChild(plotEl);
   }
 
   function drawForestPlotGroup() {
@@ -1174,284 +1198,293 @@
     //     lcl
     //     ucl
 
-    var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params, dataParams;
-
-    for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
-      if (currentMetaanalysis.aggregates[i].formulaName === 'grapeChartNumberAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
-        params = currentMetaanalysis.aggregates[i].formulaParams;
-        dataParams = params.slice(0, 4); // the first param is for grouping
-        orFunc = { formulaName: "logOddsRatioNumber", formulaParams: dataParams };
-        wtFunc = { formulaName: "weightNumber", formulaParams: dataParams };
-        lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: dataParams };
-        uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: dataParams };
-        moderatorParam = params[4];
-        break;
-      }
-      if (currentMetaanalysis.aggregates[i].formulaName === 'grapeChartPercentAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
-        params = currentMetaanalysis.aggregates[i].formulaParams;
-        dataParams = params.slice(0, 4); // the first param is for grouping
-        orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [dataParams[0], dataParams[2]] };
-        wtFunc = { formulaName: "weightPercent", formulaParams: dataParams };
-        lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: dataParams };
-        uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: dataParams };
-        moderatorParam = params[4];
-        break;
-      }
-    }
-
-    if (i === currentMetaanalysis.aggregates.length) {
-      // we don't have any parameters for the grapeChart
-      return;
-    }
-
     var plotsContainer = _.findEl('#metaanalysis > .plots');
-    plotsContainer.innerHTML = '';
 
-    var plotEl = _.cloneTemplate('grape-chart-template').children[0];
-    plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
+    for (var k=0; k<currentMetaanalysis.graphs.length; k++) {
+      var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params, dataParams;
 
-    // get the data
-    orFunc.formula = lima.createFormulaString(orFunc);
-    wtFunc.formula = lima.createFormulaString(wtFunc);
-    lclFunc.formula = lima.createFormulaString(lclFunc);
-    uclFunc.formula = lima.createFormulaString(uclFunc);
-
-    var data = [];
-    var groups = [];
-
-    for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
-      for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
-        if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
-        var line = {};
-        line.paper = currentMetaanalysis.papers[i].title || 'new paper';
-        line.exp = currentMetaanalysis.papers[i].experiments[j].title || 'new experiment';
-        if (line.exp.match(/^\d+$/)) line.exp = 'Exp. ' + line.exp;
-        line.or = getDatumValue(orFunc, j, i);
-        line.wt = getDatumValue(wtFunc, j, i);
-        line.lcl = getDatumValue(lclFunc, j, i);
-        line.ucl = getDatumValue(uclFunc, j, i);
-        line.group = getDatumValue(moderatorParam, j, i);
-
-        if (line.group != null && line.group != '' && groups.indexOf(line.group) === -1) groups.push(line.group);
-
-        // if any of the values is NaN or ±Infinity, disregard this experiment
-        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
-            line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
-          delete line.or;
-          delete line.lcl;
-          delete line.ucl;
-          delete line.wt;
-        }
-        data.push(line);
-      }
-    }
-
-    // add indication to the graph when there is no data
-    if (data.length == 0) {
-      var noDataLine = {
-        paper: "No paper",
-        exp: "No experiment",
-        group: "No data"
-      };
-      groups.push(noDataLine.group);
-      data.push(noDataLine);
-    }
-
-    plotsContainer.appendChild(plotEl);
-
-    groups.sort(); // alphabetically
-
-    var dataGroups =
-      groups.map(function (group) {
-        return data.filter(function (exp) { return exp.group == group; });
-      });
-
-
-    // todo use per-group aggregates here
-    var perGroup = {};
-    dataGroups.forEach(function (dataGroup) {
-      perGroup[dataGroup[0].group] = {};
-      perGroup[dataGroup[0].group].wt = dataGroup.reduce(function sum(acc, line) {return line.wt != null ? acc+line.wt : acc;}, 0);
-      if (perGroup[dataGroup[0].group].wt == 0) perGroup[dataGroup[0].group].wt = 1;
-      perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return line.wt != null ? acc+line.or*line.wt : acc;}, 0) / perGroup[dataGroup[0].group].wt;
-    });
-
-    // todo highlight the current experiment in forest plot and in grape chart
-
-    // set chart width based on number of groups
-    plotEl.setAttribute('width', parseInt(plotEl.dataset.zeroGroupsWidth) + groups.length * parseInt(plotEl.dataset.groupSpacing));
-    plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
-
-    var minWt = Infinity;
-    var maxWt = -Infinity;
-    var minOr = Infinity;
-    var maxOr = -Infinity;
-
-    data.forEach(function (exp) {
-      if (exp.or == null) return;
-      if (exp.wt < minWt) minWt = exp.wt;
-      if (exp.wt > maxWt) maxWt = exp.wt;
-      if (exp.or < minOr) minOr = exp.or;
-      if (exp.or > maxOr) maxOr = exp.or;
-    });
-
-    if (minOr < -10) minOr = -10;
-    if (maxOr > 10) maxOr = 10;
-
-    if (minOr == Infinity) minOr = maxOr = 0;
-    if (minWt == Infinity) minWt = maxWt = 1;
-
-    var TICK_SPACING;
-
-    // select tick spacing based on a rough estimate of how many ticks we'll need anyway
-    var clSpread = (maxOr - minOr) / Math.LN10; // how many orders of magnitude we cover
-    if (clSpread > 5) TICK_SPACING = [100];
-    else if (clSpread > 2) TICK_SPACING = [10];
-    else TICK_SPACING = [ 2, 2.5, 2 ]; // ticks at 1, 2, 5, 10, 20, 50, 100...
-
-    // adjust minimum and maximum around decimal non-logarithmic values
-    var newBound = 1;
-    var tickNo = 0;
-    while (Math.log(newBound) > minOr) {
-      tickNo -= 1;
-      newBound /= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)]; // JS % can be negative
-    }
-    minOr = Math.log(newBound) - .1;
-
-    var startingTickVal = newBound;
-    var startingTick = tickNo;
-
-    newBound = 1;
-    tickNo = 0;
-    while (Math.log(newBound) < maxOr) {
-      newBound *= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)];
-      tickNo += 1;
-    }
-    maxOr = Math.log(newBound) + .1;
-
-    var midOr = (minOr + maxOr) / 2;
-
-    var yRatio = 1/(maxOr-minOr)*parseInt(plotEl.dataset.graphHeight);
-    function getY(logVal) {
-      if (logVal == null) return 0;
-      return -(logVal-minOr)*yRatio;
-    }
-
-    function isTopHalf(logVal) {
-      return logVal > midOr;
-    }
-
-
-    var MIN_WT_SPREAD=2.5;
-    if (maxWt/minWt < MIN_WT_SPREAD) {
-      minWt = (maxWt + minWt) / 2 / Math.sqrt(MIN_WT_SPREAD);
-      maxWt = minWt * MIN_WT_SPREAD;
-    }
-
-    // minWt = 0; // todo we can uncomment this to make all weights relative to only the maximum weight
-    var minGrapeSize = parseInt(plotEl.dataset.minGrapeSize);
-    // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
-    maxWt = Math.sqrt(maxWt);
-    minWt = Math.sqrt(minWt);
-    var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxGrapeSize)-minGrapeSize);
-
-    // return the grape radius for a given weight
-    function getGrapeRadius(wt) {
-      if (wt == null) return minGrapeSize;
-      return (Math.sqrt(wt)-minWt)*wtRatio + minGrapeSize;
-    }
-
-    var groupT = _.findEl(plotEl, 'template.group-grapes');
-    var groupTooltipsT= _.findEl(plotEl, 'template.group-tooltips');
-    groups.forEach(function (group, index) {
-      var groupData = dataGroups[index];
-
-      var groupEl = _.cloneTemplate(groupT);
-      var groupTooltipsEl = _.cloneTemplate(groupTooltipsT);
-      groupT.parentElement.insertBefore(groupEl, groupT);
-      groupTooltipsT.parentElement.insertBefore(groupTooltipsEl,groupTooltipsT);
-
-      groupEl.setAttribute('transform', 'translate(' + (+plotEl.dataset.firstGroup + plotEl.dataset.groupSpacing*index) + ',0)');
-      groupTooltipsEl.setAttribute('transform', 'translate(' + (+plotEl.dataset.firstGroup + plotEl.dataset.groupSpacing*index) + ',0)');
-
-      _.fillEls(groupEl, 'text.label', group);
-      _.setAttrs(groupEl, 'g.guideline', 'transform', 'translate(0,' + getY(perGroup[group].or) + ')');
-
-      if (index === 0) groupEl.classList.add('with-legend');
-      if (index === groups.length - 1) {
-        groupEl.classList.add('with-pos-button');
-        _.addEventListener(groupEl, '.positioningbutton', 'click', function (e) {
-          plotEl.classList.toggle('maximized');
-          localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
-          e.stopPropagation();
-        })
+      if (currentMetaanalysis.graphs[k].formulaName && currentMetaanalysis.graphs[k].formulaName.indexOf('forestPlot') != -1) {
+        continue;
       }
 
-      var grapeT = _.findEl(groupEl, 'template.group-grapes-grape');
-      var tooltipT = _.findEl(groupTooltipsEl, 'template.group-tooltips-grape');
-
-      resetPositioning();
-      groupData.forEach(function (exp, index) {
-        precomputePosition(index, getY(exp.or), getGrapeRadius(exp.wt) + +plotEl.dataset.grapeSpacing); // distance the bubbles a bit
-      });
-      finalizePositioning();
-
-      groupData.forEach(function (exp, index) {
-        // grape
-        var grapeEl = _.cloneTemplate(grapeT);
-        var tooltipEl = _.cloneTemplate(tooltipT);
-        grapeT.parentElement.insertBefore(grapeEl, grapeT);
-        tooltipT.parentElement.insertBefore(tooltipEl, tooltipT);
-
-        grapeEl.setAttribute('r', getGrapeRadius(exp.wt));
-        _.setAttrs(tooltipEl, '.grape', 'r', getGrapeRadius(exp.wt));
-
-        // x-position so grapes don't overlap
-        var grapeX = getPosition(index);
-        grapeEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')')
-        tooltipEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')')
-
-        _.fillEls(tooltipEl, 'text.paper', exp.paper);
-        _.fillEls(tooltipEl, 'text.exp', exp.exp);
-        if (exp.or != null) {
-          _.fillEls(tooltipEl, 'text.or', Math.exp(exp.or).toPrecision(3));
-          _.fillEls(tooltipEl, 'text.wt', '' + (exp.wt*100/perGroup[group].wt).toPrecision(3) + '%');
-          _.fillEls(tooltipEl, 'text.ci', "" + exp.lcl.toPrecision(3) + ", " + exp.ucl.toPrecision(3));
-        } else {
-          grapeEl.classList.add('invalid');
-          tooltipEl.classList.add('invalid');
+      for (var i=k; i<currentMetaanalysis.graphs.length; i++) {
+        if (currentMetaanalysis.graphs[i].formulaName === 'grapeChartNumberGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
+          params = currentMetaanalysis.graphs[i].formulaParams;
+          dataParams = params.slice(0, 4); // the first param is for grouping
+          orFunc = { formulaName: "logOddsRatioNumber", formulaParams: dataParams };
+          wtFunc = { formulaName: "weightNumber", formulaParams: dataParams };
+          lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: dataParams };
+          uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: dataParams };
+          moderatorParam = params[4];
+          break;
+        }
+        if (currentMetaanalysis.graphs[i].formulaName === 'grapeChartPercentGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
+          params = currentMetaanalysis.graphs[i].formulaParams;
+          dataParams = params.slice(0, 4); // the first param is for grouping
+          orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [dataParams[0], dataParams[2]] };
+          wtFunc = { formulaName: "weightPercent", formulaParams: dataParams };
+          lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: dataParams };
+          uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: dataParams };
+          moderatorParam = params[4];
+          break;
         }
 
-        if (isTopHalf(exp.or)) {
-          _.addClass(tooltipEl, '.tooltip', 'tophalf');
-        }
+      }
 
-        var boxWidth = +plotEl.dataset.tooltipMinWidth;
-        _.findEls(tooltipEl, '.tooltip text').forEach(function (text) {
-          try {
-            var w = text.getBBox().width;
-            boxWidth = Math.max(boxWidth, w);
-          } catch (e) {
-            // firefox doesn't handle getBBox well, see https://bugzilla.mozilla.org/show_bug.cgi?id=612118
-            // ignore the error, use default width
+      if (i === currentMetaanalysis.graphs.length) {
+        // we don't have any parameters for the grapeChart
+        return;
+      }
+
+      // get the data
+      orFunc.formula = lima.createFormulaString(orFunc);
+      wtFunc.formula = lima.createFormulaString(wtFunc);
+      lclFunc.formula = lima.createFormulaString(lclFunc);
+      uclFunc.formula = lima.createFormulaString(uclFunc);
+
+      var data = [];
+      var groups = [];
+
+      for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
+        for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
+          if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
+          var line = {};
+          line.paper = currentMetaanalysis.papers[i].title || 'new paper';
+          line.exp = currentMetaanalysis.papers[i].experiments[j].title || 'new experiment';
+          if (line.exp.match(/^\d+$/)) line.exp = 'Exp. ' + line.exp;
+          line.or = getDatumValue(orFunc, j, i);
+          line.wt = getDatumValue(wtFunc, j, i);
+          line.lcl = getDatumValue(lclFunc, j, i);
+          line.ucl = getDatumValue(uclFunc, j, i);
+          line.group = getDatumValue(moderatorParam, j, i);
+
+          if (line.group != null && line.group != '' && groups.indexOf(line.group) === -1) groups.push(line.group);
+
+          // if any of the values is NaN or ±Infinity, disregard this experiment
+          if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
+              line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
+            delete line.or;
+            delete line.lcl;
+            delete line.ucl;
+            delete line.wt;
           }
+          data.push(line);
+        }
+      }
+
+      // add indication to the graph when there is no data
+      if (data.length == 0) {
+        var noDataLine = {
+          paper: "No paper",
+          exp: "No experiment",
+          group: "No data"
+        };
+        groups.push(noDataLine.group);
+        data.push(noDataLine);
+      }
+
+      var plotEl = _.cloneTemplate('grape-chart-template').children[0];
+      var grapeChartId = 'grape-chart-' + k;
+
+      plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
+      plotsContainer.appendChild(plotEl);
+
+      groups.sort(); // alphabetically
+
+      var dataGroups =
+        groups.map(function (group) {
+          return data.filter(function (exp) { return exp.group == group; });
         });
 
-        _.setAttrs(tooltipEl, '.tooltip rect', 'width', boxWidth + (+plotEl.dataset.tooltipPadding));
+      // todo use per-group aggregates here
+      var perGroup = {};
+      dataGroups.forEach(function (dataGroup) {
+        perGroup[dataGroup[0].group] = {};
+        perGroup[dataGroup[0].group].wt = dataGroup.reduce(function sum(acc, line) {return line.wt != null ? acc+line.wt : acc;}, 0);
+        if (perGroup[dataGroup[0].group].wt == 0) perGroup[dataGroup[0].group].wt = 1;
+        perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return line.wt != null ? acc+line.or*line.wt : acc;}, 0) / perGroup[dataGroup[0].group].wt;
       });
-    });
+
+      // todo highlight the current experiment in forest plot and in grape chart
+
+      // add an id to the current graph
+      plotEl.setAttribute('data-graph-id', grapeChartId);
+
+      // set chart width based on number of groups
+      plotEl.setAttribute('width', parseInt(plotEl.dataset.zeroGroupsWidth) + groups.length * parseInt(plotEl.dataset.groupSpacing));
+      plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
+
+      var minWt = Infinity;
+      var maxWt = -Infinity;
+      var minOr = Infinity;
+      var maxOr = -Infinity;
+
+      data.forEach(function (exp) {
+        if (exp.or == null) return;
+        if (exp.wt < minWt) minWt = exp.wt;
+        if (exp.wt > maxWt) maxWt = exp.wt;
+        if (exp.or < minOr) minOr = exp.or;
+        if (exp.or > maxOr) maxOr = exp.or;
+      });
+
+      if (minOr < -10) minOr = -10;
+      if (maxOr > 10) maxOr = 10;
+
+      if (minOr == Infinity) minOr = maxOr = 0;
+      if (minWt == Infinity) minWt = maxWt = 1;
+
+      var TICK_SPACING;
+
+      // select tick spacing based on a rough estimate of how many ticks we'll need anyway
+      var clSpread = (maxOr - minOr) / Math.LN10; // how many orders of magnitude we cover
+      if (clSpread > 5) TICK_SPACING = [100];
+      else if (clSpread > 2) TICK_SPACING = [10];
+      else TICK_SPACING = [ 2, 2.5, 2 ]; // ticks at 1, 2, 5, 10, 20, 50, 100...
+
+      // adjust minimum and maximum around decimal non-logarithmic values
+      var newBound = 1;
+      var tickNo = 0;
+      while (Math.log(newBound) > minOr) {
+        tickNo -= 1;
+        newBound /= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)]; // JS % can be negative
+      }
+      minOr = Math.log(newBound) - .1;
+
+      var startingTickVal = newBound;
+      var startingTick = tickNo;
+
+      newBound = 1;
+      tickNo = 0;
+      while (Math.log(newBound) < maxOr) {
+        newBound *= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)];
+        tickNo += 1;
+      }
+      maxOr = Math.log(newBound) + .1;
+
+      var midOr = (minOr + maxOr) / 2;
+
+      var yRatio = 1/(maxOr-minOr)*parseInt(plotEl.dataset.graphHeight);
+      function getY(logVal) {
+        if (logVal == null) return 0;
+        return -(logVal-minOr)*yRatio;
+      }
+
+      function isTopHalf(logVal) {
+        return logVal > midOr;
+      }
 
 
-    // put ticks onto the Y axis
-    var tickT = _.findEl(plotEl, 'template.tick');
-    var tickVal;
-    while ((tickVal = Math.log(startingTickVal)) < maxOr) {
-      var tickEl = _.cloneTemplate(tickT);
-      tickEl.setAttribute('transform', 'translate(0,' + getY(tickVal) + ')');
-      _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
-      tickT.parentElement.insertBefore(tickEl, tickT);
-      startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
-      startingTick += 1;
+      var MIN_WT_SPREAD=2.5;
+      if (maxWt/minWt < MIN_WT_SPREAD) {
+        minWt = (maxWt + minWt) / 2 / Math.sqrt(MIN_WT_SPREAD);
+        maxWt = minWt * MIN_WT_SPREAD;
+      }
+
+      // minWt = 0; // todo we can uncomment this to make all weights relative to only the maximum weight
+      var minGrapeSize = parseInt(plotEl.dataset.minGrapeSize);
+      // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
+      maxWt = Math.sqrt(maxWt);
+      minWt = Math.sqrt(minWt);
+      var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxGrapeSize)-minGrapeSize);
+
+      // return the grape radius for a given weight
+      function getGrapeRadius(wt) {
+        if (wt == null) return minGrapeSize;
+        return (Math.sqrt(wt)-minWt)*wtRatio + minGrapeSize;
+      }
+
+      var groupT = _.findEl(plotEl, 'template.group-grapes');
+      var groupTooltipsT= _.findEl(plotEl, 'template.group-tooltips');
+      groups.forEach(function (group, index) {
+        var groupData = dataGroups[index];
+
+        var groupEl = _.cloneTemplate(groupT);
+        var groupTooltipsEl = _.cloneTemplate(groupTooltipsT);
+        groupT.parentElement.insertBefore(groupEl, groupT);
+        groupTooltipsT.parentElement.insertBefore(groupTooltipsEl,groupTooltipsT);
+
+        groupEl.setAttribute('transform', 'translate(' + (+plotEl.dataset.firstGroup + plotEl.dataset.groupSpacing*index) + ',0)');
+        groupTooltipsEl.setAttribute('transform', 'translate(' + (+plotEl.dataset.firstGroup + plotEl.dataset.groupSpacing*index) + ',0)');
+
+        _.fillEls(groupEl, 'text.label', group);
+        _.setAttrs(groupEl, 'g.guideline', 'transform', 'translate(0,' + getY(perGroup[group].or) + ')');
+
+        if (index === 0) groupEl.classList.add('with-legend');
+        if (index === groups.length - 1) {
+          groupEl.classList.add('with-pos-button');
+          _.addEventListener(groupEl, '.positioningbutton', 'click', function (e) {
+            plotEl.classList.toggle('maximized');
+            localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
+            e.stopPropagation();
+          })
+        }
+
+        var grapeT = _.findEl(groupEl, 'template.group-grapes-grape');
+        var tooltipT = _.findEl(groupTooltipsEl, 'template.group-tooltips-grape');
+
+        resetPositioning();
+        groupData.forEach(function (exp, index) {
+          precomputePosition(index, getY(exp.or), getGrapeRadius(exp.wt) + +plotEl.dataset.grapeSpacing); // distance the bubbles a bit
+        });
+        finalizePositioning();
+
+        groupData.forEach(function (exp, index) {
+          // grape
+          var grapeEl = _.cloneTemplate(grapeT);
+          var tooltipEl = _.cloneTemplate(tooltipT);
+          grapeT.parentElement.insertBefore(grapeEl, grapeT);
+          tooltipT.parentElement.insertBefore(tooltipEl, tooltipT);
+
+          grapeEl.setAttribute('r', getGrapeRadius(exp.wt));
+          _.setAttrs(tooltipEl, '.grape', 'r', getGrapeRadius(exp.wt));
+
+          // x-position so grapes don't overlap
+          var grapeX = getPosition(index);
+          grapeEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')')
+          tooltipEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')')
+
+          _.fillEls(tooltipEl, 'text.paper', exp.paper);
+          _.fillEls(tooltipEl, 'text.exp', exp.exp);
+          if (exp.or != null) {
+            _.fillEls(tooltipEl, 'text.or', Math.exp(exp.or).toPrecision(3));
+            _.fillEls(tooltipEl, 'text.wt', '' + (exp.wt*100/perGroup[group].wt).toPrecision(3) + '%');
+            _.fillEls(tooltipEl, 'text.ci', "" + exp.lcl.toPrecision(3) + ", " + exp.ucl.toPrecision(3));
+          } else {
+            grapeEl.classList.add('invalid');
+            tooltipEl.classList.add('invalid');
+          }
+
+          if (isTopHalf(exp.or)) {
+            _.addClass(tooltipEl, '.tooltip', 'tophalf');
+          }
+
+          var boxWidth = +plotEl.dataset.tooltipMinWidth;
+          _.findEls(tooltipEl, '.tooltip text').forEach(function (text) {
+            try {
+              var w = text.getBBox().width;
+              boxWidth = Math.max(boxWidth, w);
+            } catch (e) {
+              // firefox doesn't handle getBBox well, see https://bugzilla.mozilla.org/show_bug.cgi?id=612118
+              // ignore the error, use default width
+            }
+          });
+
+          _.setAttrs(tooltipEl, '.tooltip rect', 'width', boxWidth + (+plotEl.dataset.tooltipPadding));
+        });
+      });
+
+
+      // put ticks onto the Y axis
+      var tickT = _.findEl(plotEl, 'template.tick');
+      var tickVal;
+      while ((tickVal = Math.log(startingTickVal)) < maxOr) {
+        var tickEl = _.cloneTemplate(tickT);
+        tickEl.setAttribute('transform', 'translate(0,' + getY(tickVal) + ')');
+        _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
+        tickT.parentElement.insertBefore(tickEl, tickT);
+        startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
+        startingTick += 1;
+      }
     }
   }
 
@@ -2112,7 +2145,7 @@
 
     var retval = '';
     if (level != Infinity && col.number !== undefined) retval += '<span>' + col.number + '. </span>';
-    retval += '<span>' + lima.getFormulaOrAggregateLabelById(col.formulaName) + '</span> (';
+    retval += '<span>' + lima.getRichLabelById(col.formulaName) + '</span> (';
 
     if (level == 0) {
       retval += '…';
@@ -2130,7 +2163,7 @@
     if (typeof col === 'string') {
       return col;
     } else if (typeof col === 'object') {
-      if (!col.formula) throw new Error('every computed column / aggregate should always have formula');
+      if (!col.formula) throw new Error('every computed column/aggregate/graph should always have formula');
       return col.formula;
     } else {
       return null;
@@ -2169,6 +2202,9 @@
   }
 
   function recalculateComputedData() {
+    // we need to empty the content to avoid graphs duplicates and drawing errors
+    var plotsContainer = _.findEl('.plots');
+    plotsContainer.innerHTML = '';
     // clear computation cache
     dataCache = {};
     // call all the calculation functions
@@ -2286,7 +2322,8 @@
     if (typeof col === 'string') return col in lima.columns;
 
     if (!lima.getFormulaById(col.formulaName) &&
-        !lima.getAggregateFormulaById(col.formulaName)) return false;
+        !lima.getAggregateFormulaById(col.formulaName) &&
+        !lima.getGraphFormulaById(col.formulaName)) return false;
 
     for (var i=0; i<col.formulaParams.length; i++) {
       if (!isColCompletelyDefined(col.formulaParams[i])) {
@@ -2761,6 +2798,162 @@
     setTimeout(focusFirstValidationError, 0);
   }
 
+
+/* BANNER HERE FOR 'graphs'
+
+*/
+
+// TODO: Revisit, trim unnecessary bits
+function fillGraphTable(metaanalysis) {
+  var table = _.cloneTemplate('graphs-table-template');
+  var addGraphNode = _.findEl(table, 'tr.add');
+
+  metaanalysis.graphs.forEach(function (graph, graphIndex) {
+    var graphEl = _.cloneTemplate('graph-row-template').children[0];
+    addGraphNode.parentElement.insertBefore(graphEl, addGraphNode);
+
+    var graphValTd = _.findEl(graphEl, 'td');
+    // Editing Options
+    // Add an option for every graph formula we know
+    var graphFormulas = lima.listGraphFormulas();
+    var graphFormulasDropdown = _.findEl(graphEl, 'select.graphformulas')
+    for (var i = 0; i < graphFormulas.length; i++){
+      var el = document.createElement("option");
+      el.textContent = graphFormulas[i].label;
+      el.value = graphFormulas[i].id;
+      if (graph.formulaName === el.value) {
+        el.selected = true;
+        graphFormulasDropdown.classList.remove('validationerror');
+      }
+      graphFormulasDropdown.appendChild(el);
+    }
+
+    graphFormulasDropdown.onchange = function(e) {
+      graph.formulaName = e.target.value;
+      graph.formula = lima.createFormulaString(graph);
+
+      var formula = lima.getGraphFormulaById(graph.formulaName);
+      if (formula) {
+        graphFormulasDropdown.classList.remove('validationerror');
+      } else {
+        graphFormulasDropdown.classList.add('validationerror');
+      }
+      // we'll call setValidationErrorClass() in fillGraphColumnsSelection
+
+      // make sure formula columns array matches the number of expected parameters
+      graph.formulaParams.length = formula ? formula.parameters.length : 0;
+
+      // fill in the current formula
+      _.fillEls(graphEl, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
+
+      // fill the columns selection
+      fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula);
+
+      _.scheduleSave(metaanalysis);
+      recalculateComputedData();
+    };
+
+    var graphFormula = lima.getGraphFormulaById(graph.formulaName);
+    fillGraphColumnsSelection(metaanalysis, graph, graphEl, graphFormula);
+
+    setupPopupBoxPinning(graphEl, '.datum.popupbox', graph.formula);
+    _.setDataProps(graphEl, '.datum.popupbox', 'index', graphIndex);
+
+    _.addEventListener(graphEl, 'button.move', 'click', moveGraph);
+    _.addEventListener(graphEl, 'button.delete', 'click', deleteGraph);
+
+    fillGraphInformation(graphEl, graph);
+    fillComments('comment-template', graphValTd, '.commentcount', '.datum.popupbox main', metaanalysis, ['graphs', graphIndex, 'comments']);
+  });
+
+  // Event handlers
+  _.addEventListener(table, 'tr.add button.add', 'click', addNewGraphToMetaanalysis);
+
+  var graphsContainer = _.findEl('#metaanalysis .graphs');
+  graphsContainer.appendChild(table);
+}
+
+function fillGraphInformation(graphEl, graph) {
+  _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
+  _.setProps(graphEl, '.fullgraphlabel', 'innerHTML', getColTitle(graph, Infinity));
+  // todo something for the non-editing case
+}
+
+function fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula) {
+  // editing drop-down boxes for parameter columns
+  var graphColumnsSelectionEl = _.findEl(graphEl, '.graphcolumnsselection');
+  // clear out old children.
+  graphColumnsSelectionEl.innerHTML = '';
+
+  if (!formula) return;
+
+  var noOfParams = formula.parameters.length;
+
+  for (var i = 0; i < noOfParams; i++){
+    // Make a select dropdown
+    var label = document.createElement('label');
+    label.textContent = formula.parameters[i] + ': ';
+    graphColumnsSelectionEl.appendChild(label);
+
+    var select = document.createElement("select");
+    label.appendChild(select);
+
+    // the first option is an instruction
+    var op = document.createElement("option");
+    op.textContent = 'Select a column';
+    op.value = '';
+    select.appendChild(op);
+    select.classList.add('validationerror');
+
+    var foundCurrentValue = false;
+
+    // Now make an option for each column in metaanalysis
+    // account for computed columns in metaanalysis.columns
+    for (var j = 0; j < metaanalysis.columns.length; j++){
+      var colId = metaanalysis.columns[j];
+      var found = makeOption(colId, graph, graph.formulaParams[i], select);
+      foundCurrentValue = foundCurrentValue || found;
+    }
+
+    // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
+    if (!foundCurrentValue) {
+      colId = graph.formulaParams[i];
+      makeOption(colId, graph, colId, select);
+    }
+
+    setValidationErrorClass();
+
+    // listen to changes of the dropdown box
+    // preserve the value of i inside this code
+    (function(i, select){
+      select.onchange = function(e) {
+        graph.formulaParams[i] = lima.parseFormulaString(e.target.value);
+        graph.formula = lima.createFormulaString(graph);
+        if (e.target.value) {
+          select.classList.remove('validationerror');
+        } else {
+          select.classList.add('validationerror');
+        }
+        setValidationErrorClass();
+        _.scheduleSave(metaanalysis);
+        fillGraphInformation(graphEl, graph);
+        recalculateComputedData();
+      };
+    })(i, select);
+
+  }
+
+  fillGraphInformation(graphEl, graph);
+}
+
+function addNewGraphToMetaanalysis() {
+  var graph = {formulaName: null, formulaParams: []};
+  graph.formula = lima.createFormulaString(graph);
+  currentMetaanalysis.graphs.push(graph);
+  updateMetaanalysisView();
+  _.scheduleSave(currentMetaanalysis);
+  setTimeout(focusFirstValidationError, 0);
+}
 
 
   /* comments
@@ -3480,6 +3673,62 @@
 
     if (!currentMetaanalysis.aggregates[aggregateIndex]) return console.error('aggregate[' + aggregateIndex + '] not found in aggregates!');
     currentMetaanalysis.aggregates.splice(aggregateIndex, 1);
+    unpinPopupBox();
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+  }
+
+/* BANNER FOR 'changing graphs' HERE
+*/
+
+// TODO: Revisit this to make sure it makes sense still
+
+  function moveGraph() {
+    // a click will pin the box,
+    // this timeout makes sure the click gets processed first and then we do the moving
+    setTimeout(doMoveGraph, 0, this);
+  }
+
+  function doMoveGraph(el) {
+    var up = el.classList.contains('up');
+    var most = el.classList.contains('most');
+    var graphIndex = parseInt(_.findPrecedingEl(el, 'div.popupbox').dataset.index);
+    if (isNaN(graphIndex)) return; // we don't know what to move
+
+    if (!currentMetaanalysis.graphs[graphIndex]) return console.error('graph[' + graphIndex + '] not found in graphs!');
+    var newPosition = findNextGraph(graphIndex, up, most);
+    _.moveArrayElement(currentMetaanalysis.graphs, graphIndex, newPosition);
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+  }
+
+  /*
+   * find where to move an graph from its current index;
+   * `up` indicates direction (up meaning left in array order); if `most`, move to the beginning (top) or end (bottom) of the graph list.
+   */
+  function findNextGraph(currentIndex, up, most) {
+    if (up) {
+      if (most || currentIndex <= 0) return 0;
+      currentIndex -= 1;
+    } else {
+      if (most) return currentMetaanalysis.graphs.length - 1;
+      currentIndex += 1;
+    }
+    return currentIndex;
+  }
+
+  function deleteGraph() {
+    // a click will pin the box,
+    // this timeout makes sure the click gets processed first and then we do the moving
+    setTimeout(doDeleteGraph, 0, this);
+  }
+
+  function doDeleteGraph(el) {
+    var graphIndex = parseInt(_.findPrecedingEl(el, 'div.popupbox').dataset.index);
+    if (isNaN(graphIndex)) return; // we don't know what to move
+
+    if (!currentMetaanalysis.graphs[graphIndex]) return console.error('graph[' + graphIndex + '] not found in graphs!');
+    currentMetaanalysis.graphs.splice(graphIndex, 1);
     unpinPopupBox();
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);

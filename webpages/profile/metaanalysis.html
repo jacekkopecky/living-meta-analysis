@@ -96,6 +96,7 @@
     <!-- todo comments -->
     <div class="experiments"></div>
     <div class="plots"></div>
+    <div class="graphs"></div>
     <div class="aggregates"></div>
     <p class='no-table'>No data has been entered for this meta-analysis yet.
       <span class="only-if-page-about-you">Turn editing on to add data.</span><!-- todo instruction to clone the paper? --></p>
@@ -463,6 +464,73 @@
     </td>
   </tr>
 </template>
+<template id="graphs-table-template">
+  <table class="graphs">
+    <tbody>
+      <tr>
+        <th colspan=2>
+          Graphs:
+        </th>
+      </tr>
+      <tr class="add">
+        <th colspan=2>
+          <button class="add notunpin not-unsaved">add a graph</button>
+          <button class="when-unsaved" disabled title="can't add a graph when some changes are unsaved">add an aggregate</button></th>
+      </tr>
+    </tbody>
+  </table>
+</template>
+<template id="graph-row-template">
+  <tr class="popupboxtrigger">
+    <th class="popupboxhighlight">
+      <span class="richgraphlabel">error</span>:
+      <!-- todo click on any of the above should focus the value for editing and pin its popup box -->
+    </th>
+    <td class="datum popupboxhighlight">
+      <div class="datum popupbox" data-boxtype='graphpopupbox'>
+        <div class="pin"></div>
+        <button class="not-unsaved move up most editing" title="move graph up"><span>|«</span></button>
+        <button class="not-unsaved move up editing" title="move graph up"><span>«</span></button>
+        <button class="not-unsaved delete editing">delete</button>
+        <button class="not-unsaved move down editing" title="move graph down"><span>»</span></button>
+        <button class="not-unsaved move down most editing" title="move graph down"><span>»|</span></button>
+        <button class="when-unsaved up    " disabled title="can't move graph when some changes are unsaved"><span>|«</span></button>
+        <button class="when-unsaved up    " disabled title="can't move graph when some changes are unsaved"><span>«</span></button>
+        <button class="when-unsaved delete" disabled title="can't delete graph when some changes are unsaved">delete</button>
+        <button class="when-unsaved down  " disabled title="can't move graph when some changes are unsaved"><span>»</span></button>
+        <button class="when-unsaved down  " disabled title="can't move graph when some changes are unsaved"><span>»|</span></button>
+        <header>
+          <div class="graphed">
+            <p>
+              <span class="fullgraphlabel">error</span>
+            </p>
+            <select class="graphformulas editing validationerror">
+              <option value=''>Select formula</option>
+              <!-- gets populated in the code, in which case the option above goes away -->
+            </select>
+            <div class="graphcolumnsselection editing">
+              <!-- gets populated in the code -->
+            </div>
+          </div>
+          <p><span class="commentcount"></span> comment(s):</p>
+        </header>
+        <main><!-- this is where the comments will come --></main>
+        <div class="comment new when-signed-on">
+          <header>
+            new comment:
+          </header>
+          <p>
+            <span class="text" contenteditable placeholder="enter a new comment"></span>
+            <span class="buttons">
+              <button class="cancel">cancel</button>
+              <button class="add confirm" disabled>add comment</button>
+            </span>
+          </p>
+        </div>
+      </div>
+    </td>
+  </tr>
+</template>
 <template id="comment-template">
   <div class="comment">
     <header>
@@ -489,6 +557,8 @@
     data-max-wt-size="14"
     data-extra-line-len="-10"
     data-min-diamond-width="14"
+    data-graph-type="forest-plot"
+    data-graph-id="forest-plot-0"
     >
     <style>
       svg {
@@ -583,34 +653,34 @@
         stroke-linecap: butt;
       }
 
-      .axes > g {
+      [data-graph-type="forest-plot"] .axes > g {
         transform: translate(280px,32.5px);
       }
 
-      .axes .tick text {
+      [data-graph-type="forest-plot"] .axes .tick text {
         font-size: 11px;
         transform: translate(0, 19px);
       }
 
       .axes .yaxis {
-        transform: translate(0px, 5px) scale(1, -1);
+        transform: translate(0px, 1px) scale(1, -1);
       }
 
-      .positioningbutton {
+      [data-graph-type="forest-plot"] .positioningbutton {
         transform: translate(495px, 17px);
         opacity: .2;
       }
 
-      .positioningbutton:not(:hover) line {
+      [data-graph-type="forest-plot"] .positioningbutton:not(:hover) line {
         display: none;
       }
 
-      .positioningbutton:hover {
+      [data-graph-type="forest-plot"] .positioningbutton:hover {
         opacity: 1;
         cursor: pointer;
       }
 
-      .positioningbutton line {
+      [data-graph-type="forest-plot"] .positioningbutton line {
         stroke-width: 1.5px;
       }
     </style>
@@ -932,6 +1002,8 @@
     data-grape-spacing="1.5"
     data-tooltip-padding="20"
     data-tooltip-min-width="150"
+    data-graph-type="grape-chart"
+    data-graph-id="grape-chart-0"
     >
     <style>
       svg {
@@ -956,12 +1028,12 @@
         stroke-linecap: butt;
       }
 
-      .axes .tick line {
+      [data-type="grape-chart"] .axes .tick line {
         font-size: 12px;
         transform: translate(-5px, 0);
       }
 
-      .axes .tick text {
+      [data-type="grape-chart"] .axes .tick text {
         font-size: 12px;
         transform: translate(-10px, 4px);
         text-anchor: end;
@@ -1091,12 +1163,12 @@
         display: none;
       }
 
-      .positioningbutton:hover {
+      [data-type="grape-chart"] .positioningbutton:hover {
         opacity: 1;
         cursor: pointer;
       }
 
-      .positioningbutton line {
+      [data-type="grape-chart"] .positioningbutton line {
         stroke-width: 1.5px;
       }
     </style>
@@ -1188,6 +1260,7 @@
 <script src="/js/userprofile.js"></script>
 <script src="/js/columns.js"></script>
 <script src="/js/formulas.js"></script>
+<script src="/js/graphs.js"></script>
 <script src="/js/papers.js"></script>
 <script src="/js/metaanalyses.js"></script>
 <script src="/js/version.js"></script>
