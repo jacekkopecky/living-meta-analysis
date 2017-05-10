@@ -741,316 +741,371 @@
     //     lcl
     //     ucl
 
-    var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params;
+    var plotsContainer = _.findEl('#metaanalysis > .plots');
 
-    // todo the plot should be associated with its parameters differently, not through an aggregate
-    // todo there should be the possibility to have more forest plots
-    for (var i=0; i<currentMetaanalysis.aggregates.length; i++) {
-      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotGroupNumberAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
-        params = currentMetaanalysis.aggregates[i].formulaParams;
+    currentMetaanalysis.graphs.forEach(function (graph, graphIndex) {
+      var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params;
+
+      if (graph.formulaName === 'forestPlotGroupNumberGraph' && isColCompletelyDefined(graph)) {
+        params = graph.formulaParams;
         orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
         wtFunc = { formulaName: "weightNumber", formulaParams: params };
         lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
         uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: params };
         moderatorParam = params[4];
-        break;
-      }
-      if (currentMetaanalysis.aggregates[i].formulaName === 'forestPlotGroupPercentAggr' && isColCompletelyDefined(currentMetaanalysis.aggregates[i])) {
-        params = currentMetaanalysis.aggregates[i].formulaParams;
+      } else
+      if (graph.formulaName === 'forestPlotGroupPercentGraph' && isColCompletelyDefined(graph)) {
+        params = graph.formulaParams;
         orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [params[0], params[2]] };
         wtFunc = { formulaName: "weightPercent", formulaParams: params };
         lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: params };
         uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: params };
         moderatorParam = params[4];
-        break;
+      } else {
+        // this function does not handle this type of graph or the graph is not completely defined
+        return;
       }
-    }
 
-    if (i === currentMetaanalysis.aggregates.length) {
-      // we don't have any parameters for the forestPlot
-      return;
-    }
+      // get the data
+      orFunc.formula = lima.createFormulaString(orFunc);
+      wtFunc.formula = lima.createFormulaString(wtFunc);
+      lclFunc.formula = lima.createFormulaString(lclFunc);
+      uclFunc.formula = lima.createFormulaString(uclFunc);
 
-    var plotsContainer = _.findEl('#metaanalysis > .plots');
-    plotsContainer.innerHTML = '';
+      var lines = [];
+      var groups = [];
 
-    var plotEl = _.cloneTemplate('forest-plot-group-template').children[0];
-    plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
+      for (var i=0; i<currentMetaanalysis.papers.length; i+=1) {
+        for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
+          if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
+          var line = {};
+          line.title = currentMetaanalysis.papers[i].title || 'new paper';
+          if (currentMetaanalysis.papers[i].experiments.length > 1) {
+            var expTitle = currentMetaanalysis.papers[i].experiments[j].title || 'new experiment';
+            if (expTitle.match(/^\d+$/)) expTitle = 'Exp. ' + expTitle;
+            line.title += ' (' + expTitle + ')';
+          }
+          line.or = getDatumValue(orFunc, j, i);
+          line.wt = getDatumValue(wtFunc, j, i);
+          line.lcl = getDatumValue(lclFunc, j, i);
+          line.ucl = getDatumValue(uclFunc, j, i);
+          line.group = getDatumValue(moderatorParam, j, i);
 
-    // get the data
-    orFunc.formula = lima.createFormulaString(orFunc);
-    wtFunc.formula = lima.createFormulaString(wtFunc);
-    lclFunc.formula = lima.createFormulaString(lclFunc);
-    uclFunc.formula = lima.createFormulaString(uclFunc);
-
-    var lines = [];
-    var groups = [];
-
-    for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
-      for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
-        if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
-        var line = {};
-        line.title = currentMetaanalysis.papers[i].title || 'new paper';
-        if (currentMetaanalysis.papers[i].experiments.length > 1) {
-          var expTitle = currentMetaanalysis.papers[i].experiments[j].title || 'new experiment';
-          if (expTitle.match(/^\d+$/)) expTitle = 'Exp. ' + expTitle;
-          line.title += ' (' + expTitle + ')';
-        }
-        line.or = getDatumValue(orFunc, j, i);
-        line.wt = getDatumValue(wtFunc, j, i);
-        line.lcl = getDatumValue(lclFunc, j, i);
-        line.ucl = getDatumValue(uclFunc, j, i);
-        line.group = getDatumValue(moderatorParam, j, i);
-
-        if (line.group != null && line.group != '' && groups.indexOf(line.group) === -1) groups.push(line.group);
-        // if any of the values is NaN or ±Infinity, disregard this experiment
-        if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
-            line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
-          delete line.or;
-          delete line.lcl;
-          delete line.ucl;
-          delete line.wt;
-        }
-
-        lines.push(line);
-      }
-    }
-
-    // add indication to the graph when there is no data
-    if (lines.length === 0) {
-      var noDataLine = {
-        title: "No data",
-        group: "No data"
-      };
-      groups.push(noDataLine.group)
-      lines.push(noDataLine);
-    }
-
-    groups.sort(); // alphabetically
-
-    // calculating wtg
-    groups.forEach(function (group) {
-      var sumOfWtg = 0;
-      lines.forEach(function (line) {
-        if (line.group == group) {
-          sumOfWtg += line.wt;
-        }
-      });
-
-      lines.forEach(function (line) {
-        if (line.group == group) {
-          line.wtg = line.wt / sumOfWtg * 1000;
-        }
-      });
-    });
-
-    var dataGroups =
-      groups.map(function (group) {
-        return lines.filter(function (exp) { return exp.group == group; });
-      });
-
-    // todo use per-group aggregates here
-    var perGroup = {};
-    dataGroups.forEach(function (dataGroup) {
-      perGroup[dataGroup[0].group] = {};
-      perGroup[dataGroup[0].group].wt = dataGroup.reduce(function sum(acc, line) {return line.wt != null ? acc+line.wt : acc;}, 0);
-      if (perGroup[dataGroup[0].group].wt == 0) perGroup[dataGroup[0].group].wt = 1;
-      perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return line.wt != null ? acc+line.or*line.wt : acc;}, 0) / perGroup[dataGroup[0].group].wt;
-    });
-
-    var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
-    var lclAggrFunc = { formulaName: "lowerConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
-    var uclAggrFunc = { formulaName: "upperConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
-
-    orAggrFunc.formula = lima.createFormulaString(orAggrFunc);
-    lclAggrFunc.formula = lima.createFormulaString(lclAggrFunc);
-    uclAggrFunc.formula = lima.createFormulaString(uclAggrFunc);
-
-    var aggregates = {
-      or: getDatumValue(orAggrFunc),
-      lcl: getDatumValue(lclAggrFunc),
-      ucl: getDatumValue(uclAggrFunc),
-    }
-
-    if (isNaN(aggregates.or*0) || isNaN(aggregates.lcl*0) || isNaN(aggregates.ucl*0)) {
-      aggregates.lcl = 0;
-      aggregates.ucl = 0;
-    }
-
-    // compute
-    //   sum of wt
-    //   min and max of wt
-    //   min of lcl and aggr lcl
-    //   max of ucl and aggr ucl
-    var sumOfWt = 0;
-    var minWt = Infinity;
-    var maxWt = -Infinity;
-    var minLcl = aggregates.lcl;
-    var maxUcl = aggregates.ucl;
-
-    if (isNaN(minLcl)) minLcl = 0;
-    if (isNaN(maxUcl)) maxUcl = 0;
-
-    lines.forEach(function (line) {
-      if (line.or == null) return;
-      sumOfWt += line.wt;
-      if (line.wt < minWt) minWt = line.wt;
-      if (line.wt > maxWt) maxWt = line.wt;
-      if (line.lcl < minLcl) minLcl = line.lcl;
-      if (line.ucl > maxUcl) maxUcl = line.ucl;
-    });
-
-    if (minLcl < -10) minLcl = -10;
-    if (maxUcl > 10) maxUcl = 10;
-
-    if (minWt == Infinity) minWt = maxWt = 1;
-    if (sumOfWt == 0) sumOfWt = 1;
-
-    var TICK_SPACING;
-
-
-    // select tick spacing based on a rough estimate of how many ticks we'll need anyway
-    var clSpread = (maxUcl - minLcl) / Math.LN10; // how many orders of magnitude we cover
-    if (clSpread > 3) TICK_SPACING = [100];
-    else if (clSpread > 1.3) TICK_SPACING = [10];
-    else TICK_SPACING = [ 2, 2.5, 2 ]; // ticks at 1, 2, 5, 10, 20, 50, 100...
-
-
-    // adjust minimum and maximum around decimal non-logarithmic values
-    var newBound = 1;
-    var tickNo = 0;
-    while (Math.log(newBound) > minLcl) {
-      tickNo -= 1;
-      newBound /= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)]; // JS % can be negative
-    }
-    minLcl = Math.log(newBound) - .1;
-
-    var startingTickVal = newBound;
-    var startingTick = tickNo;
-
-    newBound = 1;
-    tickNo = 0;
-    while (Math.log(newBound) < maxUcl) {
-      newBound *= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)];
-      tickNo += 1;
-    }
-    maxUcl = Math.log(newBound) + .1;
-
-    var xRatio = 1/(maxUcl-minLcl)*parseInt(plotEl.dataset.graphWidth);
-
-    // return the X coordinate on the graph that corresponds to the given logarithmic value
-    function getX(val) {
-      return (val-minLcl)*xRatio;
-    }
-
-    // adjust weights so that in case of very similar weights they don't range from minimum to maximum
-    var MIN_WT_SPREAD=2.5;
-    if (maxWt/minWt < MIN_WT_SPREAD) {
-      minWt = (maxWt + minWt) / 2 / Math.sqrt(MIN_WT_SPREAD);
-      maxWt = minWt * MIN_WT_SPREAD;
-    }
-
-    // minWt = 0; // todo we can uncomment this to make all weights relative to only the maximum weight
-    var minWtSize = parseInt(plotEl.dataset.minWtSize);
-    // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
-    maxWt = Math.sqrt(maxWt);
-    minWt = Math.sqrt(minWt);
-    var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxWtSize)-minWtSize);
-
-    // return the box size for a given weight
-    function getBoxSize(wt) {
-      return (Math.sqrt(wt)-minWt)*wtRatio + minWtSize;
-    }
-
-    var currY = parseInt(plotEl.dataset.startHeight);
-    var currGY = parseInt(plotEl.dataset.groupStartHeight);
-    var hasInvalid = false;
-
-    groups.forEach(function (group) {
-      var groupAggregates = {
-        or: 0,
-        lcl: 0,
-        ucl: 0,
-        wt: 0
-      };
-
-      var groupMembers = 0; // counter
-      var groupHasInvalid = false;
-
-      var forestGroupT = _.findEl(plotEl, 'template.forest-group');
-      var forestGroupEl = _.cloneTemplate(forestGroupT);
-
-      currGY = parseInt(plotEl.dataset.groupStartHeight);
-
-      forestGroupEl.setAttribute('transform', 'translate(' + plotEl.dataset.headingOffset + ',' + currY + ')');
-
-      _.fillEls(forestGroupEl, '.label', group);
-
-      var groupExperimentsEl = _.findEl(forestGroupEl, '.group-experiments');
-      forestGroupT.parentElement.insertBefore(forestGroupEl, forestGroupT);
-
-      // put experiments into the plot
-      lines.forEach(function (line) {
-        if (line.group === group) {
-          var expT = _.findEl(plotEl, 'template.experiment');
-          var expEl = _.cloneTemplate(expT);
-
-          expEl.setAttribute('transform', 'translate(' + plotEl.dataset.groupLineOffset + ',' + currGY + ')');
-
-          _.fillEls(expEl, '.expname', line.title);
-          if (line.or != null) {
-            groupMembers += 1;
-            _.fillEls(expEl, '.or.lcl.ucl', Math.exp(line.or).toPrecision(3) + ' [' + Math.exp(line.lcl).toPrecision(3) + ", " + Math.exp(line.ucl).toPrecision(3) + ']');
-            _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
-            _.fillEls(expEl, '.wtg', (Math.round(line.wtg)/10) + '%');
-            _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
-            _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
-
-            _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
-            _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
-            _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
-
-            groupAggregates.or += line.or;
-            groupAggregates.lcl += line.lcl;
-            groupAggregates.ucl += line.ucl;
-            groupAggregates.wt += (Math.round(line.wt / sumOfWt * 1000)/10);
-          } else {
-            expEl.classList.add('invalid');
-            hasInvalid = true;
-            groupHasInvalid = true;
+          if (line.group != null && line.group != '' && groups.indexOf(line.group) === -1) groups.push(line.group);
+          // if any of the values is NaN or ±Infinity, disregard this experiment
+          if (isNaN(line.or*0) || isNaN(line.lcl*0) || isNaN(line.ucl*0) || isNaN(line.wt*0) ||
+              line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
+            delete line.or;
+            delete line.lcl;
+            delete line.ucl;
+            delete line.wt;
           }
 
-          groupExperimentsEl.appendChild(expEl);
+          lines.push(line);
+        }
+      }
+
+      // add indication to the graph when there is no data
+      if (lines.length === 0) {
+        var noDataLine = {
+          title: "No data",
+          group: "No data"
+        };
+        groups.push(noDataLine.group)
+        lines.push(noDataLine);
+      }
+
+      var plotEl = _.cloneTemplate('forest-plot-group-template').children[0];
+
+      plotEl.classList.toggle('maximized', isPlotMaximized(graphIndex));
+      plotsContainer.appendChild(plotEl);
+
+      // add an id to the current graph
+      plotEl.setAttribute('data-graph-id', graphIndex);
+
+      groups.sort(); // alphabetically
+
+      // calculating wtg
+      groups.forEach(function (group) {
+        var sumOfWtg = 0;
+        lines.forEach(function (line) {
+          if (line.group == group) {
+            sumOfWtg += line.wt;
+          }
+        });
+
+        lines.forEach(function (line) {
+          if (line.group == group) {
+            line.wtg = line.wt / sumOfWtg * 1000;
+          }
+        });
+      });
+
+      var dataGroups =
+        groups.map(function (group) {
+          return lines.filter(function (exp) { return exp.group == group; });
+        });
+
+      // todo use per-group aggregates here
+      var perGroup = {};
+      dataGroups.forEach(function (dataGroup) {
+        perGroup[dataGroup[0].group] = {};
+        perGroup[dataGroup[0].group].wt = dataGroup.reduce(function sum(acc, line) {return line.wt != null ? acc+line.wt : acc;}, 0);
+        if (perGroup[dataGroup[0].group].wt == 0) perGroup[dataGroup[0].group].wt = 1;
+        perGroup[dataGroup[0].group].or = dataGroup.reduce(function sumproduct(acc, line) {return line.wt != null ? acc+line.or*line.wt : acc;}, 0) / perGroup[dataGroup[0].group].wt;
+      });
+
+      var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
+      var lclAggrFunc = { formulaName: "lowerConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
+      var uclAggrFunc = { formulaName: "upperConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
+
+      orAggrFunc.formula = lima.createFormulaString(orAggrFunc);
+      lclAggrFunc.formula = lima.createFormulaString(lclAggrFunc);
+      uclAggrFunc.formula = lima.createFormulaString(uclAggrFunc);
+
+      var aggregates = {
+        or: getDatumValue(orAggrFunc),
+        lcl: getDatumValue(lclAggrFunc),
+        ucl: getDatumValue(uclAggrFunc),
+      }
+
+      if (isNaN(aggregates.or*0) || isNaN(aggregates.lcl*0) || isNaN(aggregates.ucl*0)) {
+        aggregates.lcl = 0;
+        aggregates.ucl = 0;
+      }
+
+      // compute
+      //   sum of wt
+      //   min and max of wt
+      //   min of lcl and aggr lcl
+      //   max of ucl and aggr ucl
+      var sumOfWt = 0;
+      var minWt = Infinity;
+      var maxWt = -Infinity;
+      var minLcl = aggregates.lcl;
+      var maxUcl = aggregates.ucl;
+
+      if (isNaN(minLcl)) minLcl = 0;
+      if (isNaN(maxUcl)) maxUcl = 0;
+
+      lines.forEach(function (line) {
+        if (line.or == null) return;
+        sumOfWt += line.wt;
+        if (line.wt < minWt) minWt = line.wt;
+        if (line.wt > maxWt) maxWt = line.wt;
+        if (line.lcl < minLcl) minLcl = line.lcl;
+        if (line.ucl > maxUcl) maxUcl = line.ucl;
+      });
+
+      if (minLcl < -10) minLcl = -10;
+      if (maxUcl > 10) maxUcl = 10;
+
+      if (minWt == Infinity) minWt = maxWt = 1;
+      if (sumOfWt == 0) sumOfWt = 1;
+
+      var TICK_SPACING;
+
+
+      // select tick spacing based on a rough estimate of how many ticks we'll need anyway
+      var clSpread = (maxUcl - minLcl) / Math.LN10; // how many orders of magnitude we cover
+      if (clSpread > 3) TICK_SPACING = [100];
+      else if (clSpread > 1.3) TICK_SPACING = [10];
+      else TICK_SPACING = [ 2, 2.5, 2 ]; // ticks at 1, 2, 5, 10, 20, 50, 100...
+
+
+      // adjust minimum and maximum around decimal non-logarithmic values
+      var newBound = 1;
+      var tickNo = 0;
+      while (Math.log(newBound) > minLcl) {
+        tickNo -= 1;
+        newBound /= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)]; // JS % can be negative
+      }
+      minLcl = Math.log(newBound) - .1;
+
+      var startingTickVal = newBound;
+      var startingTick = tickNo;
+
+      newBound = 1;
+      tickNo = 0;
+      while (Math.log(newBound) < maxUcl) {
+        newBound *= TICK_SPACING[_.mod(tickNo, TICK_SPACING.length)];
+        tickNo += 1;
+      }
+      maxUcl = Math.log(newBound) + .1;
+
+      var xRatio = 1/(maxUcl-minLcl)*parseInt(plotEl.dataset.graphWidth);
+
+      // return the X coordinate on the graph that corresponds to the given logarithmic value
+      function getX(val) {
+        return (val-minLcl)*xRatio;
+      }
+
+      // adjust weights so that in case of very similar weights they don't range from minimum to maximum
+      var MIN_WT_SPREAD=2.5;
+      if (maxWt/minWt < MIN_WT_SPREAD) {
+        minWt = (maxWt + minWt) / 2 / Math.sqrt(MIN_WT_SPREAD);
+        maxWt = minWt * MIN_WT_SPREAD;
+      }
+
+      // minWt = 0; // todo we can uncomment this to make all weights relative to only the maximum weight
+      var minWtSize = parseInt(plotEl.dataset.minWtSize);
+      // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
+      maxWt = Math.sqrt(maxWt);
+      minWt = Math.sqrt(minWt);
+      var wtRatio = 1/(maxWt-minWt)*(parseInt(plotEl.dataset.maxWtSize)-minWtSize);
+
+      // return the box size for a given weight
+      function getBoxSize(wt) {
+        return (Math.sqrt(wt)-minWt)*wtRatio + minWtSize;
+      }
+
+      var currY = parseInt(plotEl.dataset.startHeight);
+      var currGY = parseInt(plotEl.dataset.groupStartHeight);
+      var hasInvalid = false;
+
+      groups.forEach(function (group) {
+        var groupAggregates = {
+          or: 0,
+          lcl: 0,
+          ucl: 0,
+          wt: 0
+        };
+
+        var groupMembers = 0; // counter
+        var groupHasInvalid = false;
+
+        var forestGroupT = _.findEl(plotEl, 'template.forest-group');
+        var forestGroupEl = _.cloneTemplate(forestGroupT);
+
+        currGY = parseInt(plotEl.dataset.groupStartHeight);
+
+        forestGroupEl.setAttribute('transform', 'translate(' + plotEl.dataset.headingOffset + ',' + currY + ')');
+
+        _.fillEls(forestGroupEl, '.label', group);
+
+        var groupExperimentsEl = _.findEl(forestGroupEl, '.group-experiments');
+        forestGroupT.parentElement.insertBefore(forestGroupEl, forestGroupT);
+
+        // put experiments into the plot
+        lines.forEach(function (line) {
+          if (line.group === group) {
+            var expT = _.findEl(plotEl, 'template.experiment');
+            var expEl = _.cloneTemplate(expT);
+
+            expEl.setAttribute('transform', 'translate(' + plotEl.dataset.groupLineOffset + ',' + currGY + ')');
+
+            _.fillEls(expEl, '.expname', line.title);
+            if (line.or != null) {
+              groupMembers += 1;
+              _.fillEls(expEl, '.or.lcl.ucl', Math.exp(line.or).toPrecision(3) + ' [' + Math.exp(line.lcl).toPrecision(3) + ", " + Math.exp(line.ucl).toPrecision(3) + ']');
+              _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
+              _.fillEls(expEl, '.wtg', (Math.round(line.wtg)/10) + '%');
+              _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
+              _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
+
+              _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
+              _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
+              _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
+
+              groupAggregates.or += line.or;
+              groupAggregates.lcl += line.lcl;
+              groupAggregates.ucl += line.ucl;
+              groupAggregates.wt += (Math.round(line.wt / sumOfWt * 1000)/10);
+            } else {
+              expEl.classList.add('invalid');
+              hasInvalid = true;
+              groupHasInvalid = true;
+            }
+
+            groupExperimentsEl.appendChild(expEl);
+
+            currGY += parseInt(plotEl.dataset.lineHeight);
+          }
+        });
+
+        // if stat != wt, then divide the groupAggregate sums by the number of valid lines in the group.
+        for (var stat in groupAggregates) {
+          if (stat != "wt") {
+            groupAggregates[stat] /= groupMembers;
+          }
+          else {
+            // avoid having too much decimals
+            groupAggregates[stat] = groupAggregates[stat].toFixed(1);
+          }
+        }
+
+        // put group summary into the plot
+        if (!groupHasInvalid) {
+          var sumT = _.findEl(plotEl, 'template.group-summary');
+          var sumEl = _.cloneTemplate(sumT);
+
+          _.fillEls(sumEl, '.sumname', "Total for " + group);
+          sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.groupLineOffset + ',' + currGY + ')');
+
+          _.fillEls(sumEl, '.or.lcl.ucl', Math.exp(groupAggregates.or).toPrecision(3) + ' [' + Math.exp(groupAggregates.lcl).toPrecision(3) + ", " + Math.exp(groupAggregates.ucl).toPrecision(3) + ']');
+          _.fillEls(sumEl, '.wt', groupAggregates.wt + '%');
+
+          var lclX = getX(groupAggregates.lcl);
+          var uclX = getX(groupAggregates.ucl);
+          var orX = getX(groupAggregates.or);
+          if ((uclX - lclX) < parseInt(plotEl.dataset.minDiamondWidth)) {
+            var ratio = (uclX - lclX) / parseInt(plotEl.dataset.minDiamondWidth);
+            lclX = orX + (lclX - orX) / ratio;
+            uclX = orX + (uclX - orX) / ratio;
+          }
+
+          var confidenceInterval = "" + lclX + ",0 " + orX + ",-10 " + uclX + ",0 " + orX + ",10";
+
+          _.setAttrs(sumEl, 'polygon.confidenceinterval', 'points', confidenceInterval);
+
+          var groupSummaryEl = _.findEl(forestGroupEl, '.group-summary');
+          groupSummaryEl.appendChild(sumEl);
 
           currGY += parseInt(plotEl.dataset.lineHeight);
         }
-      });
+        currY += (currGY+ parseInt(plotEl.dataset.heightBetweenGroups));
+      })
 
-      // if stat != wt, then divide the groupAggregate sums by the number of valid lines in the group.
-      for (var stat in groupAggregates) {
-        if (stat != "wt") {
-          groupAggregates[stat] /= groupMembers;
-        }
-        else {
-          // avoid having too much decimals
-          groupAggregates[stat] = groupAggregates[stat].toFixed(1);
-        }
+
+
+
+      // put axes into the plot
+      var axesT = _.findEl(plotEl, 'template.axes');
+      var axesEl = _.cloneTemplate(axesT);
+
+      axesEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
+
+      _.setAttrs(axesEl, 'line.yaxis', 'y2', currY+parseInt(plotEl.dataset.extraLineLen));
+      _.setAttrs(axesEl, 'line.yaxis', 'x1', getX(0));
+      _.setAttrs(axesEl, 'line.yaxis', 'x2', getX(0));
+
+      var tickT = _.findEl(axesEl, 'template.tick');
+      var tickVal;
+      while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
+        var tickEl = _.cloneTemplate(tickT);
+        tickEl.setAttribute('transform', 'translate(' + getX(tickVal) + ',0)');
+        _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
+        tickT.parentElement.insertBefore(tickEl, tickT);
+        startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
+        startingTick += 1;
       }
 
-      // put group summary into the plot
-      if (!groupHasInvalid) {
-        var sumT = _.findEl(plotEl, 'template.group-summary');
+      plotEl.appendChild(axesEl);
+
+
+      // put summary into the plot
+      if (!isNaN(aggregates.or*0) && !hasInvalid) {
+        currY += 2 * parseInt(plotEl.dataset.lineHeight);
+        var sumT = _.findEl(plotEl, 'template.summary');
         var sumEl = _.cloneTemplate(sumT);
 
-        _.fillEls(sumEl, '.sumname', "Total for " + group);
-        sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.groupLineOffset + ',' + currGY + ')');
+        sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
 
-        _.fillEls(sumEl, '.or.lcl.ucl', Math.exp(groupAggregates.or).toPrecision(3) + ' [' + Math.exp(groupAggregates.lcl).toPrecision(3) + ", " + Math.exp(groupAggregates.ucl).toPrecision(3) + ']');
-        _.fillEls(sumEl, '.wt', groupAggregates.wt + '%');
+        _.fillEls(sumEl, '.or.lcl.ucl', Math.exp(aggregates.or).toPrecision(3) + ' [' + Math.exp(aggregates.lcl).toPrecision(3) + ", " + Math.exp(aggregates.ucl).toPrecision(3) + ']');
 
-        var lclX = getX(groupAggregates.lcl);
-        var uclX = getX(groupAggregates.ucl);
-        var orX = getX(groupAggregates.or);
+        var lclX = getX(aggregates.lcl);
+        var uclX = getX(aggregates.ucl);
+        var orX = getX(aggregates.or);
         if ((uclX - lclX) < parseInt(plotEl.dataset.minDiamondWidth)) {
           var ratio = (uclX - lclX) / parseInt(plotEl.dataset.minDiamondWidth);
           lclX = orX + (lclX - orX) / ratio;
@@ -1061,84 +1116,25 @@
 
         _.setAttrs(sumEl, 'polygon.confidenceinterval', 'points', confidenceInterval);
 
-        var groupSummaryEl = _.findEl(forestGroupEl, '.group-summary');
-        groupSummaryEl.appendChild(sumEl);
+        _.setAttrs(sumEl, 'line.guideline', 'x1', getX(aggregates.or));
+        _.setAttrs(sumEl, 'line.guideline', 'x2', getX(aggregates.or));
+        _.setAttrs(sumEl, 'line.guideline', 'y2', currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen));
 
-        currGY += parseInt(plotEl.dataset.lineHeight);
-      }
-      currY += (currGY+ parseInt(plotEl.dataset.heightBetweenGroups));
-    })
+        plotEl.appendChild(sumEl);
 
+        _.addEventListener(sumEl, '.positioningbutton', 'click', function (e) {
+          plotEl.classList.toggle('maximized');
+          localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
+          e.stopPropagation();
 
-
-
-    // put axes into the plot
-    var axesT = _.findEl(plotEl, 'template.axes');
-    var axesEl = _.cloneTemplate(axesT);
-
-    axesEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
-
-    _.setAttrs(axesEl, 'line.yaxis', 'y2', currY+parseInt(plotEl.dataset.extraLineLen));
-    _.setAttrs(axesEl, 'line.yaxis', 'x1', getX(0));
-    _.setAttrs(axesEl, 'line.yaxis', 'x2', getX(0));
-
-    var tickT = _.findEl(axesEl, 'template.tick');
-    var tickVal;
-    while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
-      var tickEl = _.cloneTemplate(tickT);
-      tickEl.setAttribute('transform', 'translate(' + getX(tickVal) + ',0)');
-      _.fillEls(tickEl, 'text', (tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)));
-      tickT.parentElement.insertBefore(tickEl, tickT);
-      startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
-      startingTick += 1;
-    }
-
-    plotEl.appendChild(axesEl);
-
-
-    // put summary into the plot
-    if (!isNaN(aggregates.or*0) && !hasInvalid) {
-      currY += 2 * parseInt(plotEl.dataset.lineHeight);
-      var sumT = _.findEl(plotEl, 'template.summary');
-      var sumEl = _.cloneTemplate(sumT);
-
-      sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
-
-      _.fillEls(sumEl, '.or.lcl.ucl', Math.exp(aggregates.or).toPrecision(3) + ' [' + Math.exp(aggregates.lcl).toPrecision(3) + ", " + Math.exp(aggregates.ucl).toPrecision(3) + ']');
-
-      var lclX = getX(aggregates.lcl);
-      var uclX = getX(aggregates.ucl);
-      var orX = getX(aggregates.or);
-      if ((uclX - lclX) < parseInt(plotEl.dataset.minDiamondWidth)) {
-        var ratio = (uclX - lclX) / parseInt(plotEl.dataset.minDiamondWidth);
-        lclX = orX + (lclX - orX) / ratio;
-        uclX = orX + (uclX - orX) / ratio;
+        })
       }
 
-      var confidenceInterval = "" + lclX + ",0 " + orX + ",-10 " + uclX + ",0 " + orX + ",10";
-
-      _.setAttrs(sumEl, 'polygon.confidenceinterval', 'points', confidenceInterval);
-
-      _.setAttrs(sumEl, 'line.guideline', 'x1', getX(aggregates.or));
-      _.setAttrs(sumEl, 'line.guideline', 'x2', getX(aggregates.or));
-      _.setAttrs(sumEl, 'line.guideline', 'y2', currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen));
-
-      plotEl.appendChild(sumEl);
-
-      _.addEventListener(sumEl, '.positioningbutton', 'click', function (e) {
-        plotEl.classList.toggle('maximized');
-        localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
-        e.stopPropagation();
-
-      })
-    }
-
-    // finish up
-    plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
-    plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
-    // todo set plot widths based on maximum text sizes
-
-    plotsContainer.appendChild(plotEl);
+      // finish up
+      plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
+      plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
+      // todo set plot widths based on maximum text sizes
+    });
   }
 
   /* grape chart
@@ -2908,7 +2904,7 @@
       }
 
       // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
-      if (!foundCurrentValue) {
+      if (!foundCurrentValue && graph.formulaParams[i]) { // ignore undefined
         colId = graph.formulaParams[i];
         makeOption(colId, graph, colId, select);
       }

@@ -750,11 +750,12 @@
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
+    class="forestplotgroup"
     width="900"
     height="200"
     version="1.1"
-    data-heading-offset="40"
-    data-group-line-offset="-30"
+    data-heading-offset="10"
+    data-group-line-offset="0"
     data-zero-groups-width="70"
     data-line-height="30"
     data-padding="10"
@@ -769,7 +770,7 @@
     data-min-diamond-width="14"
     >
     <style>
-      svg {
+      svg.forestplotgroup {
         stroke-width: 2px;
         fill: white;
         stroke: black;
@@ -779,121 +780,123 @@
         font-family: "Arial", sans-serif;
       }
 
-      text {
+      svg.forestplotgroup text {
         stroke-width: 0;
         fill: black;
         text-anchor: middle;
       }
 
-      .headings text.or.lcl.ucl,
-      .experiment text.or.lcl.ucl,
-      .summary text.or.lcl.ucl {
+      svg.forestplotgroup .headings text.or.lcl.ucl,
+      svg.forestplotgroup .experiment text.or.lcl.ucl,
+      svg.forestplotgroup .summary text.or.lcl.ucl {
         transform: translate(610px, 20px);
       }
 
-      .headings text.wt,
-      .experiment text.wt,
-      .summary text.wt {
+      svg.forestplotgroup .headings text.wt,
+      svg.forestplotgroup .experiment text.wt,
+      svg.forestplotgroup .summary text.wt {
         transform: translate(760px,20px);
         text-anchor: end;
       }
 
-      .headings text.wtg,
-      .experiment text.wtg,
-      .summary text.wtg {
+      svg.forestplotgroup .headings text.wtg,
+      svg.forestplotgroup .experiment text.wtg,
+      svg.forestplotgroup .summary text.wtg {
         transform: translate(780px,20px);
         text-anchor: start;
       }
 
-      .experiment .expname {
+      svg.forestplotgroup .experiment .expname {
         text-anchor: start;
         transform: translate(0,20px);
       }
 
-      .experiment.invalid text {
+      svg.forestplotgroup .experiment.invalid text {
         fill: #aa4444;
       }
 
-      .experiment.invalid text.lcl,
-      .experiment.invalid text.ucl,
-      .experiment.invalid text.wt {
+      svg.forestplotgroup .experiment.invalid text.lcl,
+      svg.forestplotgroup .experiment.invalid text.ucl,
+      svg.forestplotgroup .experiment.invalid text.wt {
         display: none;
       }
 
-      .experiment .rowgraph {
+      svg.forestplotgroup .experiment .rowgraph {
         transform: translate(280px,0);
       }
 
-      .experiment .rowgraph .confidenceinterval {
+      svg.forestplotgroup .experiment .rowgraph .confidenceinterval {
         transform: translate(0,15px);
       }
 
-      .experiment .rowgraph .weightbox {
+      svg.forestplotgroup .experiment .rowgraph .weightbox {
         transform: translate(-50%,-50%) translate(0,15px);
         fill: black;
       }
 
-      .summary > g {
+      svg.forestplotgroup .summary > g {
         transform: translate(0, 20px);
       }
 
-      .summary .sumname {
+      svg.forestplotgroup .summary .sumname {
         text-anchor: start;
         transform: translate(0,20px);
       }
 
-      .summary .sumgraph {
+      svg.forestplotgroup .summary .sumgraph {
         transform: translate(280px,0);
       }
 
-      .summary .sumgraph .confidenceinterval {
+      svg.forestplotgroup .summary .sumgraph .confidenceinterval {
         transform: translate(0,15px);
       }
 
-      .summary .guideline {
+      svg.forestplotgroup .summary .guideline {
         stroke-width: 1px;
         transform: translate(280px,42.5px) scale(1,-1);
         stroke-dasharray: 5px;
         stroke-linecap: butt;
       }
 
-      .axes > g {
+      svg.forestplotgroup .axes > g {
         transform: translate(280px,32.5px);
       }
 
-      .axes .tick text {
+      svg.forestplotgroup .axes .tick text {
         font-size: 11px;
         transform: translate(0, 19px);
       }
 
-      .axes .yaxis {
+      svg.forestplotgroup .axes .yaxis {
         transform: translate(0px, 5px) scale(1, -1);
       }
 
-      .summary > g.positioningbutton {
+      svg.forestplotgroup .summary > g.positioningbutton {
         transform: translate(800px, 55px);
         opacity: .2;
       }
 
-      .positioningbutton:not(:hover) line {
+      svg.forestplotgroup .positioningbutton:not(:hover) line {
         display: none;
       }
 
-      .positioningbutton:hover {
+      svg.forestplotgroup .positioningbutton:hover {
         opacity: 1;
         cursor: pointer;
       }
 
-      .positioningbutton line {
+      svg.forestplotgroup .positioningbutton line {
         stroke-width: 1.5px;
       }
 
-      .forest-group .group-heading text.label {
+      svg.forestplotgroup .forest-group .group-heading text.label {
         font-weight: bold;
         font-size: 120%;
+        font-style: italic;
+        text-anchor: start;
       }
 
-      .summary .sumname.sumtotal {
+      svg.forestplotgroup .summary .sumname.sumtotal {
         font-weight: bold;
         font-size: 125%;
       }
