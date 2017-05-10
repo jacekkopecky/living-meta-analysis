@@ -1833,7 +1833,7 @@
               val = experiment.data[col];
             }
 
-            if (!val || val.value == null) {
+            if (!val || val.value == null || val.value.trim() == '') {
               td.classList.add('empty');
             } else {
               _.fillEls(td, '.value', val.value);
