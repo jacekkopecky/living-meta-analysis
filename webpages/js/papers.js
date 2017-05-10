@@ -869,12 +869,17 @@
     }
   }
 
+  function getFormulaLabelById(id) {
+    var formula = lima.getFormulaById(id);
+    return (formula ? formula.label : 'no formula selected');
+  }
+
   function getRichColumnLabel(col, level) {
     if (level == undefined) level = col.number == null ? 1 : 0;
 
     var retval = '';
     if (level != Infinity && col.number !== undefined) retval += '<span>' + col.number + '. </span>';
-    retval += '<span>' + lima.getFormulaOrAggregateLabelById(col.formulaName) + '</span> (';
+    retval += '<span>' + getFormulaLabelById(col.formulaName) + '</span> (';
 
     if (level == 0) {
       retval += '…';

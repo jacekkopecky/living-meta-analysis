@@ -482,7 +482,7 @@ function extractReceivedAggregate(recAggr) {
 }
 
 function extractReceivedGraph(recGraph) {
-  // TODO: Maybe this should be different, at the moment a copy paste from above
+  // uses a formula string just like computed columns and aggregates
   return {
     formula: tools.string(recGraph.formula),
     comments: tools.array(recGraph.comments, extractReceivedComment),

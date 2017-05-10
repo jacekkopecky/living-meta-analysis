@@ -103,11 +103,6 @@
     return null;
   }
 
-  lima.getRichLabelById = function getFormulaOrAggregateLabelById(id) {
-    var formula = lima.getFormulaById(id) || lima.getAggregateFormulaById(id) || lima.getGraphFormulaById(id);
-    return (formula ? formula.label : 'no formula selected');
-  }
-
   // here start the functions implementing the formulas
 
   function logOddsRatio (group1, group2) {
@@ -234,42 +229,6 @@
         func: sumAggr,
         parameters: ['values'],
       },
-      {
-        id: 'forestPlotPercentAggr',
-        label: 'Forest Plot (percentages)',
-        func: forestPlotPercentAggr,
-        parameters: [ 'group 1 (e.g. experimental percentage)', 'group 1 N', 'group 2 (e.g. control percentage)', 'group 2 N' ],
-      },
-      {
-        id: 'forestPlotNumberAggr',
-        label: 'Forest Plot (numbers affected)',
-        func: forestPlotNumberAggr,
-        parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ],
-      },
-      {
-        id: 'forestPlotGroupPercentAggr',
-        label: 'Forest Plot With Groups (percentages)',
-        func: forestPlotGroupPercentAggr,
-        parameters: [ 'group 1 (e.g. experimental percentage)', 'group 1 N', 'group 2 (e.g. control percentage)', 'group 2 N', 'moderator' ],
-      },
-      {
-        id: 'forestPlotGroupNumberAggr',
-        label: 'Forest Plot With Groups (numbers affected)',
-        func: forestPlotGroupNumberAggr,
-        parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N', 'moderator' ],
-      },
-      {
-        id: 'grapeChartPercentAggr',
-        label: 'Grape Chart (percentages)',
-        func: grapeChartPercentAggr,
-        parameters: [ 'group 1 (e.g. experimental percentage)', 'group 1 N', 'group 2 (e.g. control percentage)', 'group 2 N', 'moderator' ],
-      },
-      {
-        id: 'grapeChartNumberAggr',
-        label: 'Grape Chart (numbers affected)',
-        func: grapeChartNumberAggr,
-        parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N', 'moderator' ],
-      },
       // {
       //   id: 'sumProduct',
       //   label: 'Sum of Product',
@@ -335,26 +294,6 @@
 
   function upperConfidenceLimitAggr (valArray, weightArray) {
     return weightedMeanAggr(valArray, weightArray) + 1.96 * standardErrorAggr(weightArray);
-  }
-
-  // todo this is just a placeholder
-  function forestPlotPercentAggr () {
-    return 'see above';
-  }
-  function forestPlotGroupPercentAggr () {
-    return 'see above';
-  }
-  function grapeChartPercentAggr () {
-    return 'see above';
-  }
-  function forestPlotNumberAggr () {
-    return 'see above';
-  }
-  function forestPlotGroupNumberAggr () {
-    return 'see above';
-  }
-  function grapeChartNumberAggr () {
-    return 'see above';
   }
 
   /* parsing

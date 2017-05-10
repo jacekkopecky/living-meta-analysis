@@ -475,7 +475,7 @@
       <tr class="add">
         <th colspan=2>
           <button class="add notunpin not-unsaved">add a graph</button>
-          <button class="when-unsaved" disabled title="can't add a graph when some changes are unsaved">add an aggregate</button></th>
+          <button class="when-unsaved" disabled title="can't add a graph when some changes are unsaved">add a graph</button></th>
       </tr>
     </tbody>
   </table>
@@ -545,6 +545,7 @@
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
+    class="forestplot"
     width="800"
     height="200"
     version="1.1"
@@ -557,11 +558,9 @@
     data-max-wt-size="14"
     data-extra-line-len="-10"
     data-min-diamond-width="14"
-    data-graph-type="forest-plot"
-    data-graph-id="forest-plot-0"
     >
     <style>
-      svg {
+      svg.forestplot {
         stroke-width: 2px;
         fill: white;
         stroke: black;
@@ -571,116 +570,116 @@
         font-family: "Arial", sans-serif;
       }
 
-      text {
+      svg.forestplot text {
         stroke-width: 0;
         fill: black;
         text-anchor: middle;
       }
 
-      .headings text.or,
-      .experiment text.or,
-      .summary text.or {
+      svg.forestplot .headings text.or,
+      svg.forestplot .experiment text.or,
+      svg.forestplot .summary text.or {
         transform: translate(610px,20px);
       }
-      .headings text.lcl,
-      .experiment text.lcl,
-      .summary text.lcl {
+      svg.forestplot .headings text.lcl,
+      svg.forestplot .experiment text.lcl,
+      svg.forestplot .summary text.lcl {
         text-anchor: end;
         transform: translate(690px,20px);
       }
-      .headings text.ucl,
-      .experiment text.ucl,
-      .summary text.ucl {
+      svg.forestplot .headings text.ucl,
+      svg.forestplot .experiment text.ucl,
+      svg.forestplot .summary text.ucl {
         text-anchor: start;
         transform: translate(695px,20px);
       }
-      .headings text.wt,
-      .experiment text.wt,
-      .summary text.wt {
+      svg.forestplot .headings text.wt,
+      svg.forestplot .experiment text.wt,
+      svg.forestplot .summary text.wt {
         transform: translate(780px,20px);
         text-anchor: end;
       }
 
-      .experiment .expname {
+      svg.forestplot .experiment .expname {
         text-anchor: start;
         transform: translate(0,20px);
       }
 
-      .experiment.invalid text {
+      svg.forestplot .experiment.invalid text {
         fill: #aa4444;
       }
 
-      .experiment.invalid text.lcl,
-      .experiment.invalid text.ucl,
-      .experiment.invalid text.wt {
+      svg.forestplot .experiment.invalid text.lcl,
+      svg.forestplot .experiment.invalid text.ucl,
+      svg.forestplot .experiment.invalid text.wt {
         display: none;
       }
 
-      .experiment .rowgraph {
+      svg.forestplot .experiment .rowgraph {
         transform: translate(280px,0);
       }
 
-      .experiment .rowgraph .confidenceinterval {
+      svg.forestplot .experiment .rowgraph .confidenceinterval {
         transform: translate(0,15px);
       }
 
-      .experiment .rowgraph .weightbox {
+      svg.forestplot .experiment .rowgraph .weightbox {
         transform: translate(-50%,-50%) translate(0,15px);
         fill: black;
       }
 
-      .summary > g {
+      svg.forestplot .summary > g {
         transform: translate(0, 20px);
       }
 
-      .summary .sumname {
+      svg.forestplot .summary .sumname {
         text-anchor: start;
         transform: translate(0,20px);
       }
 
-      .summary .sumgraph {
+      svg.forestplot .summary .sumgraph {
         transform: translate(280px,0);
       }
 
-      .summary .sumgraph .confidenceinterval {
+      svg.forestplot .summary .sumgraph .confidenceinterval {
         transform: translate(0,15px);
       }
 
-      .summary .guideline {
+      svg.forestplot .summary .guideline {
         stroke-width: 1px;
         transform: translate(280px,42.5px) scale(1,-1);
         stroke-dasharray: 5px;
         stroke-linecap: butt;
       }
 
-      [data-graph-type="forest-plot"] .axes > g {
+      svg.forestplot .axes > g {
         transform: translate(280px,32.5px);
       }
 
-      [data-graph-type="forest-plot"] .axes .tick text {
+      svg.forestplot .axes .tick text {
         font-size: 11px;
         transform: translate(0, 19px);
       }
 
-      .axes .yaxis {
+      svg.forestplot .axes .yaxis {
         transform: translate(0px, 1px) scale(1, -1);
       }
 
-      [data-graph-type="forest-plot"] .positioningbutton {
+      svg.forestplot .positioningbutton {
         transform: translate(495px, 17px);
         opacity: .2;
       }
 
-      [data-graph-type="forest-plot"] .positioningbutton:not(:hover) line {
+      svg.forestplot .positioningbutton:not(:hover) line {
         display: none;
       }
 
-      [data-graph-type="forest-plot"] .positioningbutton:hover {
+      svg.forestplot .positioningbutton:hover {
         opacity: 1;
         cursor: pointer;
       }
 
-      [data-graph-type="forest-plot"] .positioningbutton line {
+      svg.forestplot .positioningbutton line {
         stroke-width: 1.5px;
       }
     </style>
@@ -989,6 +988,7 @@
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
+    class="grapechart"
     viewBox="0 0 800 550"
     width="800"
     height="550"
@@ -1002,11 +1002,9 @@
     data-grape-spacing="1.5"
     data-tooltip-padding="20"
     data-tooltip-min-width="150"
-    data-graph-type="grape-chart"
-    data-graph-id="grape-chart-0"
     >
     <style>
-      svg {
+      svg.grapechart {
         stroke-width: 2px;
         fill: white;
         stroke: black;
@@ -1016,159 +1014,159 @@
         font-family: "Arial", sans-serif;
       }
 
-      text {
+      svg.grapechart text {
         stroke-width: 0;
         fill: black;
         text-anchor: middle;
       }
 
-      line.guideline {
+      svg.grapechart line.guideline {
         stroke-width: 1px;
         stroke-dasharray: 5px;
         stroke-linecap: butt;
       }
 
-      [data-type="grape-chart"] .axes .tick line {
+      svg.grapechart .axes .tick line {
         font-size: 12px;
         transform: translate(-5px, 0);
       }
 
-      [data-type="grape-chart"] .axes .tick text {
+      svg.grapechart .axes .tick text {
         font-size: 12px;
         transform: translate(-10px, 4px);
         text-anchor: end;
       }
 
-      .group > g {
+      svg.grapechart .group > g {
         transform: translate(0, 510px);
       }
 
-      .axes .yaxis,
-      .group .trunk {
+      svg.grapechart .axes .yaxis,
+      svg.grapechart .group .trunk {
         transform: scale(1, -1);
         stroke-linecap: round;
       }
 
-      .group .xaxis {
+      svg.grapechart .group .xaxis {
         stroke-linecap: round;
       }
 
-      .group .trunk {
+      svg.grapechart .group .trunk {
         stroke-width: 0px;
       }
 
-      .group text.label {
+      svg.grapechart .group text.label {
         transform: translate(0, 20px);
         text-anchor: middle;
       }
 
-      .grape {
+      svg.grapechart .grape {
         fill: #8ddce5;
       }
 
-      .grape.invalid {
+      svg.grapechart .grape.invalid {
         fill: #aa4444;
       }
 
-      .tooltips .grape {
+      svg.grapechart .tooltips .grape {
         fill: transparent;
         stroke: transparent;
         stroke-width: 3px;
       }
 
-      .tooltips .experiment .grape:hover {
+      svg.grapechart .tooltips .experiment .grape:hover {
         fill: #f0f033;
         stroke: black;
       }
 
-      .tooltips .experiment .grape:not(:hover) + .tooltip {
+      svg.grapechart .tooltips .experiment .grape:not(:hover) + .tooltip {
         display: none
       }
 
-      .tooltip {
+      svg.grapechart .tooltip {
         transform: translate(-60px,-120px);
       }
 
-      .tooltip.tophalf {
+      svg.grapechart .tooltip.tophalf {
         transform: translate(-60px,17px);
       }
 
-      .tooltip text {
+      svg.grapechart .tooltip text {
         text-anchor: start;
         font-size: 12px;
       }
 
-      .tooltip text.paper {
+      svg.grapechart .tooltip text.paper {
         transform: translate(10px,20px);
       }
-      .tooltip text.exp   {
+      svg.grapechart .tooltip text.exp   {
         transform: translate(10px,38px);
       }
-      .tooltip text._or    {
+      svg.grapechart .tooltip text._or    {
         transform: translate(10px,56px);
       }
-      .tooltip text.or    {
+      svg.grapechart .tooltip text.or    {
         transform: translate(60px,56px);
       }
-      .tooltip text._wt    {
+      svg.grapechart .tooltip text._wt    {
         transform: translate(10px,74px);
       }
-      .tooltip text.wt    {
+      svg.grapechart .tooltip text.wt    {
         transform: translate(60px,74px);
       }
-      .tooltip text._ci    {
+      svg.grapechart .tooltip text._ci    {
         transform: translate(10px,92px);
       }
-      .tooltip text.ci    {
+      svg.grapechart .tooltip text.ci    {
         transform: translate(60px,92px);
       }
 
-      .invalid .tooltip text.wt,
-      .invalid .tooltip text.ci {
+      svg.grapechart .invalid .tooltip text.wt,
+      svg.grapechart .invalid .tooltip text.ci {
         display: none;
       }
 
-      .legend text {
+      svg.grapechart .legend text {
         text-anchor: start;
         font-size: 14px;
         transform: translate(0,4px);
       }
 
-      .group:not(.with-legend) g.guideline .legend {
+      svg.grapechart .group:not(.with-legend) g.guideline .legend {
         display: none;
       }
 
-      .group g.guideline .legend text {
+      svg.grapechart .group g.guideline .legend text {
         font-size: 10px;
       }
 
-      .group g.guideline .legend text:nth-child(1) {
+      svg.grapechart .group g.guideline .legend text:nth-child(1) {
         transform: translate(-137.5px,-5px)rotate(-90deg);
       }
 
-      .group g.guideline .legend text:nth-child(2) {
+      svg.grapechart .group g.guideline .legend text:nth-child(2) {
         transform: translate(-127.5px,-5px)rotate(-90deg);
       }
 
-      .group:not(.with-pos-button) .positioningbutton {
+      svg.grapechart .group:not(.with-pos-button) .positioningbutton {
         display: none;
       }
 
-      .positioningbutton {
+      svg.grapechart .positioningbutton {
         transform: translate(140px, 20px);
         opacity: .2;
       }
 
-      .positioningbutton:not(:hover) line {
+      svg.grapechart .positioningbutton:not(:hover) line {
         display: none;
       }
 
-      [data-type="grape-chart"] .positioningbutton:hover {
+      svg.grapechart .positioningbutton:hover {
         opacity: 1;
         cursor: pointer;
       }
 
-      [data-type="grape-chart"] .positioningbutton line {
+      svg.grapechart .positioningbutton line {
         stroke-width: 1.5px;
       }
     </style>

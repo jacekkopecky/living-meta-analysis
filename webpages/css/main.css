@@ -2584,9 +2584,18 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
   border-top: 1px solid black;
 }
 
-/* BANNER FOR 'graphs' HERE
-*/
-
+/* graphs
+ *
+ *
+ *    ####  #####    ##   #####  #    #  ####
+ *   #    # #    #  #  #  #    # #    # #
+ *   #      #    # #    # #    # ######  ####
+ *   #  ### #####  ###### #####  #    #      #
+ *   #    # #   #  #    # #      #    # #    #
+ *    ####  #    # #    # #      #    #  ####
+ *
+ *
+ */
 #metaanalysis table.graphs {
   margin-top: 2em;
   border-collapse: collapse;

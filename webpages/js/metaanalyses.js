@@ -200,10 +200,23 @@
 
     // clean metaanalysis columns, aggregates, and graphs
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.columns);
-    lima.updateColumnListAfterColumnSave(currentMetaanalysis.aggregates);
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.graphs);
+    lima.updateColumnListAfterColumnSave(currentMetaanalysis.aggregates);
 
     updateMetaanalysisView();
+  }
+
+  function populateParsedFormula (obj) {
+    if (typeof obj === 'object') {
+      var parsed = lima.parseFormulaString(obj.formula);
+      if (parsed != null) {
+        obj.formulaName = parsed.formulaName;
+        obj.formulaParams = parsed.formulaParams;
+      } else {
+        obj.formulaName = null;
+        obj.formulaParams = [];
+      }
+    }
   }
 
   function initMetaanalysis(newMetaanalysis) {
@@ -230,22 +243,12 @@
     if (!Array.isArray(self.columns)) self.columns = [];
     if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
     if (!Array.isArray(self.tags)) self.tags = [];
-    if (!Array.isArray(self.aggregates)) self.aggregates = [];
     if (!Array.isArray(self.graphs)) self.graphs = [];
+    if (!Array.isArray(self.aggregates)) self.aggregates = [];
     if (!Array.isArray(self.excludedExperiments)) self.excludedExperiments = [];
 
-    self.columns.forEach(function (col) {
-      if (typeof col === 'object') {
-        var parsed = lima.parseFormulaString(col.formula);
-        if (parsed != null) {
-          col.formulaName = parsed.formulaName;
-          col.formulaParams = parsed.formulaParams;
-        } else {
-          col.formulaName = null;
-          col.formulaParams = [];
-        }
-      }
-    });
+    self.columns.forEach(populateParsedFormula);
+
     self.columns = self.columns.filter(function (col) {
       if (typeof col === 'string' && !lima.columns[col]) {
         console.error('don\'t have column', col);
@@ -256,28 +259,8 @@
     });
     renumberComputedColumns(self.columns);
 
-    self.aggregates.forEach(function (aggr) {
-      var parsed = lima.parseFormulaString(aggr.formula);
-      if (parsed != null) {
-        aggr.formulaName = parsed.formulaName;
-        aggr.formulaParams = parsed.formulaParams;
-      } else {
-        aggr.formulaName = null;
-        aggr.formulaParams = [];
-      }
-    });
-
-    //TODO: If this stays the same - factor out with above.
-    self.graphs.forEach(function (graph) {
-      var parsed = lima.parseFormulaString(graph.formula);
-      if (parsed != null) {
-        graph.formulaName = parsed.formulaName;
-        graph.formulaParams = parsed.formulaParams;
-      } else {
-        graph.formulaName = null;
-        graph.formulaParams = [];
-      }
-    });
+    self.graphs.forEach(populateParsedFormula);
+    self.aggregates.forEach(populateParsedFormula);
 
     self.papers.forEach(function (paper, papIndex) {
       if (!(paper instanceof lima.Paper)) {
@@ -379,8 +362,8 @@
 
     fillTags(metaanalysisEl, metaanalysis);
     fillMetaanalysisExperimentTable(metaanalysis);
-    fillAggregateTable(metaanalysis);
     fillGraphTable(metaanalysis);
+    fillAggregateTable(metaanalysis);
 
     // for now, do local storage "edit your copy"
     // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), metaanalysis.title);
@@ -426,6 +409,10 @@
     setValidationErrorClass();
     setUnsavedClass();
 
+    // first clear out the old
+    addComputedDatumSetter(dropPlots);
+    // then redraw the graphs
+    // todo draw the graphs in order of currentMetaanalysis.graphs, not forests first and grapes second
     addComputedDatumSetter(drawForestPlot);
     addComputedDatumSetter(drawForestPlotGroup);
     addComputedDatumSetter(drawGrapeChart);
@@ -464,37 +451,24 @@
 
     var plotsContainer = _.findEl('#metaanalysis > .plots');
 
-    for (var k=0; k<currentMetaanalysis.graphs.length; k++) {
+    currentMetaanalysis.graphs.forEach(function (graph, graphIndex) {
       var orFunc, wtFunc, lclFunc, uclFunc, params;
 
-      if (currentMetaanalysis.graphs[k].formulaName && currentMetaanalysis.graphs[k].formulaName.indexOf('grapeChart') != -1) {
-        continue;
-      }
-
-      // TODO: HEDGEHOG
-      // todo the plot should be associated with its parameters differently, not through an aggregate
-      // todo there should be the possibility to have more forest plots
-      for (var i=k; i<currentMetaanalysis.graphs.length; i++) {
-        if (currentMetaanalysis.graphs[i].formulaName === 'forestPlotNumberGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
-          params = currentMetaanalysis.graphs[i].formulaParams;
-          orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
-          wtFunc = { formulaName: "weightNumber", formulaParams: params };
-          lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
-          uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: params };
-          break;
-        }
-        if (currentMetaanalysis.graphs[i].formulaName === 'forestPlotPercentGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
-          params = currentMetaanalysis.graphs[i].formulaParams;
-          orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [params[0], params[2]] };
-          wtFunc = { formulaName: "weightPercent", formulaParams: params };
-          lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: params };
-          uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: params };
-          break;
-        }
-      }
-
-      if (i === currentMetaanalysis.graphs.length) {
-        // we don't have any parameters for the forestPlot        console.log(i);
+      if (graph.formulaName === 'forestPlotNumberGraph' && isColCompletelyDefined(graph)) {
+        params = graph.formulaParams;
+        orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
+        wtFunc = { formulaName: "weightNumber", formulaParams: params };
+        lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: params };
+        uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: params };
+      } else
+      if (graph.formulaName === 'forestPlotPercentGraph' && isColCompletelyDefined(graph)) {
+        params = graph.formulaParams;
+        orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [params[0], params[2]] };
+        wtFunc = { formulaName: "weightPercent", formulaParams: params };
+        lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: params };
+        uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: params };
+      } else {
+        // this function does not handle this type of graph or the graph is not completely defined
         return;
       }
 
@@ -506,7 +480,7 @@
 
       var lines=[];
 
-      for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
+      for (var i=0; i<currentMetaanalysis.papers.length; i+=1) {
         for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
           if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
           var line = {};
@@ -540,10 +514,12 @@
       }
 
       var plotEl = _.cloneTemplate('forest-plot-template').children[0];
-      var forestPlotId = 'forest-plot-' + k;
 
-      plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
+      plotEl.classList.toggle('maximized', isPlotMaximized(graphIndex));
       plotsContainer.appendChild(plotEl);
+
+      // add an id to the current graph
+      plotEl.setAttribute('data-graph-id', graphIndex);
 
       var orAggrFunc = { formulaName: "weightedMeanAggr", formulaParams: [ orFunc, wtFunc ] };
       var lclAggrFunc = { formulaName: "lowerConfidenceLimitAggr", formulaParams: [ orFunc, wtFunc ] };
@@ -560,7 +536,7 @@
       }
 
       if (isNaN(aggregates.or*0) || isNaN(aggregates.lcl*0) || isNaN(aggregates.ucl*0)) {
-      /////////////////////////////////////  aggregates.lcl = 0;
+        aggregates.lcl = 0;
         aggregates.ucl = 0;
       }
 
@@ -681,6 +657,7 @@
       })
 
 
+
       // put summary into the plot
       if (!isNaN(aggregates.or*0)) {
         var sumT = _.findEl(plotEl, 'template.summary');
@@ -735,21 +712,17 @@
         startingTick += 1;
       }
 
-
       axesT.parentElement.insertBefore(axesEl, axesT);
 
       _.addEventListener(axesEl, '.positioningbutton', 'click', function (e) {
-        plotEl.classList.toggle('maximized');
-        localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
+        maximizePlot(plotEl);
         e.stopPropagation();
       })
-      // add an id to the current graph
-      plotEl.setAttribute('data-graph-id', forestPlotId);
 
       plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
       plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
       // todo set plot widths based on maximum text sizes
-    }
+    });
   }
 
   function drawForestPlotGroup() {
@@ -1200,39 +1173,28 @@
 
     var plotsContainer = _.findEl('#metaanalysis > .plots');
 
-    for (var k=0; k<currentMetaanalysis.graphs.length; k++) {
+    currentMetaanalysis.graphs.forEach(function (graph, graphIndex) {
       var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params, dataParams;
 
-      if (currentMetaanalysis.graphs[k].formulaName && currentMetaanalysis.graphs[k].formulaName.indexOf('forestPlot') != -1) {
-        continue;
-      }
-
-      for (var i=k; i<currentMetaanalysis.graphs.length; i++) {
-        if (currentMetaanalysis.graphs[i].formulaName === 'grapeChartNumberGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
-          params = currentMetaanalysis.graphs[i].formulaParams;
-          dataParams = params.slice(0, 4); // the first param is for grouping
-          orFunc = { formulaName: "logOddsRatioNumber", formulaParams: dataParams };
-          wtFunc = { formulaName: "weightNumber", formulaParams: dataParams };
-          lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: dataParams };
-          uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: dataParams };
-          moderatorParam = params[4];
-          break;
-        }
-        if (currentMetaanalysis.graphs[i].formulaName === 'grapeChartPercentGraph' && isColCompletelyDefined(currentMetaanalysis.graphs[i])) {
-          params = currentMetaanalysis.graphs[i].formulaParams;
-          dataParams = params.slice(0, 4); // the first param is for grouping
-          orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [dataParams[0], dataParams[2]] };
-          wtFunc = { formulaName: "weightPercent", formulaParams: dataParams };
-          lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: dataParams };
-          uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: dataParams };
-          moderatorParam = params[4];
-          break;
-        }
-
-      }
-
-      if (i === currentMetaanalysis.graphs.length) {
-        // we don't have any parameters for the grapeChart
+      if (graph.formulaName === 'grapeChartNumberGraph' && isColCompletelyDefined(graph)) {
+        params = graph.formulaParams;
+        dataParams = params.slice(0, 4); // the first param is for grouping
+        orFunc = { formulaName: "logOddsRatioNumber", formulaParams: dataParams };
+        wtFunc = { formulaName: "weightNumber", formulaParams: dataParams };
+        lclFunc = { formulaName: "lowerConfidenceLimitNumber", formulaParams: dataParams };
+        uclFunc = { formulaName: "upperConfidenceLimitNumber", formulaParams: dataParams };
+        moderatorParam = params[4];
+      } else
+      if (graph.formulaName === 'grapeChartPercentGraph' && isColCompletelyDefined(graph)) {
+        params = graph.formulaParams;
+        dataParams = params.slice(0, 4); // the first param is for grouping
+        orFunc = { formulaName: "logOddsRatioPercent", formulaParams: [dataParams[0], dataParams[2]] };
+        wtFunc = { formulaName: "weightPercent", formulaParams: dataParams };
+        lclFunc = { formulaName: "lowerConfidenceLimitPercent", formulaParams: dataParams };
+        uclFunc = { formulaName: "upperConfidenceLimitPercent", formulaParams: dataParams };
+        moderatorParam = params[4];
+      } else {
+        // this function does not handle this type of graph or the graph is not completely defined
         return;
       }
 
@@ -1245,7 +1207,7 @@
       var data = [];
       var groups = [];
 
-      for (i=0; i<currentMetaanalysis.papers.length; i+=1) {
+      for (var i=0; i<currentMetaanalysis.papers.length; i+=1) {
         for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
           if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
           var line = {};
@@ -1284,10 +1246,12 @@
       }
 
       var plotEl = _.cloneTemplate('grape-chart-template').children[0];
-      var grapeChartId = 'grape-chart-' + k;
 
-      plotEl.classList.toggle('maximized', !!localStorage.plotMaximized);
+      plotEl.classList.toggle('maximized', isPlotMaximized(graphIndex));
       plotsContainer.appendChild(plotEl);
+
+      // add an id to the current graph
+      plotEl.setAttribute('data-graph-id', graphIndex);
 
       groups.sort(); // alphabetically
 
@@ -1295,6 +1259,7 @@
         groups.map(function (group) {
           return data.filter(function (exp) { return exp.group == group; });
         });
+
 
       // todo use per-group aggregates here
       var perGroup = {};
@@ -1306,9 +1271,6 @@
       });
 
       // todo highlight the current experiment in forest plot and in grape chart
-
-      // add an id to the current graph
-      plotEl.setAttribute('data-graph-id', grapeChartId);
 
       // set chart width based on number of groups
       plotEl.setAttribute('width', parseInt(plotEl.dataset.zeroGroupsWidth) + groups.length * parseInt(plotEl.dataset.groupSpacing));
@@ -1413,8 +1375,7 @@
         if (index === groups.length - 1) {
           groupEl.classList.add('with-pos-button');
           _.addEventListener(groupEl, '.positioningbutton', 'click', function (e) {
-            plotEl.classList.toggle('maximized');
-            localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
+            maximizePlot(plotEl);
             e.stopPropagation();
           })
         }
@@ -1485,7 +1446,7 @@
         startingTickVal = startingTickVal * TICK_SPACING[_.mod(startingTick, TICK_SPACING.length)];
         startingTick += 1;
       }
-    }
+    });
   }
 
   var positionedGrapes;
@@ -2140,12 +2101,17 @@
     }
   }
 
+  function getAnyFormulaLabelById(id) {
+    var formula = lima.getFormulaById(id) || lima.getAggregateFormulaById(id) || lima.getGraphFormulaById(id);
+    return (formula ? formula.label : 'no formula selected');
+  }
+
   function getRichColumnLabel(col, level) {
     if (level == undefined) level = col.number == null ? 1 : 0;
 
     var retval = '';
     if (level != Infinity && col.number !== undefined) retval += '<span>' + col.number + '. </span>';
-    retval += '<span>' + lima.getRichLabelById(col.formulaName) + '</span> (';
+    retval += '<span>' + getAnyFormulaLabelById(col.formulaName) + '</span> (';
 
     if (level == 0) {
       retval += '…';
@@ -2202,9 +2168,6 @@
   }
 
   function recalculateComputedData() {
-    // we need to empty the content to avoid graphs duplicates and drawing errors
-    var plotsContainer = _.findEl('.plots');
-    plotsContainer.innerHTML = '';
     // clear computation cache
     dataCache = {};
     // call all the calculation functions
@@ -2799,161 +2762,190 @@
   }
 
 
-/* BANNER HERE FOR 'graphs'
+  /* graphs
+   *
+   *
+   *    ####  #####    ##   #####  #    #  ####
+   *   #    # #    #  #  #  #    # #    # #
+   *   #      #    # #    # #    # ######  ####
+   *   #  ### #####  ###### #####  #    #      #
+   *   #    # #   #  #    # #      #    # #    #
+   *    ####  #    # #    # #      #    #  ####
+   *
+   *
+   */
 
-*/
-
-// TODO: Revisit, trim unnecessary bits
-function fillGraphTable(metaanalysis) {
-  var table = _.cloneTemplate('graphs-table-template');
-  var addGraphNode = _.findEl(table, 'tr.add');
-
-  metaanalysis.graphs.forEach(function (graph, graphIndex) {
-    var graphEl = _.cloneTemplate('graph-row-template').children[0];
-    addGraphNode.parentElement.insertBefore(graphEl, addGraphNode);
-
-    var graphValTd = _.findEl(graphEl, 'td');
-    // Editing Options
-    // Add an option for every graph formula we know
-    var graphFormulas = lima.listGraphFormulas();
-    var graphFormulasDropdown = _.findEl(graphEl, 'select.graphformulas')
-    for (var i = 0; i < graphFormulas.length; i++){
-      var el = document.createElement("option");
-      el.textContent = graphFormulas[i].label;
-      el.value = graphFormulas[i].id;
-      if (graph.formulaName === el.value) {
-        el.selected = true;
-        graphFormulasDropdown.classList.remove('validationerror');
-      }
-      graphFormulasDropdown.appendChild(el);
-    }
-
-    graphFormulasDropdown.onchange = function(e) {
-      graph.formulaName = e.target.value;
-      graph.formula = lima.createFormulaString(graph);
-
-      var formula = lima.getGraphFormulaById(graph.formulaName);
-      if (formula) {
-        graphFormulasDropdown.classList.remove('validationerror');
-      } else {
-        graphFormulasDropdown.classList.add('validationerror');
-      }
-      // we'll call setValidationErrorClass() in fillGraphColumnsSelection
-
-      // make sure formula columns array matches the number of expected parameters
-      graph.formulaParams.length = formula ? formula.parameters.length : 0;
-
-      // fill in the current formula
-      _.fillEls(graphEl, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
-
-      // fill the columns selection
-      fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula);
-
-      _.scheduleSave(metaanalysis);
-      recalculateComputedData();
-    };
-
-    var graphFormula = lima.getGraphFormulaById(graph.formulaName);
-    fillGraphColumnsSelection(metaanalysis, graph, graphEl, graphFormula);
-
-    setupPopupBoxPinning(graphEl, '.datum.popupbox', graph.formula);
-    _.setDataProps(graphEl, '.datum.popupbox', 'index', graphIndex);
-
-    _.addEventListener(graphEl, 'button.move', 'click', moveGraph);
-    _.addEventListener(graphEl, 'button.delete', 'click', deleteGraph);
-
-    fillGraphInformation(graphEl, graph);
-    fillComments('comment-template', graphValTd, '.commentcount', '.datum.popupbox main', metaanalysis, ['graphs', graphIndex, 'comments']);
-  });
-
-  // Event handlers
-  _.addEventListener(table, 'tr.add button.add', 'click', addNewGraphToMetaanalysis);
-
-  var graphsContainer = _.findEl('#metaanalysis .graphs');
-  graphsContainer.appendChild(table);
-}
-
-function fillGraphInformation(graphEl, graph) {
-  _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
-  _.setProps(graphEl, '.fullgraphlabel', 'innerHTML', getColTitle(graph, Infinity));
-  // todo something for the non-editing case
-}
-
-function fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula) {
-  // editing drop-down boxes for parameter columns
-  var graphColumnsSelectionEl = _.findEl(graphEl, '.graphcolumnsselection');
-  // clear out old children.
-  graphColumnsSelectionEl.innerHTML = '';
-
-  if (!formula) return;
-
-  var noOfParams = formula.parameters.length;
-
-  for (var i = 0; i < noOfParams; i++){
-    // Make a select dropdown
-    var label = document.createElement('label');
-    label.textContent = formula.parameters[i] + ': ';
-    graphColumnsSelectionEl.appendChild(label);
-
-    var select = document.createElement("select");
-    label.appendChild(select);
-
-    // the first option is an instruction
-    var op = document.createElement("option");
-    op.textContent = 'Select a column';
-    op.value = '';
-    select.appendChild(op);
-    select.classList.add('validationerror');
-
-    var foundCurrentValue = false;
-
-    // Now make an option for each column in metaanalysis
-    // account for computed columns in metaanalysis.columns
-    for (var j = 0; j < metaanalysis.columns.length; j++){
-      var colId = metaanalysis.columns[j];
-      var found = makeOption(colId, graph, graph.formulaParams[i], select);
-      foundCurrentValue = foundCurrentValue || found;
-    }
-
-    // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
-    if (!foundCurrentValue) {
-      colId = graph.formulaParams[i];
-      makeOption(colId, graph, colId, select);
-    }
-
-    setValidationErrorClass();
-
-    // listen to changes of the dropdown box
-    // preserve the value of i inside this code
-    (function(i, select){
-      select.onchange = function(e) {
-        graph.formulaParams[i] = lima.parseFormulaString(e.target.value);
-        graph.formula = lima.createFormulaString(graph);
-        if (e.target.value) {
-          select.classList.remove('validationerror');
-        } else {
-          select.classList.add('validationerror');
-        }
-        setValidationErrorClass();
-        _.scheduleSave(metaanalysis);
-        fillGraphInformation(graphEl, graph);
-        recalculateComputedData();
-      };
-    })(i, select);
-
+  function dropPlots() {
+    // we need to empty the content to avoid graphs duplicates and drawing errors
+    var plotsContainer = _.findEl('.plots');
+    plotsContainer.innerHTML = '';
   }
 
-  fillGraphInformation(graphEl, graph);
-}
+  function isPlotMaximized(graphIndex) {
+    return localStorage.plotMaximized == window.location.pathname + graphIndex;
+  }
 
-function addNewGraphToMetaanalysis() {
-  var graph = {formulaName: null, formulaParams: []};
-  graph.formula = lima.createFormulaString(graph);
-  currentMetaanalysis.graphs.push(graph);
-  updateMetaanalysisView();
-  _.scheduleSave(currentMetaanalysis);
-  setTimeout(focusFirstValidationError, 0);
-}
+  function maximizePlot(plotEl) {
+    plotEl.classList.toggle('maximized');
+    localStorage.plotMaximized = plotEl.classList.contains('maximized') ? window.location.pathname + plotEl.dataset.graphId : '';
+
+    // de-maximize all other plots
+    var plotsContainer = _.findEl('.plots');
+    for (var i = 0; i < plotsContainer.children.length; i += 1) {
+      if (plotsContainer.children[i] !== plotEl) plotsContainer.children[i].classList.remove('maximized');
+    }
+  }
+
+  function fillGraphTable(metaanalysis) {
+    var table = _.cloneTemplate('graphs-table-template');
+    var addGraphNode = _.findEl(table, 'tr.add');
+
+    metaanalysis.graphs.forEach(function (graph, graphIndex) {
+      var graphEl = _.cloneTemplate('graph-row-template').children[0];
+      addGraphNode.parentElement.insertBefore(graphEl, addGraphNode);
+
+      var graphValTd = _.findEl(graphEl, 'td');
+      // Editing Options
+      // Add an option for every graph formula we know
+      var graphFormulas = lima.listGraphFormulas();
+      var graphFormulasDropdown = _.findEl(graphEl, 'select.graphformulas')
+      for (var i = 0; i < graphFormulas.length; i++){
+        var el = document.createElement("option");
+        el.textContent = graphFormulas[i].label;
+        el.value = graphFormulas[i].id;
+        if (graph.formulaName === el.value) {
+          el.selected = true;
+          graphFormulasDropdown.classList.remove('validationerror');
+        }
+        graphFormulasDropdown.appendChild(el);
+      }
+
+      graphFormulasDropdown.onchange = function(e) {
+        graph.formulaName = e.target.value;
+        graph.formula = lima.createFormulaString(graph);
+
+        var formula = lima.getGraphFormulaById(graph.formulaName);
+        if (formula) {
+          graphFormulasDropdown.classList.remove('validationerror');
+        } else {
+          graphFormulasDropdown.classList.add('validationerror');
+        }
+        // we'll call setValidationErrorClass() in fillGraphColumnsSelection
+
+        // make sure formula columns array matches the number of expected parameters
+        graph.formulaParams.length = formula ? formula.parameters.length : 0;
+
+        // fill in the current formula
+        _.fillEls(graphEl, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
+
+        // fill the columns selection
+        fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula);
+
+        _.scheduleSave(metaanalysis);
+        recalculateComputedData();
+      };
+
+      var graphFormula = lima.getGraphFormulaById(graph.formulaName);
+      fillGraphColumnsSelection(metaanalysis, graph, graphEl, graphFormula);
+
+      setupPopupBoxPinning(graphEl, '.datum.popupbox', graph.formula);
+      _.setDataProps(graphEl, '.datum.popupbox', 'index', graphIndex);
+
+      _.addEventListener(graphEl, 'button.move', 'click', moveGraph);
+      _.addEventListener(graphEl, 'button.delete', 'click', deleteGraph);
+
+      fillGraphInformation(graphEl, graph);
+      fillComments('comment-template', graphValTd, '.commentcount', '.datum.popupbox main', metaanalysis, ['graphs', graphIndex, 'comments']);
+    });
+
+    // Event handlers
+    _.addEventListener(table, 'tr.add button.add', 'click', addNewGraphToMetaanalysis);
+
+    var graphsContainer = _.findEl('#metaanalysis .graphs');
+    graphsContainer.appendChild(table);
+  }
+
+  function fillGraphInformation(graphEl, graph) {
+    _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
+    _.setProps(graphEl, '.fullgraphlabel', 'innerHTML', getColTitle(graph, Infinity));
+    // todo something for the non-editing case
+  }
+
+  function fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula) {
+    // editing drop-down boxes for parameter columns
+    var graphColumnsSelectionEl = _.findEl(graphEl, '.graphcolumnsselection');
+    // clear out old children.
+    graphColumnsSelectionEl.innerHTML = '';
+
+    if (!formula) return;
+
+    var noOfParams = formula.parameters.length;
+
+    for (var i = 0; i < noOfParams; i++){
+      // Make a select dropdown
+      var label = document.createElement('label');
+      label.textContent = formula.parameters[i] + ': ';
+      graphColumnsSelectionEl.appendChild(label);
+
+      var select = document.createElement("select");
+      label.appendChild(select);
+
+      // the first option is an instruction
+      var op = document.createElement("option");
+      op.textContent = 'Select a column';
+      op.value = '';
+      select.appendChild(op);
+      select.classList.add('validationerror');
+
+      var foundCurrentValue = false;
+
+      // Now make an option for each column in metaanalysis
+      // account for computed columns in metaanalysis.columns
+      for (var j = 0; j < metaanalysis.columns.length; j++){
+        var colId = metaanalysis.columns[j];
+        var found = makeOption(colId, graph, graph.formulaParams[i], select);
+        foundCurrentValue = foundCurrentValue || found;
+      }
+
+      // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
+      if (!foundCurrentValue) {
+        colId = graph.formulaParams[i];
+        makeOption(colId, graph, colId, select);
+      }
+
+      setValidationErrorClass();
+
+      // listen to changes of the dropdown box
+      // preserve the value of i inside this code
+      (function(i, select){
+        select.onchange = function(e) {
+          graph.formulaParams[i] = lima.parseFormulaString(e.target.value);
+          graph.formula = lima.createFormulaString(graph);
+          if (e.target.value) {
+            select.classList.remove('validationerror');
+          } else {
+            select.classList.add('validationerror');
+          }
+          setValidationErrorClass();
+          _.scheduleSave(metaanalysis);
+          fillGraphInformation(graphEl, graph);
+          recalculateComputedData();
+        };
+      })(i, select);
+
+    }
+
+    fillGraphInformation(graphEl, graph);
+  }
+
+  function addNewGraphToMetaanalysis() {
+    var graph = {formulaName: null, formulaParams: []};
+    graph.formula = lima.createFormulaString(graph);
+    currentMetaanalysis.graphs.push(graph);
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+    setTimeout(focusFirstValidationError, 0);
+  }
 
 
   /* comments
@@ -3678,10 +3670,20 @@ function addNewGraphToMetaanalysis() {
     _.scheduleSave(currentMetaanalysis);
   }
 
-/* BANNER FOR 'changing graphs' HERE
-*/
+  /* changing graphs
+   *
+   *
+   *    ####  #    #   ##   #    #  ####  # #    #  ####      ####  #####    ##   #####  #    #  ####
+   *   #    # #    #  #  #  ##   # #    # # ##   # #    #    #    # #    #  #  #  #    # #    # #
+   *   #      ###### #    # # #  # #      # # #  # #         #      #    # #    # #    # ######  ####
+   *   #      #    # ###### #  # # #  ### # #  # # #  ###    #  ### #####  ###### #####  #    #      #
+   *   #    # #    # #    # #   ## #    # # #   ## #    #    #    # #   #  #    # #      #    # #    #
+   *    ####  #    # #    # #    #  ####  # #    #  ####      ####  #    # #    # #      #    #  ####
+   *
+   *
+   */
 
-// TODO: Revisit this to make sure it makes sense still
+  // todo: this is mostly identical with aggregates, could be re-factored
 
   function moveGraph() {
     // a click will pin the box,
