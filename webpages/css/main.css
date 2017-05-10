@@ -112,7 +112,8 @@ body > footer {
   font-size: 85%;
   line-height: 120%;
   height: 5rem;
-  background-color: #c4ebf1; /* from poster */
+  /*background-color: #c4ebf1; /* from poster */
+  background-color: #D6EDFE;
   box-sizing: border-box;
   padding: 1em;
   margin: 0;
@@ -130,7 +131,7 @@ body > footer > p {
 
 .alert {
   padding: 1em;
-  background-color: #ff8;
+  background-color: #EFEF3E;
   font-size: 120%;
   line-height: 1.2em;
   border: 1px solid #800;
@@ -183,6 +184,14 @@ main.index > img.scrollhint.hide {
   opacity: 0;
 }
 
+main.index > section.columns > section > h2.second_title {
+  font-size: 1.5rem;
+}
+
+main.index > section.columns > section > ul > li {
+  font-size: 1.2rem;
+  padding-top: 0.8rem;
+}
 
 main.index > section {
   display: block;
@@ -198,17 +207,26 @@ main.index > section > * {
 }
 
 main.index > section:nth-of-type(4n+2) {
-  background-color: #90e8ef; /* from poster */
+  /*background-color: #90e8ef; /* from poster */
+  /*background-color: #D6EDFE; /* from poster */
+  background-image: linear-gradient(to bottom, #D6EDFE, #DADAFE);
+
   color: black;
 }
 
 main.index > section:nth-of-type(4n+3) {
-  background-color: #177894; /* from poster */
+  /*background-color: #177894; /* from poster */
+  /*background-color: #3992D6; /* from poster */
+  background-image: linear-gradient(to bottom, #0484E6, #3992D6);
+
   color: white;
 }
 
 main.index > section:nth-of-type(4n+4) {
-  background-color: #c4ebf1; /* from poster */
+  /*background-color: #c4ebf1; /* from poster */
+  /*background-color: #D7EEFF; /* from poster */
+  background-image: linear-gradient(to bottom, #D7EEFF, #F2F9FF);
+
   color: black;
 }
 
@@ -249,6 +267,8 @@ main.index > section.columns > h1 {
   max-width: none;
   text-align: center;
   margin-bottom: 2rem;
+  font-size: 2.5rem;
+  padding-bottom: 2rem;
 }
 
 main.index > section.columns > section {
@@ -268,10 +288,31 @@ main.index > section.columns > section > ul {
   line-height: 150%;
 }
 
-main.index > section > h1 {
+main.index > section.grape_column > h1{
+  flex: 1 1 100%;
+  max-width: none;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  padding-bottom: 2rem;
+}
+
+main.index > section.grape_column > p.preGraph {
+  padding-bottom: 2rem;
   margin-bottom: 2rem;
 }
-main.index > section > ol {
+
+main.index > section.grape_column > p.title_graph {
+  text-align: center;
+
+}
+
+main.index > section > h1 {
+  margin-bottom: 2rem;
+  font-size: 1.6rem;
+}
+
+main.index > section > ul {
   line-height: 150%;
 }
 
@@ -756,7 +797,9 @@ section.list > ul > li > ul.tags > li {
 }
 
 #paper > header {
-  background: #c4ebf1;
+  /*background: #c4ebf1;*/
+  background-color: #D6EDFE;
+
   margin: 0;
   padding: .5em;
   position: relative;
@@ -1232,7 +1275,8 @@ body:not(.page-about-you) #metaanalysis > header .edityourcopy {
 }
 
 #metaanalysis > header {
-  background: #c4ebf1;
+  /*background: #c4ebf1;*/
+  background-color: #D6EDFE;
   margin: 0;
   padding: .5em;
   position: relative;
