@@ -2263,6 +2263,11 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
   font-weight: normal;
 }
 
+#paper table.experiments .datum.popupboxtrigger.empty .datum.popupbox p.changewarning,
+#metaanalysis table.experiments .datum.popupboxtrigger.empty .datum.popupbox p.changewarning {
+  display:none;
+}
+
 #paper table.experiments .datum.popupbox p.changewarning,
 #metaanalysis table.experiments .datum.popupbox p.changewarning {
   font-style: italic;
@@ -2270,8 +2275,8 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
   font-size: 80%;
 }
 
-#paper table.experiments .datum.popupbox p.animated,
-#metaanalysis table.experiments .datum.popupbox p.animated {
+#paper table.experiments td span[contenteditable]:focus + .datum.popupbox p.changewarning,
+#metaanalysis table.experiments td span[contenteditable]:focus + .datum.popupbox p.changewarning {
   animation-duration: 700ms;
   animation-name: pulse-red;
   animation-direction: alternate;
