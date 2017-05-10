@@ -183,6 +183,16 @@ main.index > img.scrollhint.hide {
   opacity: 0;
 }
 
+main.index > section.columns > section > h1 {
+  font-size: 1.5rem;
+  line-height: 125%;
+}
+
+main.index > section.columns > section > ul > li {
+  font-size: 1.2rem;
+  line-height: 125%;
+  padding-top: 0.8rem;
+}
 
 main.index > section {
   display: block;
@@ -251,6 +261,8 @@ main.index > section.columns > h1 {
   max-width: none;
   text-align: center;
   margin-bottom: 2rem;
+  font-size: 2.5rem;
+  line-height: 125%;
 }
 
 main.index > section.columns > section {
@@ -262,6 +274,7 @@ main.index > section.columns > section {
 
 main.index > section.columns > section > h2 {
   font-size: 1.3rem;
+  line-height: 125%;
   font-weight: normal;
 }
 
@@ -270,10 +283,36 @@ main.index > section.columns > section > ul {
   line-height: 150%;
 }
 
-main.index > section > h1 {
+main.index > section.grapechart {
+  padding-top: 6rem; /* to accommodate the h1 below */
+  position: relative;
+}
+
+main.index > section.grapechart > h1 {
+  flex: 1 1 100%;
+  max-width: none;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  line-height: 125%;
+}
+
+main.index > section.grapechart > p {
   margin-bottom: 2rem;
 }
-main.index > section > ol {
+
+main.index > section.grapechart > p.caption {
+  text-align: center;
+
+}
+
+main.index > section > h1 {
+  margin-bottom: 2rem;
+  font-size: 1.6rem;
+  line-height: 125%;
+}
+
+main.index > section > ul {
   line-height: 150%;
 }
 
