@@ -1363,7 +1363,13 @@
 
     var groupT = _.findEl(plotEl, 'template.group-grapes');
     var groupTooltipsT= _.findEl(plotEl, 'template.group-tooltips');
+
+    var currentGroup = -1;
+
     groups.forEach(function (group, index) {
+
+      currentGroup++;
+
       var groupData = dataGroups[index];
 
       var groupEl = _.cloneTemplate(groupT);
@@ -1405,6 +1411,8 @@
 
         grapeEl.setAttribute('r', getGrapeRadius(exp.wt));
         _.setAttrs(tooltipEl, '.grape', 'r', getGrapeRadius(exp.wt));
+
+        grapeEl.classList.add('c' + currentGroup%plotEl.dataset.nbGroups);
 
         // x-position so grapes don't overlap
         var grapeX = getPosition(index);
