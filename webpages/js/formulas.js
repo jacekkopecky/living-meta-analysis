@@ -22,27 +22,9 @@
     return [
       {
         id: 'logOddsRatio',
-        label: 'Log Odds Ratio',
+        label: 'Log Odds Ratio (fractions)',
         func: logOddsRatio,
         parameters: [ 'group 1 (e.g. experimental)', 'group 2 (e.g. control)' ]
-      },
-      {
-        id: 'weight',
-        label: 'Weight',
-        func: weight,
-        parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N' ]
-      },
-      {
-        id: 'lowerConfidenceLimit',
-        label: 'Lower Log Confidence Limit',
-        func: lowerConfidenceLimit,
-        parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N' ]
-      },
-      {
-        id: 'upperConfidenceLimit',
-        label: 'Upper Log Confidence Limit',
-        func: upperConfidenceLimit,
-        parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N' ]
       },
       {
         id: 'logOddsRatioPercent',
@@ -51,28 +33,22 @@
         parameters: [ 'group 1 (e.g. experimental %)', 'group 2 (e.g. control %)' ]
       },
       {
-        id: 'weightPercent',
-        label: 'Weight (percentages)',
-        func: weightPercent,
-        parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
-      },
-      {
-        id: 'lowerConfidenceLimitPercent',
-        label: 'Lower Log Confidence Limit (percentages)',
-        func: lowerConfidenceLimitPercent,
-        parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
-      },
-      {
-        id: 'upperConfidenceLimitPercent',
-        label: 'Upper Log Confidence Limit (percentages)',
-        func: upperConfidenceLimitPercent,
-        parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
-      },
-      {
         id: 'logOddsRatioNumber',
         label: 'Log Odds Ratio (numbers affected)',
         func: logOddsRatioNumber,
         parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ]
+      },
+      {
+        id: 'weight',
+        label: 'Weight (fractions)',
+        func: weight,
+        parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N' ]
+      },
+      {
+        id: 'weightPercent',
+        label: 'Weight (percentages)',
+        func: weightPercent,
+        parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
       },
       {
         id: 'weightNumber',
@@ -81,10 +57,34 @@
         parameters: [ 'group 1 outcome (affected)', 'group 1 N', 'group 2 outcome (affected)', 'group 2 N' ]
       },
       {
+        id: 'lowerConfidenceLimit',
+        label: 'Lower Log Confidence Limit (fractions)',
+        func: lowerConfidenceLimit,
+        parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N' ]
+      },
+      {
+        id: 'lowerConfidenceLimitPercent',
+        label: 'Lower Log Confidence Limit (percentages)',
+        func: lowerConfidenceLimitPercent,
+        parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
+      },
+      {
         id: 'lowerConfidenceLimitNumber',
         label: 'Lower Log Confidence Limit (numbers affected)',
         func: lowerConfidenceLimitNumber,
         parameters: [ 'group 1 outcome (affected)', 'group 1 N', 'group 2 outcome (affected)', 'group 2 N' ]
+      },
+      {
+        id: 'upperConfidenceLimit',
+        label: 'Upper Log Confidence Limit (fractions)',
+        func: upperConfidenceLimit,
+        parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N' ]
+      },
+      {
+        id: 'upperConfidenceLimitPercent',
+        label: 'Upper Log Confidence Limit (percentages)',
+        func: upperConfidenceLimitPercent,
+        parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N' ]
       },
       {
         id: 'upperConfidenceLimitNumber',
