@@ -254,14 +254,26 @@
     return null;
   }
 
+  function valueOrArrayItem(arr, index) {
+    if (Array.isArray(arr)) return arr[index];
+
+    return arr;
+  }
+
   // here start the functions implementing the aggregates
   // Key structure to an aggregate function:
-  //  - Parameters must be arrays; may contain null/undefined values.
+  //  - Parameters can be arrays or single values (at runtime); if arrays, may contain null/undefined values, or empty strings.
+  //  - Data should be handled with _.strictToNumberOrNull().
   //  - The functions return a single numerical value.
   //  - May return NaN or infinities.
   //  - Must gracefully handle wacko figures, including !VALUE and nulls.
 
+  // todo the functions below always re-compute from raw data, even if sum of weights has already been computed a number of times before
+  // this may mean we want somehow to integrate caching into formulas.js rather than metaanalysis.js
+
   function sumAggr (valueArray) {
+    if (!Array.isArray(valueArray)) return valueArray;
+
     var total = 0;
     valueArray.forEach(function(value) {
       total += _.strictToNumberOrNull(value);
@@ -276,8 +288,8 @@
     var total = 0;
 
     for (var i=0; i<valueArray1.length; i++) {
-      var value1 = _.strictToNumberOrNull(valueArray1[i]);
-      var value2 = _.strictToNumberOrNull(valueArray2[i]);
+      var value1 = _.strictToNumberOrNull(valueOrArrayItem(valueArray1,i));
+      var value2 = _.strictToNumberOrNull(valueOrArrayItem(valueArray2,i));
       total += value1 * value2;
     }
 
