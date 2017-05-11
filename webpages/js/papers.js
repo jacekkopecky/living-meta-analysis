@@ -246,9 +246,11 @@
         if (parsed != null) {
           col.formulaName = parsed.formulaName;
           col.formulaParams = parsed.formulaParams;
+          col.formulaObj = parsed.formulaObj;
         } else {
           col.formulaName = null;
           col.formulaParams = [];
+          col.formulaObj = null;
         }
       }
     });
@@ -732,7 +734,7 @@
     formulasDropdown.onchange = function(e) {
       col.formulaName = e.target.value;
 
-      var formula = lima.getFormulaById(col.formulaName);
+      var formula = col.formulaObj;
       if (formula) {
         formulasDropdown.classList.remove('validationerror');
       } else {
@@ -751,7 +753,7 @@
       recalculateComputedData();
     };
 
-    var formula = lima.getFormulaById(col.formulaName);
+    var formula = col.formulaObj;
     fillFormulaColumnsSelection(paper, col, th, formula);
 
     setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.formula);
@@ -869,9 +871,8 @@
     }
   }
 
-  function getFormulaLabelById(id) {
-    var formula = lima.getFormulaById(id);
-    return (formula ? formula.label : 'no formula selected');
+  function getFormulaLabel(formulaObj) {
+    return (formulaObj ? formulaObj.label : 'no formula selected');
   }
 
   function getRichColumnLabel(col, level) {
@@ -879,7 +880,7 @@
 
     var retval = '';
     if (level != Infinity && col.number !== undefined) retval += '<span>' + col.number + '. </span>';
-    retval += '<span>' + getFormulaLabelById(col.formulaName) + '</span> (';
+    retval += '<span>' + getFormulaLabel(col.formulaObj) + '</span> (';
 
     if (level == 0) {
       retval += '…';
@@ -971,7 +972,7 @@
       var inputs = [];
 
       if (isColCompletelyDefined(col)) {
-        var formula = lima.getFormulaById(col.formulaName);
+        var formula = col.formulaObj;
         if (formula == null) return NaN;
 
         // compute the value
@@ -1000,8 +1001,7 @@
 
     if (typeof col === 'string') return col in lima.columns;
 
-    if (!lima.getFormulaById(col.formulaName) &&
-        !lima.getAggregateFormulaById(col.formulaName)) return false;
+    if (!col.formulaObj) return false;
 
     for (var i=0; i<col.formulaParams.length; i++) {
       if (!isColCompletelyDefined(col.formulaParams[i])) {

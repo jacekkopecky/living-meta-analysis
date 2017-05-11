@@ -4,6 +4,10 @@
   var lima = window.lima;
   var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
 
+  // types (objects so we can quickly compare with ===)
+  lima.FORMULA_TYPE = { type: 'formula' };
+  lima.AGGREGATE_TYPE = { type: 'aggregate' };
+
   /* simple formulas
    *
    *
@@ -19,7 +23,7 @@
 
   lima.listFormulas = function listFormulas() {
     // at some point, the server api might want to host a list of formulas with their definitions
-    return [
+    var retval = [
       {
         id: 'logOddsRatio',
         label: 'Log Odds Ratio (fractions)',
@@ -93,9 +97,11 @@
         parameters: [ 'group 1 outcome (affected)', 'group 1 N', 'group 2 outcome (affected)', 'group 2 N' ]
       },
     ];
+    retval.forEach(function(formula) { formula.type = lima.FORMULA_TYPE; });
+    return retval;
   }
 
-  lima.getFormulaById = function getFormulaById(id) {
+  function getFormulaById(id) {
     var formulas = lima.listFormulas();
     for (var i=0; i<formulas.length; i++) {
       if (formulas[i].id === id) return formulas[i];
@@ -204,7 +210,7 @@
    */
 
   lima.listAggregateFormulas = function listAggregateFormulas() {
-    return [
+    var retval = [
       {
         id: 'weightedMeanAggr',
         label: 'Weighted Mean',
@@ -236,9 +242,11 @@
       //   parameters: ['values1', 'values2'] // There might be more appropriate names for these. Factor1/2?
       // },
     ];
+    retval.forEach(function(aggr) { aggr.type = lima.AGGREGATE_TYPE; });
+    return retval;
   }
 
-  lima.getAggregateFormulaById = function getAggregateFormulaById(id) {
+  function getAggregateFormulaById(id) {
     var aggregateFormulas = lima.listAggregateFormulas();
     for (var i=0; i<aggregateFormulas.length; i++) {
       if (aggregateFormulas[i].id === id) return aggregateFormulas[i];
@@ -344,7 +352,12 @@
       retval.formulaParams = [];
     }
     retval.formula = lima.createFormulaString(retval);
+    retval.formulaObj = lima.getFormulaObject(retval.formulaName);
     return retval;
+  }
+
+  lima.getFormulaObject = function getFormulaObject(name) {
+    return getFormulaById(name) || getAggregateFormulaById(name) || lima.getGraphFormulaById(name);
   }
 
   // this function splits a string by commas, ignoring commas within parentheses
@@ -472,10 +485,13 @@
     assert(val.formulaParams[0] == 'b', "bad formula params in " + JSON.stringify(val));
 
     val = lima.parseFormulaString('a(b(c,d),e,f(g))');
-    assert(JSON.stringify(val) == '{"formulaName":"a","formulaParams":[{"formulaName":"b","formulaParams":["c","d"],"formula":"b(c,d)"},"e",{"formulaName":"f","formulaParams":["g"],"formula":"f(g)"}],"formula":"a(b(c,d),e,f(g))"}', "bad formula parsed in " + JSON.stringify(val));
+    assert(JSON.stringify(val) == '{"formulaName":"a","formulaParams":[{"formulaName":"b","formulaParams":["c","d"],"formula":"b(c,d)","formulaObj":null},"e",{"formulaName":"f","formulaParams":["g"],"formula":"f(g)","formulaObj":null}],"formula":"a(b(c,d),e,f(g))","formulaObj":null}', "bad formula parsed in " + JSON.stringify(val));
 
     val = lima.parseFormulaString('a(b(c(d(e)),f),g,h(i))');
-    assert(JSON.stringify(val) == '{"formulaName":"a","formulaParams":[{"formulaName":"b","formulaParams":[{"formulaName":"c","formulaParams":[{"formulaName":"d","formulaParams":["e"],"formula":"d(e)"}],"formula":"c(d(e))"},"f"],"formula":"b(c(d(e)),f)"},"g",{"formulaName":"h","formulaParams":["i"],"formula":"h(i)"}],"formula":"a(b(c(d(e)),f),g,h(i))"}', "bad formula parsed in " + JSON.stringify(val));
+    assert(JSON.stringify(val) == '{"formulaName":"a","formulaParams":[{"formulaName":"b","formulaParams":[{"formulaName":"c","formulaParams":[{"formulaName":"d","formulaParams":["e"],"formula":"d(e)","formulaObj":null}],"formula":"c(d(e))","formulaObj":null},"f"],"formula":"b(c(d(e)),f)","formulaObj":null},"g",{"formulaName":"h","formulaParams":["i"],"formula":"h(i)","formulaObj":null}],"formula":"a(b(c(d(e)),f),g,h(i))","formulaObj":null}', "bad formula parsed in " + JSON.stringify(val));
+
+    val = lima.parseFormulaString('logOddsRatio(b,c)');
+    assert(JSON.stringify(val) == '{"formulaName":"logOddsRatio","formulaParams":["b","c"],"formula":"logOddsRatio(b,c)","formulaObj":{"id":"logOddsRatio","label":"Log Odds Ratio (fractions)","parameters":["group 1 (e.g. experimental)","group 2 (e.g. control)"],"type":{"type":"formula"}}}', "bad formula parsed in " + JSON.stringify(val));
 
     val = lima.parseFormulaString("undefined(undefined,undefined)");
     assert(val.formulaName == 'undefined', "bad formula name in " + JSON.stringify(val));

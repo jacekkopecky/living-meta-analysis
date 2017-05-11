@@ -212,9 +212,11 @@
       if (parsed != null) {
         obj.formulaName = parsed.formulaName;
         obj.formulaParams = parsed.formulaParams;
+        obj.formulaObj = parsed.formulaObj;
       } else {
         obj.formulaName = null;
         obj.formulaParams = [];
+        obj.formulaObj = null;
       }
     }
   }
@@ -477,6 +479,10 @@
       wtFunc.formula = lima.createFormulaString(wtFunc);
       lclFunc.formula = lima.createFormulaString(lclFunc);
       uclFunc.formula = lima.createFormulaString(uclFunc);
+      orFunc.formulaObj = lima.getFormulaObject(orFunc.formulaName);
+      wtFunc.formulaObj = lima.getFormulaObject(wtFunc.formulaName);
+      lclFunc.formulaObj = lima.getFormulaObject(lclFunc.formulaName);
+      uclFunc.formulaObj = lima.getFormulaObject(uclFunc.formulaName);
 
       var lines=[];
 
@@ -528,6 +534,9 @@
       orAggrFunc.formula = lima.createFormulaString(orAggrFunc);
       lclAggrFunc.formula = lima.createFormulaString(lclAggrFunc);
       uclAggrFunc.formula = lima.createFormulaString(uclAggrFunc);
+      orAggrFunc.formulaObj = lima.getFormulaObject(orAggrFunc.formulaName);
+      lclAggrFunc.formulaObj = lima.getFormulaObject(lclAggrFunc.formulaName);
+      uclAggrFunc.formulaObj = lima.getFormulaObject(uclAggrFunc.formulaName);
 
       var aggregates = {
         or: getDatumValue(orAggrFunc),
@@ -771,6 +780,10 @@
       wtFunc.formula = lima.createFormulaString(wtFunc);
       lclFunc.formula = lima.createFormulaString(lclFunc);
       uclFunc.formula = lima.createFormulaString(uclFunc);
+      orFunc.formulaObj = lima.getFormulaObject(orFunc.formulaName);
+      wtFunc.formulaObj = lima.getFormulaObject(wtFunc.formulaName);
+      lclFunc.formulaObj = lima.getFormulaObject(lclFunc.formulaName);
+      uclFunc.formulaObj = lima.getFormulaObject(uclFunc.formulaName);
 
       var lines = [];
       var groups = [];
@@ -862,6 +875,9 @@
       orAggrFunc.formula = lima.createFormulaString(orAggrFunc);
       lclAggrFunc.formula = lima.createFormulaString(lclAggrFunc);
       uclAggrFunc.formula = lima.createFormulaString(uclAggrFunc);
+      orAggrFunc.formulaObj = lima.getFormulaObject(orAggrFunc.formulaName);
+      lclAggrFunc.formulaObj = lima.getFormulaObject(lclAggrFunc.formulaName);
+      uclAggrFunc.formulaObj = lima.getFormulaObject(uclAggrFunc.formulaName);
 
       var aggregates = {
         or: getDatumValue(orAggrFunc),
@@ -1199,6 +1215,10 @@
       wtFunc.formula = lima.createFormulaString(wtFunc);
       lclFunc.formula = lima.createFormulaString(lclFunc);
       uclFunc.formula = lima.createFormulaString(uclFunc);
+      orFunc.formulaObj = lima.getFormulaObject(orFunc.formulaName);
+      wtFunc.formulaObj = lima.getFormulaObject(wtFunc.formulaName);
+      lclFunc.formulaObj = lima.getFormulaObject(lclFunc.formulaName);
+      uclFunc.formulaObj = lima.getFormulaObject(uclFunc.formulaName);
 
       var data = [];
       var groups = [];
@@ -1969,8 +1989,9 @@
 
     formulasDropdown.onchange = function(e) {
       col.formulaName = e.target.value;
+      col.formulaObj = lima.getFormulaObject(col.formulaName);
 
-      var formula = lima.getFormulaById(col.formulaName);
+      var formula = col.formulaObj;
       if (formula) {
         formulasDropdown.classList.remove('validationerror');
       } else {
@@ -1989,7 +2010,7 @@
       recalculateComputedData();
     };
 
-    var formula = lima.getFormulaById(col.formulaName);
+    var formula = col.formulaObj;
     fillFormulaColumnsSelection(metaanalysis, col, th, formula);
 
     setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.formula);
@@ -2107,9 +2128,8 @@
     }
   }
 
-  function getAnyFormulaLabelById(id) {
-    var formula = lima.getFormulaById(id) || lima.getAggregateFormulaById(id) || lima.getGraphFormulaById(id);
-    return (formula ? formula.label : 'no formula selected');
+  function getFormulaLabel(formulaObj) {
+    return (formulaObj ? formulaObj.label : 'no formula selected');
   }
 
   function getRichColumnLabel(col, level) {
@@ -2117,7 +2137,7 @@
 
     var retval = '';
     if (level != Infinity && col.number !== undefined) retval += '<span>' + col.number + '. </span>';
-    retval += '<span>' + getAnyFormulaLabelById(col.formulaName) + '</span> (';
+    retval += '<span>' + getFormulaLabel(col.formulaObj) + '</span> (';
 
     if (level == 0) {
       retval += '…';
@@ -2206,7 +2226,7 @@
     var val;
 
     if (isColCompletelyDefined(aggregate)) {
-      var formula = lima.getAggregateFormulaById(aggregate.formulaName);
+      var formula = aggregate.formulaObj;
       if (formula == null) return NaN;
 
       // compute the value
@@ -2261,7 +2281,7 @@
       var inputs = [];
 
       if (isColCompletelyDefined(col)) {
-        var formula = lima.getFormulaById(col.formulaName);
+        var formula = col.formulaObj;
         if (formula == null) return NaN;
 
         // compute the value
@@ -2290,9 +2310,7 @@
 
     if (typeof col === 'string') return col in lima.columns;
 
-    if (!lima.getFormulaById(col.formulaName) &&
-        !lima.getAggregateFormulaById(col.formulaName) &&
-        !lima.getGraphFormulaById(col.formulaName)) return false;
+    if (!col.formulaObj) return false;
 
     for (var i=0; i<col.formulaParams.length; i++) {
       if (!isColCompletelyDefined(col.formulaParams[i])) {
@@ -2622,9 +2640,9 @@
 
       aggregateFormulasDropdown.onchange = function(e) {
         aggregate.formulaName = e.target.value;
-        aggregate.formula = lima.createFormulaString(aggregate);
+        aggregate.formulaObj = lima.getFormulaObject(aggregate.formulaName);
 
-        var formula = lima.getAggregateFormulaById(aggregate.formulaName);
+        var formula = aggregate.formulaObj;
         if (formula) {
           aggregateFormulasDropdown.classList.remove('validationerror');
         } else {
@@ -2634,6 +2652,7 @@
 
         // make sure formula columns array matches the number of expected parameters
         aggregate.formulaParams.length = formula ? formula.parameters.length : 0;
+        aggregate.formula = lima.createFormulaString(aggregate);
 
         // fill in the current formula
         _.fillEls(aggregateEl, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
@@ -2645,7 +2664,7 @@
         recalculateComputedData();
       };
 
-      var aggrFormula = lima.getAggregateFormulaById(aggregate.formulaName);
+      var aggrFormula = aggregate.formulaObj;
       fillAggregateColumnsSelection(metaanalysis, aggregate, aggregateEl, aggrFormula);
 
       setupPopupBoxPinning(aggregateEl, '.datum.popupbox', aggregate.formula);
@@ -2828,9 +2847,9 @@
 
       graphFormulasDropdown.onchange = function(e) {
         graph.formulaName = e.target.value;
-        graph.formula = lima.createFormulaString(graph);
+        graph.formulaObj = lima.getFormulaObject(graph.formulaName);
 
-        var formula = lima.getGraphFormulaById(graph.formulaName);
+        var formula = graph.formulaObj;
         if (formula) {
           graphFormulasDropdown.classList.remove('validationerror');
         } else {
@@ -2840,6 +2859,7 @@
 
         // make sure formula columns array matches the number of expected parameters
         graph.formulaParams.length = formula ? formula.parameters.length : 0;
+        graph.formula = lima.createFormulaString(graph);
 
         // fill in the current formula
         _.fillEls(graphEl, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
@@ -2851,7 +2871,7 @@
         recalculateComputedData();
       };
 
-      var graphFormula = lima.getGraphFormulaById(graph.formulaName);
+      var graphFormula = graph.formulaObj;
       fillGraphColumnsSelection(metaanalysis, graph, graphEl, graphFormula);
 
       setupPopupBoxPinning(graphEl, '.datum.popupbox', graph.formula);
