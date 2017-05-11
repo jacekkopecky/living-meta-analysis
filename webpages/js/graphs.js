@@ -3,8 +3,10 @@
 
   var lima = window.lima;
 
+  lima.GRAPH_TYPE = { type: 'graph' };
+
   lima.listGraphFormulas = function listGraphFormulas() {
-    return [
+    var retval = [
       {
         id: 'forestPlotPercentGraph',
         label: 'Forest Plot (percentages)',
@@ -36,6 +38,8 @@
         parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N', 'moderator' ],
       },
     ];
+    retval.forEach(function(graph) { graph.type = lima.GRAPH_TYPE; });
+    return retval;
   }
 
   lima.getGraphFormulaById = function getGraphFormulaById(id) {
