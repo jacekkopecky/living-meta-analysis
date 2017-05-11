@@ -15,7 +15,7 @@ const tools = require('./tools');
 const gcloud = require('google-cloud')(config.gcloudProject);
 const fs = require('fs');
 
-const datastore = gcloud.datastore({ namespace: config.gcloudDatastoreNamespace });
+const datastore = gcloud.datastore({ namespace: config.gcloudDatastoreNamespace, apiEndpoint: "http://localhost:8081"});
 
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
 

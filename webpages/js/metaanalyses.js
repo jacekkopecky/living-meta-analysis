@@ -228,6 +228,7 @@
     if (!Array.isArray(self.papers)) self.papers = [];
     if (!Array.isArray(self.columns)) self.columns = [];
     if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
+    if (!Array.isArray(self.hiddenExperiments)) self.hiddenExperiments = [];
     if (!Array.isArray(self.tags)) self.tags = [];
     if (!Array.isArray(self.aggregates)) self.aggregates = [];
     if (!Array.isArray(self.excludedExperiments)) self.excludedExperiments = [];
@@ -391,6 +392,13 @@
 
     _.setDataProps('#metaanalysis .title.editing', 'origTitle', metaanalysis.title);
     addConfirmedUpdater('#metaanalysis .title.editing', '#metaanalysis .title + .titlerename', '#metaanalysis .title ~ * .titlerenamecancel', 'textContent', checkTitleUnique, metaanalysis, 'title');
+    // DEBUG REMOVE ME
+    _.addEventListener(metaanalysisEl, '.debugbutton', 'click', function(e) {
+      currentMetaanalysis.hiddenExperiments = [];
+      updateMetaanalysisView();
+      _.scheduleSave(currentMetaanalysis);
+    });
+    //DEBUG REMOVE ABOVE
 
     _.setYouOrName();
 
@@ -1314,9 +1322,17 @@
     var addRowNode = _.findEl(table, 'tbody > tr.add');
 
     papers.forEach(function(paper, papIndex) {
+      var papTitleIndex = getFirstNonHiddenExp(paper);
       paper.experiments.forEach(function (experiment, expIndex) {
+        if (isHiddenExp(experiment.id)) {
+            return;
+        }
+
         var tr = _.cloneTemplate('experiment-row-template').children[0];
         tableBodyNode.insertBefore(tr, addRowNode);
+
+        _.setDataProps(tr, 'tr button.hideexperiment', 'id', experiment.id);
+        _.addEventListener(tr, 'tr button.hideexperiment', 'click', hideExp);
 
         _.fillEls(tr, '.paptitle', paper.title);
 
@@ -1327,9 +1343,11 @@
 
         // in the first row for a paper, the paperTitle TH should have rowspan equal to the number of experiments
         // in other rows, the paperTitle TH is hidden by the CSS
-        if (expIndex == 0) {
-          var noExpInCurrPaper = papers[papIndex].experiments.length;
+
+        if (expIndex == papTitleIndex) {
+          var noExpInCurrPaper = getNbUnhiddenExpPaper(paper);
           paperTitleEl.rowSpan = noExpInCurrPaper;
+
           tr.classList.add('paperstart');
 
           fillTags(paperTitleEl, paper);
@@ -1503,8 +1521,8 @@
     _.setProps(th, '.definedby .value', 'href', '/' + (col.definedBy || user) + '/');
 
     _.addEventListener(th, 'button.move', 'click', moveColumn);
-
     _.addEventListener(th, 'button.hide', 'click', hideColumn);
+    _.addEventListener(th, 'button.columndelete', 'click', deleteColumn);
 
     th.classList.add(col.type);
     _.addClass(th, '.coltype', col.type);
@@ -2101,7 +2119,7 @@
       if (!paper) return console.error('cannot find paper with index ' + paperIndex + ' for button ', e.target);
 
       if (!Array.isArray(paper.experiments)) paper.experiments = [];
-      paper.experiments.push({});
+      paper.experiments.push({id:"/id/exp/" + Date.now()});
       updateMetaanalysisView();
       // focus the empty title of the new experiment
       setTimeout(focusFirstValidationError, 0);
@@ -2150,11 +2168,52 @@
     }
   }
 
+  function getFirstNonHiddenExp(paper) {
+
+    for (var i=0; i<paper.experiments.length; i++) {
+      if (!isHiddenExp(paper.experiments[i].id)) {
+        console.log('i is ', i);
+        return i;
+      }
+    }
+
+    return 0;
+  }
+
+  function getNbUnhiddenExpPaper(paper) {
+    // var retval = {};
+    var retval = 0;
+
+    paper.experiments.forEach(function (exp) {
+      if (!isHiddenExp(exp.id)) {
+        retval += 1;
+      }
+    });
+
+    return retval;
+  }
+
+  function isHiddenExp(expId) {
+    return currentMetaanalysis.hiddenExperiments.indexOf(expId) !== -1;
+  }
+
+  // TODO: to be completed
+  function unhideExp(e) {
+    return null;
+  }
+
+  function hideExp(e) {
+    currentMetaanalysis.hiddenExperiments.push(e.target.dataset.id);
+    unpinPopupBox();
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+  }
+
   function addPaperRow() {
     lima.requestPaper('new-paper')
     .then(function (newPaper) {
       // Populate an empty experiment
-      newPaper.experiments.push({});
+      newPaper.experiments.push({id: '/id/exp/' + Date.now()});
       currentMetaanalysis.papers.push(newPaper);
       currentMetaanalysis.paperOrder.push(newPaper.id);
       updateMetaanalysisView();
@@ -2346,6 +2405,161 @@
   }
 
 
+/* BANNER HERE FOR 'graphs'
+
+*/
+
+// TODO: Revisit, trim unnecessary bits
+function fillGraphTable(metaanalysis) {
+  var table = _.cloneTemplate('graphs-table-template');
+  var addGraphNode = _.findEl(table, 'tr.add');
+
+  metaanalysis.graphs.forEach(function (graph, graphIndex) {
+    var graphEl = _.cloneTemplate('graph-row-template').children[0];
+    addGraphNode.parentElement.insertBefore(graphEl, addGraphNode);
+
+    var graphValTd = _.findEl(graphEl, 'td');
+    // Editing Options
+    // Add an option for every graph formula we know
+    var graphFormulas = lima.listGraphFormulas();
+    var graphFormulasDropdown = _.findEl(graphEl, 'select.graphformulas')
+    for (var i = 0; i < graphFormulas.length; i++){
+      var el = document.createElement("option");
+      el.textContent = graphFormulas[i].label;
+      el.value = graphFormulas[i].id;
+      if (graph.formulaName === el.value) {
+        el.selected = true;
+        graphFormulasDropdown.classList.remove('validationerror');
+      }
+      graphFormulasDropdown.appendChild(el);
+    }
+
+    graphFormulasDropdown.onchange = function(e) {
+      graph.formulaName = e.target.value;
+      graph.formula = lima.createFormulaString(graph);
+
+      var formula = lima.getGraphFormulaById(graph.formulaName);
+      if (formula) {
+        graphFormulasDropdown.classList.remove('validationerror');
+      } else {
+        graphFormulasDropdown.classList.add('validationerror');
+      }
+      // we'll call setValidationErrorClass() in fillGraphColumnsSelection
+
+      // make sure formula columns array matches the number of expected parameters
+      graph.formulaParams.length = formula ? formula.parameters.length : 0;
+
+      // fill in the current formula
+      _.fillEls(graphEl, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
+
+      // fill the columns selection
+      fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula);
+
+      _.scheduleSave(metaanalysis);
+      recalculateComputedData();
+    };
+
+    var graphFormula = lima.getGraphFormulaById(graph.formulaName);
+    fillGraphColumnsSelection(metaanalysis, graph, graphEl, graphFormula);
+
+    setupPopupBoxPinning(graphEl, '.datum.popupbox', graph.formula);
+    _.setDataProps(graphEl, '.datum.popupbox', 'index', graphIndex);
+
+    _.addEventListener(graphEl, 'button.move', 'click', moveGraph);
+    _.addEventListener(graphEl, 'button.delete', 'click', deleteGraph);
+
+    fillGraphInformation(graphEl, graph);
+    fillComments('comment-template', graphValTd, '.commentcount', '.datum.popupbox main', metaanalysis, ['graphs', graphIndex, 'comments']);
+  });
+
+  // Event handlers
+  _.addEventListener(table, 'tr.add button.add', 'click', addNewGraphToMetaanalysis);
+
+  var graphsContainer = _.findEl('#metaanalysis .graphs');
+  graphsContainer.appendChild(table);
+}
+
+function fillGraphInformation(graphEl, graph) {
+  _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
+  _.setProps(graphEl, '.fullgraphlabel', 'innerHTML', getColTitle(graph, Infinity));
+  // todo something for the non-editing case
+}
+
+function fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula) {
+  // editing drop-down boxes for parameter columns
+  var graphColumnsSelectionEl = _.findEl(graphEl, '.graphcolumnsselection');
+  // clear out old children.
+  graphColumnsSelectionEl.innerHTML = '';
+
+  if (!formula) return;
+
+  var noOfParams = formula.parameters.length;
+
+  for (var i = 0; i < noOfParams; i++){
+    // Make a select dropdown
+    var label = document.createElement('label');
+    label.textContent = formula.parameters[i] + ': ';
+    graphColumnsSelectionEl.appendChild(label);
+
+    var select = document.createElement("select");
+    label.appendChild(select);
+
+    // the first option is an instruction
+    var op = document.createElement("option");
+    op.textContent = 'Select a column';
+    op.value = '';
+    select.appendChild(op);
+    select.classList.add('validationerror');
+
+    var foundCurrentValue = false;
+
+    // Now make an option for each column in metaanalysis
+    // account for computed columns in metaanalysis.columns
+    for (var j = 0; j < metaanalysis.columns.length; j++){
+      var colId = metaanalysis.columns[j];
+      var found = makeOption(colId, graph, graph.formulaParams[i], select);
+      foundCurrentValue = foundCurrentValue || found;
+    }
+
+    // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
+    if (!foundCurrentValue) {
+      colId = graph.formulaParams[i];
+      makeOption(colId, graph, colId, select);
+    }
+
+    setValidationErrorClass();
+
+    // listen to changes of the dropdown box
+    // preserve the value of i inside this code
+    (function(i, select){
+      select.onchange = function(e) {
+        graph.formulaParams[i] = lima.parseFormulaString(e.target.value);
+        graph.formula = lima.createFormulaString(graph);
+        if (e.target.value) {
+          select.classList.remove('validationerror');
+        } else {
+          select.classList.add('validationerror');
+        }
+        setValidationErrorClass();
+        _.scheduleSave(metaanalysis);
+        fillGraphInformation(graphEl, graph);
+        recalculateComputedData();
+      };
+    })(i, select);
+
+  }
+
+  fillGraphInformation(graphEl, graph);
+}
+
+  function addNewGraphToMetaanalysis() {
+    var graph = {formulaName: null, formulaParams: []};
+    graph.formula = lima.createFormulaString(graph);
+    currentMetaanalysis.graphs.push(graph);
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+    setTimeout(focusFirstValidationError, 0);
+  }
 
   /* comments
    *
@@ -2656,6 +2870,9 @@
 
       localStorage[metaanalysis.id] = JSON.stringify(toSave);
       localStorage.metaanalyses = JSON.stringify(localMetaanalyses);
+      console.log(JSON.stringify(localStorage[metaanalysis.id]));
+      console.log(JSON.stringify(toSave));
+      console.log(JSON.stringify(localStorage[metaanalysis.id]) === JSON.stringify(toSave));
       console.log('metaanalysis ' + metaanalysis.id + ' saved locally');
     } catch (e) {
       console.error(e);

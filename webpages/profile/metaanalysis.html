@@ -14,7 +14,7 @@
   <a href="/" id="logo-box">
     <h1>LiMA</h1><h2>Living Meta-Analysis</h2>
   </a>
-  
+
   <!-- this puts a sign-in button, and a sign-out link, in the page -->
   <div class="userinfo signedoff">
     <img src="/img/user.png" alt="user photo or icon" class="userphoto">
@@ -55,6 +55,7 @@
           To undo, press <button class="titlerenamecancel">cancel</button>
         </p>
       </div>
+      <button class="debugbutton"> Reset hiddenExperiments </button> <!-- DEBUG REMOVE ME -->
       <ul class="tags"></ul>
       <!-- todo there could be an animated gif on the next line that is a spinner that takes just over 3s to go to full, and we reset it on every deferSave -->
       <span class="localsaving">Your changes are saved locally on this computer.</span>
@@ -193,6 +194,7 @@
       <button class="not-unsaved hide editing">hide</button>
       <button class="not-unsaved move right editing" title="move column to the right">»</button>
       <button class="not-unsaved move right most editing" title="move column to the right">»|</button>
+      <button class="columndelete">delete</button>
       <button class="when-unsaved editing" disabled title="can't move columns when some changes are unsaved">|«</button>
       <button class="when-unsaved editing" disabled title="can't move columns when some changes are unsaved">«</button>
       <button class="when-unsaved editing" disabled title="can't hide columns when some changes are unsaved">hide</button>
@@ -274,7 +276,6 @@
       <div><span class="paptitle"></span><input type="checkbox" class="exclude" checked></div>
       <div class="paperinfo popupbox" data-boxtype='paperinfo'>
         <div class="pin"></div>
-        <button class="not-unsaved hide editing">hide</button>
         <button class="when-unsaved editing" disabled title="can't hide paper when some changes are unsaved">hide</button>
         <header>
           <span class="edithighlight" data-focuses=".paptitle.editing">Paper:
@@ -336,6 +337,7 @@
       <div><span class="exptitle"></span><input type="checkbox" class="exclude" checked></div>
       <div class="experimentinfo popupbox" data-boxtype='experimentinfo'>
         <div class="pin"></div>
+        <button class="hideexperiment">hide</button>
         <header>
           <p class="papertitle">Paper: <span class="paptitle"></span></p>
           <p><span class="edithighlight" data-focuses=".exptitle.editing">Study/experiment:
@@ -366,6 +368,7 @@
     <span class="value notcomputed editing oneline" contenteditable></span>
     <div class="datum popupbox" data-boxtype='datumpopupbox'>
       <div class="pin"></div>
+      <button class="hideexperiment">hide</button>
       <header>
         <p class="value" placeholder="no value"></p>
         <p class="computed">
