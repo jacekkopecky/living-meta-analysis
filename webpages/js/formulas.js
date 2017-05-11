@@ -96,6 +96,12 @@
         func: upperConfidenceLimitNumber,
         parameters: [ 'group 1 outcome (affected)', 'group 1 N', 'group 2 outcome (affected)', 'group 2 N' ]
       },
+      {
+        id: 'fixedEffectError',
+        label: 'Fixed Effect Error',
+        func: fixedEffectError,
+        parameters: [ 'effect size', 'weight', 'grand weighted mean effect size' ],
+      },
     ];
     retval.forEach(function(formula) { formula.type = lima.FORMULA_TYPE; });
     return retval;
@@ -195,6 +201,14 @@
     return upperConfidenceLimit(Me/Ne, Ne, Mc/Nc, Nc);
   }
 
+  function fixedEffectError (es, wt, gwmes) {
+    es = _.strictToNumber(es);
+    wt = _.strictToNumber(wt);
+    gwmes = _.strictToNumber(gwmes);
+
+    return wt*Math.pow(es-gwmes, 2);
+  }
+
 
   /* aggregates
    *
@@ -230,17 +244,65 @@
         parameters: ['values', 'weights'],
       },
       {
+        id: 'varianceAggr',
+        label: 'Variance',
+        func: varianceAggr,
+        parameters: ['weights'],
+      },
+      {
+        id: 'standardErrorAggr',
+        label: 'Standard Error',
+        func: standardErrorAggr,
+        parameters: ['weights'],
+      },
+      {
+        id: 'zValueAggr',
+        label: 'Z-value',
+        func: zValueAggr,
+        parameters: ['values', 'weights'],
+      },
+      {
         id: 'sumAggr',
         label: 'Sum',
         func: sumAggr,
         parameters: ['values'],
       },
-      // {
-      //   id: 'sumProduct',
-      //   label: 'Sum of Product',
-      //   func: sumProductAggr,
-      //   parameters: ['values1', 'values2'] // There might be more appropriate names for these. Factor1/2?
-      // },
+      {
+        id: 'countAggr',
+        label: 'Count',
+        func: countAggr,
+        parameters: ['data'],
+      },
+      {
+        id: 'pValue1SidedAggr',
+        label: 'P-value (one-sided)',
+        func: pValue1SidedAggr,
+        parameters: ['data'],
+      },
+      {
+        id: 'pValue2SidedAggr',
+        label: 'P-value (two-sided)',
+        func: pValue2SidedAggr,
+        parameters: ['data'],
+      },
+      {
+        id: 'degreesOfFreedomAggr',
+        label: 'Degrees of Freedom',
+        func: degreesOfFreedomAggr,
+        parameters: ['data'],
+      },
+      {
+        id: 'tauSquaredAggr',
+        label: 'Tau Squared',
+        func: tauSquaredAggr,
+        parameters: ['values', 'weights'],
+      },
+      {
+        id: 'iSquaredAggr',
+        label: 'I-squared',
+        func: iSquaredAggr,
+        parameters: ['sum of fixed effect errors', 'degrees of freedom'],
+      },
     ];
     retval.forEach(function(aggr) { aggr.type = lima.AGGREGATE_TYPE; });
     return retval;
@@ -265,7 +327,7 @@
   //  - Parameters can be arrays or single values (at runtime); if arrays, may contain null/undefined values, or empty strings.
   //  - Data should be handled with _.strictToNumberOrNull().
   //  - The functions return a single numerical value.
-  //  - May return NaN or infinities.
+  //  - May return nulls, NaN or infinities.
   //  - Must gracefully handle wacko figures, including !VALUE and nulls.
 
   // todo the functions below always re-compute from raw data, even if sum of weights has already been computed a number of times before
@@ -282,9 +344,18 @@
     return total;
   }
 
-  // TODO: Depending on implementation further in the future, this may require extra
-  // validation, to be sure we are given correct Arrays.
-  function sumProductAggr (valueArray1, valueArray2) {
+  function countAggr (valueArray) {
+    if (!Array.isArray(valueArray)) valueArray = [valueArray];
+
+    var retval = 0;
+    valueArray.forEach(function (x) {
+      if (_.strictToNumberOrNull(x) != null) retval += 1;
+    });
+    return retval;
+  }
+
+  // this is not exposed as an aggregate (hence not called *Aggr)
+  function sumProduct (valueArray1, valueArray2) {
     var total = 0;
 
     for (var i=0; i<valueArray1.length; i++) {
@@ -297,7 +368,7 @@
   }
 
   function weightedMeanAggr (valArray, weightArray) {
-    return (sumProductAggr (valArray,weightArray) / sumAggr(weightArray));
+    return (sumProduct (valArray,weightArray) / sumAggr(weightArray));
   }
 
   function varianceAggr (weightArray) {
@@ -315,6 +386,76 @@
   function upperConfidenceLimitAggr (valArray, weightArray) {
     return weightedMeanAggr(valArray, weightArray) + 1.96 * standardErrorAggr(weightArray);
   }
+
+  function zValueAggr (valArray, weightArray) {
+    return weightedMeanAggr(valArray, weightArray) / standardErrorAggr(weightArray);
+  }
+
+  // this aggregate only takes a single value as an input (the parameter will likely be another aggregate)
+  function pValue1SidedAggr (data) {
+    data = _.strictToNumberOrNull(data);
+    if (data == null || isNaN(data)) return null;
+
+    return cdfNormal(data, 0, 1);
+  }
+
+  function pValue2SidedAggr (data) {
+    return 2*pValue1SidedAggr(data);
+  }
+
+  // cdf (cumulative normal distribution function) adapted from http://stackoverflow.com/questions/5259421/cumulative-distribution-function-in-javascript
+  // this is not exposed as an aggregate (hence not called *Aggr)
+  function cdfNormal (x, mean, standardDeviation) {
+    return (1 - math.erf((mean - x ) / (Math.sqrt(2) * standardDeviation))) / 2
+  }
+
+  function degreesOfFreedomAggr (data) {
+    return countAggr(data) - 1;
+    // todo this needs to be revisited for moderator analysis (because 1 becomes number of groups or something)
+  }
+
+  // parameters: array of effect sizes, array of weights
+  function tauSquaredAggr (ess, wts) {
+    if (!Array.isArray(ess) || !Array.isArray(wts)) return null;
+
+    // sum of weights, sum of weights squared
+    var sumwt = 0;
+    var sumwt2 = 0;
+
+    // computing both sums in a single loop rather than using sumAggr and such
+    wts.forEach(function (wt) {
+      wt = _.strictToNumberOrNull(wt);
+      sumwt += wt;
+      sumwt2 += wt*wt;
+    });
+
+    // grand weighted mean effect size
+    var gwmes = weightedMeanAggr(ess, wts);
+
+    // sum of fixed effect errors
+    var sumfee = 0;
+
+    wts.forEach(function (wt, index) {
+      var es = ess[index];
+      var fee = fixedEffectError(es, wt, gwmes);
+      sumfee += fee;
+    });
+
+    return (sumfee-degreesOfFreedomAggr(wts))/(sumwt-(sumwt2/sumwt));
+  }
+
+  // this aggregate only takes single values as inputs (the parameters will likely be other aggregates)
+  function iSquaredAggr (sumfee, df) {
+    sumfee = _.strictToNumberOrNull(sumfee);
+    df = _.strictToNumberOrNull(df);
+
+    return (sumfee - df) / sumfee;
+  }
+
+  // todo probable bug: if we have an aggregate with two parameters, both computed columns
+  // and one of them has nulls in them
+  // the whole aggregate should ignore the whole row that has a null
+
 
   /* parsing
    *
@@ -591,5 +732,20 @@
     testCase = "a,b(a,b)"; shouldFail();
   });
 
+  _.addTest(function testStatsFunctions(assert) {
+    function precisionMatch(a,b) {
+      assert(a.toPrecision(6) == b.toPrecision(6), "fail: " + a + ", " + b);
+    }
+
+    // test values from https://support.google.com/docs/answer/3094021?visit_id=1-636301774294222751-360277150&hl=en-GB&rd=1
+
+    precisionMatch(cdfNormal(490, 500, 5), 0.02275013195);
+    precisionMatch(cdfNormal(510, 500, 5), 0.9772498681);
+
+    // test values confirmed to precision 3 by https://onlinecourses.science.psu.edu/stat414/node/267
+    precisionMatch(pValue1SidedAggr(-1.92), 0.027428949703836802);
+    precisionMatch(pValue2SidedAggr(-1.92), 2*0.027428949703836802);
+
+  });
 
 })(window, document);
