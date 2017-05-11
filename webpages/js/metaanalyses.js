@@ -2207,10 +2207,18 @@
     computedDataSetters.forEach(function (f) { f(); });
   }
 
+  function isExperimentsTableColumn (col) {
+    return typeof col === 'string' || (col.formulaObj && col.formulaObj.type === lima.FORMULA_TYPE);
+  }
+
+  function isAggregate(col) {
+    return col.formulaObj && col.formulaObj.type === lima.AGGREGATE_TYPE;
+  }
+
   function getDatumValue(col, expIndex, paperIndex) {
-    if (typeof col === 'string' || (expIndex != null && col.formulaObj && col.formulaObj.type === lima.FORMULA_TYPE)) {
+    if (isExperimentsTableColumn(col)) {
       return getExperimentsTableDatumValue(col, expIndex, paperIndex);
-    } else if (col.formulaObj && col.formulaObj.type === lima.AGGREGATE_TYPE) {
+    } else if (isAggregate(col)) {
       return getAggregateDatumValue(col);
     }
   }
@@ -2228,7 +2236,6 @@
     dataCache.aggr[cacheId] = CIRCULAR_COMPUTATION_FLAG;
 
     var inputs = [];
-    var currentInputArray;
 
     var val;
 
@@ -2239,15 +2246,21 @@
       // compute the value
       // if anything here throws an exception, value cannot be computed
       for (var i=0; i<aggregate.formulaParams.length; i++) {
-        currentInputArray = [];
-        for (var paperIndex = 0; paperIndex < currentMetaanalysis.papers.length; paperIndex++) {
-          for (var expIndex = 0; expIndex < currentMetaanalysis.papers[paperIndex].experiments.length; expIndex++) {
-            if (!isExcludedExp(currentMetaanalysis.papers[paperIndex].id, expIndex)) {
-              currentInputArray.push(getDatumValue(aggregate.formulaParams[i], expIndex, paperIndex));
+        var currentInput = undefined;
+        var currentParam = aggregate.formulaParams[i];
+        if (isExperimentsTableColumn(currentParam)) {
+          currentInput = [];
+          for (var paperIndex = 0; paperIndex < currentMetaanalysis.papers.length; paperIndex++) {
+            for (var expIndex = 0; expIndex < currentMetaanalysis.papers[paperIndex].experiments.length; expIndex++) {
+              if (!isExcludedExp(currentMetaanalysis.papers[paperIndex].id, expIndex)) {
+                currentInput.push(getDatumValue(currentParam, expIndex, paperIndex));
+              }
             }
           }
+        } else if (isAggregate(currentParam)) {
+          currentInput = getDatumValue(currentParam);
         }
-        inputs.push(currentInputArray);
+        inputs.push(currentInput);
       }
 
       val = formula.func.apply(null, inputs);
