@@ -298,6 +298,24 @@
         parameters: ['values', 'weights'],
       },
       {
+        id: 'tauAggr',
+        label: 'Tau',
+        func: tauAggr,
+        parameters: ['values', 'weights'],
+      },
+      {
+        id: 'tauStandardErrorAggr',
+        label: 'Tau Standard Error',
+        func: tauStandardErrorAggr,
+        parameters: ['values', 'weights'],
+      },
+      {
+        id: 'tauVarianceAggr',
+        label: 'Tau Variance',
+        func: tauVarianceAggr,
+        parameters: ['values', 'weights'],
+      },
+      {
         id: 'heterogeneityPValueAggr',
         label: 'Heterogeneity P-value',
         func: heterogeneityPValueAggr,
@@ -420,19 +438,23 @@
     // todo this needs to be revisited for moderator analysis (because 1 becomes number of groups or something)
   }
 
+  // this function computes all the statistics related to Tau-squared and returns them in a package
+  // this is for code maintainability: the block of computations from `c` to `se` all very much depend on one another
   // parameters: array of effect sizes, array of weights
-  function tauSquaredAggr (ess, wts) {
+  function tauPackage (ess, wts) {
     if (!Array.isArray(ess) || !Array.isArray(wts)) return null;
 
     // sum of weights, sum of weights squared
     var sumwt = 0;
     var sumwt2 = 0;
+    var sumwt3 = 0;
 
     // computing both sums in a single loop rather than using sumAggr and such
     wts.forEach(function (wt) {
       wt = _.strictToNumberOrNull(wt);
       sumwt += wt;
       sumwt2 += wt*wt;
+      sumwt3 += wt*wt*wt;
     });
 
     // grand weighted mean effect size
@@ -447,7 +469,45 @@
       sumfee += fee;
     });
 
-    return (sumfee-degreesOfFreedomAggr(wts))/(sumwt-(sumwt2/sumwt));
+    // these are the interdependent computations that justify computing everything in a package
+    var c = sumwt - (sumwt2 / sumwt);
+    var df = degreesOfFreedomAggr(wts);
+    var tauSquared = (sumfee - df) / c;
+    var a = df + 2*(sumwt-sumwt2/sumwt)*tauSquared + (sumwt2 - 2*(sumwt3/sumwt) + (sumwt2*sumwt2)/(sumwt*sumwt)) * (tauSquared*tauSquared);
+    var tau = Math.sqrt(tauSquared);
+    var variance = 2*a/(c*c);
+    var se = Math.sqrt(variance);
+
+    return {
+      tauSquared: tauSquared,
+      tau: tau,
+      variance: variance,
+      se: se,
+    }
+  }
+
+  function tauSquaredAggr(ess, wts) {
+    var pkg = tauPackage(ess, wts);
+    if (pkg) return pkg.tauSquared;
+    else return NaN;
+  }
+
+  function tauAggr(ess, wts) {
+    var pkg = tauPackage(ess, wts);
+    if (pkg) return pkg.tau;
+    else return NaN;
+  }
+
+  function tauStandardErrorAggr(ess, wts) {
+    var pkg = tauPackage(ess, wts);
+    if (pkg) return pkg.se;
+    else return NaN;
+  }
+
+  function tauVarianceAggr(ess, wts) {
+    var pkg = tauPackage(ess, wts);
+    if (pkg) return pkg.variance;
+    else return NaN;
   }
 
   // this aggregate only takes single values as inputs (the parameters will likely be other aggregates)
