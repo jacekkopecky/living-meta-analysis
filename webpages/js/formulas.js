@@ -102,6 +102,24 @@
         func: fixedEffectError,
         parameters: [ 'effect size', 'weight', 'grand weighted mean effect size' ],
       },
+      {
+        id: 'randomEffectWeightFractions',
+        label: 'Random Effect Model Weight (fractions)',
+        func: randomEffectWeightFractions,
+        parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N', 'tauSquared' ]
+      },
+      {
+        id: 'randomEffectWeightPercent',
+        label: 'Random Effect Model Weight (percentages)',
+        func: randomEffectWeightPercent,
+        parameters: [ 'group 1 outcome (%)', 'group 1 N', 'group 2 outcome (%)', 'group 2 N', 'tauSquared' ]
+      },
+      {
+        id: 'randomEffectWeightNumber',
+        label: 'Random Effect Model Weight (numbers affected)',
+        func: randomEffectWeightNumber,
+        parameters: [ 'group 1 outcome (affected)', 'group 1 N', 'group 2 outcome (affected)', 'group 2 N', 'tauSquared' ]
+      },
     ];
     retval.forEach(function(formula) { formula.type = lima.FORMULA_TYPE; });
     return retval;
@@ -207,6 +225,18 @@
     gwmes = _.strictToNumber(gwmes);
 
     return wt*Math.pow(es-gwmes, 2);
+  }
+
+  function randomEffectWeightFractions (Me, Ne, Mc, Nc, tauSquared) {
+    return 1 / (variance(Me, Ne, Mc, Nc) + tauSquared);
+  }
+
+  function randomEffectWeightPercent (Me, Ne, Mc, Nc, tauSquared) {
+    return randomEffectWeightFractions(Me/100, Ne, Mc/100, Nc, tauSquared);
+  }
+
+  function randomEffectWeightNumber (Me, Ne, Mc, Nc, tauSquared) {
+    return randomEffectWeightFractions(Me/Ne, Ne, Mc/Nc, Nc, tauSquared);
   }
 
 
