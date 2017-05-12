@@ -19,3 +19,4 @@ rules:
 
 globals:
   Promise: true
+  math: true
