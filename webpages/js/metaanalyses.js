@@ -392,13 +392,6 @@
 
     _.setDataProps('#metaanalysis .title.editing', 'origTitle', metaanalysis.title);
     addConfirmedUpdater('#metaanalysis .title.editing', '#metaanalysis .title + .titlerename', '#metaanalysis .title ~ * .titlerenamecancel', 'textContent', checkTitleUnique, metaanalysis, 'title');
-    // DEBUG REMOVE ME
-    _.addEventListener(metaanalysisEl, '.debugbutton', 'click', function(e) {
-      currentMetaanalysis.hiddenExperiments = [];
-      updateMetaanalysisView();
-      _.scheduleSave(currentMetaanalysis);
-    });
-    //DEBUG REMOVE ABOVE
 
     _.setYouOrName();
 
@@ -1292,14 +1285,14 @@
 
       if (lastColumnHidden) {
         // We know that there should be an "unhide" button on this column
-        addUnhideButton(th);
+        addColUnhideButton(th);
         lastColumnHidden = false;
       }
     });
 
     // Check to see if the last column was hidden.
     if (lastColumnHidden) {
-      addUnhideButton(addColumnNode);
+      addColUnhideButton(addColumnNode);
       lastColumnHidden = false;
     }
 
@@ -1325,11 +1318,11 @@
       var papTitleIndex = getFirstNonHiddenExp(paper);
       paper.experiments.forEach(function (experiment, expIndex) {
         if (isHiddenExp(experiment.id)) {
-            return;
+          return;
         }
 
         var tr = _.cloneTemplate('experiment-row-template').children[0];
-        tableBodyNode.insertBefore(tr, addRowNode);
+        tableBodyNode.insertBefore(tr, addRowNode)
 
         _.setDataProps(tr, 'tr button.hideexperiment', 'id', experiment.id);
         _.addEventListener(tr, 'tr button.hideexperiment', 'click', hideExp);
@@ -1491,10 +1484,19 @@
 
             td.classList.add('result');
           }
-
         });
       });
     });
+
+    // Add unhide button for the needed papers
+    for (var i=0; i<papers.length; i++) {
+      var nbHidden = getNbHiddenExpPaper(papers[i]);
+
+      if (nbHidden > 0 && nbHidden < papers[i].experiments.length) {
+        var paperTitleEl = _.findEl(tableBodyNode, '[data-paper-index="' + i + '"] .papertitle');
+        addExpUnhideButton(paperTitleEl, papers[i].id);
+      }
+    }
 
     _.addEventListener(table, 'tr:not(.add) .papertitle button.add', 'click', addExperimentRow);
     _.addEventListener(table, 'tr.add button.add', 'click', addPaperRow);
@@ -2169,10 +2171,8 @@
   }
 
   function getFirstNonHiddenExp(paper) {
-
     for (var i=0; i<paper.experiments.length; i++) {
       if (!isHiddenExp(paper.experiments[i].id)) {
-        console.log('i is ', i);
         return i;
       }
     }
@@ -2181,7 +2181,6 @@
   }
 
   function getNbUnhiddenExpPaper(paper) {
-    // var retval = {};
     var retval = 0;
 
     paper.experiments.forEach(function (exp) {
@@ -2193,13 +2192,39 @@
     return retval;
   }
 
+  function getNbHiddenExpPaper(paper) {
+    var retval = 0;
+
+    paper.experiments.forEach(function (exp) {
+      if (isHiddenExp(exp.id)) {
+        retval += 1;
+      }
+    });
+
+    return retval;
+  }
+
   function isHiddenExp(expId) {
     return currentMetaanalysis.hiddenExperiments.indexOf(expId) !== -1;
   }
 
-  // TODO: to be completed
-  function unhideExp(e) {
-    return null;
+  function unhideExpPaper(e) {
+    var paperIndex = 0;
+
+    while (currentMetaanalysis.papers[paperIndex].id != e.target.dataset.paperId) {
+      paperIndex++;
+    }
+
+    currentMetaanalysis.papers[paperIndex].experiments.forEach(function (experiment) {
+      var expIndex = currentMetaanalysis.hiddenExperiments.indexOf(experiment.id);
+
+      if (expIndex != -1) {
+        currentMetaanalysis.hiddenExperiments.splice(expIndex, 1);
+      }
+    });
+
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
   }
 
   function hideExp(e) {
@@ -2207,6 +2232,14 @@
     unpinPopupBox();
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
+  }
+
+  function addExpUnhideButton(expNode, paperId) {
+    var unhidebutton = _.findEl(expNode, '.unhideexp');
+
+    unhidebutton.removeAttribute('hidden');
+    _.setDataProps(expNode, 'button.unhideexp', 'paperId', paperId);
+    _.addEventListener(expNode, 'button.unhideexp', 'click', unhideExpPaper);
   }
 
   function addPaperRow() {
@@ -3194,7 +3227,7 @@ function fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula) {
   }
 
 
-  function addUnhideButton(colNode) {
+  function addColUnhideButton(colNode) {
     colNode.classList.add('lastcolumnhidden');
     _.addEventListener(colNode, '.unhide', 'click', unhideColumns);
   }

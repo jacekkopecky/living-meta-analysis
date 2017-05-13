@@ -1684,6 +1684,12 @@ body.page-about-you.editing .fullcolinfo header {
   right: .5rem;
 }
 
+#metaanalysis table.experiments tr:not(.add) .papertitle button.unhideexp {
+    position: absolute;
+    bottom: .3rem;
+    right: 2.5rem;
+}
+
 #metaanalysis table.experiments tr.add td {
   border-left: none;
   border-right: none;

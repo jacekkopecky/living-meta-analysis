@@ -55,7 +55,6 @@
           To undo, press <button class="titlerenamecancel">cancel</button>
         </p>
       </div>
-      <button class="debugbutton"> Reset hiddenExperiments </button> <!-- DEBUG REMOVE ME -->
       <ul class="tags"></ul>
       <!-- todo there could be an animated gif on the next line that is a spinner that takes just over 3s to go to full, and we reset it on every deferSave -->
       <span class="localsaving">Your changes are saved locally on this computer.</span>
@@ -329,6 +328,7 @@
       <!-- todo make this smaller and ellipsized, and fill it -->
       <div class="paperdescription short" data-focuses=".paperdescription.editing"></div>
       <!-- todo comments -->
+      <button class="unhideexp" hidden>unhide</button>
       <button class="add not-unsaved" title="add an experiment">+</button>
       <button class="when-unsaved" disabled title="can't add a row when some changes are unsaved">add a row</button>
     </th>
