@@ -2501,6 +2501,12 @@ body:not(.editing) #metaanalysis table.experiments button.add + button {
   display: none;
 }
 
+body:not(.editing) table.aggregates.empty,
+body:not(.editing) table.graphs.empty,
+body:not(.editing) table.grouping.aggregates.empty {
+  display: none;
+}
+
 #paper table.experiments th.add > div > span,
 #metaanalysis table.experiments th.add > div > span {
   padding-left: .5em;

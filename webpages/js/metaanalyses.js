@@ -264,6 +264,10 @@
     self.graphs.forEach(populateParsedFormula);
     self.aggregates.forEach(populateParsedFormula);
 
+    if (self.groupingColumn) {
+      self.groupingColumnObj = lima.parseFormulaString(self.groupingColumn);
+    }
+
     self.papers.forEach(function (paper, papIndex) {
       if (!(paper instanceof lima.Paper)) {
         self.papers[papIndex] = lima.Paper.prototype.init(paper);
@@ -366,6 +370,7 @@
     fillMetaanalysisExperimentTable(metaanalysis);
     fillGraphTable(metaanalysis);
     fillAggregateTable(metaanalysis);
+    fillGroupingAggregateTable(metaanalysis);
 
     // for now, do local storage "edit your copy"
     // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), metaanalysis.title);
@@ -2036,6 +2041,7 @@
     var noOfParams = formula.parameters.length;
 
     for (var i = 0; i < noOfParams; i++){
+      // todo this needs to be refactored with fillAggregateColumnsSelection and fillGraphColumnsSelection and fillGroupingAggregateColumnSelection
       // Make a select dropdown
       var label = document.createElement('label');
       label.textContent = formula.parameters[i] + ': ';
@@ -2076,7 +2082,6 @@
 
       setValidationErrorClass();
 
-
       // listen to changes of the dropdown box
       // preserve the value of i inside this code
       (function(i, select){
@@ -2099,7 +2104,7 @@
 
   function makeOption(optionColumn, currentTableColumn, currentValue, selectEl) {
     // the current computed column should not be an option here
-    if (typeof optionColumn === 'object' && optionColumn.formula === currentTableColumn.formula) return;
+    if (typeof optionColumn === 'object' && currentTableColumn && optionColumn.formula === currentTableColumn.formula) return;
 
     var el = document.createElement("option");
 
@@ -2170,6 +2175,7 @@
   }
 
   function fillComputedColumnInformation(th, col) {
+    // todo this needs to be refactored together with fillAggregateInformation and fillGraphInformation
     _.setProps(th, '.richcollabel', 'innerHTML', getColTitle(col, 1));
     _.setProps(th, '.fullcollabel', 'innerHTML', getColTitle(col, Infinity));
     // todo do more for non-editing; use computed-datum as inspiration but fix it to account for computed columns
@@ -2635,8 +2641,12 @@
    *
    */
   function fillAggregateTable(metaanalysis) {
-    var table = _.cloneTemplate('aggregates-table-template');
+    var table = _.cloneTemplate('aggregates-table-template').children[0];
     var addAggregateNode = _.findEl(table, 'tr.add');
+
+    if (metaanalysis.aggregates.length === 0) {
+      table.classList.add('empty');
+    }
 
     metaanalysis.aggregates.forEach(function (aggregate, aggregateIndex) {
       var aggregateEl = _.cloneTemplate('aggregate-row-template').children[0];
@@ -2813,6 +2823,67 @@
     setTimeout(focusFirstValidationError, 0);
   }
 
+  /* grouping aggr
+   *
+   *
+   *    ####  #####   ####  #    # #####  # #    #  ####       ##    ####   ####  #####
+   *   #    # #    # #    # #    # #    # # ##   # #    #     #  #  #    # #    # #    #
+   *   #      #    # #    # #    # #    # # # #  # #         #    # #      #      #    #
+   *   #  ### #####  #    # #    # #####  # #  # # #  ###    ###### #  ### #  ### #####
+   *   #    # #   #  #    # #    # #      # #   ## #    #    #    # #    # #    # #   #
+   *    ####  #    #  ####   ####  #      # #    #  ####     #    #  ####   ####  #    #
+   *
+   *
+   */
+
+  function fillGroupingAggregateTable(metaanalysis) {
+    var table = _.cloneTemplate('grouping-aggregate-table-template').children[0];
+
+    fillGroupingAggregateColumnSelection(metaanalysis, _.findEl(table, 'select.groupcolumnselection'));
+    if (metaanalysis.groupingColumn) {
+      _.findEl(table, '.groupcolumnlabel').innerHTML = getColTitle(metaanalysis.groupingColumnObj, 1);
+    } else {
+      table.classList.add('empty');
+    }
+
+    var aggregatesContainer = _.findEl('#metaanalysis .aggregates');
+    aggregatesContainer.appendChild(table);
+  }
+
+  function fillGroupingAggregateColumnSelection(metaanalysis, select) {
+    // the first option is an instruction
+    var op = document.createElement("option");
+    op.textContent = 'Select moderator';
+    op.value = '';
+    select.appendChild(op);
+
+    var foundCurrentValue = false;
+
+    // Now make an option for each column in metaanalysis
+    // account for computed columns in metaanalysis.columns
+    for (var j = 0; j < metaanalysis.columns.length; j++){
+      var colId = metaanalysis.columns[j];
+      var found = makeOption(colId, null, metaanalysis.groupingColumn, select);
+      foundCurrentValue = foundCurrentValue || found;
+    }
+
+    // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
+    if (!foundCurrentValue && metaanalysis.groupingColumn) {
+      colId = metaanalysis.groupingColumnObj;
+      makeOption(colId, null, colId, select);
+    }
+
+    setValidationErrorClass();
+
+    // listen to changes of the dropdown box
+    select.onchange = function(e) {
+      metaanalysis.groupingColumn = e.target.value;
+      metaanalysis.groupingColumnObj = lima.parseFormulaString(e.target.value);
+      _.scheduleSave(metaanalysis);
+      recalculateComputedData();
+    };
+  }
+
 
   /* graphs
    *
@@ -2849,8 +2920,12 @@
   }
 
   function fillGraphTable(metaanalysis) {
-    var table = _.cloneTemplate('graphs-table-template');
+    var table = _.cloneTemplate('graphs-table-template').children[0];
     var addGraphNode = _.findEl(table, 'tr.add');
+
+    if (metaanalysis.graphs.length === 0) {
+      table.classList.add('empty');
+    }
 
     metaanalysis.graphs.forEach(function (graph, graphIndex) {
       var graphEl = _.cloneTemplate('graph-row-template').children[0];
