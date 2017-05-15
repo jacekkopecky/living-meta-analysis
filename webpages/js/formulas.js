@@ -544,6 +544,7 @@
   function heterogeneityPValueAggr (sumfee, df) {
     sumfee = _.strictToNumberOrNull(sumfee);
     df = _.strictToNumberOrNull(df);
+    if (df < 1) return NaN;
 
     return chisq_dist_rt(sumfee, df);
   }

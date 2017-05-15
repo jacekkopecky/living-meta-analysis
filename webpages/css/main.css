@@ -2619,6 +2619,27 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
   display: block;
 }
 
+#metaanalysis table.grouping.aggregates tr:last-child {
+  border-bottom: 1px solid black;
+}
+
+#metaanalysis table.grouping.aggregates tr.groupheadings th {
+  font-weight: bold;
+}
+
+#metaanalysis table.grouping.aggregates tr.groupheadings th:not(:first-child),
+#metaanalysis table.grouping.aggregates tr td {
+  border-left: 1px solid black;
+}
+
+#metaanalysis.validationerror table.grouping.aggregates select.groupcolumnselection {
+  display: none;
+}
+
+#metaanalysis table.grouping.aggregates.empty tr.groupheadings {
+  display: none;
+}
+
 
 
 /* plots
