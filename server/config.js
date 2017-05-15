@@ -25,6 +25,7 @@ module.exports = {
   gcloudDatastoreNamespace: 'living-meta-analysis-v2',
   port: 8080,
   // comment out, or delete, the following lines, to have LiMA running on HTTP only
+  // or start lima with the environment variable DISABLE_HTTPS=1
   httpsPort: 8443,
   httpsCert: '/etc/letsencrypt/live/lima.soc.port.ac.uk/fullchain.pem',
   httpsKey: '/etc/letsencrypt/live/lima.soc.port.ac.uk/privkey.pem',
