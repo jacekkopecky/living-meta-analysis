@@ -202,6 +202,7 @@
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.columns);
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.graphs);
     lima.updateColumnListAfterColumnSave(currentMetaanalysis.aggregates);
+    lima.updateColumnListAfterColumnSave(currentMetaanalysis.groupingAggregates);
 
     updateMetaanalysisView();
   }
@@ -213,6 +214,7 @@
         obj.formulaName = parsed.formulaName;
         obj.formulaParams = parsed.formulaParams;
         obj.formulaObj = parsed.formulaObj;
+        obj.grouping = parsed.grouping;
       } else {
         obj.formulaName = null;
         obj.formulaParams = [];
@@ -247,6 +249,7 @@
     if (!Array.isArray(self.tags)) self.tags = [];
     if (!Array.isArray(self.graphs)) self.graphs = [];
     if (!Array.isArray(self.aggregates)) self.aggregates = [];
+    if (!Array.isArray(self.groupingAggregates)) self.groupingAggregates = [];
     if (!Array.isArray(self.excludedExperiments)) self.excludedExperiments = [];
 
     self.columns.forEach(populateParsedFormula);
@@ -263,6 +266,7 @@
 
     self.graphs.forEach(populateParsedFormula);
     self.aggregates.forEach(populateParsedFormula);
+    self.groupingAggregates.forEach(populateParsedFormula);
 
     if (self.groupingColumn) {
       self.groupingColumnObj = lima.parseFormulaString(self.groupingColumn);
@@ -2877,9 +2881,8 @@
         groupHeadingsTr.appendChild(colTh);
       });
 
-      // for each grouped aggregate, add a row
-      // todo for now we repeat all the normally-selected aggregates in the grouping aggregates table
-      metaanalysis.aggregates.forEach(function (aggr) {
+      // for each grouping aggregate, add a row
+      metaanalysis.groupingAggregates.forEach(function (aggr) {
         var tr = _.cloneTemplate('grouping-aggregate-row-template').children[0];
         tbody.appendChild(tr);
         fillAggregateInformation(tr, aggr);
