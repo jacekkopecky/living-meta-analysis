@@ -304,15 +304,15 @@
         parameters: ['data'],
       },
       {
-        id: 'pValue1SidedAggr',
-        label: 'P-value (one-sided)',
-        func: pValue1SidedAggr,
+        id: 'pValue1TailedAggr',
+        label: 'P-value (one-tailed)',
+        func: pValue1TailedAggr,
         parameters: ['data'],
       },
       {
-        id: 'pValue2SidedAggr',
-        label: 'P-value (two-sided)',
-        func: pValue2SidedAggr,
+        id: 'pValue2TailedAggr',
+        label: 'P-value (two-tailed)',
+        func: pValue2TailedAggr,
         parameters: ['data'],
       },
       {
@@ -446,15 +446,15 @@
   }
 
   // this aggregate only takes a single value as an input (the parameter will likely be another aggregate)
-  function pValue1SidedAggr (data) {
+  function pValue1TailedAggr (data) {
     data = _.strictToNumberOrNull(data);
     if (data == null || isNaN(data)) return null;
 
-    return cdfNormal(data, 0, 1);
+    return cdfNormal(-(Math.abs(data)), 0, 1);
   }
 
-  function pValue2SidedAggr (data) {
-    return 2*pValue1SidedAggr(data);
+  function pValue2TailedAggr (data) {
+    return 2*pValue1TailedAggr(data);
   }
 
   // cdf (cumulative normal distribution function) adapted from http://stackoverflow.com/questions/5259421/cumulative-distribution-function-in-javascript
@@ -967,8 +967,12 @@
     precisionMatch(cdfNormal(510, 500, 5), 0.9772498681);
 
     // test values confirmed to precision 3 by https://onlinecourses.science.psu.edu/stat414/node/267
-    precisionMatch(pValue1SidedAggr(-1.92), 0.027428949703836802);
-    precisionMatch(pValue2SidedAggr(-1.92), 2*0.027428949703836802);
+    precisionMatch(pValue1TailedAggr(-1.92), 0.027428949703836802);
+    precisionMatch(pValue2TailedAggr(-1.92), 2*0.027428949703836802);
+
+    // positive values should be treated as negatives
+    precisionMatch(pValue1TailedAggr(1.92), 0.027428949703836802);
+    precisionMatch(pValue2TailedAggr(1.92), 2*0.027428949703836802);
 
   });
 
