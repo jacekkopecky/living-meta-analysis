@@ -468,16 +468,54 @@
     </td>
   </tr>
 </template>
+<template id="grouping-aggregate-table-template">
+  <table class="grouping aggregates">
+    <tbody>
+      <tr>
+        <th colspan=2>
+          Grouping by: <span class="groupcolumnlabel notediting"></span><select class="groupcolumnselection editing">
+            <!-- gets populated in the code for each available column in the data -->
+          </select>
+        </th>
+      </tr>
+    </tbody>
+  </table>
+</template>
+<template id="grouping-aggregate-row-template">
+  <tr class="popupboxtrigger">
+    <th class="popupboxhighlight">
+      <span class="richaggrlabel">error</span>:
+      <!-- todo click on any of the above should focus the value for editing and pin its popup box -->
+    </th>
+    <!-- this will contain instances of the grouping-aggregate-datum-template -->
+  </tr>
+</template>
+<template id="grouping-aggregate-datum-template">
+  <td class="datum popupboxhighlight">
+    <span class="value aggregated">error</span>
+    <div class="datum popupbox" data-boxtype='groupeddatumpopupbox'>
+      <div class="pin"></div>
+      <header>
+        <p class="value" placeholder="no value">error</p>
+        <div class="aggregated">
+          <p>
+            <span class="fullaggrlabel">error</span>
+          </p>
+        </div>
+      </header>
+    </div>
+  </td>
+</template>
 <template id="graphs-table-template">
   <table class="graphs">
     <tbody>
       <tr>
-        <th colspan=2>
+        <th>
           Graphs:
         </th>
       </tr>
       <tr class="add">
-        <th colspan=2>
+        <th>
           <button class="add notunpin not-unsaved">add a graph</button>
           <button class="when-unsaved" disabled title="can't add a graph when some changes are unsaved">add a graph</button></th>
       </tr>
