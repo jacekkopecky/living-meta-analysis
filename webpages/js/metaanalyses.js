@@ -2153,7 +2153,9 @@
 
     var retval = '';
     if (level != Infinity && col.number !== undefined) retval += '<span>' + col.number + '. </span>';
-    retval += '<span>' + getFormulaLabel(col.formulaObj) + '</span> (';
+    retval += '<span>';
+    if (col.grouping) retval += '<span class="grouped">Grouping </span>';
+    retval += getFormulaLabel(col.formulaObj) + '</span> (';
 
     if (level == 0) {
       retval += '…';
@@ -2948,8 +2950,7 @@
       metaanalysis.groupingColumn = e.target.value;
       metaanalysis.groupingColumnObj = lima.parseFormulaString(e.target.value);
       _.scheduleSave(metaanalysis);
-      lima.updateView();
-      recalculateComputedData();
+      updateMetaanalysisView();
     };
   }
 
