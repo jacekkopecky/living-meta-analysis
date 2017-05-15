@@ -2640,6 +2640,12 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
   display: none;
 }
 
+/* disable repeating "grouping" in the name of every grouping aggregate listed in the table */
+/* but only for the first one */
+#metaanalysis table.grouping.aggregates .richaggrlabel > span:first-of-type > span.grouped {
+  display: none;
+}
+
 
 
 /* plots
