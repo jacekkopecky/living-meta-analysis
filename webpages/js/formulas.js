@@ -390,6 +390,8 @@
   function sumAggr (valueArray) {
     if (!Array.isArray(valueArray)) return valueArray;
 
+    if (valueArray.length === 0) return null;
+
     var total = 0;
     valueArray.forEach(function(value) {
       total += _.strictToNumberOrNull(value);
