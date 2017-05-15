@@ -1324,8 +1324,8 @@
         var tr = _.cloneTemplate('experiment-row-template').children[0];
         tableBodyNode.insertBefore(tr, addRowNode)
 
-        _.setDataProps(tr, 'tr button.hideexperiment', 'id', experiment.id);
-        _.addEventListener(tr, 'tr button.hideexperiment', 'click', hideExp);
+        _.setDataProps(tr, 'tr button.hideexp', 'id', experiment.id);
+        _.addEventListener(tr, 'tr button.hideexp', 'click', hideExp);
 
         _.fillEls(tr, '.paptitle', paper.title);
 
@@ -1450,6 +1450,9 @@
             if (lima.columns[col].new) {
               td.classList.add('newcol');
             }
+
+            _.setDataProps(td, 'td button.hideexp', 'id', experiment.id);
+            _.addEventListener(td, 'td button.hideexp', 'click', hideExp);
 
           } else {
             // computed column
