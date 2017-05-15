@@ -695,9 +695,11 @@
    *
    */
 
+  // todo document formula strings: especially using * to indicate grouping
+
   // this regexp matches the outside of function formulas of the type
-  // "sumProduct(/id/col/1473674381680,neg(/id/col/1473674325686))"
-  var functionRegex = /^([^(),\s]+)\s*(\((.*)\))?$/;
+  // "sum*(/id/col/1473674381680,neg(/id/col/1473674325686))"
+  var functionRegex = /^([^*(),\s]+)(\*?)\s*(\((.*)\))?$/;
 
   // parse nested function formulas of the type "a(b(c,d),e,f(g))"
   // where parameters can contain any character except (),\s
@@ -711,13 +713,16 @@
     if (!match) return null;
 
     // if we don't have parentheses, the string is just a single identifier
-    if (!match[2]) return match[1];
+    if (!match[3]) {
+      if (match[2]) return null; // single identifiers cannot use * for grouping
+      return match[1];
+    }
 
     // otherwise it's a function
     var retval = {}
     retval.formulaName = match[1];
-    if (match[3] && match[3].trim()) {
-      var params = splitParams(match[3]);
+    if (match[4] && match[4].trim()) {
+      var params = splitParams(match[4]);
       if (params == null) return null;
 
       retval.formulaParams = [];
@@ -729,6 +734,7 @@
     } else {
       retval.formulaParams = [];
     }
+    if (match[2]) retval.grouping = true;
     retval.formula = lima.createFormulaString(retval);
     retval.formulaObj = lima.getFormulaObject(retval.formulaName);
     return retval;
@@ -773,6 +779,7 @@
     if (typeof obj === 'string') return obj;
     var retval = '';
     retval += obj.formulaName || 'undefined';
+    if (obj.grouping) retval += '*';
     retval += '(';
     if (Array.isArray(obj.formulaParams)) {
       var params = obj.formulaParams.slice();
@@ -811,6 +818,8 @@
     testObject('foo', 'foo');
     testObject({formulaName: 'a'}, 'a()');
     testObject({formulaName: 'a', formulaParams: ['b', 'c']}, 'a(b,c)');
+    testObject({formulaName: 'a', grouping: true, formulaParams: ['b', 'c']}, 'a*(b,c)');
+    testObject({formulaName: 'a', grouping: false, formulaParams: ['b', 'c']}, 'a(b,c)');
     testObject({formulaParams: ['b', 'c']}, 'undefined(b,c)');
     testObject({formulaParams: [ null, 'c']}, 'undefined(undefined,c)');
 
@@ -818,9 +827,11 @@
     sparseArray[1] = 'c';
     sparseArray.length = 4;
     testObject({formulaParams: sparseArray}, 'undefined(undefined,c,undefined,undefined)');
+    testObject({formulaParams: sparseArray,grouping:true}, 'undefined*(undefined,c,undefined,undefined)');
     testObject({formulaParams: [ {formulaName: 'a', formulaParams: ['b', 'c']}, 'd']}, 'undefined(a(b,c),d)');
     testObject({formulaName:"a",formulaParams:[{formulaName:"b",formulaParams:["c","d"]},"e",{formulaName:"f",formulaParams:["g"]}]}, 'a(b(c,d),e,f(g))');
     testObject({formulaName:"a",formulaParams:[{formulaName:"b",formulaParams:[null,"d"]},"e",{formulaParams:["g"]}]}, 'a(b(undefined,d),e,undefined(g))');
+    testObject({formulaName:"a",formulaParams:[{formulaName:"b",formulaParams:[null,"d"],grouping:1},"e",{formulaParams:["g"]}]}, 'a(b*(undefined,d),e,undefined(g))');
   });
 
   _.addTest(function testSplitParams(assert) {
@@ -901,6 +912,9 @@
     val = lima.parseFormulaString('a3 490/4836()');
     assert(val == null, "erroneously parsed formula " + JSON.stringify(val));
 
+    val = lima.parseFormulaString('a(b*,c)');
+    assert(val == null, "erroneously parsed formula " + JSON.stringify(val));
+
     val = lima.parseFormulaString(' a3490/4836  ');
     assert(val == 'a3490/4836', "erroneously parsed formula " + JSON.stringify(val));
 
@@ -916,6 +930,20 @@
     assert(val.formulaParams[2].formulaName == 'c', "bad second nested formula param in " + JSON.stringify(val));
     assert(val.formulaParams[2].formulaParams.length == 0, "bad second nested formula param in " + JSON.stringify(val));
 
+    val = lima.parseFormulaString('a*(b,x(y,z),c*(),d)');
+    assert(val.formulaName == 'a', "bad formula name in " + JSON.stringify(val));
+    assert(val.grouping, "bad grouping in " + JSON.stringify(val));
+    assert(val.formulaParams.length == 4, "bad formula params len in " + JSON.stringify(val));
+    assert(val.formulaParams[0] == 'b', "bad formula params in " + JSON.stringify(val));
+    assert(val.formulaParams[3] == 'd', "bad formula params in " + JSON.stringify(val));
+    assert(val.formulaParams[1].formulaName == 'x', "bad first nested formula param in " + JSON.stringify(val));
+    assert(val.formulaParams[1].formulaParams.length == 2, "bad first nested formula param in " + JSON.stringify(val));
+    assert(val.formulaParams[1].formulaParams[0] == 'y', "bad first nested formula param in " + JSON.stringify(val));
+    assert(val.formulaParams[1].formulaParams[1] == 'z', "bad first nested formula param in " + JSON.stringify(val));
+    assert(val.formulaParams[1].grouping != true, "bad first nested formula param in " + JSON.stringify(val));
+    assert(val.formulaParams[2].formulaName == 'c', "bad second nested formula param in " + JSON.stringify(val));
+    assert(val.formulaParams[2].grouping, "bad second nested formula param in " + JSON.stringify(val));
+    assert(val.formulaParams[2].formulaParams.length == 0, "bad second nested formula param in " + JSON.stringify(val));
   });
 
   _.addTest(function testFunctionRegex(assert) {
@@ -942,6 +970,7 @@
     testCase = "flskjdf/ewr(a/ewr /((436632 ,b )"; shouldPass();
     testCase = "flskjdf/ewr(a/ewr/436632, b ,4390)"; shouldPass();
     testCase = "flskjdf/ewr ( a/ewr/436632 , b , 4390)"; shouldPass();
+    testCase = "flskjdf/ewr* ( a/ewr/436632 , b , 4390)"; shouldPass();
 
     // negative test cases
     testCase = ""; shouldFail();
@@ -955,6 +984,9 @@
     testCase = "f(a,b"; shouldFail();
     testCase = "(a,b)"; shouldFail();
     testCase = "a,b(a,b)"; shouldFail();
+    testCase = "a*b(a,b)"; shouldFail();
+    testCase = "*b(a,b)"; shouldFail();
+    testCase = "*(b,b)"; shouldFail();
   });
 
   _.addTest(function testStatsFunctions(assert) {
