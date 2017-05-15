@@ -2234,19 +2234,65 @@
     return col.formulaObj && col.formulaObj.type === lima.AGGREGATE_TYPE;
   }
 
+  function getGroups() {
+    if (!currentMetaanalysis.groupingColumnObj) return [];
+    if (!dataCache.groups) dataCache.groups = {};
+    var cacheId = currentMetaanalysis.groupingColumn;
+    if (dataCache.groups[cacheId]) return dataCache.groups[cacheId];
+
+    var groups = dataCache.groups[cacheId] = [];
+
+    for (var i=0; i<currentMetaanalysis.papers.length; i+=1) {
+      for (var j=0; j<currentMetaanalysis.papers[i].experiments.length; j+=1) {
+        if (isExcludedExp(currentMetaanalysis.papers[i].id, j)) continue;
+        var group = getGroup(j, i);
+
+        if (group != null && group != '' && groups.indexOf(group) === -1) groups.push(group);
+      }
+    }
+
+    groups.sort(); // alphabetically
+    return groups;
+  }
+
+  function getGroup(expIndex, paperIndex) {
+    if (currentMetaanalysis.groupingColumnObj) {
+      return getDatumValue(currentMetaanalysis.groupingColumnObj, expIndex, paperIndex);
+    }
+  }
+
   function getDatumValue(col, expIndex, paperIndex) {
     if (isExperimentsTableColumn(col)) {
       return getExperimentsTableDatumValue(col, expIndex, paperIndex);
     } else if (isAggregate(col)) {
-      return getAggregateDatumValue(col);
+      if (col.grouping) {
+        var group = getGroup(expIndex, paperIndex);
+        if (group == null) {
+          // no need to run the grouping aggregate if we don't have a group
+          console.warn('trying to compute a grouping aggregate without a group');
+          return NaN;
+        }
+        return getAggregateDatumValue(col, group);
+      } else {
+        return getAggregateDatumValue(col);
+      }
     }
   }
 
-  // group and groupColumn are optional parameters
-  // computes aggregate across all values if group and groupColumn are omitted
-  function getAggregateDatumValue(aggregate, group, groupColumn) {
+  function getAggregateDatumValue(aggregate, group) {
+    // ignore group if the aggregate isn't grouping
+    if (!aggregate.grouping) group = null;
+
+    // return NaN if we have a group but don't have a grouping column
+    if (group != null && currentMetaanalysis.groupingColumnObj == null) {
+      console.warn('trying to compute a grouping aggregate without a grouping column');
+      return NaN;
+    }
+
     if (!dataCache.aggr) dataCache.aggr = {};
-    var cacheId = getColIdentifier(aggregate) + (group == null ? '' : '#' + getColIdentifier(groupColumn) + '@' + group);
+    var cacheId =
+      getColIdentifier(aggregate) +
+      (group == null ? '' : '#' + currentMetaanalysis.groupingColumn + '@' + group);
     if (cacheId in dataCache.aggr) {
       if (dataCache.aggr[cacheId] === CIRCULAR_COMPUTATION_FLAG) {
         throw new Error('circular computation involving aggregate ' + cacheId);
@@ -2276,13 +2322,24 @@
               // ignore excluded values
               if (isExcludedExp(currentMetaanalysis.papers[paperIndex].id, expIndex)) continue;
               // ignore values with the wrong groups
-              if (groupColumn && getDatumValue(groupColumn, expIndex, paperIndex) !== group) continue;
+              if (group != null && getGroup(expIndex, paperIndex) !== group) continue;
 
               currentInput.push(getDatumValue(currentParam, expIndex, paperIndex));
             }
           }
         } else if (isAggregate(currentParam)) {
-          currentInput = getAggregateDatumValue(currentParam, group, groupColumn);
+          if (!currentParam.grouping) {
+            currentInput = getAggregateDatumValue(currentParam);
+          } else if (currentParam.grouping && group != null) {
+            currentInput = getAggregateDatumValue(currentParam, group);
+          } else if (currentParam.grouping && group == null) {
+            // currentParam is grouping but we don't have a group so currentInput should be an array per group
+            var groups = getGroups();
+            currentInput = [];
+            groups.forEach(function (g) {
+              currentInput.push(getAggregateDatumValue(currentParam, g));
+            });
+          }
         }
         inputs.push(currentInput);
       }
@@ -2874,19 +2931,7 @@
     if (!metaanalysis.groupingColumn) {
       table.classList.add('empty');
     } else {
-      // find out the groups
-      var groups = [];
-      for (var i=0; i<metaanalysis.papers.length; i+=1) {
-        for (var j=0; j<metaanalysis.papers[i].experiments.length; j+=1) {
-          if (isExcludedExp(metaanalysis.papers[i].id, j)) continue;
-          var group = getDatumValue(metaanalysis.groupingColumnObj, j, i);
-
-          if (group != null && group != '' && groups.indexOf(group) === -1) groups.push(group);
-        }
-      }
-
-      groups.sort(); // alphabetically
-
+      var groups = getGroups();
       _.setProps(tbody, 'tr:first-child > th:first-child', 'colSpan', groups.length + 1);
 
       // for each group, add a heading
@@ -2908,7 +2953,7 @@
           tr.appendChild(td);
 
           addComputedDatumSetter(function() {
-            var val = getAggregateDatumValue(aggr, group, metaanalysis.groupingColumnObj);
+            var val = getAggregateDatumValue(aggr, group);
 
             // handle bad values like Excel
             if (val == null) {
