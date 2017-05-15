@@ -544,9 +544,9 @@
       uclAggrFunc.formulaObj = lima.getFormulaObject(uclAggrFunc.formulaName);
 
       var aggregates = {
-        or: getDatumValue(orAggrFunc),
-        lcl: getDatumValue(lclAggrFunc),
-        ucl: getDatumValue(uclAggrFunc),
+        or: getAggregateDatumValue(orAggrFunc),
+        lcl: getAggregateDatumValue(lclAggrFunc),
+        ucl: getAggregateDatumValue(uclAggrFunc),
       }
 
       if (isNaN(aggregates.or*0) || isNaN(aggregates.lcl*0) || isNaN(aggregates.ucl*0)) {
@@ -885,9 +885,9 @@
       uclAggrFunc.formulaObj = lima.getFormulaObject(uclAggrFunc.formulaName);
 
       var aggregates = {
-        or: getDatumValue(orAggrFunc),
-        lcl: getDatumValue(lclAggrFunc),
-        ucl: getDatumValue(uclAggrFunc),
+        or: getAggregateDatumValue(orAggrFunc),
+        lcl: getAggregateDatumValue(lclAggrFunc),
+        ucl: getAggregateDatumValue(uclAggrFunc),
       }
 
       if (isNaN(aggregates.or*0) || isNaN(aggregates.lcl*0) || isNaN(aggregates.ucl*0)) {
@@ -2229,9 +2229,11 @@
     }
   }
 
-  function getAggregateDatumValue(aggregate) {
+  // group and groupColumn are optional parameters
+  // computes aggregate across all values if group and groupColumn are omitted
+  function getAggregateDatumValue(aggregate, group, groupColumn) {
     if (!dataCache.aggr) dataCache.aggr = {};
-    var cacheId = getColIdentifier(aggregate);
+    var cacheId = getColIdentifier(aggregate) + (group == null ? '' : '#' + getColIdentifier(groupColumn) + '@' + group);
     if (cacheId in dataCache.aggr) {
       if (dataCache.aggr[cacheId] === CIRCULAR_COMPUTATION_FLAG) {
         throw new Error('circular computation involving aggregate ' + cacheId);
@@ -2258,13 +2260,16 @@
           currentInput = [];
           for (var paperIndex = 0; paperIndex < currentMetaanalysis.papers.length; paperIndex++) {
             for (var expIndex = 0; expIndex < currentMetaanalysis.papers[paperIndex].experiments.length; expIndex++) {
-              if (!isExcludedExp(currentMetaanalysis.papers[paperIndex].id, expIndex)) {
-                currentInput.push(getDatumValue(currentParam, expIndex, paperIndex));
-              }
+              // ignore excluded values
+              if (isExcludedExp(currentMetaanalysis.papers[paperIndex].id, expIndex)) continue;
+              // ignore values with the wrong groups
+              if (groupColumn && getDatumValue(groupColumn, expIndex, paperIndex) !== group) continue;
+
+              currentInput.push(getDatumValue(currentParam, expIndex, paperIndex));
             }
           }
         } else if (isAggregate(currentParam)) {
-          currentInput = getDatumValue(currentParam);
+          currentInput = getAggregateDatumValue(currentParam, group, groupColumn);
         }
         inputs.push(currentInput);
       }
@@ -2704,7 +2709,7 @@
       _.addEventListener(aggregateEl, 'button.delete', 'click', deleteAggregate);
 
       addComputedDatumSetter(function() {
-        var val = getDatumValue(aggregate);
+        var val = getAggregateDatumValue(aggregate);
 
         // handle bad values like Excel
         if (val == null) {
@@ -2838,12 +2843,72 @@
 
   function fillGroupingAggregateTable(metaanalysis) {
     var table = _.cloneTemplate('grouping-aggregate-table-template').children[0];
+    var tbody = _.findEl(table, 'tbody');
+
+    if (metaanalysis.groupingColumnObj) {
+      _.fillEls(tbody, 'tr th .groupcolumnlabel', getColTitle(metaanalysis.groupingColumnObj));
+    }
 
     fillGroupingAggregateColumnSelection(metaanalysis, _.findEl(table, 'select.groupcolumnselection'));
-    if (metaanalysis.groupingColumn) {
-      _.findEl(table, '.groupcolumnlabel').innerHTML = getColTitle(metaanalysis.groupingColumnObj, 1);
-    } else {
+
+    if (!metaanalysis.groupingColumn) {
       table.classList.add('empty');
+    } else {
+      // find out the groups
+      var groups = [];
+      for (var i=0; i<metaanalysis.papers.length; i+=1) {
+        for (var j=0; j<metaanalysis.papers[i].experiments.length; j+=1) {
+          if (isExcludedExp(metaanalysis.papers[i].id, j)) continue;
+          var group = getDatumValue(metaanalysis.groupingColumnObj, j, i);
+
+          if (group != null && group != '' && groups.indexOf(group) === -1) groups.push(group);
+        }
+      }
+
+      groups.sort(); // alphabetically
+
+      _.setProps(tbody, 'tr:first-child > th:first-child', 'colSpan', groups.length + 1);
+
+      // for each group, add a heading
+      var groupHeadingsTr = _.findEl(tbody, 'tr.groupheadings');
+      groups.forEach(function (group) {
+        var colTh = _.cloneTemplate('grouping-aggregate-heading-template').children[0];
+        _.fillEls(colTh, '.grouptitle', group);
+        groupHeadingsTr.appendChild(colTh);
+      });
+
+      // for each grouped aggregate, add a row
+      // todo for now we repeat all the normally-selected aggregates in the grouping aggregates table
+      metaanalysis.aggregates.forEach(function (aggr) {
+        var tr = _.cloneTemplate('grouping-aggregate-row-template').children[0];
+        tbody.appendChild(tr);
+        fillAggregateInformation(tr, aggr);
+
+        groups.forEach(function (group) {
+          var td = _.cloneTemplate('grouping-aggregate-datum-template').children[0];
+          tr.appendChild(td);
+
+          addComputedDatumSetter(function() {
+            var val = getAggregateDatumValue(aggr, group, metaanalysis.groupingColumnObj);
+
+            // handle bad values like Excel
+            if (val == null) {
+              val = '';
+              td.classList.add('empty');
+            } else if (typeof val == 'number' && isNaN(val)) {
+              val = '#VALUE!';
+              td.classList.add('empty');
+            } else {
+              td.classList.remove('empty');
+            }
+
+            // only show three significant digits for numbers
+            if (typeof val == 'number') val = val.toPrecision(3);
+
+            _.fillEls(td, '.value', val);
+          });
+        });
+      });
     }
 
     var aggregatesContainer = _.findEl('#metaanalysis .aggregates');
@@ -2880,6 +2945,7 @@
       metaanalysis.groupingColumn = e.target.value;
       metaanalysis.groupingColumnObj = lima.parseFormulaString(e.target.value);
       _.scheduleSave(metaanalysis);
+      lima.updateView();
       recalculateComputedData();
     };
   }

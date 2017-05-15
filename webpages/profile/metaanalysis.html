@@ -468,22 +468,33 @@
     </td>
   </tr>
 </template>
+<!-- todo fix popup boxes for grouping aggregates -->
 <template id="grouping-aggregate-table-template">
   <table class="grouping aggregates">
     <tbody>
       <tr>
-        <th colspan=2>
-          Grouping by: <span class="groupcolumnlabel notediting"></span><select class="groupcolumnselection editing">
+        <th>
+          Aggregates grouped by: <span class="groupcolumnlabel notediting"></span
+                      ><span class="groupcolumnlabel editing when-unsaved" title="can't change the grouping column when some changes are unsaved">none</span
+                      ><select class="groupcolumnselection editing ">
             <!-- gets populated in the code for each available column in the data -->
           </select>
         </th>
       </tr>
+      <tr class="groupheadings">
+        <th>Group</th>
+      </tr>
     </tbody>
   </table>
 </template>
+<template id="grouping-aggregate-heading-template">
+  <th>
+    <span class="grouptitle">error</span>
+  </th>
+</template>
 <template id="grouping-aggregate-row-template">
-  <tr class="popupboxtrigger">
-    <th class="popupboxhighlight">
+  <tr>
+    <th>
       <span class="richaggrlabel">error</span>:
       <!-- todo click on any of the above should focus the value for editing and pin its popup box -->
     </th>
@@ -491,19 +502,8 @@
   </tr>
 </template>
 <template id="grouping-aggregate-datum-template">
-  <td class="datum popupboxhighlight">
+  <td>
     <span class="value aggregated">error</span>
-    <div class="datum popupbox" data-boxtype='groupeddatumpopupbox'>
-      <div class="pin"></div>
-      <header>
-        <p class="value" placeholder="no value">error</p>
-        <div class="aggregated">
-          <p>
-            <span class="fullaggrlabel">error</span>
-          </p>
-        </div>
-      </header>
-    </div>
   </td>
 </template>
 <template id="graphs-table-template">
