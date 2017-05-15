@@ -2078,6 +2078,13 @@
         foundCurrentValue = foundCurrentValue || found;
       }
 
+      // Now make an option for each grouping aggregate in metaanalysis
+      for (j = 0; j < metaanalysis.groupingAggregates.length; j++){
+        aggr = metaanalysis.groupingAggregates[j];
+        found = makeOption(aggr, col, col.formulaParams[i], select);
+        foundCurrentValue = foundCurrentValue || found;
+      }
+
       // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
       if (!foundCurrentValue && col.formulaParams[i]) { // ignore undefined
         colId = col.formulaParams[i];
@@ -2794,6 +2801,13 @@
         foundCurrentValue = foundCurrentValue || found;
       }
 
+      // Now make an option for each grouping aggregate in metaanalysis
+      for (j = 0; j < metaanalysis.groupingAggregates.length; j++){
+        aggr = metaanalysis.groupingAggregates[j];
+        found = makeOption(aggr, aggregate, aggregate.formulaParams[i], select);
+        foundCurrentValue = foundCurrentValue || found;
+      }
+
       // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
       if (!foundCurrentValue && aggregate.formulaParams[i]) {
         colId = aggregate.formulaParams[i];
@@ -3102,13 +3116,6 @@
       for (var j = 0; j < metaanalysis.columns.length; j++){
         var colId = metaanalysis.columns[j];
         var found = makeOption(colId, graph, graph.formulaParams[i], select);
-        foundCurrentValue = foundCurrentValue || found;
-      }
-
-      // Now make an option for each aggregate in metaanalysis
-      for (j = 0; j < metaanalysis.aggregates.length; j++){
-        var aggr = metaanalysis.aggregates[j];
-        found = makeOption(aggr, graph, graph.formulaParams[i], select);
         foundCurrentValue = foundCurrentValue || found;
       }
 
