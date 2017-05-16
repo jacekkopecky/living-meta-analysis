@@ -2919,14 +2919,15 @@
    */
 
   function fillGroupingAggregateTable(metaanalysis) {
-    var table = _.cloneTemplate('grouping-aggregate-table-template').children[0];
+    var table = _.cloneTemplate('grouping-aggregates-table-template').children[0];
     var tbody = _.findEl(table, 'tbody');
+    var addGroupingAggregateNode = _.findEl(table, 'tr.add');
 
     if (metaanalysis.groupingColumnObj) {
       _.fillEls(tbody, 'tr th .groupcolumnlabel', getColTitle(metaanalysis.groupingColumnObj));
     }
 
-    fillGroupingAggregateColumnSelection(metaanalysis, _.findEl(table, 'select.groupcolumnselection'));
+    fillGroupingColumnSelection(metaanalysis, _.findEl(table, 'select.groupcolumnselection'));
 
     if (!metaanalysis.groupingColumn) {
       table.classList.add('empty');
@@ -2943,17 +2944,67 @@
       });
 
       // for each grouping aggregate, add a row
-      metaanalysis.groupingAggregates.forEach(function (aggr) {
+      metaanalysis.groupingAggregates.forEach(function (groupingAggregate, groupingAggregateIndex) {
         var tr = _.cloneTemplate('grouping-aggregate-row-template').children[0];
-        tbody.appendChild(tr);
-        fillAggregateInformation(tr, aggr);
+        tbody.insertBefore(tr, addGroupingAggregateNode);
+        fillAggregateInformation(tr, groupingAggregate);
+
+        // todo this could be factored out with aggregates
+        // Add an option for every aggregate formula we know
+        var aggregateFormulas = lima.listAggregateFormulas();
+        var groupingAggregateFormulasDropdown = _.findEl(tr, 'select.groupingaggregateformulas')
+        for (var i = 0; i < aggregateFormulas.length; i++){
+          var el = document.createElement("option");
+          el.textContent = aggregateFormulas[i].label;
+          el.value = aggregateFormulas[i].id;
+          if (groupingAggregate.formulaName === el.value) {
+            el.selected = true;
+            groupingAggregateFormulasDropdown.classList.remove('validationerror');
+          }
+          groupingAggregateFormulasDropdown.appendChild(el);
+        }
+
+        groupingAggregateFormulasDropdown.onchange = function(e) {
+          groupingAggregate.formulaName = e.target.value;
+          groupingAggregate.formulaObj = lima.getFormulaObject(groupingAggregate.formulaName);
+
+          var formula = groupingAggregate.formulaObj;
+          if (formula) {
+            groupingAggregateFormulasDropdown.classList.remove('validationerror');
+          } else {
+            groupingAggregateFormulasDropdown.classList.add('validationerror');
+          }
+          // we'll call setValidationErrorClass() in fillGroupingAggregateColumnsSelection
+
+          // make sure formula columns array matches the number of expected parameters
+          groupingAggregate.formulaParams.length = formula ? formula.parameters.length : 0;
+          groupingAggregate.formula = lima.createFormulaString(groupingAggregate);
+
+          // fill in the current formula
+          _.fillEls(tr, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
+
+          // fill the columns selection
+          fillGroupingAggregateColumnsSelection(metaanalysis, groupingAggregate, tr, formula);
+
+          _.scheduleSave(metaanalysis);
+          recalculateComputedData();
+        };
+
+        var groupingAggrFormula = groupingAggregate.formulaObj;
+        fillGroupingAggregateColumnsSelection(metaanalysis, groupingAggregate, tr, groupingAggrFormula);
+
+        setupPopupBoxPinning(tr, '.popupbox', groupingAggregate.formula);
+        _.setDataProps(tr, '.popupbox', 'index', groupingAggregateIndex);
+
+        _.addEventListener(tr, 'button.move', 'click', moveGroupingAggregate);
+        _.addEventListener(tr, 'button.delete', 'click', deleteGroupingAggregate);
 
         groups.forEach(function (group) {
           var td = _.cloneTemplate('grouping-aggregate-datum-template').children[0];
           tr.appendChild(td);
 
           addComputedDatumSetter(function() {
-            var val = getAggregateDatumValue(aggr, group);
+            var val = getAggregateDatumValue(groupingAggregate, group);
 
             // handle bad values like Excel
             if (val == null) {
@@ -2970,16 +3021,26 @@
             if (typeof val == 'number') val = val.toPrecision(3);
 
             _.fillEls(td, '.value', val);
+            _.fillEls(td, '.group', group);
+
+            setupPopupBoxPinning(td, '.popupbox', groupingAggregate.formula + ',' + group);
           });
         });
+
+        fillAggregateInformation(tr, groupingAggregate);
+        fillComments('comment-template', tr, '.commentcount', '.popupbox main', metaanalysis, ['groupingAggregates', groupingAggregateIndex, 'comments']);
       });
     }
+
+    // Event handlers
+    _.addEventListener(table, 'tr.add button.add', 'click', addNewGroupingAggregateToMetaanalysis);
 
     var aggregatesContainer = _.findEl('#metaanalysis .aggregates');
     aggregatesContainer.appendChild(table);
   }
 
-  function fillGroupingAggregateColumnSelection(metaanalysis, select) {
+  // this function fills the grouping aggregates 'grouped by' column selection
+  function fillGroupingColumnSelection(metaanalysis, select) {
     // the first option is an instruction
     var op = document.createElement("option");
     op.textContent = 'Select moderator';
@@ -3011,6 +3072,97 @@
       _.scheduleSave(metaanalysis);
       updateMetaanalysisView();
     };
+  }
+
+  // this function fills the grouping aggregates formula param selection dropdowns
+  function fillGroupingAggregateColumnsSelection(metaanalysis, groupingAggregate, trEl, formula) {
+    // editing drop-down boxes for parameter columns
+    var groupingAggregateColumnsSelectionEl = _.findEl(trEl, '.groupingaggregatecolumnsselection');
+    // clear out old children.
+    groupingAggregateColumnsSelectionEl.innerHTML = '';
+
+    if (!formula) return;
+
+    var noOfParams = formula.parameters.length;
+
+    for (var i = 0; i < noOfParams; i++){
+      // Make a select dropdown
+      var label = document.createElement('label');
+      label.textContent = formula.parameters[i] + ': ';
+      groupingAggregateColumnsSelectionEl.appendChild(label);
+
+      var select = document.createElement("select");
+      label.appendChild(select);
+
+      // the first option is an instruction
+      var op = document.createElement("option");
+      op.textContent = 'Select a column or aggregate';
+      op.value = '';
+      select.appendChild(op);
+      select.classList.add('validationerror');
+
+      var foundCurrentValue = false;
+
+      // Now make an option for each column in metaanalysis
+      // account for computed columns in metaanalysis.columns
+      for (var j = 0; j < metaanalysis.columns.length; j++){
+        var colId = metaanalysis.columns[j];
+        var found = makeOption(colId, groupingAggregate, groupingAggregate.formulaParams[i], select);
+        foundCurrentValue = foundCurrentValue || found;
+      }
+
+      // Now make an option for each aggregate in metaanalysis
+      for (j = 0; j < metaanalysis.aggregates.length; j++){
+        var aggr = metaanalysis.aggregates[j];
+        found = makeOption(aggr, groupingAggregate, groupingAggregate.formulaParams[i], select);
+        foundCurrentValue = foundCurrentValue || found;
+      }
+
+      // Now make an option for each grouping aggregate in metaanalysis
+      for (j = 0; j < metaanalysis.groupingAggregates.length; j++){
+        aggr = metaanalysis.groupingAggregates[j];
+        found = makeOption(aggr, groupingAggregate, groupingAggregate.formulaParams[i], select);
+        foundCurrentValue = foundCurrentValue || found;
+      }
+
+      // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
+      if (!foundCurrentValue && groupingAggregate.formulaParams[i]) {
+        colId = groupingAggregate.formulaParams[i];
+        makeOption(colId, groupingAggregate, colId, select);
+      }
+
+      setValidationErrorClass();
+
+      // listen to changes of the dropdown box
+      // preserve the value of i inside this code
+      (function(i, select){
+        select.onchange = function(e) {
+          groupingAggregate.formulaParams[i] = lima.parseFormulaString(e.target.value);
+          groupingAggregate.formula = lima.createFormulaString(groupingAggregate);
+          if (e.target.value) {
+            select.classList.remove('validationerror');
+          } else {
+            select.classList.add('validationerror');
+          }
+          setValidationErrorClass();
+          _.scheduleSave(metaanalysis);
+          fillAggregateInformation(trEl, groupingAggregate);
+          recalculateComputedData();
+        };
+      })(i, select);
+
+    }
+
+    fillAggregateInformation(trEl, groupingAggregate);
+  }
+
+  function addNewGroupingAggregateToMetaanalysis() {
+    var groupingAggregate = {formulaName: null, formulaParams: [], grouping: true};
+    groupingAggregate.formula = lima.createFormulaString(groupingAggregate);
+    currentMetaanalysis.groupingAggregates.push(groupingAggregate);
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+    setTimeout(focusFirstValidationError, 0);
   }
 
 
@@ -3149,7 +3301,7 @@
 
       // the first option is an instruction
       var op = document.createElement("option");
-      op.textContent = 'Select a column';
+      op.textContent = 'Select a column or aggregate';
       op.value = '';
       select.appendChild(op);
       select.classList.add('validationerror');
@@ -3922,6 +4074,59 @@
 
     if (!currentMetaanalysis.aggregates[aggregateIndex]) return console.error('aggregate[' + aggregateIndex + '] not found in aggregates!');
     currentMetaanalysis.aggregates.splice(aggregateIndex, 1);
+    unpinPopupBox();
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+  }
+
+  /* banner here for 'changing grouping aggr'
+  */
+  function moveGroupingAggregate() {
+    // a click will pin the box,
+    // this timeout makes sure the click gets processed first and then we do the moving
+    setTimeout(doMoveGroupingAggregate, 0, this);
+  }
+
+  function doMoveGroupingAggregate(el) {
+    var up = el.classList.contains('up');
+    var most = el.classList.contains('most');
+    var groupingAggregateIndex = parseInt(_.findPrecedingEl(el, 'div.popupbox').dataset.index);
+    if (isNaN(groupingAggregateIndex)) return; // we don't know what to move
+
+    if (!currentMetaanalysis.groupingAggregates[groupingAggregateIndex]) return console.error('grouping aggregate[' + groupingAggregateIndex + '] not found in grouping aggregates!');
+    var newPosition = findNextGroupingAggr(groupingAggregateIndex, up, most);
+    _.moveArrayElement(currentMetaanalysis.groupingAggregates, groupingAggregateIndex, newPosition);
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+  }
+
+  /*
+   * find where to move a grouping aggregate from its current index;
+   * `up` indicates direction (up meaning left in array order); if `most`, move to the beginning (top) or end (bottom) of the aggregate list.
+   */
+  function findNextGroupingAggr(currentIndex, up, most) {
+    if (up) {
+      if (most || currentIndex <= 0) return 0;
+      currentIndex -= 1;
+    } else {
+      if (most) return currentMetaanalysis.groupingAggregates.length - 1;
+      currentIndex += 1;
+    }
+    return currentIndex;
+  }
+
+  function deleteGroupingAggregate() {
+    // a click will pin the box,
+    // this timeout makes sure the click gets processed first and then we do the moving
+    setTimeout(doDeleteGroupingAggregate, 0, this);
+  }
+
+  function doDeleteGroupingAggregate(el) {
+    var groupingAggregateIndex = parseInt(_.findPrecedingEl(el, 'div.popupbox').dataset.index);
+    if (isNaN(groupingAggregateIndex)) return; // we don't know what to move
+
+    if (!currentMetaanalysis.groupingAggregates[groupingAggregateIndex]) return console.error('grouping aggregate[' + groupingAggregateIndex + '] not found in grouping aggregates!');
+    currentMetaanalysis.groupingAggregates.splice(groupingAggregateIndex, 1);
     unpinPopupBox();
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
