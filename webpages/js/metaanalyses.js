@@ -1741,6 +1741,8 @@
       lastColumnHidden = false;
     }
 
+    populateOneClickOptions(addColumnNode);
+
 
     /* experiment rows
      *
@@ -1927,10 +1929,16 @@
     _.addEventListener(table, 'tr:not(.add) .papertitle button.add', 'click', addExperimentRow);
     _.addEventListener(table, 'tr.add button.add', 'click', addPaperRow);
 
+    // add a column box
     _.addEventListener(table, 'th.add button.add', 'click', addExperimentColumn);
-    _.addEventListener(table, 'th.add button.cancel', 'click', dismissAddExperimentColumn);
-    _.addEventListener(table, 'th.add button.addnew', 'click', addNewExperimentColumn);
-    _.addEventListener(table, 'th.add button.addcomp', 'click', addNewComputedColumn);
+    _.addEventListener(table, 'th.add div.newcolumn button.cancel', 'click', dismissAddExperimentColumn);
+    _.addEventListener(table, 'th.add div.newcolumn button.addnew', 'click', addNewExperimentColumn);
+    _.addEventListener(table, 'th.add div.newcolumn button.addcomp', 'click', addNewComputedColumn);
+
+    // add a one-click box
+    _.addEventListener(table, 'th.add button.oneclick', 'click', showOneClickMetaanalysisBox);
+    _.addEventListener(table, 'th.add div.oneclick button.cancel', 'click', dismissOneClickMetaanalysisBox);
+    _.addEventListener(table, 'th.add div.oneclick button.addoneclick', 'click', addOneClickMetaanalysis);
 
     var experimentsContainer = _.findEl('#metaanalysis .experiments');
     experimentsContainer.appendChild(table);
@@ -2443,7 +2451,7 @@
     }
 
     // show the add column box
-    _.addClass('#metaanalysis table.experiments tr:first-child th.add', 'adding');
+    _.addClass('#metaanalysis table.experiments tr:first-child th.add div.newcolumn', 'adding');
     _.addClass('body', 'addnewcolumn');
 
     lima.getColumns()
@@ -2451,12 +2459,12 @@
   }
 
   function dismissAddExperimentColumn() {
-    _.removeClass('#metaanalysis table.experiments tr:first-child th.add', 'adding');
+    _.removeClass('#metaanalysis table.experiments tr:first-child th.add div.newcolumn', 'adding');
     _.removeClass('body', 'addnewcolumn');
   }
 
   function populateAddColumnsList(columns) {
-    var list = _.findEl('#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul');
+    var list = _.findEl('#metaanalysis table.experiments tr:first-child th.add div.newcolumn .addcolumnbox > ul');
     list.innerHTML='';
     var user = lima.getAuthenticatedUserEmail();
     var ordered = {yours: { result: [], characteristic: []},
@@ -2486,7 +2494,7 @@
     addColumnsBlock(list, 'result columns:', ordered.other.result);
     addColumnsBlock(list, 'columns used in the meta-analysis:', usedInTheMetaanalysis);
 
-    _.removeClass('#metaanalysis table.experiments tr:first-child th.add .addcolumnbox.loading', 'loading');
+    _.removeClass('#metaanalysis table.experiments tr:first-child th.add div.newcolumn .addcolumnbox.loading', 'loading');
     _.setYouOrName();
 
     emptyColInfo();
@@ -2618,6 +2626,226 @@
     }
     updateMetaanalysisView();
     setTimeout(focusFirstValidationError, 0);
+  }
+
+  /* one-click
+   *
+   *
+   *    ####  #    # ######        ####  #      #  ####  #    #
+   *   #    # ##   # #            #    # #      # #    # #   #
+   *   #    # # #  # #####  ##### #      #      # #      ####
+   *   #    # #  # # #            #      #      # #      #  #
+   *   #    # #   ## #            #    # #      # #    # #   #
+   *    ####  #    # ######        ####  ###### #  ####  #    #
+   *
+   *
+   */
+
+  function showOneClickMetaanalysisBox() {
+    // show the one-click box
+    _.addClass('#metaanalysis table.experiments tr:first-child th.add div.oneclick', 'adding');
+    _.addClass('body', 'addoneclick');
+  }
+
+  function dismissOneClickMetaanalysisBox() {
+    // dismiss the one-click box
+    _.removeClass('#metaanalysis table.experiments tr:first-child th.add div.oneclick', 'adding');
+    _.removeClass('body', 'addoneclick');
+  }
+
+  function populateOneClickOptions(thEl) {
+    var oneClickMetaEl = _.findEl(thEl, 'div.oneclickcontainer');
+
+    if (!currentMetaanalysis.oneclick) currentMetaanalysis.oneclick = {};
+
+    // generate dropdown boxes for the parameters
+    oneClickManualDropdownBuilder(oneClickMetaEl, 'Type of input data', 'inputDataType', ['fractions', 'percentages', 'numbers affected']);
+    oneClickDropdownBuilder(oneClickMetaEl, 'Experimental', 'experimental');
+    oneClickDropdownBuilder(oneClickMetaEl, 'Experimental N', 'experimentalN');
+    oneClickDropdownBuilder(oneClickMetaEl, 'Control', 'control');
+    oneClickDropdownBuilder(oneClickMetaEl, 'Control N', 'controlN');
+
+    // generate checkbox options
+    // General things to include
+    var sectionEl = document.createElement("span");
+    sectionEl.textContent = 'Include';
+    sectionEl.classList.add('section');
+    oneClickMetaEl.appendChild(sectionEl);
+
+    oneClickCheckboxBuilder(sectionEl, 'Forest plot', 'forestPlot', true, null);
+    oneClickCheckboxBuilder(sectionEl, 'Random-effect model', 'randomEffect', false);
+
+    // Moderator analysis / grouping things to include
+    sectionEl = document.createElement("span");
+    sectionEl.textContent = 'Moderator Analysis';
+    sectionEl.classList.add('section');
+    oneClickMetaEl.appendChild(sectionEl);
+
+    oneClickCheckboxBuilder(sectionEl, 'Include Moderator Analysis', 'moderatorAnalysis', false);
+    oneClickCheckboxBuilder(sectionEl, 'Grape Chart', 'grapeChart', false);
+    oneClickCheckboxBuilder(sectionEl, 'Grouped Forest Chart', 'groupedForest', false);
+
+    // add the sub-dropdown box that depends on the above checkboxes
+    oneClickDropdownBuilder(sectionEl, 'Moderator', 'moderator', true, false);
+  }
+
+  // this function builds a dom object in the form of
+  // <label class="<paramId>">
+  //   paramLabel + ':'
+  //   <select>
+  //     <!-- containing options for each column, aggregate or group aggregate
+  //          from the currentMetaanalysis -->
+  //     <option value="/example/id/12345">Example * label</option>
+  //   </select>
+  // </label>
+  //
+  // Selection in this dropdownbox is saved to currentMetaanalysis.oneclick[paramId]
+  // if subDropdown is provided, the dropdownbox is hidden by default and will be
+  // displayed when one of its owner checkbox options are clicked.
+  function oneClickDropdownBuilder(oneClickMetaEl, paramLabel, paramId, subDropdown, subDropdownShown) {
+    var label = document.createElement("label");
+    label.innerHTML = paramLabel + ':';
+    oneClickMetaEl.appendChild(label);
+
+    var selectEl = document.createElement("select");
+    label.classList.add(paramId)
+    label.appendChild(selectEl)
+
+    // the first option is an instruction
+    var op = document.createElement("option");
+    op.textContent = 'Select a column or aggregate';
+    op.value = '';
+    selectEl.appendChild(op);
+
+    // values here dont persist, so on page load they are all lost. As a result,
+    // we don't need to;
+    // - display the current one as an option of itself
+    // - automatically select the current value
+    // as a result, we pass {formula:''} and ''.
+
+    // Now make an option for each column in metaanalysis
+    // account for computed columns in metaanalysis.columns
+    for (var j = 0; j < currentMetaanalysis.columns.length; j++){
+      var colId = currentMetaanalysis.columns[j];
+      makeOption(colId, {formula: ''}, '', selectEl);
+    }
+
+    // Now make an option for each aggregate in currentMetaanalysis
+    for (j = 0; j < currentMetaanalysis.aggregates.length; j++){
+      var aggr = currentMetaanalysis.aggregates[j];
+      makeOption(aggr, {formula: ''}, '', selectEl);
+    }
+
+    // Now make an option for each grouping aggregate in currentMetaanalysis
+    for (j = 0; j < currentMetaanalysis.groupingAggregates.length; j++){
+      aggr = currentMetaanalysis.groupingAggregates[j];
+      makeOption(aggr, {formula: ''}, '', selectEl);
+    }
+
+    // store the values from the dropdown box temporarily in metaanalysis.oneclick
+    // we dont save this, it's simply so we don't need to grab them when we
+    // hit the one-click button.
+    selectEl.onchange = function(e) {
+      if (!currentMetaanalysis.oneclick) currentMetaanalysis.oneclick = {};
+      currentMetaanalysis.oneclick[paramId] = e.target.value;
+    }
+
+    if (subDropdown == true) {
+      label.classList.add("subdropdown");
+      if (!subDropdownShown) label.classList.add("hidden");
+    }
+  }
+
+  // this function builds a dom object in the form of
+  // <label class="<paramId>">
+  //   paramLabel + ':'
+  //   <select>
+  //     <!-- containing options for each item in the options array -->
+  //     <option value="foo">foo</option>
+  //   </select>
+  // </label>
+  //
+  // Selection in this dropdownbox is saved to currentMetaanalysis.oneclick[paramId]
+  // if subDropdown is provided, the dropdownbox is hidden by default and will be
+  // displayed when one of its owner checkbox options are clicked.
+  function oneClickManualDropdownBuilder(oneClickMetaEl, paramLabel, paramId, options, subDropdown, subDropdownShown) {
+    var label = document.createElement("label");
+    label.innerHTML = paramLabel + ':';
+    oneClickMetaEl.appendChild(label);
+
+    var selectEl = document.createElement("select");
+    label.classList.add(paramId)
+    label.appendChild(selectEl)
+
+    // the first option is an instruction
+    var op = document.createElement("option");
+    op.textContent = 'Select an option';
+    op.value = '';
+    selectEl.appendChild(op);
+
+
+    options.forEach(function (option) {
+      var el = document.createElement("option");
+      el.innerHTML = option;
+      el.value = option;
+      selectEl.appendChild(el);
+    })
+
+    // store the values from the dropdown box temporarily in metaanalysis.oneclick
+    // we don't save this, it's simply so we don't need to grab them when we
+    // hit the one-click button.
+    selectEl.onchange = function(e) {
+      if (!currentMetaanalysis.oneclick) currentMetaanalysis.oneclick = {};
+      currentMetaanalysis.oneclick[paramId] = e.target.value;
+    }
+
+    if (subDropdown == true) {
+      label.classList.add("subdropdown");
+      if (!subDropdownShown) label.classList.add("hidden");
+    }
+  }
+
+  // This function builds a dom object in the form of
+  //   <label class='sublabel'><input type="checkbox" value="optionId">optionLabel</label>
+  //
+  // Checked status in this is saved to currentMetaanalysis.oneclick[optionId]
+  // elements with class .subdropdown in the same section are automatically only shown if one of the
+  // options in that section is checked.
+  function oneClickCheckboxBuilder(sectionEl, optionLabel, optionId, checked) {
+    var label = document.createElement("label");
+    label.innerHTML = optionLabel;
+    label.classList.add('sublabel');
+    var checkboxEl = document.createElement("input");
+    checkboxEl.type = "checkbox";
+    checkboxEl.value = optionId;
+    checkboxEl.checked = !!checked;
+    currentMetaanalysis.oneclick[optionId] = !!checked;
+    label.appendChild(checkboxEl);
+    sectionEl.appendChild(label);
+
+    // onchange listener for checkboxes
+    checkboxEl.onchange = function(e) {
+      currentMetaanalysis.oneclick[optionId] = e.target.checked
+
+      // If there are dependent elements, we wanna show/hide those depending on this checkbox and its siblings
+
+      // first, find if any of this checkbox and its siblings is checked
+      var display = false;
+      _.findEls(sectionEl, "label.sublabel > input").forEach(function(option) {
+        if (option.checked) display = true;
+      });
+
+      // then show or hide the dependent elements
+      _.findEls(sectionEl, '.subdropdown').forEach(function(subdropdown) {
+        subdropdown.classList.toggle('hidden', !display);
+      });
+    }
+  }
+
+  function addOneClickMetaanalysis() {
+    // todo: Implement this
+    console.log("button was clicked");
+    console.log(currentMetaanalysis.oneclick);
   }
 
   /* adding rows
@@ -4566,6 +4794,7 @@
         ev.target.blur();
       } else if (pinnedBox) {
         dismissAddExperimentColumn();
+        dismissOneClickMetaanalysisBox();
         unpinPopupBox();
       }
     }
@@ -4579,6 +4808,7 @@
     if (!el || el.classList.contains('pin') && pinnedBox) {
       unpinPopupBox();
       dismissAddExperimentColumn();
+      dismissOneClickMetaanalysisBox();
     }
     else pinPopupBox(el);
   }

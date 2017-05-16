@@ -131,38 +131,58 @@
             <!-- todo comments -->
           </div>
         </th>
-        <th class="add popupboxtrigger">
+        <th class="add">
           <div class="unhide editing">&#x25C4; &#x25BA;</div>
-          <div><span><button class="add notunpin not-unsaved">add a column</button>
-                     <button class="when-unsaved" disabled title="can't add a column when some changes are unsaved">add a column</button></span></div>
-          <div class="addcolumnbox loading">
-            <header>
-              <h1>Click column to add</h1>
-              <!-- todo search -->
-              <!-- <span class="search"><input type="search" placeholder="search" class="search"></span> -->
-            </header>
-            <div class="loadingspinner">loading&hellip;</div>
-            <ul></ul><!-- this will contain the columns to add -->
-            <footer>
-              <button class="addnew">+ new data column</button>
-              <button class="addcomp">+ new computed column</button>
-              <button class="cancel">cancel</button>
-            </footer>
+          <div><span>
+            <button class="add notunpin not-unsaved">add a column</button>
+            <button class="when-unsaved" disabled title="can't add a column when some changes are unsaved">add a column</button>
+            <button class="oneclick notunpin not-unsaved">meta-analysis</button>
+            <button class="when-unsaved" disabled title="can't add meta-analysis when some changes are unsaved">meta-analysis</button>
+          </span></div>
+          <div class="newcolumn popupboxtrigger">
+            <div class="addcolumnbox loading">
+              <header>
+                <h1>Click column to add</h1>
+                <!-- todo search -->
+                <!-- <span class="search"><input type="search" placeholder="search" class="search"></span> -->
+              </header>
+              <div class="loadingspinner">loading&hellip;</div>
+              <ul></ul><!-- this will contain the columns to add -->
+              <footer>
+                <button class="addnew">+ new data column</button>
+                <button class="addcomp">+ new computed column</button>
+                <button class="cancel">cancel</button>
+              </footer>
+            </div>
+            <div class="colinfo popupbox unpopulated" data-boxid='colinfo'>
+              <header>
+                <p class="coltitle">error</p>
+                <p class="alreadythere">(included in the meta-analysis)<p>
+                <p class="unpopulated">Select a column to add</p>
+              </header>
+              <p class="coldescription">error</p>
+              <p class="unpopulated">To see details of a column, move over it with your mouse.</p>
+              <!-- todo comments -->
+              <footer>
+                <span class="coltype"><span class="type-characteristic">characteristic/moderator</span><span class="type-result">result</span> column</span>
+                <span class="definedby only-not-yours needs-owner"> defined by <a class="value" href="error">error</a>,</span>
+                last updated <span class="colmtime"> on <span class="value date">error</span></span>
+              </footer>
+            </div>
           </div>
-          <div class="colinfo popupbox unpopulated" data-boxid='colinfo'>
-            <header>
-              <p class="coltitle">error</p>
-              <p class="alreadythere">(included in the meta-analysis)<p>
-              <p class="unpopulated">Select a column to add</p>
-            </header>
-            <p class="coldescription">error</p>
-            <p class="unpopulated">To see details of a column, move over it with your mouse.</p>
-            <!-- todo comments -->
-            <footer>
-              <span class="coltype"><span class="type-characteristic">characteristic/moderator</span><span class="type-result">result</span> column</span>
-              <span class="definedby only-not-yours needs-owner"> defined by <a class="value" href="error">error</a>,</span>
-              last updated <span class="colmtime"> on <span class="value date">error</span></span>
-            </footer>
+          <div class="oneclick popupboxtrigger">
+            <div class="oneclickmetabox loading">
+              <header>
+                <h1>Specify the following parameters</h1>
+              </header>
+              <div class="oneclickcontainer">
+                <!-- gets populated in the code -->
+              </div>
+              <footer>
+                <button class="addoneclick">do the magic!</button>
+                <button class="cancel">cancel</button>
+              </footer>
+            </div>
           </div>
         </th>
       </tr>
@@ -258,7 +278,7 @@
         <div class="colcomputedcolumns">
           <select class="colformulas editing validationerror">
             <option value=''>Select formula</option>
-            <!-- gets populated in the code, in which case the option above goes away -->
+            <!-- gets populated in the code -->
           </select>
           <div class="colformulacolumnsselection editing">
             <!-- gets populated in the code -->
@@ -443,7 +463,7 @@
             </p>
             <select class="aggregateformulas editing validationerror">
               <option value=''>Select formula</option>
-              <!-- gets populated in the code, in which case the option above goes away -->
+              <!-- gets populated in the code -->
             </select>
             <div class="aggregatecolumnsselection editing">
               <!-- gets populated in the code -->
@@ -521,7 +541,7 @@
             </p>
             <select class="groupingaggregateformulas editing validationerror">
               <option value=''>Select formula</option>
-              <!-- gets populated in the code, in which case the option above goes away -->
+              <!-- gets populated in the code -->
             </select>
             <div class="groupingaggregatecolumnsselection editing">
               <!-- gets populated in the code -->
@@ -603,7 +623,7 @@
             </p>
             <select class="graphformulas editing validationerror">
               <option value=''>Select formula</option>
-              <!-- gets populated in the code, in which case the option above goes away -->
+              <!-- gets populated in the code -->
             </select>
             <div class="graphcolumnsselection editing">
               <!-- gets populated in the code -->

@@ -140,6 +140,11 @@ body > footer > p {
   text-align: center;
 }
 
+/* prevent selects from growing too big with long values */
+select {
+  max-width: 100%;
+}
+
 /* index
  *
  *
@@ -1769,7 +1774,8 @@ body.page-about-you.editing .fullcolinfo header {
 }
 
 body.addnewcolumn #paper table.experiments,
-body.addnewcolumn #metaanalysis table.experiments {
+body.addnewcolumn #metaanalysis table.experiments,
+body.addoneclick #metaanalysis table.experiments {
   padding-right: 35em; /* 15em for width of popupbox and 22em for width of new column box */
 }
 
@@ -1859,7 +1865,7 @@ body:not(.editing) #metaanalysis table.experiments tr:first-child th:nth-last-ch
 }
 
 #paper table.experiments tr:first-child th > div:not(.popupbox):not(.unhide):not(.addcolumnbox),
-#metaanalysis table.experiments tr:first-child th > div:not(.popupbox):not(.unhide):not(.addcolumnbox) {
+#metaanalysis table.experiments tr:first-child th > div:not(.popupbox):not(.unhide):not(.newcolumn):not(.oneclick) {
   transform: translate(-.5em,.8em) rotate(-45deg);
   transform-origin: top left;
   display: inline-block;
@@ -2122,13 +2128,13 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox,
+#metaanalysis table.experiments tr:first-child th div.oneclick .oneclickmetabox {
   transform: none;
   position: absolute;
   top: -10em;
   left: -1em;
   z-index: 10;
-  height: 20em;
   width: 25em;
   background: white;
   border: 1px solid black;
@@ -2144,15 +2150,41 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 
 #paper table.experiments tr:first-child th.add:not(.adding) .addcolumnbox,
 #paper table.experiments tr:first-child th.add:not(.adding) .colinfo,
-#metaanalysis table.experiments tr:first-child th.add:not(.adding) .addcolumnbox,
-#metaanalysis table.experiments tr:first-child th.add:not(.adding) .colinfo {
+#metaanalysis table.experiments tr:first-child th.add div.newcolumn:not(.adding) .addcolumnbox,
+#metaanalysis table.experiments tr:first-child th.add div.newcolumn:not(.adding) .colinfo,
+#metaanalysis table.experiments tr:first-child th.add div.oneclick:not(.adding) .oneclickmetabox {
   display: none;
+}
+
+#metaanalysis table.experiments tr:first-child th.add div.oneclick label,
+#metaanalysis table.experiments tr:first-child th.add div.oneclick label > select {
+  margin: .3em 0;
+  display: block;
+}
+
+#metaanalysis table.experiments tr:first-child th.add div.oneclick label.hidden {
+  display: none;
+}
+
+#metaanalysis table.experiments tr:first-child th.add div.oneclick span.section {
+  font-weight: bold;
+}
+
+#metaanalysis table.experiments tr:first-child th.add div.oneclick label.sublabel {
+  font-weight: normal;
+  margin-left: .3em;
+}
+
+#metaanalysis table.experiments tr:first-child th.add div.oneclick label.subdropdown {
+  margin-left: .6em;
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox header,
 #paper table.experiments tr:first-child th.add .addcolumnbox footer,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox header,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox footer {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox header,
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox footer,
+#metaanalysis table.experiments tr:first-child th div.oneclick .oneclickmetabox header,
+#metaanalysis table.experiments tr:first-child th div.oneclick .oneclickmetabox footer {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -2161,7 +2193,7 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox header span.search,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox header span.search {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox header span.search {
   flex: 1 0 5em;
   margin-left: auto;
   padding-left: 1em;
@@ -2169,26 +2201,27 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox header input.search,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox header input.search {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox header input.search {
   width: 100%;
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox h1,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox h1 {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox h1,
+#metaanalysis table.experiments tr:first-child th div.oneclick .oneclickmetabox h1 {
   font-size: 120%;
   margin: 0;
   flex: 0 0 auto;
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox > ul,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox > ul {
   overflow: auto;
   margin: .5em 0;
   padding: 0;
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox > ul > li,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul > li {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox > ul > li {
   overflow: auto;
   display: flex;
   justify-content: space-between;
@@ -2197,27 +2230,27 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox > ul > li:last-child,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul > li:last-child {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox > ul > li:last-child {
   border-bottom: 1px solid #888;
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox > ul > li:hover:not(.heading):not(.alreadythere),
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul > li:hover:not(.heading):not(.alreadythere) {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox > ul > li:hover:not(.heading):not(.alreadythere) {
   background: rgba(243,230,255,1);
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox > ul > li.alreadythere,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul > li.alreadythere {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox > ul > li.alreadythere {
   background-color: #eee;
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox > ul > li.alreadythere:hover,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul > li.alreadythere:hover {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox > ul > li.alreadythere:hover {
   background: rgba(228,215,240,1);
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox > ul > li.heading,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul > li.heading {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox > ul > li.heading {
   padding: .3em;
   /*font-weight: bold;*/
   background: rgba(128,0,255,.05);
@@ -2225,7 +2258,7 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox > ul > li > .coltitle,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul > li > .coltitle {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox > ul > li > .coltitle {
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1 1 auto;
@@ -2233,25 +2266,25 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox > ul > li.alreadythere > .coltitle,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul > li.alreadythere > .coltitle {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox > ul > li.alreadythere > .coltitle {
   color: #444;
   font-style: italic;
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox > ul > li:not(.alreadythere) > .coltitle,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul > li:not(.alreadythere) > .coltitle {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox > ul > li:not(.alreadythere) > .coltitle {
   cursor: pointer;
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox > ul > li > .definedby,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox > ul > li > .definedby {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox > ul > li > .definedby {
   display: block;
   flex: 0 0 auto;
   font-size: 67%;
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox:not(.loading) > ul:empty:after,
-#metaanalysis table.experiments tr:first-child th.add .addcolumnbox:not(.loading) > ul:empty:after {
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox:not(.loading) > ul:empty:after {
   display: block;
   content: 'error: no columns available';
 }
