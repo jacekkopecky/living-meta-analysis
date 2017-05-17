@@ -1313,11 +1313,21 @@
     // fill rows with experiment data
     var tableBodyNode = _.findEl(table, 'tbody');
     var addRowNode = _.findEl(table, 'tbody > tr.add');
+    var lastExpHidden = false;
 
     papers.forEach(function(paper, papIndex) {
       var papTitleIndex = getFirstNonHiddenExp(paper);
       paper.experiments.forEach(function (experiment, expIndex) {
+        var noExpInCurrPaper = getNbUnhiddenExpPaper(paper);
+
         if (isHiddenExp(experiment.id)) {
+          /* Add an unhide button only if there is at least one unhidden experiment,
+           * otherwise we will not be able to found later the needed element
+           */
+          if (noExpInCurrPaper) {
+            lastExpHidden = true;
+          }
+
           return;
         }
 
@@ -1337,7 +1347,6 @@
         // in the first row for a paper, the paperTitle TH should have rowspan equal to the number of experiments
         // in other rows, the paperTitle TH is hidden by the CSS
         if (expIndex == papTitleIndex) {
-          var noExpInCurrPaper = getNbUnhiddenExpPaper(paper);
           paperTitleEl.rowSpan = noExpInCurrPaper;
           tr.classList.add('paperstart');
 
@@ -1384,6 +1393,21 @@
           setPaperExclusionState(paper, tr);
           _.setDataProps(tr, '.papertitle .exclude', 'index', papIndex);
           _.addEventListener(tr, '.papertitle .exclude', 'click', excludePaper);
+
+        }
+
+        // Add an unhide button if necessary
+        if (lastExpHidden) {
+          var concernPapIndex = papIndex;
+
+          // If it's in the previous paper
+          if (!expIndex) {
+            concernPapIndex -= 1;
+          }
+
+          var paperTitleEl = _.findEl(tableBodyNode, '[data-paper-index="' + concernPapIndex +'"]');
+          addExpUnhideButton(paperTitleEl);
+          lastExpHidden = false;
         }
 
         _.fillEls(tr, '.exptitle', experiment.title);
@@ -1489,14 +1513,10 @@
       });
     });
 
-    // Add unhide button for the needed papers
-    for (var i=0; i<papers.length; i++) {
-      var nbHidden = getNbHiddenExpPaper(papers[i]);
-
-      if (nbHidden > 0 && nbHidden < papers[i].experiments.length) {
-        var paperTitleEl = _.findEl(tableBodyNode, '[data-paper-index="' + i + '"] .papertitle');
-        addExpUnhideButton(paperTitleEl, i);
-      }
+    // If the last experiment in the last paper is hidden
+    if (lastExpHidden) {
+      var paperTitleEl = _.findEl(tableBodyNode, '[data-paper-index="' + (currentMetaanalysis.papers.length - 1) +'"]');
+      addExpUnhideButton(paperTitleEl);
     }
 
     _.addEventListener(table, 'tr:not(.add) .papertitle button.add', 'click', addExperimentRow);
@@ -2192,18 +2212,6 @@
     return retval;
   }
 
-  function getNbHiddenExpPaper(paper) {
-    var retval = 0;
-
-    paper.experiments.forEach(function (exp) {
-      if (isHiddenExp(exp.id)) {
-        retval += 1;
-      }
-    });
-
-    return retval;
-  }
-
   function isHiddenExp(expId) {
     return currentMetaanalysis.hiddenExperiments.indexOf(expId) !== -1;
   }
@@ -2226,7 +2234,8 @@
     _.scheduleSave(currentMetaanalysis);
   }
 
-  function addExpUnhideButton(expNode, paperIndex) {
+  function addExpUnhideButton(expNode) {
+    var paperIndex = expNode.dataset.paperIndex;
     var unhidebutton = _.findEl(expNode, '.unhideexp');
     unhidebutton.removeAttribute('hidden');
     _.setDataProps(expNode, 'button.unhideexp', 'paperIndex', paperIndex);
