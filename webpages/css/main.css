@@ -2599,7 +2599,7 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
 }
 
 #metaanalysis table.aggregates:not(.grouping) tr + tr > *,
-#metaanalysis table.grouping.aggregates tr:not(:first-child):not(:last-child) {
+#metaanalysis table.grouping.aggregates tr:not(:first-child) {
   border-top: 1px solid black;
 }
 
@@ -2643,13 +2643,22 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
   display: none;
 }
 
-#metaanalysis table.grouping.aggregates.empty tr.groupheadings {
+#metaanalysis table.grouping.aggregates.nogroupingcolumn tr:not(.add):not(:first-child) th > *:not(.popupbox),
+#metaanalysis table.grouping.aggregates.nogroupingcolumn tr:not(.add):not(:first-child) td > *:not(.popupbox) {
+  color: grey;
+  font-style: italic;
+}
+
+#metaanalysis table.grouping.aggregates.nogroups tr.groupheadings {
   display: none;
 }
 
-/* disable repeating "grouping" in the name of every grouping aggregate listed in the table */
-/* but only for the first one */
-#metaanalysis table.grouping.aggregates .richaggrlabel > span:first-of-type > span.grouped {
+#metaanalysis table.grouping.aggregates tr.groupheadings th:first-child {
+  text-align: right;
+}
+
+/* disable repeating "grouping" where it's redundant */
+#metaanalysis table.grouping.aggregates .suppressgrouping > span:first-of-type > span.grouped {
   display: none;
 }
 
