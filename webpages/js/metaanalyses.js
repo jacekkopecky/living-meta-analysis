@@ -1495,7 +1495,7 @@
 
       if (nbHidden > 0 && nbHidden < papers[i].experiments.length) {
         var paperTitleEl = _.findEl(tableBodyNode, '[data-paper-index="' + i + '"] .papertitle');
-        addExpUnhideButton(paperTitleEl, papers[i].id);
+        addExpUnhideButton(paperTitleEl, i);
       }
     }
 
@@ -2209,17 +2209,10 @@
   }
 
   function unhideExpPaper(e) {
-    var paperIndex = 0;
-
-    while (currentMetaanalysis.papers[paperIndex].id != e.target.dataset.paperId) {
-      paperIndex++;
-    }
+    var paperIndex = e.target.dataset.paperIndex;
 
     currentMetaanalysis.papers[paperIndex].experiments.forEach(function (experiment) {
-      var expIndex = currentMetaanalysis.hiddenExperiments.indexOf(experiment.id);
-      if (expIndex != -1) {
-        currentMetaanalysis.hiddenExperiments.splice(expIndex, 1);
-      }
+      _.removeFromArray(currentMetaanalysis.hiddenExperiments, experiment.id);
     });
 
     updateMetaanalysisView();
@@ -2233,10 +2226,10 @@
     _.scheduleSave(currentMetaanalysis);
   }
 
-  function addExpUnhideButton(expNode, paperId) {
+  function addExpUnhideButton(expNode, paperIndex) {
     var unhidebutton = _.findEl(expNode, '.unhideexp');
     unhidebutton.removeAttribute('hidden');
-    _.setDataProps(expNode, 'button.unhideexp', 'paperId', paperId);
+    _.setDataProps(expNode, 'button.unhideexp', 'paperIndex', paperIndex);
     _.addEventListener(expNode, 'button.unhideexp', 'click', unhideExpPaper);
   }
 
