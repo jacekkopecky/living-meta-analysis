@@ -2160,7 +2160,14 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 #metaanalysis table.experiments tr:first-child th.add div.oneclick label > select {
   margin: .3em 0;
   display: block;
+  position: relative;
 }
+
+#metaanalysis table.experiments tr:first-child th.add div.oneclick label > input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+}
+
 
 #metaanalysis table.experiments tr:first-child th.add div.oneclick label.hidden {
   display: none;
@@ -2172,11 +2179,11 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 
 #metaanalysis table.experiments tr:first-child th.add div.oneclick label.sublabel {
   font-weight: normal;
-  margin-left: .3em;
+  padding-left: 1.5em;
 }
 
 #metaanalysis table.experiments tr:first-child th.add div.oneclick label.subdropdown {
-  margin-left: .6em;
+  margin-left: 1.5em;
 }
 
 #paper table.experiments tr:first-child th.add .addcolumnbox header,
