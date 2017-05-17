@@ -2704,7 +2704,7 @@
   // displayed when one of its owner checkbox options are clicked.
   function oneClickDropdownBuilder(oneClickMetaEl, paramLabel, paramId, subDropdown, subDropdownShown) {
     var label = document.createElement("label");
-    label.innerHTML = paramLabel + ':';
+    label.textContent = paramLabel + ':';
     oneClickMetaEl.appendChild(label);
 
     var selectEl = document.createElement("select");
@@ -2770,7 +2770,7 @@
   // displayed when one of its owner checkbox options are clicked.
   function oneClickManualDropdownBuilder(oneClickMetaEl, paramLabel, paramId, options, subDropdown, subDropdownShown) {
     var label = document.createElement("label");
-    label.innerHTML = paramLabel + ':';
+    label.textContent = paramLabel + ':';
     oneClickMetaEl.appendChild(label);
 
     var selectEl = document.createElement("select");
@@ -2786,7 +2786,7 @@
 
     options.forEach(function (option) {
       var el = document.createElement("option");
-      el.innerHTML = option;
+      el.textContent = option;
       el.value = option;
       selectEl.appendChild(el);
     })
@@ -2813,7 +2813,7 @@
   // options in that section is checked.
   function oneClickCheckboxBuilder(sectionEl, optionLabel, optionId, checked) {
     var label = document.createElement("label");
-    label.innerHTML = optionLabel;
+    label.textContent = optionLabel;
     label.classList.add('sublabel');
     var checkboxEl = document.createElement("input");
     checkboxEl.type = "checkbox";
