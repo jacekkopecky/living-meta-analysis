@@ -2056,7 +2056,7 @@
 
       // the first option is an instruction
       var op = document.createElement("option");
-      op.textContent = 'Select a column';
+      op.textContent = 'Select a column or aggregate';
       op.value = '';
       select.appendChild(op);
       select.classList.add('validationerror');
@@ -2836,7 +2836,7 @@
 
       // the first option is an instruction
       var op = document.createElement("option");
-      op.textContent = 'Select a column';
+      op.textContent = 'Select a column or aggregate';
       op.value = '';
       select.appendChild(op);
       select.classList.add('validationerror');
@@ -2930,107 +2930,111 @@
     fillGroupingColumnSelection(metaanalysis, _.findEl(table, 'select.groupcolumnselection'));
 
     if (!metaanalysis.groupingColumn) {
-      table.classList.add('empty');
-    } else {
-      var groups = getGroups();
-      _.setProps(tbody, 'tr:first-child > th:first-child', 'colSpan', groups.length + 1);
-
-      // for each group, add a heading
-      var groupHeadingsTr = _.findEl(tbody, 'tr.groupheadings');
-      groups.forEach(function (group) {
-        var colTh = _.cloneTemplate('grouping-aggregate-heading-template').children[0];
-        _.fillEls(colTh, '.grouptitle', group);
-        groupHeadingsTr.appendChild(colTh);
-      });
-
-      // for each grouping aggregate, add a row
-      metaanalysis.groupingAggregates.forEach(function (groupingAggregate, groupingAggregateIndex) {
-        var tr = _.cloneTemplate('grouping-aggregate-row-template').children[0];
-        tbody.insertBefore(tr, addGroupingAggregateNode);
-        fillAggregateInformation(tr, groupingAggregate);
-
-        // todo this could be factored out with aggregates
-        // Add an option for every aggregate formula we know
-        var aggregateFormulas = lima.listAggregateFormulas();
-        var groupingAggregateFormulasDropdown = _.findEl(tr, 'select.groupingaggregateformulas')
-        for (var i = 0; i < aggregateFormulas.length; i++){
-          var el = document.createElement("option");
-          el.textContent = aggregateFormulas[i].label;
-          el.value = aggregateFormulas[i].id;
-          if (groupingAggregate.formulaName === el.value) {
-            el.selected = true;
-            groupingAggregateFormulasDropdown.classList.remove('validationerror');
-          }
-          groupingAggregateFormulasDropdown.appendChild(el);
-        }
-
-        groupingAggregateFormulasDropdown.onchange = function(e) {
-          groupingAggregate.formulaName = e.target.value;
-          groupingAggregate.formulaObj = lima.getFormulaObject(groupingAggregate.formulaName);
-
-          var formula = groupingAggregate.formulaObj;
-          if (formula) {
-            groupingAggregateFormulasDropdown.classList.remove('validationerror');
-          } else {
-            groupingAggregateFormulasDropdown.classList.add('validationerror');
-          }
-          // we'll call setValidationErrorClass() in fillGroupingAggregateColumnsSelection
-
-          // make sure formula columns array matches the number of expected parameters
-          groupingAggregate.formulaParams.length = formula ? formula.parameters.length : 0;
-          groupingAggregate.formula = lima.createFormulaString(groupingAggregate);
-
-          // fill in the current formula
-          _.fillEls(tr, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
-
-          // fill the columns selection
-          fillGroupingAggregateColumnsSelection(metaanalysis, groupingAggregate, tr, formula);
-
-          _.scheduleSave(metaanalysis);
-          recalculateComputedData();
-        };
-
-        var groupingAggrFormula = groupingAggregate.formulaObj;
-        fillGroupingAggregateColumnsSelection(metaanalysis, groupingAggregate, tr, groupingAggrFormula);
-
-        setupPopupBoxPinning(tr, '.popupbox', groupingAggregate.formula);
-        _.setDataProps(tr, '.popupbox', 'index', groupingAggregateIndex);
-
-        _.addEventListener(tr, 'button.move', 'click', moveGroupingAggregate);
-        _.addEventListener(tr, 'button.delete', 'click', deleteGroupingAggregate);
-
-        groups.forEach(function (group) {
-          var td = _.cloneTemplate('grouping-aggregate-datum-template').children[0];
-          tr.appendChild(td);
-
-          addComputedDatumSetter(function() {
-            var val = getAggregateDatumValue(groupingAggregate, group);
-
-            // handle bad values like Excel
-            if (val == null) {
-              val = '';
-              td.classList.add('empty');
-            } else if (typeof val == 'number' && isNaN(val)) {
-              val = '#VALUE!';
-              td.classList.add('empty');
-            } else {
-              td.classList.remove('empty');
-            }
-
-            // only show three significant digits for numbers
-            if (typeof val == 'number') val = val.toPrecision(3);
-
-            _.fillEls(td, '.value', val);
-            _.fillEls(td, '.group', group);
-
-            setupPopupBoxPinning(td, '.popupbox', groupingAggregate.formula + ',' + group);
-          });
-        });
-
-        fillAggregateInformation(tr, groupingAggregate);
-        fillComments('comment-template', tr, '.commentcount', '.popupbox main', metaanalysis, ['groupingAggregates', groupingAggregateIndex, 'comments']);
-      });
+      table.classList.add('nogroupingcolumn');
     }
+
+    var groups = getGroups();
+    _.setProps(tbody, 'th.spanning', 'colSpan', groups.length + 1);
+
+    if (groups.length === 0) {
+      table.classList.add('nogroups');
+    }
+
+    // for each group, add a heading
+    var groupHeadingsTr = _.findEl(tbody, 'tr.groupheadings');
+    groups.forEach(function (group) {
+      var colTh = _.cloneTemplate('grouping-aggregate-heading-template').children[0];
+      _.fillEls(colTh, '.grouptitle', group);
+      groupHeadingsTr.appendChild(colTh);
+    });
+
+    // for each grouping aggregate, add a row
+    metaanalysis.groupingAggregates.forEach(function (groupingAggregate, groupingAggregateIndex) {
+      var tr = _.cloneTemplate('grouping-aggregate-row-template').children[0];
+      tbody.insertBefore(tr, addGroupingAggregateNode);
+      fillAggregateInformation(tr, groupingAggregate);
+
+      // todo this could be factored out with aggregates
+      // Add an option for every aggregate formula we know
+      var aggregateFormulas = lima.listAggregateFormulas();
+      var groupingAggregateFormulasDropdown = _.findEl(tr, 'select.groupingaggregateformulas')
+      for (var i = 0; i < aggregateFormulas.length; i++){
+        var el = document.createElement("option");
+        el.textContent = aggregateFormulas[i].label;
+        el.value = aggregateFormulas[i].id;
+        if (groupingAggregate.formulaName === el.value) {
+          el.selected = true;
+          groupingAggregateFormulasDropdown.classList.remove('validationerror');
+        }
+        groupingAggregateFormulasDropdown.appendChild(el);
+      }
+
+      groupingAggregateFormulasDropdown.onchange = function(e) {
+        groupingAggregate.formulaName = e.target.value;
+        groupingAggregate.formulaObj = lima.getFormulaObject(groupingAggregate.formulaName);
+
+        var formula = groupingAggregate.formulaObj;
+        if (formula) {
+          groupingAggregateFormulasDropdown.classList.remove('validationerror');
+        } else {
+          groupingAggregateFormulasDropdown.classList.add('validationerror');
+        }
+        // we'll call setValidationErrorClass() in fillGroupingAggregateColumnsSelection
+
+        // make sure formula columns array matches the number of expected parameters
+        groupingAggregate.formulaParams.length = formula ? formula.parameters.length : 0;
+        groupingAggregate.formula = lima.createFormulaString(groupingAggregate);
+
+        // fill in the current formula
+        _.fillEls(tr, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
+
+        // fill the columns selection
+        fillGroupingAggregateColumnsSelection(metaanalysis, groupingAggregate, tr, formula);
+
+        _.scheduleSave(metaanalysis);
+        recalculateComputedData();
+      };
+
+      var groupingAggrFormula = groupingAggregate.formulaObj;
+      fillGroupingAggregateColumnsSelection(metaanalysis, groupingAggregate, tr, groupingAggrFormula);
+
+      setupPopupBoxPinning(tr, '.popupbox', groupingAggregate.formula);
+      _.setDataProps(tr, '.popupbox', 'index', groupingAggregateIndex);
+
+      _.addEventListener(tr, 'button.move', 'click', moveGroupingAggregate);
+      _.addEventListener(tr, 'button.delete', 'click', deleteGroupingAggregate);
+
+      groups.forEach(function (group) {
+        var td = _.cloneTemplate('grouping-aggregate-datum-template').children[0];
+        tr.appendChild(td);
+
+        addComputedDatumSetter(function() {
+          var val = getAggregateDatumValue(groupingAggregate, group);
+
+          // handle bad values like Excel
+          if (val == null) {
+            val = '';
+            td.classList.add('empty');
+          } else if (typeof val == 'number' && isNaN(val)) {
+            val = '#VALUE!';
+            td.classList.add('empty');
+          } else {
+            td.classList.remove('empty');
+          }
+
+          // only show three significant digits for numbers
+          if (typeof val == 'number') val = val.toPrecision(3);
+
+          _.fillEls(td, '.value', val);
+          _.fillEls(td, '.group', group);
+
+          setupPopupBoxPinning(td, '.popupbox', groupingAggregate.formula + ',' + group);
+        });
+      });
+
+      fillAggregateInformation(tr, groupingAggregate);
+      fillComments('comment-template', tr, '.commentcount', '.popupbox main', metaanalysis, ['groupingAggregates', groupingAggregateIndex, 'comments']);
+    });
 
     // Event handlers
     _.addEventListener(table, 'tr.add button.add', 'click', addNewGroupingAggregateToMetaanalysis);
@@ -3301,7 +3305,7 @@
 
       // the first option is an instruction
       var op = document.createElement("option");
-      op.textContent = 'Select a column or aggregate';
+      op.textContent = 'Select a column';
       op.value = '';
       select.appendChild(op);
       select.classList.add('validationerror');
@@ -4079,8 +4083,18 @@
     _.scheduleSave(currentMetaanalysis);
   }
 
-  /* banner here for 'changing grouping aggr'
-  */
+  /* changing grouping aggr
+   *
+   *
+   *    ####  #    #   ##   #    #  ####  # #    #  ####      ####  #####   ####  #    # #####  # #    #  ####       ##    ####   ####  #####
+   *   #    # #    #  #  #  ##   # #    # # ##   # #    #    #    # #    # #    # #    # #    # # ##   # #    #     #  #  #    # #    # #    #
+   *   #      ###### #    # # #  # #      # # #  # #         #      #    # #    # #    # #    # # # #  # #         #    # #      #      #    #
+   *   #      #    # ###### #  # # #  ### # #  # # #  ###    #  ### #####  #    # #    # #####  # #  # # #  ###    ###### #  ### #  ### #####
+   *   #    # #    # #    # #   ## #    # # #   ## #    #    #    # #   #  #    # #    # #      # #   ## #    #    #    # #    # #    # #   #
+   *    ####  #    # #    # #    #  ####  # #    #  ####      ####  #    #  ####   ####  #      # #    #  ####     #    #  ####   ####  #    #
+   *
+   *
+   */
   function moveGroupingAggregate() {
     // a click will pin the box,
     // this timeout makes sure the click gets processed first and then we do the moving

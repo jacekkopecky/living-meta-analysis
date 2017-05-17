@@ -473,7 +473,7 @@
   <table class="grouping aggregates">
     <tbody>
       <tr>
-        <th>
+        <th class="spanning">
           Aggregates grouped by: <span class="groupcolumnlabel notediting"></span
                       ><span class="groupcolumnlabel editing when-unsaved" title="can't change the grouping column when some changes are unsaved">none</span
                       ><select class="groupcolumnselection editing ">
@@ -482,13 +482,13 @@
         </th>
       </tr>
       <tr class="groupheadings">
-        <th>Group</th>
+        <th>Groups:</th>
       </tr>
       <tr class="add">
-        <th>
+        <th class="spanning">
           <button class="add notunpin not-unsaved">add a grouping aggregate</button>
           <button class="when-unsaved" disabled title="can't add a grouping aggregate when some changes are unsaved">add a grouping aggregate</button></th>
-        <th>
+        </th>
       </tr>
     </tbody>
   </table>
@@ -500,8 +500,8 @@
 </template>
 <template id="grouping-aggregate-row-template">
   <tr>
-    <th class="popupboxhightlight popupboxtrigger">
-      <span class="richaggrlabel">error</span>:
+    <th class="popupboxhighlight popupboxtrigger">
+      <span class="richaggrlabel suppressgrouping">error</span>
       <div class="popupbox" data-boxtype="groupingaggregatepopupbox">
         <div class="pin"></div>
         <button class="not-unsaved move up most editing" title="move grouping aggregate up"><span>|«</span></button>
@@ -549,17 +549,14 @@
   </tr>
 </template>
 <template id="grouping-aggregate-datum-template">
-  <td class="datum popupboxtrigger popupboxhightlight">
+  <td class="datum popupboxtrigger popupboxhighlight">
     <span class="value aggregated">error</span>
     <div class="datum popupbox" data-boxtype='datumpopupbox'>
       <header>
         <p class="value" placeholder="no value"></p>
         <p>
-          calculated as
-          <span class="fullaggrlabel"></span>
-          for the
-          <span class="group"></span>
-          group
+          calculated for the <span class="group"></span> group as
+          <span class="fullaggrlabel suppressgrouping"></span>
       </header>
     </div>
   </td>
