@@ -2183,7 +2183,7 @@
 
       // Add a number to the current aggregate
       var aggregateNumberEl = _.findEl(aggregateEl, 'th span.aggregatenum');
-      aggregateNumberEl.innerHTML = aggregateIndex + 1;
+      aggregateNumberEl.innerHTML = (aggregateIndex + 1) + '.';
 
       var aggregateValTd = _.findEl(aggregateEl, 'td.datum.popupboxhighlight');
       // Editing Options
