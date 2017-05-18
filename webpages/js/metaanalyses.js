@@ -2181,7 +2181,11 @@
       var aggregateEl = _.cloneTemplate('aggregate-row-template').children[0];
       addAggregateNode.parentElement.insertBefore(aggregateEl, addAggregateNode);
 
-      var aggregateValTd = _.findEl(aggregateEl, 'td');
+      // Add a number to the current aggregate
+      var aggregateNumberEl = _.findEl(aggregateEl, 'th span.aggregatenum');
+      aggregateNumberEl.innerHTML = aggregateIndex + 1;
+
+      var aggregateValTd = _.findEl(aggregateEl, 'td.datum.popupboxhighlight');
       // Editing Options
       // Add an option for every aggregate formula we know
       var aggregateFormulas = lima.listAggregateFormulas();
