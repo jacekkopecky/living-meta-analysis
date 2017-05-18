@@ -2702,7 +2702,8 @@
   // Selection in this dropdownbox is saved to currentMetaanalysis.oneclick[paramId]
   // if subDropdown is provided, the dropdownbox is hidden by default and will be
   // displayed when one of its owner checkbox options are clicked.
-  function oneClickDropdownBuilder(oneClickMetaEl, paramLabel, paramId, subDropdown, subDropdownShown) {
+  // If disabled is provided as 'true', the dropdown box will be disabled
+  function oneClickDropdownBuilder(oneClickMetaEl, paramLabel, paramId, subDropdown, subDropdownShown, disabled, disabledText) {
     var label = document.createElement("label");
     label.textContent = paramLabel + ':';
     oneClickMetaEl.appendChild(label);
@@ -2754,6 +2755,11 @@
       label.classList.add("subdropdown");
       if (!subDropdownShown) label.classList.add("hidden");
     }
+
+    if (disabled == true) {
+      selectEl.disabled = true;
+      label.title = disabledText || "Unsuitable Data";
+    }
   }
 
   // this function builds a dom object in the form of
@@ -2768,7 +2774,8 @@
   // Selection in this dropdownbox is saved to currentMetaanalysis.oneclick[paramId]
   // if subDropdown is provided, the dropdownbox is hidden by default and will be
   // displayed when one of its owner checkbox options are clicked.
-  function oneClickManualDropdownBuilder(oneClickMetaEl, paramLabel, paramId, options, subDropdown, subDropdownShown) {
+  // If disabled is provided as 'true', the dropdown box will be disabled
+  function oneClickManualDropdownBuilder(oneClickMetaEl, paramLabel, paramId, options, subDropdown, subDropdownShown, disabled, disabledText) {
     var label = document.createElement("label");
     label.textContent = paramLabel + ':';
     oneClickMetaEl.appendChild(label);
@@ -2803,6 +2810,11 @@
       label.classList.add("subdropdown");
       if (!subDropdownShown) label.classList.add("hidden");
     }
+
+    if (disabled == true) {
+      selectEl.disabled = true;
+      label.title = disabledText || "Unsuitable Data";
+    }
   }
 
   // This function builds a dom object in the form of
@@ -2811,7 +2823,7 @@
   // Checked status in this is saved to currentMetaanalysis.oneclick[optionId]
   // elements with class .subdropdown in the same section are automatically only shown if one of the
   // options in that section is checked.
-  function oneClickCheckboxBuilder(sectionEl, optionLabel, optionId, checked) {
+  function oneClickCheckboxBuilder(sectionEl, optionLabel, optionId, checked, disabled, disabledText) {
     var label = document.createElement("label");
     label.textContent = optionLabel;
     label.classList.add('sublabel');
@@ -2839,6 +2851,11 @@
       _.findEls(sectionEl, '.subdropdown').forEach(function(subdropdown) {
         subdropdown.classList.toggle('hidden', !display);
       });
+    }
+
+    if (disabled == true) {
+      checkboxEl.disabled = true;
+      label.title = disabledText || "Unsuitable Data";
     }
   }
 
