@@ -3146,6 +3146,29 @@
         aggregateFormulasDropdown.appendChild(el);
       }
 
+      var customAggrEl = _.findEl(aggregateEl, 'span.customaggrname');
+
+      // Fill custom name on loading in html if we have a valid one
+      if (aggregate.customName || (aggregate.formulaName && aggregate.formulaName != 'undefined')) {
+        customAggrEl.innerHTML = aggregate.customName;
+        customAggrEl.parentElement.removeAttribute('hidden');
+      }
+
+      _.addEventListener(aggregateEl, 'span.customaggrname', 'input', function(e) {
+      var customName = e.target.innerHTML.trim();
+
+      if (!customName) {
+        aggregate.customName = null;
+        _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
+      }
+      else {
+        aggregate.customName = customName;
+        _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', aggregate.customName);
+      }
+
+      _.scheduleSave(currentMetaanalysis);
+      });
+
       aggregateFormulasDropdown.onchange = function(e) {
         aggregate.formulaName = e.target.value;
         aggregate.formulaObj = lima.getFormulaObject(aggregate.formulaName);
@@ -3153,8 +3176,12 @@
         var formula = aggregate.formulaObj;
         if (formula) {
           aggregateFormulasDropdown.classList.remove('validationerror');
+          customAggrEl.parentElement.removeAttribute('hidden');
         } else {
           aggregateFormulasDropdown.classList.add('validationerror');
+          aggregate.customName = null;
+          customAggrEl.parentElement.setAttribute('hidden', 'true');
+          _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
         }
         // we'll call setValidationErrorClass() in fillAggregateColumnsSelection
 
@@ -3213,7 +3240,13 @@
   }
 
   function fillAggregateInformation(aggregateEl, aggregate) {
-    _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
+    if (aggregate.customName) {
+      _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', aggregate.customName);
+    }
+    else {
+      _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
+    }
+
     _.setProps(aggregateEl, '.fullaggrlabel', 'innerHTML', getColTitle(aggregate, Infinity));
     // todo something for the non-editing case
   }
@@ -3300,7 +3333,7 @@
   }
 
   function addNewAggregateToMetaanalysis() {
-    var aggregate = {formulaName: null, formulaParams: []};
+    var aggregate = {customName: null, formulaName: null, formulaParams: []};
     aggregate.formula = lima.createFormulaString(aggregate);
     currentMetaanalysis.aggregates.push(aggregate);
     updateMetaanalysisView();
@@ -3372,6 +3405,30 @@
         groupingAggregateFormulasDropdown.appendChild(el);
       }
 
+      var customGroupingAggregateEl = _.findEl(tr, 'span.customgroupingaggrname');
+
+      // Fill custom name on loading in html if we have a valid one
+      if (groupingAggregate.customName || (groupingAggregate.formulaName && groupingAggregate.formulaName != 'undefined')) {
+        customGroupingAggregateEl.innerHTML = groupingAggregate.customName;
+        customGroupingAggregateEl.parentElement.removeAttribute('hidden');
+      }
+
+      _.addEventListener(tr, 'span.customgroupingaggrname', 'input', function(e) {
+      var customName = e.target.innerHTML.trim();
+
+      if (!customName) {
+        groupingAggregate.customName = null;
+        _.setProps(tr, '.richaggrlabel', 'innerHTML', getColTitle(groupingAggregate, 1));
+      }
+      else {
+        groupingAggregate.customName = customName;
+        _.setProps(tr, '.richaggrlabel', 'innerHTML', groupingAggregate.customName);
+      }
+
+      _.scheduleSave(currentMetaanalysis);
+      });
+
+
       groupingAggregateFormulasDropdown.onchange = function(e) {
         groupingAggregate.formulaName = e.target.value;
         groupingAggregate.formulaObj = lima.getFormulaObject(groupingAggregate.formulaName);
@@ -3379,8 +3436,12 @@
         var formula = groupingAggregate.formulaObj;
         if (formula) {
           groupingAggregateFormulasDropdown.classList.remove('validationerror');
+          customGroupingAggregateEl.parentElement.removeAttribute('hidden');
         } else {
           groupingAggregateFormulasDropdown.classList.add('validationerror');
+          groupingAggregate.customName = null;
+          customGroupingAggregateEl.parentElement.setAttribute('hidden', 'true');
+          _.setProps(tr, '.richaggrlabel', 'innerHTML', getColTitle(groupingAggregate, 1));
         }
         // we'll call setValidationErrorClass() in fillGroupingAggregateColumnsSelection
 
@@ -3564,7 +3625,7 @@
   }
 
   function addNewGroupingAggregateToMetaanalysis() {
-    var groupingAggregate = {formulaName: null, formulaParams: [], grouping: true};
+    var groupingAggregate = {customName: null, formulaName: null, formulaParams: [], grouping: true};
     groupingAggregate.formula = lima.createFormulaString(groupingAggregate);
     currentMetaanalysis.groupingAggregates.push(groupingAggregate);
     updateMetaanalysisView();
@@ -3635,15 +3696,41 @@
         graphFormulasDropdown.appendChild(el);
       }
 
+      var customGraphEl = _.findEl(graphEl, 'span.customgraphname');
+
+      // Fill custom name on loading in html if we have a valid one
+      if (graph.customName || (graph.formulaName && graph.formulaName != 'undefined')) {
+        customGraphEl.innerHTML = graph.customName;
+        customGraphEl.parentElement.removeAttribute('hidden');
+      }
+
+      _.addEventListener(graphEl, 'span.customgraphname', 'input', function(e) {
+        var customName = e.target.innerHTML.trim();
+
+        if (!customName) {
+          graph.customName = null;
+          _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
+        }
+        else {
+          graph.customName = customName;
+          _.setProps(graphEl, '.richgraphlabel', 'innerHTML', graph.customName);
+        }
+
+        _.scheduleSave(currentMetaanalysis);
+      });
+
       graphFormulasDropdown.onchange = function(e) {
         graph.formulaName = e.target.value;
         graph.formulaObj = lima.getFormulaObject(graph.formulaName);
-
         var formula = graph.formulaObj;
         if (formula) {
           graphFormulasDropdown.classList.remove('validationerror');
+          customGraphEl.parentElement.removeAttribute('hidden');
         } else {
           graphFormulasDropdown.classList.add('validationerror');
+          graph.customName = null;
+          customGraphEl.parentElement.setAttribute('hidden', 'true');
+          _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
         }
         // we'll call setValidationErrorClass() in fillGraphColumnsSelection
 
@@ -3682,7 +3769,13 @@
   }
 
   function fillGraphInformation(graphEl, graph) {
-    _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
+    if (graph.customName) {
+      _.setProps(graphEl, '.richgraphlabel', 'innerHTML', graph.customName);
+    }
+    else {
+      _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
+    }
+
     _.setProps(graphEl, '.fullgraphlabel', 'innerHTML', getColTitle(graph, Infinity));
     // todo something for the non-editing case
   }
@@ -3755,7 +3848,7 @@
   }
 
   function addNewGraphToMetaanalysis() {
-    var graph = {formulaName: null, formulaParams: []};
+    var graph = {customName:  null, formulaName: null, formulaParams: []};
     graph.formula = lima.createFormulaString(graph);
     currentMetaanalysis.graphs.push(graph);
     updateMetaanalysisView();
@@ -4433,7 +4526,6 @@
    *
    *
    */
-
 
   function moveAggregate() {
     // a click will pin the box,

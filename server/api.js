@@ -482,6 +482,7 @@ function extractReceivedAggregate(recAggr) {
   return {
     formula: tools.string(recAggr.formula),
     comments: tools.array(recAggr.comments, extractReceivedComment),
+    customName: tools.string(recAggr.customName),
   };
 }
 
@@ -490,6 +491,7 @@ function extractReceivedGraph(recGraph) {
   return {
     formula: tools.string(recGraph.formula),
     comments: tools.array(recGraph.comments, extractReceivedComment),
+    customName: tools.string(recGraph.customName),
   };
 }
 
