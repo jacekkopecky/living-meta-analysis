@@ -2197,6 +2197,35 @@
         aggregateFormulasDropdown.appendChild(el);
       }
 
+      var customAggrEl = _.findEl(aggregateEl, 'span.customaggrname');
+
+      // Fill or not fill custom name on loading
+      if (!aggregate.formulaName) {
+        aggregate.customName = null;
+      }
+      else {
+        if (aggregate.customName) {
+          customAggrEl.innerHTML = aggregate.customName;
+        }
+
+        customAggrEl.parentElement.removeAttribute('hidden');
+      }
+
+      _.addEventListener(aggregateEl, 'span.customaggrname', 'input', function(e) {
+        var customName = e.target.innerHTML;
+
+        if (!customName) {
+          aggregate.customName = null;
+          _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
+        }
+        else {
+          aggregate.customName = customName;
+          _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', aggregate.customName);
+        }
+
+        _.scheduleSave(currentMetaanalysis);
+      });
+
       aggregateFormulasDropdown.onchange = function(e) {
         aggregate.formulaName = e.target.value;
         aggregate.formula = lima.createFormulaString(aggregate);
@@ -2204,8 +2233,10 @@
         var formula = lima.getAggregateFormulaById(aggregate.formulaName);
         if (formula) {
           aggregateFormulasDropdown.classList.remove('validationerror');
+          customAggrEl.parentElement.removeAttribute('hidden');
         } else {
           aggregateFormulasDropdown.classList.add('validationerror');
+          customAggrEl.parentElement.setAttribute('hidden', 'true');
         }
         // we'll call setValidationErrorClass() in fillAggregateColumnsSelection
 
@@ -2263,7 +2294,13 @@
   }
 
   function fillAggregateInformation(aggregateEl, aggregate) {
-    _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
+    if (aggregate.customName) {
+      _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', aggregate.customName);
+    }
+    else {
+      _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
+    }
+
     _.setProps(aggregateEl, '.fullaggrlabel', 'innerHTML', getColTitle(aggregate, Infinity));
     // todo something for the non-editing case
   }
@@ -2336,7 +2373,7 @@
   }
 
   function addNewAggregateToMetaanalysis() {
-    var aggregate = {formulaName: null, formulaParams: []};
+    var aggregate = {customName: null, formulaName: null, formulaParams: []};
     aggregate.formula = lima.createFormulaString(aggregate);
     currentMetaanalysis.aggregates.push(aggregate);
     updateMetaanalysisView();
@@ -3014,7 +3051,6 @@
    *
    *
    */
-
 
   function moveAggregate() {
     // a click will pin the box,
