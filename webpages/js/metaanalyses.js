@@ -2199,15 +2199,9 @@
 
       var customAggrEl = _.findEl(aggregateEl, 'span.customaggrname');
 
-      // Fill or not fill custom name on loading
-      if (!aggregate.formulaName) {
-        aggregate.customName = null;
-      }
-      else {
-        if (aggregate.customName) {
-          customAggrEl.innerHTML = aggregate.customName;
-        }
-
+      // Fill custom name on loading in html if we have a valid one
+      if (aggregate.customName || (aggregate.formulaName && aggregate.formulaName != 'undefined')) {
+        customAggrEl.innerHTML = aggregate.customName;
         customAggrEl.parentElement.removeAttribute('hidden');
       }
 
@@ -2236,7 +2230,10 @@
           customAggrEl.parentElement.removeAttribute('hidden');
         } else {
           aggregateFormulasDropdown.classList.add('validationerror');
+          aggregate.customName = null;
           customAggrEl.parentElement.setAttribute('hidden', 'true');
+          _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
+
         }
         // we'll call setValidationErrorClass() in fillAggregateColumnsSelection
 
