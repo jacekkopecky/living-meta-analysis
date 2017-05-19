@@ -262,11 +262,14 @@
         return true;
       }
     });
-    renumberComputedColumns(self.columns);
+    renumberObjects(self.columns);
 
     self.graphs.forEach(populateParsedFormula);
     self.aggregates.forEach(populateParsedFormula);
     self.groupingAggregates.forEach(populateParsedFormula);
+    renumberObjects(self.graphs, 'G');
+    renumberObjects(self.aggregates, 'A');
+    renumberObjects(self.groupingAggregates, 'GA');
 
     if (self.groupingColumn) {
       self.groupingColumnObj = lima.parseFormulaString(self.groupingColumn);
@@ -293,11 +296,11 @@
     return self;
   }
 
-  function renumberComputedColumns(columns) {
-    var computedColumnCount = 0;
-    columns.forEach(function (col) {
-      if (typeof col === 'object') {
-        col.number = computedColumnCount += 1;
+  function renumberObjects(array, prefix) {
+    var count = 0;
+    array.forEach(function (object) {
+      if (typeof object === 'object') {
+        object.number = prefix + (count += 1);
       }
     });
   }
@@ -2631,7 +2634,7 @@
       formulaParams: [],
     };
     currentMetaanalysis.columns.push(col);
-    renumberComputedColumns(currentMetaanalysis.columns);
+    renumberObjects(currentMetaanalysis.columns);
     updateMetaanalysisView();
     setTimeout(focusFirstValidationError, 0);
   }
@@ -3004,7 +3007,10 @@
     }
 
     // finish up by saving and updating the view.
-    renumberComputedColumns(currentMetaanalysis.columns);
+    renumberObjects(currentMetaanalysis.columns);
+    renumberObjects(currentMetaanalysis.aggregates, 'A');
+    renumberObjects(currentMetaanalysis.graphs, 'G');
+    renumberObjects(currentMetaanalysis.groupingAggregates, 'Gr');
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
   }
@@ -3326,6 +3332,7 @@
     var aggregate = {customName: null, formulaName: null, formulaParams: []};
     aggregate.formula = lima.createFormulaString(aggregate);
     currentMetaanalysis.aggregates.push(aggregate);
+    renumberObjects(currentMetaanalysis.aggregates, 'A');
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
     setTimeout(focusFirstValidationError, 0);
@@ -3609,6 +3616,7 @@
     var groupingAggregate = {customName: null, formulaName: null, formulaParams: [], grouping: true};
     groupingAggregate.formula = lima.createFormulaString(groupingAggregate);
     currentMetaanalysis.groupingAggregates.push(groupingAggregate);
+    renumberObjects(currentMetaanalysis.groupingAggregates, 'Gr');
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
     setTimeout(focusFirstValidationError, 0);
@@ -3822,6 +3830,7 @@
     var graph = {customName:  null, formulaName: null, formulaParams: []};
     graph.formula = lima.createFormulaString(graph);
     currentMetaanalysis.graphs.push(graph);
+    renumberObjects(currentMetaanalysis.graphs, 'G');
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
     setTimeout(focusFirstValidationError, 0);
