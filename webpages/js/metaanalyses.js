@@ -2672,7 +2672,7 @@
     sectionEl.classList.add('section');
     oneClickMetaEl.appendChild(sectionEl);
 
-    oneClickCheckboxBuilder(sectionEl, 'Forest plot', 'forestPlot', true, null);
+    oneClickCheckboxBuilder(sectionEl, 'Forest plot', 'forestPlot', true);
     oneClickCheckboxBuilder(sectionEl, 'Random-effect model', 'randomEffect', false);
 
     // Moderator analysis / grouping things to include
@@ -2703,7 +2703,7 @@
   // if subDropdown is provided, the dropdownbox is hidden by default and will be
   // displayed when one of its owner checkbox options are clicked.
   // If disabled is provided as 'true', the dropdown box will be disabled
-  function oneClickDropdownBuilder(oneClickMetaEl, paramLabel, paramId, subDropdown, subDropdownShown, disabled, disabledText) {
+  function oneClickDropdownBuilder(oneClickMetaEl, paramLabel, paramId, subDropdown, subDropdownShown, disabledText) {
     var label = document.createElement("label");
     label.textContent = paramLabel + ':';
     oneClickMetaEl.appendChild(label);
@@ -2756,9 +2756,9 @@
       if (!subDropdownShown) label.classList.add("hidden");
     }
 
-    if (disabled == true) {
+    if (disabledText) {
       selectEl.disabled = true;
-      label.title = disabledText || "Unsuitable Data";
+      label.title = disabledText;
     }
   }
 
@@ -2775,7 +2775,7 @@
   // if subDropdown is provided, the dropdownbox is hidden by default and will be
   // displayed when one of its owner checkbox options are clicked.
   // If disabled is provided as 'true', the dropdown box will be disabled
-  function oneClickManualDropdownBuilder(oneClickMetaEl, paramLabel, paramId, options, subDropdown, subDropdownShown, disabled, disabledText) {
+  function oneClickManualDropdownBuilder(oneClickMetaEl, paramLabel, paramId, options, subDropdown, subDropdownShown, disabledText) {
     var label = document.createElement("label");
     label.textContent = paramLabel + ':';
     oneClickMetaEl.appendChild(label);
@@ -2811,9 +2811,9 @@
       if (!subDropdownShown) label.classList.add("hidden");
     }
 
-    if (disabled == true) {
+    if (disabledText) {
       selectEl.disabled = true;
-      label.title = disabledText || "Unsuitable Data";
+      label.title = disabledText;
     }
   }
 
@@ -2823,7 +2823,7 @@
   // Checked status in this is saved to currentMetaanalysis.oneclick[optionId]
   // elements with class .subdropdown in the same section are automatically only shown if one of the
   // options in that section is checked.
-  function oneClickCheckboxBuilder(sectionEl, optionLabel, optionId, checked, disabled, disabledText) {
+  function oneClickCheckboxBuilder(sectionEl, optionLabel, optionId, checked, disabledText) {
     var label = document.createElement("label");
     label.textContent = optionLabel;
     label.classList.add('sublabel');
@@ -2853,9 +2853,9 @@
       });
     }
 
-    if (disabled == true) {
+    if (disabledText) {
       checkboxEl.disabled = true;
-      label.title = disabledText || "Unsuitable Data";
+      label.title = disabledText;
     }
   }
 
