@@ -2683,10 +2683,10 @@
   function populateOneClickOptions(thEl) {
     var oneClickMetaEl = _.findEl(thEl, 'div.oneclickcontainer');
 
-    if (!currentMetaanalysis.oneclick) currentMetaanalysis.oneclick = {};
+    if (!currentMetaanalysis.oneClick) currentMetaanalysis.oneClick = {};
 
-    // if we have currentMetaanalysis.oneclick, pre-fill form from it
-    var oneclick = currentMetaanalysis.oneclick;
+    // if we have currentMetaanalysis.oneClick, pre-fill form from it
+    var oneClick = currentMetaanalysis.oneClick;
 
     // generate dropdown boxes for the parameters
     oneClickManualDropdownBuilder(oneClickMetaEl, 'Type of input data', 'inputDataType', ['fractions', 'percentages', 'numbers affected']);
@@ -2702,8 +2702,8 @@
     sectionEl.classList.add('section');
     oneClickMetaEl.appendChild(sectionEl);
 
-    oneClickCheckboxBuilder(sectionEl, 'Forest plot', 'forestPlot', oneclick.forestPlot == null ? true : oneclick.forestPlot);
-    oneClickCheckboxBuilder(sectionEl, 'Random-effect model', 'randomEffect', oneclick.randomEffect);
+    oneClickCheckboxBuilder(sectionEl, 'Forest plot', 'forestPlot', oneClick.forestPlot == null ? true : oneClick.forestPlot);
+    oneClickCheckboxBuilder(sectionEl, 'Random-effect model', 'randomEffect', oneClick.randomEffect);
 
     // Moderator analysis / grouping things to include
     sectionEl = document.createElement("span");
@@ -2711,13 +2711,13 @@
     sectionEl.classList.add('section');
     oneClickMetaEl.appendChild(sectionEl);
 
-    oneClickCheckboxBuilder(sectionEl, 'Include Moderator Analysis', 'moderatorAnalysis', oneclick.moderatorAnalysis);
-    oneClickCheckboxBuilder(sectionEl, 'Grape Chart', 'grapeChart', oneclick.grapeChart);
-    oneClickCheckboxBuilder(sectionEl, 'Grouped Forest plot', 'groupedForest', oneclick.groupedForest);
+    oneClickCheckboxBuilder(sectionEl, 'Include Moderator Analysis', 'moderatorAnalysis', oneClick.moderatorAnalysis);
+    oneClickCheckboxBuilder(sectionEl, 'Grape Chart', 'grapeChart', oneClick.grapeChart);
+    oneClickCheckboxBuilder(sectionEl, 'Grouped Forest plot', 'groupedForest', oneClick.groupedForest);
 
     // add the sub-dropdown box that depends on the above checkboxes
     oneClickDropdownBuilder(sectionEl, 'Moderator', 'moderator', true,
-      oneclick.moderatorAnalysis || oneclick.grapeChart || oneclick.groupedForest);
+      oneClick.moderatorAnalysis || oneClick.grapeChart || oneClick.groupedForest);
   }
 
   // this function builds a dom object in the form of
@@ -2730,7 +2730,7 @@
   //   </select>
   // </label>
   //
-  // Selection in this dropdownbox is saved to currentMetaanalysis.oneclick[paramId]
+  // Selection in this dropdownbox is saved to currentMetaanalysis.oneClick[paramId]
   // if subDropdown is provided, the dropdownbox is hidden by default and will be
   // displayed when one of its owner checkbox options are clicked.
   // If disabled is provided as 'true', the dropdown box will be disabled
@@ -2753,16 +2753,16 @@
     // account for computed columns in metaanalysis.columns
     for (var j = 0; j < currentMetaanalysis.columns.length; j++){
       var colId = currentMetaanalysis.columns[j];
-      makeOption(colId, null, currentMetaanalysis.oneclick[paramId], selectEl);
+      makeOption(colId, null, currentMetaanalysis.oneClick[paramId], selectEl);
     }
 
-    // store the values from the dropdown box temporarily in metaanalysis.oneclick
+    // store the values from the dropdown box temporarily in metaanalysis.oneClick
     // we dont save this, it's simply so we don't need to grab them when we
     // hit the one-click button.
     selectEl.onchange = function(e) {
-      if (!currentMetaanalysis.oneclick) currentMetaanalysis.oneclick = {};
-      currentMetaanalysis.oneclick[paramId] = e.target.value;
-      // todo warn if the user selects the same column for different oneclick parameters
+      if (!currentMetaanalysis.oneClick) currentMetaanalysis.oneClick = {};
+      currentMetaanalysis.oneClick[paramId] = e.target.value;
+      // todo warn if the user selects the same column for different oneClick parameters
     };
 
     if (subDropdown == true) {
@@ -2785,7 +2785,7 @@
   //   </select>
   // </label>
   //
-  // Selection in this dropdownbox is saved to currentMetaanalysis.oneclick[paramId]
+  // Selection in this dropdownbox is saved to currentMetaanalysis.oneClick[paramId]
   // if subDropdown is provided, the dropdownbox is hidden by default and will be
   // displayed when one of its owner checkbox options are clicked.
   // If disabled is provided as 'true', the dropdown box will be disabled
@@ -2808,16 +2808,16 @@
       var el = document.createElement("option");
       el.textContent = option;
       el.value = option;
-      if (currentMetaanalysis.oneclick[paramId] == option) el.selected = true;
+      if (currentMetaanalysis.oneClick[paramId] == option) el.selected = true;
       selectEl.appendChild(el);
     });
 
-    // store the values from the dropdown box temporarily in metaanalysis.oneclick
+    // store the values from the dropdown box temporarily in metaanalysis.oneClick
     // we don't save this, it's simply so we don't need to grab them when we
     // hit the one-click button.
     selectEl.onchange = function(e) {
-      if (!currentMetaanalysis.oneclick) currentMetaanalysis.oneclick = {};
-      currentMetaanalysis.oneclick[paramId] = e.target.value;
+      if (!currentMetaanalysis.oneClick) currentMetaanalysis.oneClick = {};
+      currentMetaanalysis.oneClick[paramId] = e.target.value;
     };
 
     if (subDropdown == true) {
@@ -2834,7 +2834,7 @@
   // This function builds a dom object in the form of
   //   <label class='sublabel'><input type="checkbox" value="optionId">optionLabel</label>
   //
-  // Checked status in this is saved to currentMetaanalysis.oneclick[optionId]
+  // Checked status in this is saved to currentMetaanalysis.oneClick[optionId]
   // elements with class .subdropdown in the same section are automatically only shown if one of the
   // options in that section is checked.
   function oneClickCheckboxBuilder(sectionEl, optionLabel, optionId, checked, disabledText) {
@@ -2845,13 +2845,13 @@
     checkboxEl.type = "checkbox";
     checkboxEl.value = optionId;
     checkboxEl.checked = !!checked;
-    currentMetaanalysis.oneclick[optionId] = !!checked;
+    currentMetaanalysis.oneClick[optionId] = !!checked;
     label.appendChild(checkboxEl);
     sectionEl.appendChild(label);
 
     // onchange listener for checkboxes
     checkboxEl.onchange = function(e) {
-      currentMetaanalysis.oneclick[optionId] = e.target.checked;
+      currentMetaanalysis.oneClick[optionId] = e.target.checked;
 
       // If there are dependent elements, we wanna show/hide those depending on this checkbox and its siblings
 
@@ -2874,7 +2874,7 @@
   }
 
   function addOneClickMetaanalysis() {
-    var oneClick = currentMetaanalysis.oneclick;
+    var oneClick = currentMetaanalysis.oneClick;
     var inputDataType;
 
     if (oneClick.inputDataType == 'percentages') {
@@ -2982,6 +2982,7 @@
       currentMetaanalysis.groupingColumn = oneClick.moderator;
       currentMetaanalysis.groupingColumnObj = lima.parseFormulaString(oneClick.moderator);
 
+      // Generate formula strings
       var weightedMeanGrpFormula = 'weightedMeanAggr*(' + logOddsFormula + ',' + weightFormula + ')';
       var fixedEffectErrorGrpFormula = 'fixedEffectError(' + logOddsFormula + ',' + weightFormula + ',' + weightedMeanGrpFormula + ')';
       var qValueGrpFormula = 'sumAggr*(' + fixedEffectErrorGrpFormula + ')';
@@ -2997,6 +2998,7 @@
       addObject(qValueGrpFormula, groupingAggregateOptions);
       addObject(degreesOfFreedomGrpFormula, groupingAggregateOptions);
 
+      // add them to the metaanalysis
       addObject(qValueGrpTotalFormula, aggregateOptions);
       addObject(degreesOfFreedomGrpTotalFormula, aggregateOptions);
       addObject(heterogeneityWithinGroupsPValueFormula, aggregateOptions);
