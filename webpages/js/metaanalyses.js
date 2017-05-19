@@ -3150,12 +3150,12 @@
 
       // Fill custom name on loading in html if we have a valid one
       if (aggregate.customName || (aggregate.formulaName && aggregate.formulaName != 'undefined')) {
-        customAggrEl.innerHTML = aggregate.customName;
+        customAggrEl.textContent = aggregate.customName;
         customAggrEl.parentElement.removeAttribute('hidden');
       }
 
       _.addEventListener(aggregateEl, 'span.customaggrname', 'input', function(e) {
-        var customName = e.target.innerHTML.trim();
+        var customName = e.target.textContent.trim();
 
         if (!customName) {
           aggregate.customName = null;
@@ -3163,7 +3163,7 @@
         }
         else {
           aggregate.customName = customName;
-          _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', aggregate.customName);
+          _.fillEls(aggregateEl, '.richaggrlabel', aggregate.customName);
         }
 
         _.scheduleSave(currentMetaanalysis);
@@ -3241,7 +3241,7 @@
 
   function fillAggregateInformation(aggregateEl, aggregate) {
     if (aggregate.customName) {
-      _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', aggregate.customName);
+      _.fillEls(aggregateEl, '.richaggrlabel', aggregate.customName);
     }
     else {
       _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
@@ -3409,12 +3409,12 @@
 
       // Fill custom name on loading in html if we have a valid one
       if (groupingAggregate.customName || (groupingAggregate.formulaName && groupingAggregate.formulaName != 'undefined')) {
-        customGroupingAggregateEl.innerHTML = groupingAggregate.customName;
+        customGroupingAggregateEl.textContent = groupingAggregate.customName;
         customGroupingAggregateEl.parentElement.removeAttribute('hidden');
       }
 
       _.addEventListener(tr, 'span.customgroupingaggrname', 'input', function(e) {
-        var customName = e.target.innerHTML.trim();
+        var customName = e.target.textContent.trim();
 
         if (!customName) {
           groupingAggregate.customName = null;
@@ -3422,7 +3422,7 @@
         }
         else {
           groupingAggregate.customName = customName;
-          _.setProps(tr, '.richaggrlabel', 'innerHTML', groupingAggregate.customName);
+          _.fillEls(tr, '.richaggrlabel', groupingAggregate.customName);
         }
 
         _.scheduleSave(currentMetaanalysis);
@@ -3700,12 +3700,12 @@
 
       // Fill custom name on loading in html if we have a valid one
       if (graph.customName || (graph.formulaName && graph.formulaName != 'undefined')) {
-        customGraphEl.innerHTML = graph.customName;
+        customGraphEl.textContent = graph.customName;
         customGraphEl.parentElement.removeAttribute('hidden');
       }
 
       _.addEventListener(graphEl, 'span.customgraphname', 'input', function(e) {
-        var customName = e.target.innerHTML.trim();
+        var customName = e.target.textContent.trim();
 
         if (!customName) {
           graph.customName = null;
@@ -3713,7 +3713,7 @@
         }
         else {
           graph.customName = customName;
-          _.setProps(graphEl, '.richgraphlabel', 'innerHTML', graph.customName);
+          _.fillEls(graphEl, '.richgraphlabel', graph.customName);
         }
 
         _.scheduleSave(currentMetaanalysis);
@@ -3770,7 +3770,7 @@
 
   function fillGraphInformation(graphEl, graph) {
     if (graph.customName) {
-      _.setProps(graphEl, '.richgraphlabel', 'innerHTML', graph.customName);
+      _.fillEls(graphEl, '.richgraphlabel', graph.customName);
     }
     else {
       _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
