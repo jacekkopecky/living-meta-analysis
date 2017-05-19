@@ -103,9 +103,9 @@
         parameters: [ 'effect size', 'weight', 'grand weighted mean effect size' ],
       },
       {
-        id: 'randomEffectWeightFractions',
+        id: 'randomEffectWeight',
         label: 'Random Effect Model Weight (fractions)',
-        func: randomEffectWeightFractions,
+        func: randomEffectWeight,
         parameters: [ 'group 1 outcome', 'group 1 N', 'group 2 outcome', 'group 2 N', 'tauSquared' ]
       },
       {
@@ -227,16 +227,16 @@
     return wt*Math.pow(es-gwmes, 2);
   }
 
-  function randomEffectWeightFractions (Me, Ne, Mc, Nc, tauSquared) {
+  function randomEffectWeight (Me, Ne, Mc, Nc, tauSquared) {
     return 1 / (variance(Me, Ne, Mc, Nc) + tauSquared);
   }
 
   function randomEffectWeightPercent (Me, Ne, Mc, Nc, tauSquared) {
-    return randomEffectWeightFractions(Me/100, Ne, Mc/100, Nc, tauSquared);
+    return randomEffectWeight(Me/100, Ne, Mc/100, Nc, tauSquared);
   }
 
   function randomEffectWeightNumber (Me, Ne, Mc, Nc, tauSquared) {
-    return randomEffectWeightFractions(Me/Ne, Ne, Mc/Nc, Nc, tauSquared);
+    return randomEffectWeight(Me/Ne, Ne, Mc/Nc, Nc, tauSquared);
   }
 
 
