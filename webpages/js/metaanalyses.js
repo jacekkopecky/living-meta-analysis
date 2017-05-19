@@ -2888,8 +2888,14 @@
 
     // Compulsory
     // Generate formula strings
+    var expControlString = oneClick.experimental + ',' + oneClick.control;
     var expNControlNString = oneClick.experimental + ',' + oneClick.experimentalN + ',' + oneClick.control + ',' + oneClick.controlN;
-    var logOddsFormula = 'logOddsRatio' + inputDataType + '(' + expNControlNString + ')';
+    var logOddsFormula;
+    if (inputDataType == 'Number') {
+      logOddsFormula = 'logOddsRatio' + inputDataType + '(' + expNControlNString + ')';
+    } else {
+      logOddsFormula = 'logOddsRatio' + inputDataType + '(' + expControlString + ')';
+    }
     var weightFormula = 'weight' + inputDataType + '(' + expNControlNString + ')';
     var weightedMeanAggrFormula = 'weightedMeanAggr(' + logOddsFormula + ',' + weightFormula + ')';
     var fixedEffectErrorFormula = 'fixedEffectError(' + logOddsFormula + ',' + weightFormula + ',' + weightedMeanAggrFormula + ')';
@@ -2981,6 +2987,7 @@
     }
 
     // finish up by saving and updating the view.
+    renumberComputedColumns(currentMetaanalysis.columns);
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
   }
