@@ -154,7 +154,7 @@
       if (response.status === 404) _.notFound();
       else return _.fetchJson(response);
     })
-    .then(initMetaanalysis)
+    .then(initMetaanalysis);
   }
 
   function requestAndFillMetaanalysis() {
@@ -551,7 +551,7 @@
         or: getAggregateDatumValue(orAggrFunc),
         lcl: getAggregateDatumValue(lclAggrFunc),
         ucl: getAggregateDatumValue(uclAggrFunc),
-      }
+      };
 
       if (isNaN(aggregates.or*0) || isNaN(aggregates.lcl*0) || isNaN(aggregates.ucl*0)) {
         aggregates.lcl = 0;
@@ -672,7 +672,7 @@
         expT.parentElement.insertBefore(expEl, expT);
 
         currY += parseInt(plotEl.dataset.lineHeight);
-      })
+      });
 
 
 
@@ -735,7 +735,7 @@
       _.addEventListener(axesEl, '.positioningbutton', 'click', function (e) {
         maximizePlot(plotEl);
         e.stopPropagation();
-      })
+      });
 
       plotEl.setAttribute('height', parseInt(plotEl.dataset.endHeight) + currY);
       plotEl.setAttribute('viewBox', "0 0 " + plotEl.getAttribute('width') + " " + plotEl.getAttribute('height'));
@@ -833,7 +833,7 @@
           title: "No data",
           group: "No data"
         };
-        groups.push(noDataLine.group)
+        groups.push(noDataLine.group);
         lines.push(noDataLine);
       }
 
@@ -892,7 +892,7 @@
         or: getAggregateDatumValue(orAggrFunc),
         lcl: getAggregateDatumValue(lclAggrFunc),
         ucl: getAggregateDatumValue(uclAggrFunc),
-      }
+      };
 
       if (isNaN(aggregates.or*0) || isNaN(aggregates.lcl*0) || isNaN(aggregates.ucl*0)) {
         aggregates.lcl = 0;
@@ -1089,7 +1089,7 @@
           currGY += parseInt(plotEl.dataset.lineHeight);
         }
         currY += (currGY+ parseInt(plotEl.dataset.heightBetweenGroups));
-      })
+      });
 
 
 
@@ -1152,7 +1152,7 @@
           localStorage.plotMaximized = plotEl.classList.contains('maximized') ? '1' : '';
           e.stopPropagation();
 
-        })
+        });
       }
 
       // finish up
@@ -1410,7 +1410,7 @@
           _.addEventListener(groupEl, '.positioningbutton', 'click', function (e) {
             maximizePlot(plotEl);
             e.stopPropagation();
-          })
+          });
         }
 
         var grapeT = _.findEl(groupEl, 'template.group-grapes-grape');
@@ -1436,8 +1436,8 @@
 
           // x-position so grapes don't overlap
           var grapeX = getPosition(index);
-          grapeEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')')
-          tooltipEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')')
+          grapeEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')');
+          tooltipEl.setAttribute('transform', 'translate(' + grapeX + ', ' + getY(exp.or) + ')');
 
           _.fillEls(tooltipEl, 'text.paper', exp.paper);
           _.fillEls(tooltipEl, 'text.exp', exp.exp);
@@ -1544,14 +1544,14 @@
       bucket.forEach(function (g) {
         min = Math.min(min, g.x - g.r);
         max = Math.max(max, g.x + g.r);
-      })
+      });
 
       if (min < Infinity && Math.abs(min + max) > 1) {
         // got a connecting group that wants to be moved, move it to center
         var dx = (max + min) / 2;
         bucket.forEach(function (g) { g.x -= dx; });
       }
-    })
+    });
   }
 
   function getPosition(i) {
@@ -1591,8 +1591,8 @@
             console.error('removing tag but can\'t find it: ' + text);
           }
         }
-      }
-    })
+      };
+    });
     // events for starting to add a tag
     var btn = _.findEl(metaanalysisEl, '.tags .new + .addtag');
     var newTagContainer = _.findEl(metaanalysisEl, '.tags .new');
@@ -1601,7 +1601,7 @@
     btn.onclick = function () {
       newTagContainer.classList.add('editing');
       newTag.focus();
-    }
+    };
     if (startNewTag != null) {
       btn.onclick();
       newTag.textContent = startNewTag;
@@ -1633,7 +1633,7 @@
           fillTags(metaanalysisEl, metaanalysis);
         }
       }
-    }
+    };
     newTag.onkeydown = function (ev) {
       _.deferScheduledSave();
       // enter
@@ -1656,7 +1656,7 @@
           newTag.blur();
         }
       }
-    }
+    };
   }
 
   /* fill Exp table
@@ -1787,7 +1787,7 @@
           _.fillEls (paperTitleEl, '.paplink .value', paper.link);
           _.setProps(paperTitleEl, '.paplink a.value', 'href', paper.link);
           _.fillEls (paperTitleEl, '.papdoi .value', paper.doi);
-          _.setProps(paperTitleEl, '.papdoi a.value', 'href', function(el){return el.dataset.base + paper.doi});
+          _.setProps(paperTitleEl, '.papdoi a.value', 'href', function(el){return el.dataset.base + paper.doi;});
           _.fillEls (paperTitleEl, '.papenteredby .value', paper.enteredBy);
           _.setProps(paperTitleEl, '.papenteredby .value', 'href', '/' + paper.enteredBy + '/');
           _.fillEls (paperTitleEl, '.papctime .value', _.formatDateTime(paper.ctime));
@@ -1992,7 +1992,7 @@
     // Editing Options
     // Add an option for every formula we know
     var formulas = lima.listFormulas();
-    var formulasDropdown = _.findEl(th, 'select.colformulas')
+    var formulasDropdown = _.findEl(th, 'select.colformulas');
     for (var i = 0; i < formulas.length; i++){
       var el = document.createElement("option");
       el.textContent = formulas[i].label;
@@ -2476,7 +2476,7 @@
       var bucket = (col.definedBy === user || !col.definedBy) ? 'yours' : 'other';
       if (currentMetaanalysis.columns.indexOf(colId) > -1) bucket = 'already';
       ordered[bucket][col.type].push(col);
-    })
+    });
     ordered.yours.result.sort(compareColumnsByAuthorAndTitle);
     ordered.yours.characteristic.sort(compareColumnsByAuthorAndTitle);
     ordered.other.result.sort(compareColumnsByAuthorAndTitle);
@@ -2533,7 +2533,7 @@
       list.addEventListener('mouseleave', emptyColInfo);
 
       list.appendChild(li);
-    })
+    });
   }
 
   function fillColInfo(ev) {
@@ -2709,8 +2709,8 @@
     oneClickMetaEl.appendChild(label);
 
     var selectEl = document.createElement("select");
-    label.classList.add(paramId)
-    label.appendChild(selectEl)
+    label.classList.add(paramId);
+    label.appendChild(selectEl);
 
     // the first option is an instruction
     var op = document.createElement("option");
@@ -2749,7 +2749,7 @@
     selectEl.onchange = function(e) {
       if (!currentMetaanalysis.oneclick) currentMetaanalysis.oneclick = {};
       currentMetaanalysis.oneclick[paramId] = e.target.value;
-    }
+    };
 
     if (subDropdown == true) {
       label.classList.add("subdropdown");
@@ -2781,8 +2781,8 @@
     oneClickMetaEl.appendChild(label);
 
     var selectEl = document.createElement("select");
-    label.classList.add(paramId)
-    label.appendChild(selectEl)
+    label.classList.add(paramId);
+    label.appendChild(selectEl);
 
     // the first option is an instruction
     var op = document.createElement("option");
@@ -2796,7 +2796,7 @@
       el.textContent = option;
       el.value = option;
       selectEl.appendChild(el);
-    })
+    });
 
     // store the values from the dropdown box temporarily in metaanalysis.oneclick
     // we don't save this, it's simply so we don't need to grab them when we
@@ -2804,7 +2804,7 @@
     selectEl.onchange = function(e) {
       if (!currentMetaanalysis.oneclick) currentMetaanalysis.oneclick = {};
       currentMetaanalysis.oneclick[paramId] = e.target.value;
-    }
+    };
 
     if (subDropdown == true) {
       label.classList.add("subdropdown");
@@ -2837,7 +2837,7 @@
 
     // onchange listener for checkboxes
     checkboxEl.onchange = function(e) {
-      currentMetaanalysis.oneclick[optionId] = e.target.checked
+      currentMetaanalysis.oneclick[optionId] = e.target.checked;
 
       // If there are dependent elements, we wanna show/hide those depending on this checkbox and its siblings
 
@@ -2851,7 +2851,7 @@
       _.findEls(sectionEl, '.subdropdown').forEach(function(subdropdown) {
         subdropdown.classList.toggle('hidden', !display);
       });
-    }
+    };
 
     if (disabledText) {
       checkboxEl.disabled = true;
@@ -2864,12 +2864,12 @@
     var inputDataType;
 
     if (oneClick.inputDataType == 'percentages') {
-      inputDataType = 'Percentages'
+      inputDataType = 'Percentages';
     } else if (oneClick.inputDataType == 'fractions') {
       // special case, suffix nothing
-      inputDataType = ''
+      inputDataType = '';
     } else if (oneClick.inputDataType == 'numbers affected') {
-      inputDataType = 'Number'
+      inputDataType = 'Number';
     } else {
       // todo: handle missing params type, for now just return
       return;
@@ -2890,24 +2890,24 @@
     // Compulsory
     // Generate formula strings
     var expNControlNString = `${oneClick.experimental},${oneClick.experimentalN},${oneClick.control},${oneClick.controlN}`;
-    var logOddsFormula = `logOddsRatio${inputDataType}(${expNControlNString})`
-    var weightFormula = `weight${inputDataType}(${expNControlNString})`
-    var weightedMeanAggrFormula = `weightedMeanAggr(${logOddsFormula},${weightFormula})`
-    var fixedEffectErrorFormula = `fixedEffectError(${logOddsFormula},${weightFormula},${weightedMeanAggrFormula})`
-    var standardErrorAggrFormula = `standardErrorAggr(${weightFormula})`
-    var varianceAggrFormula = `varianceAggr(${weightFormula})`
-    var lowerConfidenceLimitAggrFormula = `lowerConfidenceLimitAggr(${logOddsFormula},${weightFormula})`
-    var upperConfidenceLimitAggrFormula = `upperConfidenceLimitAggr(${logOddsFormula},${weightFormula})`
-    var zValueAggrFormula = `zValueAggr(${logOddsFormula},${weightFormula})`
-    var pValue2TailedAggrFormula = `pValue2TailedAggr(${zValueAggrFormula})`
-    var qValueFormula = `sumAggr(${fixedEffectErrorFormula})` // perfect candidate for a custom label
-    var degreesOfFreedomAggrFormula = `degreesOfFreedomAggr(${logOddsFormula})`
-    var heterogeneityPValueAggrFormula = `heterogeneityPValueAggr(${qValueFormula}, ${degreesOfFreedomAggrFormula})`
-    var iSquaredAggrFormula = `iSquaredAggr(${qValueFormula}, ${degreesOfFreedomAggrFormula})`
-    var tauSquaredAggrFormula = `tauSquaredAggr(${logOddsFormula},${weightFormula})`
-    var tauStandardErrorAggrFormula = `tauStandardErrorAggr(${logOddsFormula},${weightFormula})`
-    var tauVarianceAggrFormula = `tauVarianceAggr(${logOddsFormula},${weightFormula})`
-    var tauAggrFormula = `tauAggr(${logOddsFormula},${weightFormula})`
+    var logOddsFormula = `logOddsRatio${inputDataType}(${expNControlNString})`;
+    var weightFormula = `weight${inputDataType}(${expNControlNString})`;
+    var weightedMeanAggrFormula = `weightedMeanAggr(${logOddsFormula},${weightFormula})`;
+    var fixedEffectErrorFormula = `fixedEffectError(${logOddsFormula},${weightFormula},${weightedMeanAggrFormula})`;
+    var standardErrorAggrFormula = `standardErrorAggr(${weightFormula})`;
+    var varianceAggrFormula = `varianceAggr(${weightFormula})`;
+    var lowerConfidenceLimitAggrFormula = `lowerConfidenceLimitAggr(${logOddsFormula},${weightFormula})`;
+    var upperConfidenceLimitAggrFormula = `upperConfidenceLimitAggr(${logOddsFormula},${weightFormula})`;
+    var zValueAggrFormula = `zValueAggr(${logOddsFormula},${weightFormula})`;
+    var pValue2TailedAggrFormula = `pValue2TailedAggr(${zValueAggrFormula})`;
+    var qValueFormula = `sumAggr(${fixedEffectErrorFormula})`; // perfect candidate for a custom label
+    var degreesOfFreedomAggrFormula = `degreesOfFreedomAggr(${logOddsFormula})`;
+    var heterogeneityPValueAggrFormula = `heterogeneityPValueAggr(${qValueFormula}, ${degreesOfFreedomAggrFormula})`;
+    var iSquaredAggrFormula = `iSquaredAggr(${qValueFormula}, ${degreesOfFreedomAggrFormula})`;
+    var tauSquaredAggrFormula = `tauSquaredAggr(${logOddsFormula},${weightFormula})`;
+    var tauStandardErrorAggrFormula = `tauStandardErrorAggr(${logOddsFormula},${weightFormula})`;
+    var tauVarianceAggrFormula = `tauVarianceAggr(${logOddsFormula},${weightFormula})`;
+    var tauAggrFormula = `tauAggr(${logOddsFormula},${weightFormula})`;
 
     // add them to the metaanalysis
     addObject(logOddsFormula, currentMetaanalysis.columns, columnMarker);
@@ -2933,21 +2933,21 @@
     // todo: We have no forest plot for fractions, so maybe we should disable
     // the button if type is changed to fractions?
     if (oneClick.forestPlot === true && oneClick.inputDataType != 'fractions') {
-      var forestPlotFormula = `forestPlot${inputDataType}Graph(${expNControlNString})`
+      var forestPlotFormula = `forestPlot${inputDataType}Graph(${expNControlNString})`;
       addObject(forestPlotFormula, currentMetaanalysis.graphs, graphMarker);
     }
 
     // Random-effect model
     if (oneClick.randomEffect === true) {
       // Generate formula strings
-      var randomEffectWeightFormula = `randomEffectWeight${inputDataType}(${expNControlNString},${tauSquaredAggrFormula})`
-      var weightedMeanRandomAggrFormula = `weightedMeanAggr(${logOddsFormula},${randomEffectWeightFormula})`
-      var standardErrorRandomAggrFormula = `standardErrorAggr(${randomEffectWeightFormula})`
-      var varianceRandomAggrFormula = `varianceAggr(${randomEffectWeightFormula})`
-      var lowerConfidenceLimitRandomAggrFormula = `lowerConfidenceLimitAggr(${logOddsFormula},${randomEffectWeightFormula})`
-      var upperConfidenceLimitRandomAggrFormula = `upperConfidenceLimitAggr(${logOddsFormula},${randomEffectWeightFormula})`
-      var zValueRandomAggrFormula = `zValueAggr(${logOddsFormula},${randomEffectWeightFormula})`
-      var pValue2TailedRandomAggrFormula = `pValue2TailedAggr(${zValueRandomAggrFormula})`
+      var randomEffectWeightFormula = `randomEffectWeight${inputDataType}(${expNControlNString},${tauSquaredAggrFormula})`;
+      var weightedMeanRandomAggrFormula = `weightedMeanAggr(${logOddsFormula},${randomEffectWeightFormula})`;
+      var standardErrorRandomAggrFormula = `standardErrorAggr(${randomEffectWeightFormula})`;
+      var varianceRandomAggrFormula = `varianceAggr(${randomEffectWeightFormula})`;
+      var lowerConfidenceLimitRandomAggrFormula = `lowerConfidenceLimitAggr(${logOddsFormula},${randomEffectWeightFormula})`;
+      var upperConfidenceLimitRandomAggrFormula = `upperConfidenceLimitAggr(${logOddsFormula},${randomEffectWeightFormula})`;
+      var zValueRandomAggrFormula = `zValueAggr(${logOddsFormula},${randomEffectWeightFormula})`;
+      var pValue2TailedRandomAggrFormula = `pValue2TailedAggr(${zValueRandomAggrFormula})`;
 
       // add them to the metaanalysis
       addObject(randomEffectWeightFormula, currentMetaanalysis.columns, columnMarker);
@@ -2969,7 +2969,7 @@
     // todo: We have no grape chart for fractions, so maybe we should disable
     // the button if type is changed to fractions?
     if (oneClick.grapeChart === true && oneClick.moderator && oneClick.inputDataType != 'fractions') {
-      var grapeChartFormula = `grapeChart${inputDataType}Graph(${expNControlNString}, ${oneClick.moderator})`
+      var grapeChartFormula = `grapeChart${inputDataType}Graph(${expNControlNString}, ${oneClick.moderator})`;
       addObject(grapeChartFormula, currentMetaanalysis.graphs, graphMarker);
     }
 
@@ -2977,7 +2977,7 @@
     // todo: We have no grouped forest plot for fractions, so maybe we should disable
     // the button if type is changed to fractions?
     if (oneClick.groupedForest === true && oneClick.moderator && oneClick.inputDataType != 'fractions') {
-      var forestPlotGroupFormula = `forestPlotGroup${inputDataType}Graph(${expNControlNString},${oneClick.moderator}})`
+      var forestPlotGroupFormula = `forestPlotGroup${inputDataType}Graph(${expNControlNString},${oneClick.moderator}})`;
       addObject(forestPlotGroupFormula, currentMetaanalysis.graphs, graphMarker);
     }
 
@@ -3110,7 +3110,7 @@
       // Editing Options
       // Add an option for every aggregate formula we know
       var aggregateFormulas = lima.listAggregateFormulas();
-      var aggregateFormulasDropdown = _.findEl(aggregateEl, 'select.aggregateformulas')
+      var aggregateFormulasDropdown = _.findEl(aggregateEl, 'select.aggregateformulas');
       for (var i = 0; i < aggregateFormulas.length; i++){
         var el = document.createElement("option");
         el.textContent = aggregateFormulas[i].label;
@@ -3336,7 +3336,7 @@
       // todo this could be factored out with aggregates
       // Add an option for every aggregate formula we know
       var aggregateFormulas = lima.listAggregateFormulas();
-      var groupingAggregateFormulasDropdown = _.findEl(tr, 'select.groupingaggregateformulas')
+      var groupingAggregateFormulasDropdown = _.findEl(tr, 'select.groupingaggregateformulas');
       for (var i = 0; i < aggregateFormulas.length; i++){
         var el = document.createElement("option");
         el.textContent = aggregateFormulas[i].label;
@@ -3599,7 +3599,7 @@
       // Editing Options
       // Add an option for every graph formula we know
       var graphFormulas = lima.listGraphFormulas();
-      var graphFormulasDropdown = _.findEl(graphEl, 'select.graphformulas')
+      var graphFormulasDropdown = _.findEl(graphEl, 'select.graphformulas');
       for (var i = 0; i < graphFormulas.length; i++){
         var el = document.createElement("option");
         el.textContent = graphFormulas[i].label;
@@ -3794,7 +3794,7 @@
     // enable/disable the add button based on content
     newComment.oninput = function () {
       _.setProps(buttons, '.confirm', 'disabled', newComment.textContent.trim() == '');
-    }
+    };
 
     // add
     _.addEventListener(root, '.comment.new .buttons .add', 'click', function() {
@@ -3833,7 +3833,7 @@
           Object.keys(localMetaanalyses).forEach(function (localURL) {
             var title = extractMetaanalysisTitleFromUrl(localURL);
             if (allTitles.indexOf(title) === -1) allTitles.push(title);
-          })
+          });
         }
       })
       .catch(function (err) {
@@ -3975,10 +3975,10 @@
       .then(lima.updatePageURL)
       .catch(function(err) {
         console.error('error saving metaanalysis');
-        if (err instanceof Response) err.text().then(function (t) {console.error(t)});
+        if (err instanceof Response) err.text().then(function (t) {console.error(t);});
         else console.error(err);
         throw err;
-      })
+      });
   }
 
   var localMetaanalyses;
@@ -4134,10 +4134,10 @@
       tr = _.findPrecedingEl(checkbox, 'tr');
     }
     if (isExcludedExp(paperId, expIndex)) {
-      _.setProps(tr, '.experimenttitle .exclude', 'checked', false)
+      _.setProps(tr, '.experimenttitle .exclude', 'checked', false);
       tr.classList.add('excluded');
     } else {
-      _.setProps(tr, '.experimenttitle .exclude', 'checked', true)
+      _.setProps(tr, '.experimenttitle .exclude', 'checked', true);
       tr.classList.remove('excluded');
     }
   }
@@ -4735,7 +4735,7 @@
         ev.target.blur();
         confirmEl.onclick();
       }
-    }
+    };
 
     confirmEl.onclick = function () {
       var value = editingEl[property];
@@ -4757,7 +4757,7 @@
 
     cancelEls.forEach(function (cancelEl) {
       cancelEl.onclick = cancel;
-    })
+    });
   }
 
   function assignDeepValue(target, targetProp, value) {
@@ -4892,7 +4892,7 @@
   // or if no ID is given, the currently pinned popup box element
   function getPopupBoxEl(id) {
     if (!id) id = pinnedBox;
-    return _.findEl('[data-boxid="' + id + '"]')
+    return _.findEl('[data-boxid="' + id + '"]');
   }
 
   function setupPopupBoxPinning(el, selector, localid) {
@@ -4908,7 +4908,7 @@
       var trigger = box;
       while (trigger && !trigger.classList.contains('popupboxtrigger')) trigger = trigger.parentElement;
       if (trigger) trigger.classList.remove('pinned');
-    })
+    });
   }
 
 
@@ -5122,6 +5122,6 @@
     lima.getAllTitles = function(){return allTitles;};
     lima.getCurrentMetaanalysis = function(){return currentMetaanalysis;};
     lima.savePendingMax = 0;
-  }
+  };
 
 })(window, document);

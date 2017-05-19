@@ -28,7 +28,7 @@
     fetch('/api/register', {
       method: 'POST',
       headers: _.idTokenToFetchHeaders(idToken),
-    })
+    });
   }
 
   lima.getAuthenticatedUserEmail = function getAuthenticatedUserEmail() {
@@ -38,7 +38,7 @@
       }
     } catch (e) {console.info(e);} // any errors mean no current user
     return null;
-  }
+  };
 
   var toggleButton = _.byId('toggle-editing');
 
@@ -50,14 +50,14 @@
     }
 
     document.body.classList.toggle('editing', !!lima.editing);
-  }
+  };
 
   if (toggleButton) {
     lima.toggleEditing();
     toggleButton.addEventListener('click', function () {
       lima.toggleEditing(!lima.editing);
       if (lima.updateView) lima.updateView();
-    })
+    });
   }
 
 
@@ -107,14 +107,14 @@
             console.error(reason);
             reject(reason);
           }
-        )
+        );
       }
     });
 
     token.then(clearPendingToken, clearPendingToken);
 
     return token;
-  }
+  };
 
   function clearPendingToken() {
     pendingToken = null;
@@ -131,7 +131,7 @@
     gapi.auth2.getAuthInstance().then(
       function (gauth) {
         gauth.currentUser.listen(onSignIn);
-        _.findEls('a.signout').forEach(function (el){el.addEventListener('click', signOut)});
+        _.findEls('a.signout').forEach(function (el){el.addEventListener('click', signOut);});
         if (gauth.isSignedIn.get()) onSignIn(gauth.currentUser.get());
         try {
           if (lima.initPage) lima.initPage();
@@ -144,12 +144,12 @@
         console.log('failed getting gapi auth instance');
         console.log(err);
       });
-  })
+  });
 
   var onSignInListeners = [];
 
   lima.onSignInChange = function (cb) {
     if (onSignInListeners.indexOf(cb) === -1) onSignInListeners.push(cb);
-  }
+  };
 
 })(window, document);

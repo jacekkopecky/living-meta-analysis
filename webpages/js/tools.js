@@ -26,7 +26,7 @@
     }
     if (!selector) return undefined;
     return root.querySelector(selector);
-  }
+  };
 
   /*
    * param root is optional
@@ -38,7 +38,7 @@
     }
     if (!selector) return [];
     return _.array(root.querySelectorAll(selector));
-  }
+  };
 
   /*
    * finds the preceding sibling or ancestor that matches a selector, or returns null if not found
@@ -46,11 +46,11 @@
   _.findPrecedingEl = function findPrecedingEl(el, selector) {
     while (el && !el.matches(selector)) el = el.previousElementSibling || el.parentElement;
     return el;
-  }
+  };
 
   _.byId = function byId(id) {
     return document.getElementById(id);
-  }
+  };
 
   // todo maybe if the template only has one child, return that instead of the DocumentFragment
   // this way we'd avoid all the _.cloneTemplate().children[0]
@@ -64,12 +64,12 @@
       // this is not an HTML template (might be an SVG template, for example), so import its first child
       return document.importNode(template.children[0], true);
     }
-  }
+  };
 
   _.array = function array(arr) {
     return [].slice.call(arr);
     // todo NodeList returned by document.querySelectorAll is soon getting .forEach so this function may soon no longer be needed
-  }
+  };
 
   function valOrFun(val, param) {
     return (typeof val === 'function' && val.valOrFun !== 'val') ? val(param) : val;
@@ -78,7 +78,7 @@
   _.f = function val(f) {
     if (typeof f === 'function') f.valOrFun = 'val';
     return f;
-  }
+  };
 
   _.fillEls = function fillEls(root, selector, value) {
     if (!(root instanceof Node)) {
@@ -90,7 +90,7 @@
       var newVal = valOrFun(value, el);
       if (el.textContent != newVal) el.textContent = newVal == null ? '' : newVal;
     });
-  }
+  };
 
   _.setProps = function setProps(root, selector, attr, value) {
     if (!(root instanceof Node)) {
@@ -100,7 +100,7 @@
       root = document;
     }
     _.findEls(root, selector).forEach(function (el) { el[attr] = valOrFun(value, el); });
-  }
+  };
 
   _.setAttrs = function setAttrs(root, selector, attr, value) {
     if (!(root instanceof Node)) {
@@ -110,7 +110,7 @@
       root = document;
     }
     _.findEls(root, selector).forEach(function (el) { el.setAttribute(attr, valOrFun(value, el)); });
-  }
+  };
 
   _.setDataProps = function setDataProps(root, selector, name, value) {
     if (!(root instanceof Node)) {
@@ -120,7 +120,7 @@
       root = document;
     }
     _.findEls(root, selector).forEach(function (el) { el.dataset[name] = valOrFun(value, el); });
-  }
+  };
 
   _.addClass = function addClass(root, selector, value) {
     if (!(root instanceof Node)) {
@@ -129,7 +129,7 @@
       root = document;
     }
     _.findEls(root, selector).forEach(function(el){el.classList.add(valOrFun(value, el));});
-  }
+  };
 
   _.removeClass = function removeClass(root, selector, value) {
     if (!(root instanceof Node)) {
@@ -138,7 +138,7 @@
       root = document;
     }
     _.findEls(root, selector).forEach(function(el){el.classList.remove(valOrFun(value, el));});
-  }
+  };
 
   _.addEventListener = function addEventListener(root, selector, event, f) {
     if (!(root instanceof Node)) {
@@ -148,7 +148,7 @@
       root = document;
     }
     _.findEls(root, selector).forEach(function(el){el.addEventListener(event, f);});
-  }
+  };
 
   _.fillTags = function fillTags(root, selector, tags, flashTag) {
     if (!(root instanceof Node)) {
@@ -175,7 +175,7 @@
       });
       if (newTagTemplate) el.appendChild(_.cloneTemplate(newTagTemplate));
     });
-  }
+  };
 
   _.putCursorAtEnd = function putCursorAtEnd(el) {
     if (el && el.childNodes.length) {
@@ -186,14 +186,14 @@
       selection.removeAllRanges();
       selection.addRange(range);
     }
-  }
+  };
 
   // a workaround for strange chrome behaviour where it doesn't focus right:
   // e.g. clicking on the placeholder 'doi' of an empty editable doi value focuses the element but doesn't react to subsequent key strokes
   _.blurAndFocus = function(ev) {
     ev.target.blur();
     ev.target.focus();
-  }
+  };
 
   // oneline input fields get blurred on enter (for Excel-like editing)
   _.blurOnEnter = function(ev) {
@@ -201,7 +201,7 @@
       ev.preventDefault();
       ev.target.blur();
     }
-  }
+  };
 
 
   _.linkEditTest = function(ev) {
@@ -215,7 +215,7 @@
         if (el.nodeName === 'A') linkEl = el;
         else if (el.isContentEditable || el.contentEditable === 'true') editEl = el;
       }
-    })
+    });
 
     if (!linkEl || !editEl) {
       console.error('linkEditTest cannot find linkEl or editEl');
@@ -226,7 +226,7 @@
     if (linkEl.dataset.base) link = linkEl.dataset.base + link;
 
     window.open(link, "linkedittest");
-  }
+  };
 
   _.preventLinkEditBlur = function(ev) {
     var btn = ev.target;
@@ -235,7 +235,7 @@
     var editEl = null;
     _.array(btn.parentElement.children).forEach(function (el) {
       if (el.classList.contains('value') && (el.isContentEditable || el.contentEditable === 'true')) editEl = el;
-    })
+    });
 
     if (!editEl) {
       console.error('preventLinkEditBlur cannot find editEl');
@@ -244,7 +244,7 @@
 
     // clicking the 'test' button should not cause blur on the editing field
     if (document.activeElement === editEl) ev.preventDefault();
-  }
+  };
 
   /* array manipulation
    *
@@ -265,7 +265,7 @@
     arr.splice(oldIndex, 1);
     arr.splice(newIndex, 0, content);
     return arr;
-  }
+  };
 
   // remove an element from the array in-place, by value
   _.removeFromArray = function removeFromArray(array, element) {
@@ -273,7 +273,7 @@
     if (index !== -1) {
       array.splice(index, 1);
     }
-  }
+  };
 
   // find out if a bigger array contains all the elements of a smaller array
   // we don't expect any duplicate entries here
@@ -286,7 +286,7 @@
       if (superset.indexOf(subset[i]) == -1) return false;
     }
     return true;
-  }
+  };
 
   /* bounds arrays
    *
@@ -305,7 +305,7 @@
     if (this == null) return new _.Bounds();
 
     this.limits = [];
-  }
+  };
 
   _.Bounds.prototype.add = function(min, max) {
     for (var i=0; i<this.limits.length; i+=1) {
@@ -329,11 +329,11 @@
     }
     // if we didn't break above, the current bound is the last one
     if (i == this.limits.length) this.limits.push({ min: min, max: max });
-  }
+  };
 
   _.Bounds.prototype.isEmpty = function() {
     return !this.limits.length;
-  }
+  };
 
   _.Bounds.prototype.getNearestOutsideValue = function(val) {
     // choose the value outside of the given bounds that's closest to the given val
@@ -362,7 +362,7 @@
     } else {
       return this.limits[i].max;
     }
-  }
+  };
 
   // find the index of the bounds that contains val, or -1 if no bounds contains val
   _.Bounds.prototype.indexOf = function(val) {
@@ -382,7 +382,7 @@
     }
 
     return i;
-  }
+  };
 
   /* input validation
    *
@@ -404,7 +404,7 @@
       else return Number(val);
     }
     return NaN;
-  }
+  };
 
   _.strictToNumberOrNull = function strictToNumberOrNull(val) {
     if (val == null) return val;
@@ -414,11 +414,11 @@
       else return Number(val);
     }
     return NaN;
-  }
+  };
 
   _.mod = function mod(x, n) {
     return ((x%n)+n)%n;
-  }
+  };
 
   // regexp generated by http://unicode.org/cldr/utility/list-unicodeset.jsp?a=%5B%5Cp%7BN%7D%5Cp%7BL%7D%5D&abb=on&ucd=on&esc=on&g=&i=
   // excluding the high ranges from \U00010000 because somehow they break things
@@ -451,8 +451,8 @@
       document.open();
       document.write(text);
       document.close();
-    })
-  }
+    });
+  };
 
   _.apiFail = function apiFail() {
     document.body.innerHTML = '';
@@ -467,8 +467,8 @@
       document.open();
       document.write(text);
       document.close();
-    })
-  }
+    });
+  };
 
   /* testing
    *
@@ -554,11 +554,11 @@
   // call _.addTest(function) to add a test that will be run in tests/index.html
   // the function takes one parameter `assert` which is a function:
   // function assert(condition, errorMessage) - reports errorMessage if condition is falsy
-  _.addTest = function addTest(f) { tests.push(f); }
+  _.addTest = function addTest(f) { tests.push(f); };
 
   window.onerror = function globalError(msg, source) {
     globalErrors.push(source + ': ' + msg);
-  }
+  };
 
   var GLOBAL_ERROR_SEP = "\n    ";
 
@@ -589,21 +589,21 @@
   _.formatNiceDate = function formatNiceDate(d) {
     if (typeof d !== "object") d = new Date(+d);
     return months[d.getMonth()] + d.getDate() + ', ' + d.getFullYear();
-  }
+  };
 
   _.formatDate = function formatDate(d) {
     if (typeof d !== "object") d = new Date(+d);
     return d.getFullYear() + "-" + twoDigits((d.getMonth()+1)) + "-" + twoDigits(d.getDate());
-  }
+  };
 
   _.formatTime = function formatTime(d) {
     if (typeof d !== "object") d = new Date(+d);
     return twoDigits(d.getHours()) + ":" + twoDigits(d.getMinutes());
-  }
+  };
 
   _.formatDateTime = function formatDateTime(d) {
     return _.formatDate(d) + " " + _.formatTime(d);
-  }
+  };
 
   function twoDigits(x) {
     return x < 10 ? "0" + x : "" + x;
@@ -614,9 +614,9 @@
       string = string.substring(prefix.length);
     }
     return string;
-  }
+  };
 
-  _.stripDOIPrefix = function (doi) { return _.stripPrefix('doi:', doi); }
+  _.stripDOIPrefix = function (doi) { return _.stripPrefix('doi:', doi); };
 
 
   /* youOrName
@@ -674,7 +674,7 @@
         el.classList.remove('yours');
       }
     });
-  }
+  };
 
 
   /* fetch
@@ -693,7 +693,7 @@
   _.fetchJson = function fetchJson(response) {
     if (response.ok) return response.json();
     else return Promise.reject(response);
-  }
+  };
 
   /*
    * with fetch API, get the response as text, but if the HTTP code wasn't 2xx, make the response a rejected promise
@@ -701,11 +701,11 @@
   _.fetchText = function fetchText(response) {
     if (response.ok) return response.text();
     else return Promise.reject(response);
-  }
+  };
 
   _.idTokenToFetchOptions = function idTokenToFetchOptions(idToken) {
     return idToken ? { headers: _.idTokenToFetchHeaders(idToken) } : void 0;
-  }
+  };
 
   _.idTokenToFetchHeaders = function idTokenToFetchHeaders(idToken, extraHeaders) {
     var retval = {};
@@ -714,14 +714,14 @@
     }
     if (idToken) retval.Authorization = "Bearer " + idToken;
     return retval;
-  }
+  };
 
   // for testing purposes - simulating a delay before a promise is resolved
   _.delayPromise = function delayPromise(x) {
     return new Promise(function (resolve) {
       setTimeout(resolve, 1000, x);
-    })
-  }
+    });
+  };
 
   // adapted from underscore http://underscorejs.org/docs/underscore.html
   _.debounce = function(func, wait, immediate) {
@@ -801,7 +801,7 @@
 
     _.deferScheduledSave();
     if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(doSave, SAVE_PENDING_TIMEOUT);
-  }
+  };
 
   // setTimeout for save in 3s
   // if already set, cancel the old one and set a new one
@@ -811,7 +811,7 @@
       clearTimeout(pendingSaveTimeout);
       pendingSaveTimeout = setTimeout(doSave, SAVE_PENDING_TIMEOUT);
     }
-  }
+  };
 
   _.cancelScheduledSave = function cancelScheduledSave(saveFunction) {
     var removeIndex = pendingSaveFunctions.indexOf(saveFunction);
@@ -823,7 +823,7 @@
 
     if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
     pendingSaveTimeout = null;
-  }
+  };
 
   _.manualSave = doSave;
 
@@ -897,7 +897,7 @@
     }
     lastTime = currTime;
     return 'new_' + type + '_' + currTime;
-  }
+  };
 
   /* page leave
    *

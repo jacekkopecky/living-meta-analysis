@@ -40,7 +40,7 @@
     ];
     retval.forEach(function(graph) { graph.type = lima.GRAPH_TYPE; });
     return retval;
-  }
+  };
 
   lima.getGraphFormulaById = function getGraphFormulaById(id) {
     var graphFormulas = lima.listGraphFormulas();
@@ -48,6 +48,6 @@
       if (graphFormulas[i].id === id) return graphFormulas[i];
     }
     return null;
-  }
+  };
 
 })(window, document);

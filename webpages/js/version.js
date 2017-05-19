@@ -11,7 +11,7 @@
 
   fetch('/version', { credentials: 'same-origin' })
   .then(_.fetchText)
-  .then(function (text) { _.fillEls('.limaversion .value', text)})
+  .then(function (text) { _.fillEls('.limaversion .value', text);})
   .catch(function (err) {
     console.error("problem getting version");
     console.error(err);

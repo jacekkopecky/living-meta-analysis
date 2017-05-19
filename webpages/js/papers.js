@@ -327,7 +327,7 @@
     _.fillEls (paperEl, '.link .value', paper.link);
     _.setProps(paperEl, '.link a.value', 'href', paper.link);
     _.fillEls (paperEl, '.doi .value', paper.doi);
-    _.setProps(paperEl, '.doi a.value', 'href', function(el){return el.dataset.base + paper.doi});
+    _.setProps(paperEl, '.doi a.value', 'href', function(el){return el.dataset.base + paper.doi;});
     _.fillEls (paperEl, '.enteredby .value', paper.enteredBy);
     _.setProps(paperEl, '.enteredby .value', 'href', '/' + paper.enteredBy + '/');
     _.fillEls (paperEl, '.ctime .value', _.formatDateTime(paper.ctime));
@@ -405,8 +405,8 @@
             console.error('removing tag but can\'t find it: ' + text);
           }
         }
-      }
-    })
+      };
+    });
     // events for starting to add a tag
     var btn = _.findEl(paperEl, '.tags .new + .addtag');
     var newTagContainer = _.findEl(paperEl, '.tags .new');
@@ -415,7 +415,7 @@
     btn.onclick = function () {
       newTagContainer.classList.add('editing');
       newTag.focus();
-    }
+    };
     if (startNewTag != null) {
       btn.onclick();
       newTag.textContent = startNewTag;
@@ -447,7 +447,7 @@
           fillTags(paperEl, paper);
         }
       }
-    }
+    };
     newTag.onkeydown = function (ev) {
       _.deferScheduledSave();
       // enter
@@ -470,7 +470,7 @@
           newTag.blur();
         }
       }
-    }
+    };
   }
 
   /* fill Exp table
@@ -719,7 +719,7 @@
     // Editing Options
     // Add an option for every formula we know
     var formulas = lima.listFormulas();
-    var formulasDropdown = _.findEl(th, 'select.colformulas')
+    var formulasDropdown = _.findEl(th, 'select.colformulas');
     for (var i = 0; i < formulas.length; i++){
       var el = document.createElement("option");
       el.textContent = formulas[i].label;
@@ -946,7 +946,7 @@
   function getDatumValue(colId, expIndex) {
     // check cache
     if (!dataCache) dataCache = {};
-    var cacheId = getColIdentifier(colId)
+    var cacheId = getColIdentifier(colId);
     if (!(cacheId in dataCache)) dataCache[cacheId] = [];
     if (expIndex in dataCache[cacheId]) {
       if (dataCache[cacheId][expIndex] === CIRCULAR_COMPUTATION_FLAG) {
@@ -1058,7 +1058,7 @@
       var bucket = (col.definedBy === user || !col.definedBy) ? 'yours' : 'other';
       if (currentPaper.columns.indexOf(colId) > -1) bucket = 'already';
       ordered[bucket][col.type].push(col);
-    })
+    });
     ordered.yours.result.sort(compareColumnsByAuthorAndTitle);
     ordered.yours.characteristic.sort(compareColumnsByAuthorAndTitle);
     ordered.other.result.sort(compareColumnsByAuthorAndTitle);
@@ -1115,7 +1115,7 @@
       list.addEventListener('mouseleave', emptyColInfo);
 
       list.appendChild(li);
-    })
+    });
   }
 
   function fillColInfo(ev) {
@@ -1303,7 +1303,7 @@
     // enable/disable the add button based on content
     newComment.oninput = function () {
       _.setProps(buttons, '.confirm', 'disabled', newComment.textContent.trim() == '');
-    }
+    };
 
     // add
     _.addEventListener(root, '.comment.new .buttons .add', 'click', function() {
@@ -1342,7 +1342,7 @@
           Object.keys(localPapers).forEach(function (localURL) {
             var title = extractPaperTitleFromUrl(localURL);
             if (allTitles.indexOf(title) === -1) allTitles.push(title);
-          })
+          });
         }
       })
       .catch(function (err) {
@@ -1485,10 +1485,10 @@
       .then(lima.updatePageURL)
       .catch(function(err) {
         console.error('error saving paper');
-        if (err instanceof Response) err.text().then(function (t) {console.error(t)});
+        if (err instanceof Response) err.text().then(function (t) {console.error(t);});
         else console.error(err);
         throw err;
-      })
+      });
   }
 
   var localPapers;
@@ -1881,7 +1881,7 @@
         ev.target.blur();
         confirmEl.onclick();
       }
-    }
+    };
 
     confirmEl.onclick = function () {
       var value = editingEl[property];
@@ -1903,7 +1903,7 @@
 
     cancelEls.forEach(function (cancelEl) {
       cancelEl.onclick = cancel;
-    })
+    });
   }
 
   function assignDeepValue(target, targetProp, value) {
@@ -2038,7 +2038,7 @@
   // or if no ID is given, the currently pinned popup box element
   function getPopupBoxEl(id) {
     if (!id) id = pinnedBox;
-    return _.findEl('[data-boxid="' + id + '"]')
+    return _.findEl('[data-boxid="' + id + '"]');
   }
 
   function setupPopupBoxPinning(el, selector, localid) {
@@ -2054,7 +2054,7 @@
       var trigger = box;
       while (trigger && !trigger.classList.contains('popupboxtrigger')) trigger = trigger.parentElement;
       if (trigger) trigger.classList.remove('pinned');
-    })
+    });
   }
 
 
@@ -2268,6 +2268,6 @@
     lima.getPaperTitles = function(){return allTitles;};
     lima.getCurrentPaper = function(){return currentPaper;};
     lima.savePendingMax = 0;
-  }
+  };
 
 })(window, document);
