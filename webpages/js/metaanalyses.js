@@ -2880,12 +2880,11 @@
       return;
     }
 
-    // objects so that we pass by reference to the functions below and don't
-    // need excessive *Marker = return values
-    var columnMarker = { value: currentMetaanalysis.columns.length };
-    var aggregateMarker = { value: currentMetaanalysis.aggregates.length };
-    var graphMarker = { value: currentMetaanalysis.graphs.length };
-    var groupingAggregateMarker = { value: currentMetaanalysis.groupingAggregates.length };
+    // here we keep track of where in the arrays we should add the next object
+    var columnOptions = { array: currentMetaanalysis.columns, position: currentMetaanalysis.columns.length };
+    var aggregateOptions = { array: currentMetaanalysis.aggregates, position: currentMetaanalysis.aggregates.length };
+    var graphOptions = { array: currentMetaanalysis.graphs, position: currentMetaanalysis.graphs.length };
+    var groupingAggregateOptions = { array: currentMetaanalysis.groupingAggregates, position: currentMetaanalysis.groupingAggregates.length };
 
     // Compulsory
     // Generate formula strings
@@ -2910,31 +2909,31 @@
     var tauAggrFormula = `tauAggr(${logOddsFormula},${weightFormula})`;
 
     // add them to the metaanalysis
-    addObject(logOddsFormula, currentMetaanalysis.columns, columnMarker);
-    addObject(weightFormula, currentMetaanalysis.columns, columnMarker);
-    addObject(weightedMeanAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(fixedEffectErrorFormula, currentMetaanalysis.columns, columnMarker);
-    addObject(standardErrorAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(varianceAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(lowerConfidenceLimitAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(upperConfidenceLimitAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(zValueAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(pValue2TailedAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(qValueFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(degreesOfFreedomAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(heterogeneityPValueAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(iSquaredAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(tauSquaredAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(tauStandardErrorAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(tauVarianceAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-    addObject(tauAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
+    addObject(logOddsFormula, columnOptions);
+    addObject(weightFormula, columnOptions);
+    addObject(weightedMeanAggrFormula, aggregateOptions);
+    addObject(fixedEffectErrorFormula, columnOptions);
+    addObject(standardErrorAggrFormula, aggregateOptions);
+    addObject(varianceAggrFormula, aggregateOptions);
+    addObject(lowerConfidenceLimitAggrFormula, aggregateOptions);
+    addObject(upperConfidenceLimitAggrFormula, aggregateOptions);
+    addObject(zValueAggrFormula, aggregateOptions);
+    addObject(pValue2TailedAggrFormula, aggregateOptions);
+    addObject(qValueFormula, aggregateOptions);
+    addObject(degreesOfFreedomAggrFormula, aggregateOptions);
+    addObject(heterogeneityPValueAggrFormula, aggregateOptions);
+    addObject(iSquaredAggrFormula, aggregateOptions);
+    addObject(tauSquaredAggrFormula, aggregateOptions);
+    addObject(tauStandardErrorAggrFormula, aggregateOptions);
+    addObject(tauVarianceAggrFormula, aggregateOptions);
+    addObject(tauAggrFormula, aggregateOptions);
 
     // Forest plot
     // todo: We have no forest plot for fractions, so maybe we should disable
     // the button if type is changed to fractions?
     if (oneClick.forestPlot === true && oneClick.inputDataType != 'fractions') {
       var forestPlotFormula = `forestPlot${inputDataType}Graph(${expNControlNString})`;
-      addObject(forestPlotFormula, currentMetaanalysis.graphs, graphMarker);
+      addObject(forestPlotFormula, graphOptions);
     }
 
     // Random-effect model
@@ -2950,14 +2949,14 @@
       var pValue2TailedRandomAggrFormula = `pValue2TailedAggr(${zValueRandomAggrFormula})`;
 
       // add them to the metaanalysis
-      addObject(randomEffectWeightFormula, currentMetaanalysis.columns, columnMarker);
-      addObject(weightedMeanRandomAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-      addObject(standardErrorRandomAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-      addObject(varianceRandomAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-      addObject(lowerConfidenceLimitRandomAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-      addObject(upperConfidenceLimitRandomAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-      addObject(zValueRandomAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
-      addObject(pValue2TailedRandomAggrFormula, currentMetaanalysis.aggregates, aggregateMarker);
+      addObject(randomEffectWeightFormula, columnOptions);
+      addObject(weightedMeanRandomAggrFormula, aggregateOptions);
+      addObject(standardErrorRandomAggrFormula, aggregateOptions);
+      addObject(varianceRandomAggrFormula, aggregateOptions);
+      addObject(lowerConfidenceLimitRandomAggrFormula, aggregateOptions);
+      addObject(upperConfidenceLimitRandomAggrFormula, aggregateOptions);
+      addObject(zValueRandomAggrFormula, aggregateOptions);
+      addObject(pValue2TailedRandomAggrFormula, aggregateOptions);
     }
 
     // Moderator Analysis
@@ -2970,7 +2969,7 @@
     // the button if type is changed to fractions?
     if (oneClick.grapeChart === true && oneClick.moderator && oneClick.inputDataType != 'fractions') {
       var grapeChartFormula = `grapeChart${inputDataType}Graph(${expNControlNString}, ${oneClick.moderator})`;
-      addObject(grapeChartFormula, currentMetaanalysis.graphs, graphMarker);
+      addObject(grapeChartFormula, graphOptions);
     }
 
     // Grouped Forest plot
@@ -2978,7 +2977,7 @@
     // the button if type is changed to fractions?
     if (oneClick.groupedForest === true && oneClick.moderator && oneClick.inputDataType != 'fractions') {
       var forestPlotGroupFormula = `forestPlotGroup${inputDataType}Graph(${expNControlNString},${oneClick.moderator}})`;
-      addObject(forestPlotGroupFormula, currentMetaanalysis.graphs, graphMarker);
+      addObject(forestPlotGroupFormula, graphOptions);
     }
 
     // finish up by saving and updating the view.
@@ -2986,17 +2985,18 @@
     _.scheduleSave(currentMetaanalysis);
   }
 
-  function addObject(formulaString, array, marker){
-    for (var i = 0; i < array.length; i++) {
-      if (array[i].formula == formulaString) {
-        marker.value = i;
+  // todo this will want to add a second parameter shortLabel
+  function addObject(formulaString, options){
+    for (var i = 0; i < options.array.length; i++) {
+      if (options.array[i].formula == formulaString) {
+        options.position = i+1;
         return; // we have it already
       }
     }
     var obj = { formula: formulaString };
     populateParsedFormula(obj);
-    marker.value += 1;
-    array.splice(marker.value, 0, obj);
+    options.array.splice(options.position, 0, obj);
+    options.position += 1;
   }
 
   /* adding rows
