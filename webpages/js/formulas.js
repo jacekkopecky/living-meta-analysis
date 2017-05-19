@@ -123,7 +123,7 @@
     ];
     retval.forEach(function(formula) { formula.type = lima.FORMULA_TYPE; });
     return retval;
-  }
+  };
 
   function getFormulaById(id) {
     var formulas = lima.listFormulas();
@@ -360,7 +360,7 @@
     ];
     retval.forEach(function(aggr) { aggr.type = lima.AGGREGATE_TYPE; });
     return retval;
-  }
+  };
 
   function getAggregateFormulaById(id) {
     var aggregateFormulas = lima.listAggregateFormulas();
@@ -395,7 +395,7 @@
     var total = 0;
     valueArray.forEach(function(value) {
       total += _.strictToNumberOrNull(value);
-    })
+    });
 
     return total;
   }
@@ -462,7 +462,7 @@
   // cdf (cumulative normal distribution function) adapted from http://stackoverflow.com/questions/5259421/cumulative-distribution-function-in-javascript
   // this is not exposed as an aggregate (hence not called *Aggr)
   function cdfNormal (x, mean, standardDeviation) {
-    return (1 - math.erf((mean - x ) / (Math.sqrt(2) * standardDeviation))) / 2
+    return (1 - math.erf((mean - x ) / (Math.sqrt(2) * standardDeviation))) / 2;
   }
 
   function degreesOfFreedomAggr (data) {
@@ -515,7 +515,7 @@
       tau: tau,
       variance: variance,
       se: se,
-    }
+    };
   }
 
   function tauSquaredAggr(ess, wts) {
@@ -640,7 +640,7 @@
         B1=1;
       }
       var Prob=Math.exp(A*Math.log(X)-X-LogGamma(A))*A1;
-      return 1-Prob
+      return 1-Prob;
     }
 
     function Gser(X,A) {        // Good for X<A+1.
@@ -653,26 +653,26 @@
         I=I+1;
       }
       G=G*Math.exp(A*Math.log(X)-X-LogGamma(A));
-      return G
+      return G;
     }
 
     function Gammacdf(x,a) {
       var GI;
       if (x<=0) {
-        GI=0
+        GI=0;
       } else if (x<a+1) {
-        GI=Gser(x,a)
+        GI=Gser(x,a);
       } else {
-        GI=Gcf(x,a)
+        GI=Gcf(x,a);
       }
-      return GI
+      return GI;
     }
 
     function cdf (Z, DF) {
       if (DF<=0) {
-        throw new Error("Degrees of freedom must be positive")
+        throw new Error("Degrees of freedom must be positive");
       }
-      return Gammacdf(Z/2,DF/2)
+      return Gammacdf(Z/2,DF/2);
     }
 
     // 1-cdf gives us the CHISQ.DIST.RT Excel value, according to
@@ -721,7 +721,7 @@
     }
 
     // otherwise it's a function
-    var retval = {}
+    var retval = {};
     retval.formulaName = match[1];
     if (match[4] && match[4].trim()) {
       var params = splitParams(match[4]);
@@ -740,11 +740,11 @@
     retval.formula = lima.createFormulaString(retval);
     retval.formulaObj = lima.getFormulaObject(retval.formulaName);
     return retval;
-  }
+  };
 
   lima.getFormulaObject = function getFormulaObject(name) {
     return getFormulaById(name) || getAggregateFormulaById(name) || lima.getGraphFormulaById(name);
-  }
+  };
 
   // this function splits a string by commas, ignoring commas within parentheses
   // it does a simple counting of parentheses
@@ -792,7 +792,7 @@
     }
     retval += ')';
     return retval;
-  }
+  };
 
 
   /* tests
@@ -825,7 +825,7 @@
     testObject({formulaParams: ['b', 'c']}, 'undefined(b,c)');
     testObject({formulaParams: [ null, 'c']}, 'undefined(undefined,c)');
 
-    var sparseArray = []
+    var sparseArray = [];
     sparseArray[1] = 'c';
     sparseArray.length = 4;
     testObject({formulaParams: sparseArray}, 'undefined(undefined,c,undefined,undefined)');
