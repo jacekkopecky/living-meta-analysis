@@ -2685,6 +2685,9 @@
 
     if (!currentMetaanalysis.oneclick) currentMetaanalysis.oneclick = {};
 
+    // if we have currentMetaanalysis.oneclick, pre-fill form from it
+    var oneclick = currentMetaanalysis.oneclick;
+
     // generate dropdown boxes for the parameters
     oneClickManualDropdownBuilder(oneClickMetaEl, 'Type of input data', 'inputDataType', ['fractions', 'percentages', 'numbers affected']);
     oneClickDropdownBuilder(oneClickMetaEl, 'Experimental', 'experimental');
@@ -2699,8 +2702,8 @@
     sectionEl.classList.add('section');
     oneClickMetaEl.appendChild(sectionEl);
 
-    oneClickCheckboxBuilder(sectionEl, 'Forest plot', 'forestPlot', true);
-    oneClickCheckboxBuilder(sectionEl, 'Random-effect model', 'randomEffect', false);
+    oneClickCheckboxBuilder(sectionEl, 'Forest plot', 'forestPlot', oneclick.forestPlot == null ? true : oneclick.forestPlot);
+    oneClickCheckboxBuilder(sectionEl, 'Random-effect model', 'randomEffect', oneclick.randomEffect);
 
     // Moderator analysis / grouping things to include
     sectionEl = document.createElement("span");
@@ -2708,12 +2711,13 @@
     sectionEl.classList.add('section');
     oneClickMetaEl.appendChild(sectionEl);
 
-    oneClickCheckboxBuilder(sectionEl, 'Include Moderator Analysis', 'moderatorAnalysis', false);
-    oneClickCheckboxBuilder(sectionEl, 'Grape Chart', 'grapeChart', false);
-    oneClickCheckboxBuilder(sectionEl, 'Grouped Forest plot', 'groupedForest', false);
+    oneClickCheckboxBuilder(sectionEl, 'Include Moderator Analysis', 'moderatorAnalysis', oneclick.moderatorAnalysis);
+    oneClickCheckboxBuilder(sectionEl, 'Grape Chart', 'grapeChart', oneclick.grapeChart);
+    oneClickCheckboxBuilder(sectionEl, 'Grouped Forest plot', 'groupedForest', oneclick.groupedForest);
 
     // add the sub-dropdown box that depends on the above checkboxes
-    oneClickDropdownBuilder(sectionEl, 'Moderator', 'moderator', true, false);
+    oneClickDropdownBuilder(sectionEl, 'Moderator', 'moderator', true,
+      oneclick.moderatorAnalysis || oneclick.grapeChart || oneclick.groupedForest);
   }
 
   // this function builds a dom object in the form of
@@ -2755,7 +2759,7 @@
     // account for computed columns in metaanalysis.columns
     for (var j = 0; j < currentMetaanalysis.columns.length; j++){
       var colId = currentMetaanalysis.columns[j];
-      makeOption(colId, {formula: ''}, '', selectEl);
+      makeOption(colId, {formula: ''}, currentMetaanalysis.oneclick[paramId], selectEl);
     }
 
     // store the values from the dropdown box temporarily in metaanalysis.oneclick
@@ -2764,6 +2768,7 @@
     selectEl.onchange = function(e) {
       if (!currentMetaanalysis.oneclick) currentMetaanalysis.oneclick = {};
       currentMetaanalysis.oneclick[paramId] = e.target.value;
+      // todo warn if the user selects the same column for different oneclick parameters
     };
 
     if (subDropdown == true) {
@@ -2809,6 +2814,7 @@
       var el = document.createElement("option");
       el.textContent = option;
       el.value = option;
+      if (currentMetaanalysis.oneclick[paramId] == option) el.selected = true;
       selectEl.appendChild(el);
     });
 
