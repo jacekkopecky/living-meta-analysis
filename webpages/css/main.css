@@ -2135,7 +2135,6 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
   top: -10em;
   left: -1em;
   z-index: 10;
-  width: 25em;
   background: white;
   border: 1px solid black;
   border-radius: .5em;
@@ -2146,9 +2145,11 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
   font-size: 80%;
   padding: 1em;
   text-align: left;
+  min-width: 22em;
 }
 
 #metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox {
+  width: 25em;
   height: 20em;
 }
 
@@ -2194,7 +2195,7 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
 #paper table.experiments tr:first-child th.add .addcolumnbox footer,
 #metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox header,
 #metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox footer,
-#metaanalysis table.experiments tr:first-child th div.oneclick .oneclickmetabox header,
+/* header in oneclick box doesn't want to be flex */
 #metaanalysis table.experiments tr:first-child th div.oneclick .oneclickmetabox footer {
   display: flex;
   flex-direction: row;
@@ -2651,6 +2652,10 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
 #metaanalysis table.aggregates td {
   padding: .3em .5em;
   font-weight: normal;
+}
+
+#metaanalysis table.aggregates th {
+  text-align: left;
 }
 
 #metaanalysis table.aggregates tr:first-of-type {

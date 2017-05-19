@@ -2919,7 +2919,7 @@
     var upperConfidenceLimitAggrFormula = 'upperConfidenceLimitAggr(' + logOddsFormula + ',' + weightFormula + ')';
     var zValueAggrFormula = 'zValueAggr(' + logOddsFormula + ',' + weightFormula + ')';
     var pValue2TailedAggrFormula = 'pValue2TailedAggr(' + zValueAggrFormula + ')';
-    var qValueFormula = 'sumAggr(' + fixedEffectErrorFormula + ')'; // perfect candidate for a custom label
+    var qValueFormula = 'sumAggr(' + fixedEffectErrorFormula + ')';
     var degreesOfFreedomAggrFormula = 'degreesOfFreedomAggr(' + logOddsFormula + ')';
     var heterogeneityPValueAggrFormula = 'heterogeneityPValueAggr(' + qValueFormula + ', ' + degreesOfFreedomAggrFormula + ')';
     var iSquaredAggrFormula = 'iSquaredAggr(' + qValueFormula + ', ' + degreesOfFreedomAggrFormula + ')';
@@ -2929,29 +2929,29 @@
     var tauAggrFormula = 'tauAggr(' + logOddsFormula + ',' + weightFormula + ')';
 
     // add them to the metaanalysis
-    addObject(columnOptions, logOddsFormula);
-    addObject(columnOptions, weightFormula);
-    addObject(aggregateOptions, weightedMeanAggrFormula);
-    addObject(columnOptions, fixedEffectErrorFormula);
-    addObject(aggregateOptions, standardErrorAggrFormula);
-    addObject(aggregateOptions, varianceAggrFormula);
-    addObject(aggregateOptions, lowerConfidenceLimitAggrFormula);
-    addObject(aggregateOptions, upperConfidenceLimitAggrFormula);
-    addObject(aggregateOptions, zValueAggrFormula);
-    addObject(aggregateOptions, pValue2TailedAggrFormula);
-    addObject(aggregateOptions, qValueFormula);
-    addObject(aggregateOptions, degreesOfFreedomAggrFormula);
-    addObject(aggregateOptions, heterogeneityPValueAggrFormula);
-    addObject(aggregateOptions, iSquaredAggrFormula);
-    addObject(aggregateOptions, tauSquaredAggrFormula);
-    addObject(aggregateOptions, tauStandardErrorAggrFormula);
-    addObject(aggregateOptions, tauVarianceAggrFormula);
-    addObject(aggregateOptions, tauAggrFormula);
+    addObject(columnOptions, logOddsFormula, 'Log Odds Ratio');
+    addObject(columnOptions, weightFormula, 'Fixed Effect Model (FEM) Weight');
+    addObject(aggregateOptions, weightedMeanAggrFormula, 'Fixed Effect Model (FEM) Point Estimate');
+    addObject(columnOptions, fixedEffectErrorFormula, 'FEM Effect Error');
+    addObject(aggregateOptions, standardErrorAggrFormula, 'FEM Standard Error');
+    addObject(aggregateOptions, varianceAggrFormula, 'FEM Variance');
+    addObject(aggregateOptions, lowerConfidenceLimitAggrFormula, 'FEM 95% Lower Confidence Limit');
+    addObject(aggregateOptions, upperConfidenceLimitAggrFormula, 'FEM 95% Upper Confidence Limit');
+    addObject(aggregateOptions, zValueAggrFormula, 'FEM Z-value');
+    addObject(aggregateOptions, pValue2TailedAggrFormula, 'FEM P-value (2-tail)');
+    addObject(aggregateOptions, qValueFormula, 'FEM Heterogeneity Q-value');
+    addObject(aggregateOptions, degreesOfFreedomAggrFormula, 'FEM Degrees of Freedom');
+    addObject(aggregateOptions, heterogeneityPValueAggrFormula, 'FEM Heterogeneity P-value');
+    addObject(aggregateOptions, iSquaredAggrFormula, 'FEM Heterogeneity I²');
+    addObject(aggregateOptions, tauSquaredAggrFormula, 'FEM 𝛕²');
+    addObject(aggregateOptions, tauStandardErrorAggrFormula, 'FEM 𝛕 Standard Error');
+    addObject(aggregateOptions, tauVarianceAggrFormula, 'FEM 𝛕 Variance');
+    addObject(aggregateOptions, tauAggrFormula, 'FEM 𝛕');
 
     // Forest plot
     if (oneClick.forestPlot === true) {
       var forestPlotFormula = 'forestPlot' + inputDataType + 'Graph(' + expNControlNString + ')';
-      addObject(graphOptions, forestPlotFormula);
+      addObject(graphOptions, forestPlotFormula, 'Forest Plot');
     }
 
     // Random-effect model
@@ -2967,14 +2967,14 @@
       var pValue2TailedRandomAggrFormula = 'pValue2TailedAggr(' + zValueRandomAggrFormula + ')';
 
       // add them to the metaanalysis
-      addObject(columnOptions, randomEffectWeightFormula);
-      addObject(aggregateOptions, weightedMeanRandomAggrFormula);
-      addObject(aggregateOptions, standardErrorRandomAggrFormula);
-      addObject(aggregateOptions, varianceRandomAggrFormula);
-      addObject(aggregateOptions, lowerConfidenceLimitRandomAggrFormula);
-      addObject(aggregateOptions, upperConfidenceLimitRandomAggrFormula);
-      addObject(aggregateOptions, zValueRandomAggrFormula);
-      addObject(aggregateOptions, pValue2TailedRandomAggrFormula);
+      addObject(columnOptions, randomEffectWeightFormula, 'Random Effect Model (REM) Weight');
+      addObject(aggregateOptions, weightedMeanRandomAggrFormula, 'Random Effect Model (REM) Point Estimate');
+      addObject(aggregateOptions, standardErrorRandomAggrFormula, 'REM Standard Error');
+      addObject(aggregateOptions, varianceRandomAggrFormula, 'REM Variance');
+      addObject(aggregateOptions, lowerConfidenceLimitRandomAggrFormula, 'REM 95% Lower Confidence Limit');
+      addObject(aggregateOptions, upperConfidenceLimitRandomAggrFormula, 'REM 95% Upper Confidence Limit');
+      addObject(aggregateOptions, zValueRandomAggrFormula, 'REM Z-value');
+      addObject(aggregateOptions, pValue2TailedRandomAggrFormula, 'REM P-value (2-tail)');
     }
 
     // Moderator Analysis
@@ -2995,27 +2995,27 @@
       var heterogeneityBetweenGroupsPValueFormula = 'heterogeneityPValueAggr(' + qValueBetweenFormula + ', ' + degreesOfFreedomBetweenFormula + ')';
 
       // add them to the metaanalysis
-      addObject(groupingAggregateOptions, weightedMeanGrpFormula);
-      addObject(groupingAggregateOptions, qValueGrpFormula);
-      addObject(aggregateOptions, qValueGrpTotalFormula);
-      addObject(groupingAggregateOptions, degreesOfFreedomGrpFormula);
-      addObject(aggregateOptions, degreesOfFreedomGrpTotalFormula);
-      addObject(aggregateOptions, heterogeneityWithinGroupsPValueFormula);
-      addObject(aggregateOptions, qValueBetweenFormula);
-      addObject(aggregateOptions, degreesOfFreedomBetweenFormula);
-      addObject(aggregateOptions, heterogeneityBetweenGroupsPValueFormula);
+      addObject(groupingAggregateOptions, weightedMeanGrpFormula, 'FEM Group Point Estimates');
+      addObject(groupingAggregateOptions, qValueGrpFormula, 'Within-group Heterogeneity Q-values');
+      addObject(aggregateOptions, qValueGrpTotalFormula, 'Moderator Analysis (MA) Total Heterogeneity Q-value Within Groups');
+      addObject(groupingAggregateOptions, degreesOfFreedomGrpFormula, 'Within-group Degrees of Freedom');
+      addObject(aggregateOptions, degreesOfFreedomGrpTotalFormula, 'MA Total Degrees of Freedom Within Groups');
+      addObject(aggregateOptions, heterogeneityWithinGroupsPValueFormula, 'MA Total Heterogeneity P-value Within Groups');
+      addObject(aggregateOptions, qValueBetweenFormula, 'MA Heterogeneity Q-value Between Groups');
+      addObject(aggregateOptions, degreesOfFreedomBetweenFormula, 'MA Degrees of Freedom Between Groups');
+      addObject(aggregateOptions, heterogeneityBetweenGroupsPValueFormula, 'MA Heterogeneity P-value Between Groups');
     }
 
     // Grape Chart
     if (oneClick.grapeChart === true && oneClick.moderator) {
       var grapeChartFormula = 'grapeChart' + inputDataType + 'Graph(' + expNControlNString + ',' + oneClick.moderator + ')';
-      addObject(graphOptions, grapeChartFormula);
+      addObject(graphOptions, grapeChartFormula, 'Grape Chart');
     }
 
     // Grouped Forest plot
     if (oneClick.groupedForest === true && oneClick.moderator) {
       var forestPlotGroupFormula = 'forestPlotGroup' + inputDataType + 'Graph(' + expNControlNString + ',' + oneClick.moderator + ')';
-      addObject(graphOptions, forestPlotGroupFormula);
+      addObject(graphOptions, forestPlotGroupFormula, 'Forest Plot with Groups');
     }
 
     // finish up by saving and updating the view.
@@ -3026,8 +3026,7 @@
     _.scheduleSave(currentMetaanalysis);
   }
 
-  // todo this will want to add a second parameter shortLabel
-  function addObject(target, formulaString){
+  function addObject(target, formulaString, customName){
     for (var i = 0; i < target.array.length; i++) {
       if (target.array[i].formula == formulaString) {
         target.position = i+1;
@@ -3036,6 +3035,7 @@
     }
     var obj = { formula: formulaString };
     populateParsedFormula(obj);
+    obj.customName = customName;
     target.array.splice(target.position, 0, obj);
     target.position += 1;
   }
