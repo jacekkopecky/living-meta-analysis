@@ -8,6 +8,11 @@
   lima.listGraphFormulas = function listGraphFormulas() {
     var retval = [
       {
+        id: 'forestPlotGraph',
+        label: 'Forest Plot (fractions)',
+        parameters: [ 'group 1 (e.g. experimental)', 'group 1 N', 'group 2 (e.g. control)', 'group 2 N' ],
+      },
+      {
         id: 'forestPlotPercentGraph',
         label: 'Forest Plot (percentages)',
         parameters: [ 'group 1 (e.g. experimental percentage)', 'group 1 N', 'group 2 (e.g. control percentage)', 'group 2 N' ],
@@ -18,6 +23,11 @@
         parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N' ],
       },
       {
+        id: 'forestPlotGroupGraph',
+        label: 'Forest Plot With Groups (fractions)',
+        parameters: [ 'group 1 (e.g. experimental)', 'group 1 N', 'group 2 (e.g. control)', 'group 2 N', 'moderator' ],
+      },
+      {
         id: 'forestPlotGroupPercentGraph',
         label: 'Forest Plot With Groups (percentages)',
         parameters: [ 'group 1 (e.g. experimental percentage)', 'group 1 N', 'group 2 (e.g. control percentage)', 'group 2 N', 'moderator' ],
@@ -26,6 +36,11 @@
         id: 'forestPlotGroupNumberGraph',
         label: 'Forest Plot With Groups (numbers affected)',
         parameters: [ 'group 1 (e.g. experimental affected)', 'group 1 N', 'group 2 (e.g. control affected)', 'group 2 N', 'moderator' ],
+      },
+      {
+        id: 'grapeChartGraph',
+        label: 'Grape Chart (fractions)',
+        parameters: [ 'group 1 (e.g. experimental)', 'group 1 N', 'group 2 (e.g. control)', 'group 2 N', 'moderator' ],
       },
       {
         id: 'grapeChartPercentGraph',
