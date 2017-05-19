@@ -262,14 +262,14 @@
         return true;
       }
     });
-    renumberObjects(self.columns);
 
     self.graphs.forEach(populateParsedFormula);
     self.aggregates.forEach(populateParsedFormula);
     self.groupingAggregates.forEach(populateParsedFormula);
-    renumberObjects(self.graphs, 'G');
+
+    renumberObjects(self.columns);
     renumberObjects(self.aggregates, 'A');
-    renumberObjects(self.groupingAggregates, 'GA');
+    renumberObjects(self.groupingAggregates, 'G');
 
     if (self.groupingColumn) {
       self.groupingColumnObj = lima.parseFormulaString(self.groupingColumn);
@@ -297,6 +297,7 @@
   }
 
   function renumberObjects(array, prefix) {
+    prefix = prefix || '';
     var count = 0;
     array.forEach(function (object) {
       if (typeof object === 'object') {
@@ -3009,8 +3010,7 @@
     // finish up by saving and updating the view.
     renumberObjects(currentMetaanalysis.columns);
     renumberObjects(currentMetaanalysis.aggregates, 'A');
-    renumberObjects(currentMetaanalysis.graphs, 'G');
-    renumberObjects(currentMetaanalysis.groupingAggregates, 'Gr');
+    renumberObjects(currentMetaanalysis.groupingAggregates, 'G');
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
   }
@@ -3616,7 +3616,7 @@
     var groupingAggregate = {customName: null, formulaName: null, formulaParams: [], grouping: true};
     groupingAggregate.formula = lima.createFormulaString(groupingAggregate);
     currentMetaanalysis.groupingAggregates.push(groupingAggregate);
-    renumberObjects(currentMetaanalysis.groupingAggregates, 'Gr');
+    renumberObjects(currentMetaanalysis.groupingAggregates, 'G');
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
     setTimeout(focusFirstValidationError, 0);
@@ -3830,7 +3830,6 @@
     var graph = {customName:  null, formulaName: null, formulaParams: []};
     graph.formula = lima.createFormulaString(graph);
     currentMetaanalysis.graphs.push(graph);
-    renumberObjects(currentMetaanalysis.graphs, 'G');
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
     setTimeout(focusFirstValidationError, 0);
