@@ -2929,29 +2929,29 @@
     var tauAggrFormula = 'tauAggr(' + logOddsFormula + ',' + weightFormula + ')';
 
     // add them to the metaanalysis
-    addObject(logOddsFormula, columnOptions);
-    addObject(weightFormula, columnOptions);
-    addObject(weightedMeanAggrFormula, aggregateOptions);
-    addObject(fixedEffectErrorFormula, columnOptions);
-    addObject(standardErrorAggrFormula, aggregateOptions);
-    addObject(varianceAggrFormula, aggregateOptions);
-    addObject(lowerConfidenceLimitAggrFormula, aggregateOptions);
-    addObject(upperConfidenceLimitAggrFormula, aggregateOptions);
-    addObject(zValueAggrFormula, aggregateOptions);
-    addObject(pValue2TailedAggrFormula, aggregateOptions);
-    addObject(qValueFormula, aggregateOptions);
-    addObject(degreesOfFreedomAggrFormula, aggregateOptions);
-    addObject(heterogeneityPValueAggrFormula, aggregateOptions);
-    addObject(iSquaredAggrFormula, aggregateOptions);
-    addObject(tauSquaredAggrFormula, aggregateOptions);
-    addObject(tauStandardErrorAggrFormula, aggregateOptions);
-    addObject(tauVarianceAggrFormula, aggregateOptions);
-    addObject(tauAggrFormula, aggregateOptions);
+    addObject(columnOptions, logOddsFormula);
+    addObject(columnOptions, weightFormula);
+    addObject(aggregateOptions, weightedMeanAggrFormula);
+    addObject(columnOptions, fixedEffectErrorFormula);
+    addObject(aggregateOptions, standardErrorAggrFormula);
+    addObject(aggregateOptions, varianceAggrFormula);
+    addObject(aggregateOptions, lowerConfidenceLimitAggrFormula);
+    addObject(aggregateOptions, upperConfidenceLimitAggrFormula);
+    addObject(aggregateOptions, zValueAggrFormula);
+    addObject(aggregateOptions, pValue2TailedAggrFormula);
+    addObject(aggregateOptions, qValueFormula);
+    addObject(aggregateOptions, degreesOfFreedomAggrFormula);
+    addObject(aggregateOptions, heterogeneityPValueAggrFormula);
+    addObject(aggregateOptions, iSquaredAggrFormula);
+    addObject(aggregateOptions, tauSquaredAggrFormula);
+    addObject(aggregateOptions, tauStandardErrorAggrFormula);
+    addObject(aggregateOptions, tauVarianceAggrFormula);
+    addObject(aggregateOptions, tauAggrFormula);
 
     // Forest plot
     if (oneClick.forestPlot === true) {
       var forestPlotFormula = 'forestPlot' + inputDataType + 'Graph(' + expNControlNString + ')';
-      addObject(forestPlotFormula, graphOptions);
+      addObject(graphOptions, forestPlotFormula);
     }
 
     // Random-effect model
@@ -2967,14 +2967,14 @@
       var pValue2TailedRandomAggrFormula = 'pValue2TailedAggr(' + zValueRandomAggrFormula + ')';
 
       // add them to the metaanalysis
-      addObject(randomEffectWeightFormula, columnOptions);
-      addObject(weightedMeanRandomAggrFormula, aggregateOptions);
-      addObject(standardErrorRandomAggrFormula, aggregateOptions);
-      addObject(varianceRandomAggrFormula, aggregateOptions);
-      addObject(lowerConfidenceLimitRandomAggrFormula, aggregateOptions);
-      addObject(upperConfidenceLimitRandomAggrFormula, aggregateOptions);
-      addObject(zValueRandomAggrFormula, aggregateOptions);
-      addObject(pValue2TailedRandomAggrFormula, aggregateOptions);
+      addObject(columnOptions, randomEffectWeightFormula);
+      addObject(aggregateOptions, weightedMeanRandomAggrFormula);
+      addObject(aggregateOptions, standardErrorRandomAggrFormula);
+      addObject(aggregateOptions, varianceRandomAggrFormula);
+      addObject(aggregateOptions, lowerConfidenceLimitRandomAggrFormula);
+      addObject(aggregateOptions, upperConfidenceLimitRandomAggrFormula);
+      addObject(aggregateOptions, zValueRandomAggrFormula);
+      addObject(aggregateOptions, pValue2TailedRandomAggrFormula);
     }
 
     // Moderator Analysis
@@ -2994,29 +2994,28 @@
       var degreesOfFreedomBetweenFormula = 'subtractAggr(' + degreesOfFreedomAggrFormula + ',' + degreesOfFreedomGrpTotalFormula + ')';
       var heterogeneityBetweenGroupsPValueFormula = 'heterogeneityPValueAggr(' + qValueBetweenFormula + ', ' + degreesOfFreedomBetweenFormula + ')';
 
-      addObject(weightedMeanGrpFormula, groupingAggregateOptions);
-      addObject(qValueGrpFormula, groupingAggregateOptions);
-      addObject(degreesOfFreedomGrpFormula, groupingAggregateOptions);
-
       // add them to the metaanalysis
-      addObject(qValueGrpTotalFormula, aggregateOptions);
-      addObject(degreesOfFreedomGrpTotalFormula, aggregateOptions);
-      addObject(heterogeneityWithinGroupsPValueFormula, aggregateOptions);
-      addObject(qValueBetweenFormula, aggregateOptions);
-      addObject(degreesOfFreedomBetweenFormula, aggregateOptions);
-      addObject(heterogeneityBetweenGroupsPValueFormula, aggregateOptions);
+      addObject(groupingAggregateOptions, weightedMeanGrpFormula);
+      addObject(groupingAggregateOptions, qValueGrpFormula);
+      addObject(aggregateOptions, qValueGrpTotalFormula);
+      addObject(groupingAggregateOptions, degreesOfFreedomGrpFormula);
+      addObject(aggregateOptions, degreesOfFreedomGrpTotalFormula);
+      addObject(aggregateOptions, heterogeneityWithinGroupsPValueFormula);
+      addObject(aggregateOptions, qValueBetweenFormula);
+      addObject(aggregateOptions, degreesOfFreedomBetweenFormula);
+      addObject(aggregateOptions, heterogeneityBetweenGroupsPValueFormula);
     }
 
     // Grape Chart
     if (oneClick.grapeChart === true && oneClick.moderator) {
       var grapeChartFormula = 'grapeChart' + inputDataType + 'Graph(' + expNControlNString + ',' + oneClick.moderator + ')';
-      addObject(grapeChartFormula, graphOptions);
+      addObject(graphOptions, grapeChartFormula);
     }
 
     // Grouped Forest plot
     if (oneClick.groupedForest === true && oneClick.moderator) {
       var forestPlotGroupFormula = 'forestPlotGroup' + inputDataType + 'Graph(' + expNControlNString + ',' + oneClick.moderator + ')';
-      addObject(forestPlotGroupFormula, graphOptions);
+      addObject(graphOptions, forestPlotGroupFormula);
     }
 
     // finish up by saving and updating the view.
@@ -3028,17 +3027,17 @@
   }
 
   // todo this will want to add a second parameter shortLabel
-  function addObject(formulaString, options){
-    for (var i = 0; i < options.array.length; i++) {
-      if (options.array[i].formula == formulaString) {
-        options.position = i+1;
+  function addObject(target, formulaString){
+    for (var i = 0; i < target.array.length; i++) {
+      if (target.array[i].formula == formulaString) {
+        target.position = i+1;
         return; // we have it already
       }
     }
     var obj = { formula: formulaString };
     populateParsedFormula(obj);
-    options.array.splice(options.position, 0, obj);
-    options.position += 1;
+    target.array.splice(target.position, 0, obj);
+    target.position += 1;
   }
 
   /* adding rows
