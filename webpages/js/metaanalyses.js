@@ -2141,7 +2141,7 @@
       if (!paper) return console.error('cannot find paper with index ' + paperIndex + ' for button ', e.target);
 
       if (!Array.isArray(paper.experiments)) paper.experiments = [];
-      paper.experiments.push({id:"/id/exp/" + Date.now()});
+      paper.experiments.push({ id: '/id/exp/' + paper.experiments.length });
       updateMetaanalysisView();
       // focus the empty title of the new experiment
       setTimeout(focusFirstValidationError, 0);
@@ -2235,6 +2235,7 @@
   }
 
   function addExpUnhideButton(expNode) {
+    if (!expNode) return;
     var paperIndex = expNode.dataset.paperIndex;
     var unhidebutton = _.findEl(expNode, '.unhideexp');
     unhidebutton.removeAttribute('hidden');
