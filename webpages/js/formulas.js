@@ -304,6 +304,12 @@
         parameters: ['data'],
       },
       {
+        id: 'subtractAggr',
+        label: 'Subtract',
+        func: subtractAggr,
+        parameters: ['a', 'b'],
+      },
+      {
         id: 'pValue1TailedAggr',
         label: 'P-value (one-tailed)',
         func: pValue1TailedAggr,
@@ -408,6 +414,14 @@
       if (_.strictToNumberOrNull(x) != null) retval += 1;
     });
     return retval;
+  }
+
+  // this aggregate only takes single values as inputs (the parameters will likely be other aggregates)
+  function subtractAggr (a, b) {
+    a = _.strictToNumberOrNull(a);
+    b = _.strictToNumberOrNull(b);
+
+    return a-b;
   }
 
   // this is not exposed as an aggregate (hence not called *Aggr)
