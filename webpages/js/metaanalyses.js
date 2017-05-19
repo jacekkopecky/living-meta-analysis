@@ -2985,7 +2985,30 @@
 
     // Moderator Analysis
     if (oneClick.moderatorAnalysis === true && oneClick.moderator) {
-      // todo: Fill this in based on what we expect once 'moderator analysis' is checked
+      currentMetaanalysis.groupingColumn = oneClick.moderator;
+      currentMetaanalysis.groupingColumnObj = lima.parseFormulaString(oneClick.moderator);
+
+      var weightedMeanGrpFormula = 'weightedMeanAggr*(' + logOddsFormula + ',' + weightFormula + ')';
+      var fixedEffectErrorGrpFormula = 'fixedEffectError(' + logOddsFormula + ',' + weightFormula + ',' + weightedMeanGrpFormula + ')';
+      var qValueGrpFormula = 'sumAggr*(' + fixedEffectErrorGrpFormula + ')';
+      var qValueGrpTotalFormula = 'sumAggr(' + qValueGrpFormula + ')';
+      var degreesOfFreedomGrpFormula = 'degreesOfFreedomAggr*(' + logOddsFormula + ')';
+      var degreesOfFreedomGrpTotalFormula = 'sumAggr(' + degreesOfFreedomGrpFormula + ')';
+      var heterogeneityWithinGroupsPValueFormula = 'heterogeneityPValueAggr(' + qValueGrpTotalFormula + ', ' + degreesOfFreedomGrpTotalFormula + ')';
+      var qValueBetweenFormula = 'subtractAggr(' + qValueFormula + ',' + qValueGrpTotalFormula + ')';
+      var degreesOfFreedomBetweenFormula = 'subtractAggr(' + degreesOfFreedomAggrFormula + ',' + degreesOfFreedomGrpTotalFormula + ')';
+      var heterogeneityBetweenGroupsPValueFormula = 'heterogeneityPValueAggr(' + qValueBetweenFormula + ', ' + degreesOfFreedomBetweenFormula + ')';
+
+      addObject(weightedMeanGrpFormula, groupingAggregateOptions);
+      addObject(qValueGrpFormula, groupingAggregateOptions);
+      addObject(degreesOfFreedomGrpFormula, groupingAggregateOptions);
+
+      addObject(qValueGrpTotalFormula, aggregateOptions);
+      addObject(degreesOfFreedomGrpTotalFormula, aggregateOptions);
+      addObject(heterogeneityWithinGroupsPValueFormula, aggregateOptions);
+      addObject(qValueBetweenFormula, aggregateOptions);
+      addObject(degreesOfFreedomBetweenFormula, aggregateOptions);
+      addObject(heterogeneityBetweenGroupsPValueFormula, aggregateOptions);
     }
 
     // Grape Chart
