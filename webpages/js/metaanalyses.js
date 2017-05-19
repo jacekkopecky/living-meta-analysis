@@ -2749,17 +2749,11 @@
     op.value = '';
     selectEl.appendChild(op);
 
-    // values here dont persist, so on page load they are all lost. As a result,
-    // we don't need to;
-    // - display the current one as an option of itself
-    // - automatically select the current value
-    // as a result, we pass {formula:''} and ''.
-
     // Now make an option for each column in metaanalysis
     // account for computed columns in metaanalysis.columns
     for (var j = 0; j < currentMetaanalysis.columns.length; j++){
       var colId = currentMetaanalysis.columns[j];
-      makeOption(colId, {formula: ''}, currentMetaanalysis.oneclick[paramId], selectEl);
+      makeOption(colId, null, currentMetaanalysis.oneclick[paramId], selectEl);
     }
 
     // store the values from the dropdown box temporarily in metaanalysis.oneclick
