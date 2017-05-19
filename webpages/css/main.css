@@ -2148,6 +2148,10 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.charact
   text-align: left;
 }
 
+#metaanalysis table.experiments tr:first-child th div.newcolumn .addcolumnbox {
+  height: 20em;
+}
+
 #paper table.experiments tr:first-child th.add:not(.adding) .addcolumnbox,
 #paper table.experiments tr:first-child th.add:not(.adding) .colinfo,
 #metaanalysis table.experiments tr:first-child th.add div.newcolumn:not(.adding) .addcolumnbox,
