@@ -2888,25 +2888,25 @@
 
     // Compulsory
     // Generate formula strings
-    var expNControlNString = `${oneClick.experimental},${oneClick.experimentalN},${oneClick.control},${oneClick.controlN}`;
-    var logOddsFormula = `logOddsRatio${inputDataType}(${expNControlNString})`;
-    var weightFormula = `weight${inputDataType}(${expNControlNString})`;
-    var weightedMeanAggrFormula = `weightedMeanAggr(${logOddsFormula},${weightFormula})`;
-    var fixedEffectErrorFormula = `fixedEffectError(${logOddsFormula},${weightFormula},${weightedMeanAggrFormula})`;
-    var standardErrorAggrFormula = `standardErrorAggr(${weightFormula})`;
-    var varianceAggrFormula = `varianceAggr(${weightFormula})`;
-    var lowerConfidenceLimitAggrFormula = `lowerConfidenceLimitAggr(${logOddsFormula},${weightFormula})`;
-    var upperConfidenceLimitAggrFormula = `upperConfidenceLimitAggr(${logOddsFormula},${weightFormula})`;
-    var zValueAggrFormula = `zValueAggr(${logOddsFormula},${weightFormula})`;
-    var pValue2TailedAggrFormula = `pValue2TailedAggr(${zValueAggrFormula})`;
-    var qValueFormula = `sumAggr(${fixedEffectErrorFormula})`; // perfect candidate for a custom label
-    var degreesOfFreedomAggrFormula = `degreesOfFreedomAggr(${logOddsFormula})`;
-    var heterogeneityPValueAggrFormula = `heterogeneityPValueAggr(${qValueFormula}, ${degreesOfFreedomAggrFormula})`;
-    var iSquaredAggrFormula = `iSquaredAggr(${qValueFormula}, ${degreesOfFreedomAggrFormula})`;
-    var tauSquaredAggrFormula = `tauSquaredAggr(${logOddsFormula},${weightFormula})`;
-    var tauStandardErrorAggrFormula = `tauStandardErrorAggr(${logOddsFormula},${weightFormula})`;
-    var tauVarianceAggrFormula = `tauVarianceAggr(${logOddsFormula},${weightFormula})`;
-    var tauAggrFormula = `tauAggr(${logOddsFormula},${weightFormula})`;
+    var expNControlNString = oneClick.experimental + ',' + oneClick.experimentalN + ',' + oneClick.control + ',' + oneClick.controlN;
+    var logOddsFormula = 'logOddsRatio' + inputDataType + '(' + expNControlNString + ')';
+    var weightFormula = 'weight' + inputDataType + '(' + expNControlNString + ')';
+    var weightedMeanAggrFormula = 'weightedMeanAggr(' + logOddsFormula + ',' + weightFormula + ')';
+    var fixedEffectErrorFormula = 'fixedEffectError(' + logOddsFormula + ',' + weightFormula + ',' + weightedMeanAggrFormula + ')';
+    var standardErrorAggrFormula = 'standardErrorAggr(' + weightFormula + ')';
+    var varianceAggrFormula = 'varianceAggr(' + weightFormula + ')';
+    var lowerConfidenceLimitAggrFormula = 'lowerConfidenceLimitAggr(' + logOddsFormula + ',' + weightFormula + ')';
+    var upperConfidenceLimitAggrFormula = 'upperConfidenceLimitAggr(' + logOddsFormula + ',' + weightFormula + ')';
+    var zValueAggrFormula = 'zValueAggr(' + logOddsFormula + ',' + weightFormula + ')';
+    var pValue2TailedAggrFormula = 'pValue2TailedAggr(' + zValueAggrFormula + ')';
+    var qValueFormula = 'sumAggr(' + fixedEffectErrorFormula + ')'; // perfect candidate for a custom label
+    var degreesOfFreedomAggrFormula = 'degreesOfFreedomAggr(' + logOddsFormula + ')';
+    var heterogeneityPValueAggrFormula = 'heterogeneityPValueAggr(' + qValueFormula + ', ' + degreesOfFreedomAggrFormula + ')';
+    var iSquaredAggrFormula = 'iSquaredAggr(' + qValueFormula + ', ' + degreesOfFreedomAggrFormula + ')';
+    var tauSquaredAggrFormula = 'tauSquaredAggr(' + logOddsFormula + ',' + weightFormula + ')';
+    var tauStandardErrorAggrFormula = 'tauStandardErrorAggr(' + logOddsFormula + ',' + weightFormula + ')';
+    var tauVarianceAggrFormula = 'tauVarianceAggr(' + logOddsFormula + ',' + weightFormula + ')';
+    var tauAggrFormula = 'tauAggr(' + logOddsFormula + ',' + weightFormula + ')';
 
     // add them to the metaanalysis
     addObject(logOddsFormula, columnOptions);
@@ -2932,21 +2932,21 @@
     // todo: We have no forest plot for fractions, so maybe we should disable
     // the button if type is changed to fractions?
     if (oneClick.forestPlot === true && oneClick.inputDataType != 'fractions') {
-      var forestPlotFormula = `forestPlot${inputDataType}Graph(${expNControlNString})`;
+      var forestPlotFormula = 'forestPlot' + inputDataType + 'Graph(' + expNControlNString + ')';
       addObject(forestPlotFormula, graphOptions);
     }
 
     // Random-effect model
     if (oneClick.randomEffect === true) {
       // Generate formula strings
-      var randomEffectWeightFormula = `randomEffectWeight${inputDataType}(${expNControlNString},${tauSquaredAggrFormula})`;
-      var weightedMeanRandomAggrFormula = `weightedMeanAggr(${logOddsFormula},${randomEffectWeightFormula})`;
-      var standardErrorRandomAggrFormula = `standardErrorAggr(${randomEffectWeightFormula})`;
-      var varianceRandomAggrFormula = `varianceAggr(${randomEffectWeightFormula})`;
-      var lowerConfidenceLimitRandomAggrFormula = `lowerConfidenceLimitAggr(${logOddsFormula},${randomEffectWeightFormula})`;
-      var upperConfidenceLimitRandomAggrFormula = `upperConfidenceLimitAggr(${logOddsFormula},${randomEffectWeightFormula})`;
-      var zValueRandomAggrFormula = `zValueAggr(${logOddsFormula},${randomEffectWeightFormula})`;
-      var pValue2TailedRandomAggrFormula = `pValue2TailedAggr(${zValueRandomAggrFormula})`;
+      var randomEffectWeightFormula = 'randomEffectWeight' + inputDataType + '(' + expNControlNString + ',' + tauSquaredAggrFormula + ')';
+      var weightedMeanRandomAggrFormula = 'weightedMeanAggr(' + logOddsFormula + ',' + randomEffectWeightFormula + ')';
+      var standardErrorRandomAggrFormula = 'standardErrorAggr(' + randomEffectWeightFormula + ')';
+      var varianceRandomAggrFormula = 'varianceAggr(' + randomEffectWeightFormula + ')';
+      var lowerConfidenceLimitRandomAggrFormula = 'lowerConfidenceLimitAggr(' + logOddsFormula + ',' + randomEffectWeightFormula + ')';
+      var upperConfidenceLimitRandomAggrFormula = 'upperConfidenceLimitAggr(' + logOddsFormula + ',' + randomEffectWeightFormula + ')';
+      var zValueRandomAggrFormula = 'zValueAggr(' + logOddsFormula + ',' + randomEffectWeightFormula + ')';
+      var pValue2TailedRandomAggrFormula = 'pValue2TailedAggr(' + zValueRandomAggrFormula + ')';
 
       // add them to the metaanalysis
       addObject(randomEffectWeightFormula, columnOptions);
@@ -2968,7 +2968,7 @@
     // todo: We have no grape chart for fractions, so maybe we should disable
     // the button if type is changed to fractions?
     if (oneClick.grapeChart === true && oneClick.moderator && oneClick.inputDataType != 'fractions') {
-      var grapeChartFormula = `grapeChart${inputDataType}Graph(${expNControlNString}, ${oneClick.moderator})`;
+      var grapeChartFormula = 'grapeChart' + inputDataType + 'Graph(' + expNControlNString + ', ' + oneClick.moderator + ')';
       addObject(grapeChartFormula, graphOptions);
     }
 
@@ -2976,7 +2976,7 @@
     // todo: We have no grouped forest plot for fractions, so maybe we should disable
     // the button if type is changed to fractions?
     if (oneClick.groupedForest === true && oneClick.moderator && oneClick.inputDataType != 'fractions') {
-      var forestPlotGroupFormula = `forestPlotGroup${inputDataType}Graph(${expNControlNString},${oneClick.moderator}})`;
+      var forestPlotGroupFormula = 'forestPlotGroup' + inputDataType + 'Graph(' + expNControlNString + ',' + oneClick.moderator + '})';
       addObject(forestPlotGroupFormula, graphOptions);
     }
 
@@ -4245,7 +4245,7 @@
 
   /*
    * find where to move a columns from its current index;
-   * `left` indicates direction; if `most`, move to the beginning (left) or end (right) of the columns list.
+   * 'left' indicates direction; if 'most', move to the beginning (left) or end (right) of the columns list.
    */
   function findNextNonHiddenCol(currentIndex, left, most) {
     if (left) {
@@ -4432,7 +4432,7 @@
 
   /*
    * find where to move an aggregate from its current index;
-   * `up` indicates direction (up meaning left in array order); if `most`, move to the beginning (top) or end (bottom) of the aggregate list.
+   * 'up' indicates direction (up meaning left in array order); if 'most', move to the beginning (top) or end (bottom) of the aggregate list.
    */
   function findNextAggr(currentIndex, up, most) {
     if (up) {
@@ -4495,7 +4495,7 @@
 
   /*
    * find where to move a grouping aggregate from its current index;
-   * `up` indicates direction (up meaning left in array order); if `most`, move to the beginning (top) or end (bottom) of the aggregate list.
+   * 'up' indicates direction (up meaning left in array order); if 'most', move to the beginning (top) or end (bottom) of the aggregate list.
    */
   function findNextGroupingAggr(currentIndex, up, most) {
     if (up) {
@@ -4561,7 +4561,7 @@
 
   /*
    * find where to move an graph from its current index;
-   * `up` indicates direction (up meaning left in array order); if `most`, move to the beginning (top) or end (bottom) of the graph list.
+   * 'up' indicates direction (up meaning left in array order); if 'most', move to the beginning (top) or end (bottom) of the graph list.
    */
   function findNextGraph(currentIndex, up, most) {
     if (up) {
@@ -4702,7 +4702,7 @@
       editingEl.classList.remove('validationerror');
 
       // the following calls are expensive and unnecessary when building the dom
-      // but when building the dom, we don't have `ev`
+      // but when building the dom, we don't have 'ev'
       if (ev) {
         setValidationErrorClass();
         setUnsavedClass();
