@@ -3146,13 +3146,7 @@
         aggregateFormulasDropdown.appendChild(el);
       }
 
-      var customAggrEl = _.findEl(aggregateEl, 'span.customaggrname');
-
-      // Fill custom name on loading in html if we have a valid one
-      if (aggregate.customName || (aggregate.formulaName && aggregate.formulaName != 'undefined')) {
-        customAggrEl.textContent = aggregate.customName;
-        customAggrEl.parentElement.removeAttribute('hidden');
-      }
+      _.fillEls(aggregateEl, 'span.customaggrname', aggregate.customName);
 
       _.addEventListener(aggregateEl, 'span.customaggrname', 'input', function(e) {
         var customName = e.target.textContent.trim();
@@ -3160,8 +3154,7 @@
         if (!customName) {
           aggregate.customName = null;
           _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
-        }
-        else {
+        } else {
           aggregate.customName = customName;
           _.fillEls(aggregateEl, '.richaggrlabel', aggregate.customName);
         }
@@ -3176,12 +3169,10 @@
         var formula = aggregate.formulaObj;
         if (formula) {
           aggregateFormulasDropdown.classList.remove('validationerror');
-          customAggrEl.parentElement.removeAttribute('hidden');
         } else {
           aggregateFormulasDropdown.classList.add('validationerror');
-          aggregate.customName = null;
-          customAggrEl.parentElement.setAttribute('hidden', 'true');
-          _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
+          if (!aggregate.customName)
+            _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
         }
         // we'll call setValidationErrorClass() in fillAggregateColumnsSelection
 
@@ -3242,8 +3233,7 @@
   function fillAggregateInformation(aggregateEl, aggregate) {
     if (aggregate.customName) {
       _.fillEls(aggregateEl, '.richaggrlabel', aggregate.customName);
-    }
-    else {
+    } else {
       _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
     }
 
@@ -3405,13 +3395,7 @@
         groupingAggregateFormulasDropdown.appendChild(el);
       }
 
-      var customGroupingAggregateEl = _.findEl(tr, 'span.customgroupingaggrname');
-
-      // Fill custom name on loading in html if we have a valid one
-      if (groupingAggregate.customName || (groupingAggregate.formulaName && groupingAggregate.formulaName != 'undefined')) {
-        customGroupingAggregateEl.textContent = groupingAggregate.customName;
-        customGroupingAggregateEl.parentElement.removeAttribute('hidden');
-      }
+      _.fillEls(tr, 'span.customgroupingaggrname', groupingAggregate.customName);
 
       _.addEventListener(tr, 'span.customgroupingaggrname', 'input', function(e) {
         var customName = e.target.textContent.trim();
@@ -3419,8 +3403,7 @@
         if (!customName) {
           groupingAggregate.customName = null;
           _.setProps(tr, '.richaggrlabel', 'innerHTML', getColTitle(groupingAggregate, 1));
-        }
-        else {
+        } else {
           groupingAggregate.customName = customName;
           _.fillEls(tr, '.richaggrlabel', groupingAggregate.customName);
         }
@@ -3436,12 +3419,10 @@
         var formula = groupingAggregate.formulaObj;
         if (formula) {
           groupingAggregateFormulasDropdown.classList.remove('validationerror');
-          customGroupingAggregateEl.parentElement.removeAttribute('hidden');
         } else {
           groupingAggregateFormulasDropdown.classList.add('validationerror');
-          groupingAggregate.customName = null;
-          customGroupingAggregateEl.parentElement.setAttribute('hidden', 'true');
-          _.setProps(tr, '.richaggrlabel', 'innerHTML', getColTitle(groupingAggregate, 1));
+          if (!groupingAggregate.customName)
+            _.setProps(tr, '.richaggrlabel', 'innerHTML', getColTitle(groupingAggregate, 1));
         }
         // we'll call setValidationErrorClass() in fillGroupingAggregateColumnsSelection
 
@@ -3696,13 +3677,7 @@
         graphFormulasDropdown.appendChild(el);
       }
 
-      var customGraphEl = _.findEl(graphEl, 'span.customgraphname');
-
-      // Fill custom name on loading in html if we have a valid one
-      if (graph.customName || (graph.formulaName && graph.formulaName != 'undefined')) {
-        customGraphEl.textContent = graph.customName;
-        customGraphEl.parentElement.removeAttribute('hidden');
-      }
+      _.fillEls(graphEl, 'span.customgraphname', graph.customName);
 
       _.addEventListener(graphEl, 'span.customgraphname', 'input', function(e) {
         var customName = e.target.textContent.trim();
@@ -3710,8 +3685,7 @@
         if (!customName) {
           graph.customName = null;
           _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
-        }
-        else {
+        } else {
           graph.customName = customName;
           _.fillEls(graphEl, '.richgraphlabel', graph.customName);
         }
@@ -3725,12 +3699,10 @@
         var formula = graph.formulaObj;
         if (formula) {
           graphFormulasDropdown.classList.remove('validationerror');
-          customGraphEl.parentElement.removeAttribute('hidden');
         } else {
           graphFormulasDropdown.classList.add('validationerror');
-          graph.customName = null;
-          customGraphEl.parentElement.setAttribute('hidden', 'true');
-          _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
+          if (!graph.customName)
+            _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
         }
         // we'll call setValidationErrorClass() in fillGraphColumnsSelection
 
@@ -3771,8 +3743,7 @@
   function fillGraphInformation(graphEl, graph) {
     if (graph.customName) {
       _.fillEls(graphEl, '.richgraphlabel', graph.customName);
-    }
-    else {
+    } else {
       _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
     }
 
