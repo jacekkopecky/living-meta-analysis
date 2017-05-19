@@ -30,13 +30,13 @@
       console.error(err);
       _.apiFail();
     });
-  }
+  };
 
   lima.extractUserProfileEmailFromUrl = function extractUserProfileEmailFromUrl() {
     // the path of a page attributed to a user will be '/email/something',
     // so extract the 'email' portion here:
     return window.location.pathname.substring(1, window.location.pathname.indexOf('/', 1));
-  }
+  };
 
   function hideUserProfile() {
     _.removeClass('#personalinfo', 'loading');
@@ -47,7 +47,7 @@
         console.info('cleared local storage');
         window.location.reload();
       }
-    })
+    });
   }
 
   function fillUserProfile(user) {
@@ -71,6 +71,6 @@
 
   lima.whenUserPageIsAboutIsKnown = function whenUserPageIsAboutIsKnown(f) {
     if (functionsWaiting.indexOf(f) === -1) functionsWaiting.push(f);
-  }
+  };
 
 })(window, document);

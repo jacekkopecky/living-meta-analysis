@@ -16,6 +16,9 @@ rules:
     - error
     - 2
   no-inner-declarations: off
+  semi:
+    - 2
+    - always
 
 globals:
   Promise: true

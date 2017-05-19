@@ -29,11 +29,11 @@
     }
 
     return columnsPromise;
-  }
+  };
 
   lima.newColumn = function() {
     return storeColumn({id: _.createId('col'), type: lima.columnTypes[0], new: true});
-  }
+  };
 
   function storeColumns(columns) {
     lima.columns = {};
@@ -127,11 +127,11 @@
       })
       .catch(function(err) {
         console.error('error saving column');
-        if (err instanceof Response) err.text().then(function (t) {console.error(t)});
+        if (err instanceof Response) err.text().then(function (t) {console.error(t);});
         else console.error(err);
         throw err;
-      })
-  }
+      });
+  };
 
   // when a column is saved and its ID changes, this function helps
   // update to the new ID wherever columns are used
@@ -153,6 +153,6 @@
         }
       }
     });
-  }
+  };
 
 })(window, document);
