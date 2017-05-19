@@ -5051,8 +5051,9 @@
         ev.target.blur();
       } else if (pinnedBox) {
         dismissAddExperimentColumn();
-        dismissOneClickMetaanalysisBox();
         unpinPopupBox();
+      } else {
+        dismissOneClickMetaanalysisBox();
       }
     }
   }
