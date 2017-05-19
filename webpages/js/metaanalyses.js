@@ -465,6 +465,13 @@
     currentMetaanalysis.graphs.forEach(function (graph, graphIndex) {
       var orFunc, wtFunc, lclFunc, uclFunc, params;
 
+      if (graph.formulaName === 'forestPlotGraph' && isColCompletelyDefined(graph)) {
+        params = graph.formulaParams;
+        orFunc = { formulaName: "logOddsRatio", formulaParams: [params[0], params[2]] };
+        wtFunc = { formulaName: "weight", formulaParams: params };
+        lclFunc = { formulaName: "lowerConfidenceLimit", formulaParams: params };
+        uclFunc = { formulaName: "upperConfidenceLimit", formulaParams: params };
+      } else
       if (graph.formulaName === 'forestPlotNumberGraph' && isColCompletelyDefined(graph)) {
         params = graph.formulaParams;
         orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
@@ -764,6 +771,14 @@
     currentMetaanalysis.graphs.forEach(function (graph, graphIndex) {
       var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params;
 
+      if (graph.formulaName === 'forestPlotGroupGraph' && isColCompletelyDefined(graph)) {
+        params = graph.formulaParams;
+        orFunc = { formulaName: "logOddsRatio", formulaParams: [params[0], params[2]] };
+        wtFunc = { formulaName: "weight", formulaParams: params };
+        lclFunc = { formulaName: "lowerConfidenceLimit", formulaParams: params };
+        uclFunc = { formulaName: "upperConfidenceLimit", formulaParams: params };
+        moderatorParam = params[4];
+      } else
       if (graph.formulaName === 'forestPlotGroupNumberGraph' && isColCompletelyDefined(graph)) {
         params = graph.formulaParams;
         orFunc = { formulaName: "logOddsRatioNumber", formulaParams: params };
@@ -1197,6 +1212,14 @@
     currentMetaanalysis.graphs.forEach(function (graph, graphIndex) {
       var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params, dataParams;
 
+      if (graph.formulaName === 'grapeChartGraph' && isColCompletelyDefined(graph)) {
+        params = graph.formulaParams;
+        orFunc = { formulaName: "logOddsRatio", formulaParams: [params[0], params[2]] };
+        wtFunc = { formulaName: "weight", formulaParams: params };
+        lclFunc = { formulaName: "lowerConfidenceLimit", formulaParams: params };
+        uclFunc = { formulaName: "upperConfidenceLimit", formulaParams: params };
+        moderatorParam = params[4];
+      } else
       if (graph.formulaName === 'grapeChartNumberGraph' && isColCompletelyDefined(graph)) {
         params = graph.formulaParams;
         dataParams = params.slice(0, 4); // the first param is for grouping
@@ -2935,9 +2958,7 @@
     addObject(tauAggrFormula, aggregateOptions);
 
     // Forest plot
-    // todo: We have no forest plot for fractions, so maybe we should disable
-    // the button if type is changed to fractions?
-    if (oneClick.forestPlot === true && oneClick.inputDataType != 'fractions') {
+    if (oneClick.forestPlot === true) {
       var forestPlotFormula = 'forestPlot' + inputDataType + 'Graph(' + expNControlNString + ')';
       addObject(forestPlotFormula, graphOptions);
     }
@@ -2971,18 +2992,14 @@
     }
 
     // Grape Chart
-    // todo: We have no grape chart for fractions, so maybe we should disable
-    // the button if type is changed to fractions?
-    if (oneClick.grapeChart === true && oneClick.moderator && oneClick.inputDataType != 'fractions') {
-      var grapeChartFormula = 'grapeChart' + inputDataType + 'Graph(' + expNControlNString + ', ' + oneClick.moderator + ')';
+    if (oneClick.grapeChart === true && oneClick.moderator) {
+      var grapeChartFormula = 'grapeChart' + inputDataType + 'Graph(' + expNControlNString + ',' + oneClick.moderator + ')';
       addObject(grapeChartFormula, graphOptions);
     }
 
     // Grouped Forest plot
-    // todo: We have no grouped forest plot for fractions, so maybe we should disable
-    // the button if type is changed to fractions?
-    if (oneClick.groupedForest === true && oneClick.moderator && oneClick.inputDataType != 'fractions') {
-      var forestPlotGroupFormula = 'forestPlotGroup' + inputDataType + 'Graph(' + expNControlNString + ',' + oneClick.moderator + '})';
+    if (oneClick.groupedForest === true && oneClick.moderator) {
+      var forestPlotGroupFormula = 'forestPlotGroup' + inputDataType + 'Graph(' + expNControlNString + ',' + oneClick.moderator + ')';
       addObject(forestPlotGroupFormula, graphOptions);
     }
 
