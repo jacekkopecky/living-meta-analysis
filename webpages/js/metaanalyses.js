@@ -2741,7 +2741,7 @@
 
     // the first option is an instruction
     var op = document.createElement("option");
-    op.textContent = 'Select a column or aggregate';
+    op.textContent = 'Select a column';
     op.value = '';
     selectEl.appendChild(op);
 
@@ -2756,18 +2756,6 @@
     for (var j = 0; j < currentMetaanalysis.columns.length; j++){
       var colId = currentMetaanalysis.columns[j];
       makeOption(colId, {formula: ''}, '', selectEl);
-    }
-
-    // Now make an option for each aggregate in currentMetaanalysis
-    for (j = 0; j < currentMetaanalysis.aggregates.length; j++){
-      var aggr = currentMetaanalysis.aggregates[j];
-      makeOption(aggr, {formula: ''}, '', selectEl);
-    }
-
-    // Now make an option for each grouping aggregate in currentMetaanalysis
-    for (j = 0; j < currentMetaanalysis.groupingAggregates.length; j++){
-      aggr = currentMetaanalysis.groupingAggregates[j];
-      makeOption(aggr, {formula: ''}, '', selectEl);
     }
 
     // store the values from the dropdown box temporarily in metaanalysis.oneclick
@@ -2816,7 +2804,6 @@
     op.textContent = 'Select an option';
     op.value = '';
     selectEl.appendChild(op);
-
 
     options.forEach(function (option) {
       var el = document.createElement("option");
