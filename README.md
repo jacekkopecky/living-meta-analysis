@@ -25,7 +25,7 @@ cd living-meta-analysis
 git stash
 git pull
 git stash apply
-git diff -u              # review everything
+git diff -U2             # review everything
 npm install              # if package.json has changed
 forever restart server   # if server has changed
 logout                   # so we don't have a hanging terminal to the server
