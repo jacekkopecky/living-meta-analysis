@@ -104,6 +104,8 @@ function checkForDisallowedChanges(current, original, columns) {
   // todo check that columns and groupingColumn and aggregates references existing columns
   // todo check that paperOrder references existing papers
   // this might end up being different for papers and for metaanalyses
+  // todo refuse to save if all the experiments of a paper are hidden in the metaanalysis
+  //    - the paper should be gone from this metaanalysis
 
   original = original || {};
 

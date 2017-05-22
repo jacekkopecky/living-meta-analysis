@@ -239,7 +239,7 @@
         if (self.columns.indexOf(key) === -1) self.columns.push(key);
       });
       if (!experiment.id) {
-        experiment.id = '/id/exp/' + self.id + ',' + expIndex;
+        experiment.id = self.id + ',' + expIndex;
       }
     });
 
