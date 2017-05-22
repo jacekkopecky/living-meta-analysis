@@ -2027,7 +2027,7 @@
     return th;
   }
 
-  function fillComputedColumnHeading(metaanalysis, col /*, columnIndex */) {
+  function fillComputedColumnHeading(metaanalysis, col) {
     var th = _.cloneTemplate('computed-col-heading-template').children[0];
 
     th.classList.add('result');
@@ -2047,6 +2047,23 @@
       formulasDropdown.appendChild(el);
     }
 
+    _.fillEls(th, 'span.customcolname', col.customName);
+
+    // todo this (and the same for aggrs/graggrs/graphs) should use addOnInputUpdater
+    _.addEventListener(th, 'span.customcolname', 'input', function(e) {
+      var customName = e.target.textContent.trim();
+
+      if (!customName) {
+        col.customName = null;
+        _.setProps(th, '.richcollabel', 'innerHTML', getColTitle(col, 1));
+      } else {
+        col.customName = customName;
+        _.fillEls(th, '.richcollabel', col.customName);
+      }
+
+      _.scheduleSave(currentMetaanalysis);
+    });
+
     formulasDropdown.onchange = function(e) {
       col.formulaName = e.target.value;
       col.formulaObj = lima.getFormulaObject(col.formulaName);
@@ -2056,6 +2073,8 @@
         formulasDropdown.classList.remove('validationerror');
       } else {
         formulasDropdown.classList.add('validationerror');
+        if (!col.customName)
+          _.setProps(th, '.richcollabel', 'innerHTML', getColTitle(col, 1));
       }
       // we'll call setValidationErrorClass() in fillFormulaColumnsSelection
 
@@ -2240,7 +2259,12 @@
 
   function fillComputedColumnInformation(th, col) {
     // todo this needs to be refactored together with fillAggregateInformation and fillGraphInformation
-    _.setProps(th, '.richcollabel', 'innerHTML', getColTitle(col, 1));
+    if (col.customName) {
+      _.fillEls(th, '.richcollabel', col.customName);
+    } else {
+      _.setProps(th, '.richcollabel', 'innerHTML', getColTitle(col, 1));
+    }
+
     _.setProps(th, '.fullcollabel', 'innerHTML', getColTitle(col, Infinity));
     // todo do more for non-editing; use computed-datum as inspiration but fix it to account for computed columns
   }
@@ -2646,7 +2670,8 @@
   function addNewComputedColumn() {
     dismissAddExperimentColumn();
     var col = {
-      formula: 'undefined()',
+      customName: null,
+      formula: 'undefined()', // todo why is this here and not in addNewAggregateToMetaanalysis
       formulaName: null,
       formulaParams: [],
     };
@@ -2946,7 +2971,7 @@
 
     // add them to the metaanalysis
     addObject(columnOptions, logOddsFormula, 'Log Odds Ratio');
-    addObject(columnOptions, weightFormula, 'Fixed Effect Model (FEM) Weight');
+    addObject(columnOptions, weightFormula, 'FEM Weight');
     addObject(aggregateOptions, weightedMeanAggrFormula, 'Fixed Effect Model (FEM) Point Estimate');
     addObject(columnOptions, fixedEffectErrorFormula, 'FEM Effect Error');
     addObject(aggregateOptions, standardErrorAggrFormula, 'FEM Standard Error');
@@ -2983,7 +3008,7 @@
       var pValue2TailedRandomAggrFormula = 'pValue2TailedAggr(' + zValueRandomAggrFormula + ')';
 
       // add them to the metaanalysis
-      addObject(columnOptions, randomEffectWeightFormula, 'Random Effect Model (REM) Weight');
+      addObject(columnOptions, randomEffectWeightFormula, 'REM Weight');
       addObject(aggregateOptions, weightedMeanRandomAggrFormula, 'Random Effect Model (REM) Point Estimate');
       addObject(aggregateOptions, standardErrorRandomAggrFormula, 'REM Standard Error');
       addObject(aggregateOptions, varianceRandomAggrFormula, 'REM Variance');

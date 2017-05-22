@@ -1386,7 +1386,7 @@ body.editing.page-about-you #metaanalysis table.experiments th.experimenttitle:h
 
 #metaanalysis .paperinfo header,
 #metaanalysis .experimentinfo header,
-#metaanalysis .fullcolinfo header,
+#metaanalysis .fullcolinfo:not(.computed) header,
 #metaanalysis .colinfo header {
   padding-top: 1em;
   position: relative;
@@ -1396,7 +1396,7 @@ body.page-about-you.editing .fullcolinfo header {
   margin-right: 0;
 }
 
-#metaanalysis .fullcolinfo header p,
+#metaanalysis .fullcolinfo:not(.computed) header p,
 #metaanalysis .colinfo header p,
 #metaanalysis .paperinfo header p,
 #metaanalysis .experimentinfo header p {

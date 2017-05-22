@@ -471,6 +471,7 @@ function extractReceivedColumnEntry(recCol) {
     return {
       formula: tools.string(recCol.formula),
       comments: tools.array(recCol.comments, extractReceivedComment),
+      customName: tools.string(recCol.customName),
     };
   }
 

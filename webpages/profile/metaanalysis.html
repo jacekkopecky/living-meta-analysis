@@ -261,7 +261,7 @@
     <div class="popupboxhighlight">
       <span class="richcollabel">error</span>
     </div>
-    <div class="fullcolinfo popupbox" data-boxtype='fullcolinfo'>
+    <div class="fullcolinfo computed popupbox" data-boxtype='fullcolinfo'>
       <div class="pin"></div>
       <button class="not-unsaved move left most editing" title="move column to the left">|«</button>
       <button class="not-unsaved move left editing" title="move column to the left">«</button>
@@ -274,7 +274,12 @@
       <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">»</button>
       <button class="when-unsaved" disabled title="can't move columns when some changes are unsaved">»|</button>
       <header>
-        <span class="fullcollabel">error</span>
+        <p class="customcolname">
+          <span class="customcolname" placeholder="optional custom name" contenteditable></span>
+        </p>
+        <p>
+          <span class="fullcollabel">error</span>
+        </p>
         <div class="colcomputedcolumns">
           <select class="colformulas editing validationerror">
             <option value=''>Select formula</option>
