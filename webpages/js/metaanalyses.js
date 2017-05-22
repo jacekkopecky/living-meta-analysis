@@ -246,6 +246,7 @@
     if (!Array.isArray(self.papers)) self.papers = [];
     if (!Array.isArray(self.columns)) self.columns = [];
     if (!Array.isArray(self.hiddenCols)) self.hiddenCols = [];
+    if (!Array.isArray(self.hiddenExperiments)) self.hiddenExperiments = [];
     if (!Array.isArray(self.tags)) self.tags = [];
     if (!Array.isArray(self.graphs)) self.graphs = [];
     if (!Array.isArray(self.aggregates)) self.aggregates = [];
@@ -1757,14 +1758,14 @@
 
       if (lastColumnHidden) {
         // We know that there should be an "unhide" button on this column
-        addUnhideButton(th);
+        addColUnhideButton(th);
         lastColumnHidden = false;
       }
     });
 
     // Check to see if the last column was hidden.
     if (lastColumnHidden) {
-      addUnhideButton(addColumnNode);
+      addColUnhideButton(addColumnNode);
       lastColumnHidden = false;
     }
 
@@ -1787,11 +1788,29 @@
     // fill rows with experiment data
     var tableBodyNode = _.findEl(table, 'tbody');
     var addRowNode = _.findEl(table, 'tbody > tr.add');
+    var lastExpHidden = false;
 
     papers.forEach(function(paper, papIndex) {
+      var papTitleIndex = getFirstNonHiddenExp(paper);
       paper.experiments.forEach(function (experiment, expIndex) {
+        var noExpInCurrPaper = getNbUnhiddenExpPaper(paper);
+
+        if (isHiddenExp(experiment.id)) {
+          /* Add an unhide button only if there is at least one unhidden experiment,
+          * otherwise we will not be able to found later the needed element
+          */
+          if (noExpInCurrPaper) {
+            lastExpHidden = true;
+          }
+
+          return;
+        }
+
         var tr = _.cloneTemplate('experiment-row-template').children[0];
         tableBodyNode.insertBefore(tr, addRowNode);
+
+        _.setDataProps(tr, 'tr button.hideexp', 'id', experiment.id);
+        _.addEventListener(tr, 'tr button.hideexp', 'click', hideExp);
 
         _.fillEls(tr, '.paptitle', paper.title);
 
@@ -1802,8 +1821,7 @@
 
         // in the first row for a paper, the paperTitle TH should have rowspan equal to the number of experiments
         // in other rows, the paperTitle TH is hidden by the CSS
-        if (expIndex == 0) {
-          var noExpInCurrPaper = papers[papIndex].experiments.length;
+        if (expIndex == papTitleIndex) {
           paperTitleEl.rowSpan = noExpInCurrPaper;
           tr.classList.add('paperstart');
 
@@ -1850,6 +1868,20 @@
           setPaperExclusionState(paper, tr);
           _.setDataProps(tr, '.papertitle .exclude', 'index', papIndex);
           _.addEventListener(tr, '.papertitle .exclude', 'click', excludePaper);
+        }
+
+        // Add an unhide button is necessary
+        if (lastExpHidden) {
+          var concernPapIndex = papIndex;
+
+          // If it's the previous paper
+          if(!expIndex) {
+            concernPapIndex -= 1;
+          }
+
+          var paperTitleEl = _.findEl(tableBodyNode, '[data-paper-index="' + concernPapIndex + '"]');
+          addExpUnhideButton(paperTitleEl);
+          lastExpHidden = false;
         }
 
         _.fillEls(tr, '.exptitle', experiment.title);
@@ -1915,6 +1947,8 @@
               td.classList.add('newcol');
             }
 
+            _.setDataProps(td, 'td button.hideexp', 'id', experiment.id);
+            _.addEventListener(td, 'td button.hideexp', 'click', hideexp);
           } else {
             // computed column
             td.classList.add('computed');
@@ -1952,6 +1986,12 @@
         });
       });
     });
+
+    // If the last experiment in the last paper is hidden
+    if (lastExpHidden) {
+      var paperTitleEl = _.findEl(tableBodyNode, '[data-paper-index="' + (currentMetaanalysis.papers.length - 1) +'"]');
+      addExpUnhideButton(paperTitleEl);
+    }
 
     _.addEventListener(table, 'tr:not(.add) .papertitle button.add', 'click', addExperimentRow);
     _.addEventListener(table, 'tr.add button.add', 'click', addPaperRow);
@@ -3062,7 +3102,7 @@
       if (!paper) return console.error('cannot find paper with index ' + paperIndex + ' for button ', e.target);
 
       if (!Array.isArray(paper.experiments)) paper.experiments = [];
-      paper.experiments.push({});
+      paper.experiments.push({id: '/id/exp/' + paper.experiments.length});
       updateMetaanalysisView();
       // focus the empty title of the new experiment
       setTimeout(focusFirstValidationError, 0);
@@ -3111,11 +3151,65 @@
     }
   }
 
+  function getFirstNonHiddenExp(paper) {
+    for (var i=0; i<paper.experiments.length; i++) {
+      if (!isHiddenExp(paper.experiments[i].id)) {
+        return i;
+      }
+    }
+
+    return 0;
+  }
+
+  function getNbUnhiddenExpPaper(paper) {
+    var retval = 0;
+
+    paper.experiments.forEach(function (exp) {
+      if (!isHiddenExp(exp.id)) {
+        retval += 1;
+      }
+    });
+
+    return retval;
+  }
+
+  function isHiddenExp(expId) {
+    return currentMetaanalysis.hiddenExperiments.indexOf(expId) !== -1;
+  }
+
+  function unhideExpPaper(e) {
+    var paperIndex = e.target.dataset.paperIndex;
+
+    currentMetaanalysis.papers[paperIndex].experiments.forEach(function (experiment) {
+      _.removeFromArray(currentMetaanalysis.hiddenExperiments, experiment.id);
+    });
+
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+  }
+
+  function hideExp(e) {
+    currentMetaanalysis.hiddenExperiments.push(e.target.dataset.id);
+    unpinPopupBox();
+    updateMetaanalysisView();
+    _.scheduleSave(currentMetaanalysis);
+  }
+
+  function addExpUnhideButton(expNode) {
+    if (!expNode) return;
+    var paperIndex = expNode.dataset.paperIndex;
+    var unhidebutton = _.findEl(expNode, '.unhideexp');
+    unhidebutton.removeAttribute('hidden');
+    _.setDataProps(expNode, 'button.unhideexp', 'paperIndex', paperIndex);
+    _.addEventListener(expNode, 'button.unhideexp', 'click', unhideExpPaper);
+  }
+
+
   function addPaperRow() {
     lima.requestPaper('new-paper')
     .then(function (newPaper) {
       // Populate an empty experiment
-      newPaper.experiments.push({});
+      newPaper.experiments.push({id: '/id/exp/' + Date.now()});
       currentMetaanalysis.papers.push(newPaper);
       currentMetaanalysis.paperOrder.push(newPaper.id);
       updateMetaanalysisView();
@@ -4472,7 +4566,7 @@
   }
 
 
-  function addUnhideButton(colNode) {
+  function addColUnhideButton(colNode) {
     colNode.classList.add('lastcolumnhidden');
     _.addEventListener(colNode, '.unhide', 'click', unhideColumns);
   }

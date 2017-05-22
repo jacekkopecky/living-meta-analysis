@@ -348,6 +348,7 @@
       <!-- todo make this smaller and ellipsized, and fill it -->
       <div class="paperdescription short" data-focuses=".paperdescription.editing"></div>
       <!-- todo comments -->
+      <button class="unhideexp" hidden>unhide</button>
       <button class="add not-unsaved" title="add an experiment">+</button>
       <button class="when-unsaved" disabled title="can't add a row when some changes are unsaved">add a row</button>
     </th>
@@ -356,6 +357,7 @@
       <div><span class="exptitle"></span><input type="checkbox" class="exclude" checked></div>
       <div class="experimentinfo popupbox" data-boxtype='experimentinfo'>
         <div class="pin"></div>
+        <button class="hideexp">hide</button>
         <header>
           <p class="papertitle">Paper: <span class="paptitle"></span></p>
           <p><span class="edithighlight" data-focuses=".exptitle.editing">Study/experiment:
@@ -386,6 +388,7 @@
     <span class="value notcomputed editing oneline" contenteditable></span>
     <div class="datum popupbox" data-boxtype='datumpopupbox'>
       <div class="pin"></div>
+      <button class="hideexp">hide</button>
       <header>
         <p class="value" placeholder="no value"></p>
         <p class="computed">

@@ -234,10 +234,13 @@
 
     // if any experiment has data that isn't in columns (e.g. it was added in a metaanalysis page)
     // add it to columns
-    self.experiments.forEach(function (experiment) {
+    self.experiments.forEach(function (experiment, expIndex) {
       if (experiment.data) Object.keys(experiment.data).forEach(function (key) {
         if (self.columns.indexOf(key) === -1) self.columns.push(key);
       });
+      if (!experiment.id) {
+        experiment.id = '/id/exp/' + expIndex;
+      }
     });
 
     self.columns.forEach(function (col) {
