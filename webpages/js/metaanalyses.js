@@ -1788,9 +1788,9 @@
     // fill rows with experiment data
     var tableBodyNode = _.findEl(table, 'tbody');
     var addRowNode = _.findEl(table, 'tbody > tr.add');
-    var paperTitleInserted = false;
 
     papers.forEach(function(paper, papIndex) {
+      var paperTitleInserted = false;
       paper.experiments.forEach(function (experiment, expIndex) {
         if (isHiddenExp(experiment.id)) {
           return;
