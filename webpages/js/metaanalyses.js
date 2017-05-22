@@ -1948,7 +1948,7 @@
             }
 
             _.setDataProps(td, 'td button.hideexp', 'id', experiment.id);
-            _.addEventListener(td, 'td button.hideexp', 'click', hideexp);
+            _.addEventListener(td, 'td button.hideexp', 'click', hideExp);
           } else {
             // computed column
             td.classList.add('computed');
@@ -3102,7 +3102,7 @@
       if (!paper) return console.error('cannot find paper with index ' + paperIndex + ' for button ', e.target);
 
       if (!Array.isArray(paper.experiments)) paper.experiments = [];
-      paper.experiments.push({id: '/id/exp/' + paper.experiments.length});
+      paper.experiments.push({id: '/id/exp/' + paper.id + ',' + paper.experiments.length});
       updateMetaanalysisView();
       // focus the empty title of the new experiment
       setTimeout(focusFirstValidationError, 0);
@@ -3209,7 +3209,7 @@
     lima.requestPaper('new-paper')
     .then(function (newPaper) {
       // Populate an empty experiment
-      newPaper.experiments.push({id: '/id/exp/' + Date.now()});
+      newPaper.experiments.push({id: '/id/exp/' + newPaper.id + ',0'});
       currentMetaanalysis.papers.push(newPaper);
       currentMetaanalysis.paperOrder.push(newPaper.id);
       updateMetaanalysisView();
