@@ -618,6 +618,16 @@
 
   _.stripDOIPrefix = function (doi) { return _.stripPrefix('doi:', doi); };
 
+  // produce a presentable, not-too-high-precision string representation of a number
+  _.formatNumber = function formatNumber(x) {
+    if (typeof x !== 'number') return x;
+    var xabs = Math.abs(x);
+    if (xabs >= 100) return x.toFixed(0);
+    if (xabs >= 10) return x.toFixed(1);
+    if (xabs >= 1) return x.toFixed(2);
+    return x.toFixed(3);
+  };
+
 
   /* youOrName
    *
@@ -1041,6 +1051,59 @@
     assert(b.indexOf(3.5) == 2);
     assert(b.indexOf(4.1) == 2);
 
+  });
+
+  _.addTest(function testFormatNumber(assert) {
+    // use trimming so we can format the checks nicely
+    function check(num,str) {
+      assert(_.formatNumber(num) === str, 'error formatting ' + num + ', expecting ' + str + ' but got ' + _.formatNumber(num));
+    }
+
+    function check2(num,str) {
+      check(-num, '-' + str);
+    }
+
+
+    check (     Infinity,  'Infinity' );
+    check (     NaN     ,       'NaN' );
+    check (     0       ,     '0.000' );
+    check (    -0       ,     '0.000' );
+    check (     0.004   ,     '0.004' );
+    check (     0.0044  ,     '0.004' );
+    check (     0.004501,     '0.005' );   // 0.004501 because 0.0045 is actually 0.00449999999999999966
+    check (     0.0046  ,     '0.005' );
+    check (     0.005   ,     '0.005' );
+    check (     0.04    ,     '0.040' );
+    check (     0.14    ,     '0.140' );
+    check (     3.1     ,     '3.10'  );
+    check (     3.14    ,     '3.14'  );
+    check (    13.14    ,    '13.1'   );
+    check (   113.14    ,   '113'     );
+    check (  1113.14    ,  '1113'     );
+    check ( 11113.14    , '11113'     );
+
+    check2(     Infinity,  'Infinity' );
+    check2(     0.004   ,     '0.004' );
+    check2(     0.0044  ,     '0.004' );
+    check2(     0.004501,     '0.005' );   // 0.004501 because 0.0045 is actually 0.00449999999999999966
+    check2(     0.0046  ,     '0.005' );
+    check2(     0.005   ,     '0.005' );
+    check2(     0.04    ,     '0.040' );
+    check2(     0.14    ,     '0.140' );
+    check2(     3.1     ,     '3.10'  );
+    check2(     3.14    ,     '3.14'  );
+    check2(    13.14    ,    '13.1'   );
+    check2(   113.14    ,   '113'     );
+    check2(  1113.14    ,  '1113'     );
+    check2( 11113.14    , '11113'     );
+
+    check ('foo', 'foo');
+    check ('3', '3');
+    check (undefined, undefined);
+    check (null, null);
+
+    var a = {};
+    check (a, a);
   });
 
 
