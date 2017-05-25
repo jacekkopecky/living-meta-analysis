@@ -88,7 +88,7 @@
     }
     _.findEls(root, selector).forEach(function (el) {
       var newVal = valOrFun(value, el);
-      if (el.textContent != newVal) el.textContent = newVal == null ? '' : newVal;
+      if (el.textContent !== newVal) el.textContent = newVal == null ? '' : newVal;
     });
   };
 
@@ -138,6 +138,15 @@
       root = document;
     }
     _.findEls(root, selector).forEach(function(el){el.classList.remove(valOrFun(value, el));});
+  };
+
+  _.removeClasses = function removeClasses(root, selector, values) {
+    if (!(root instanceof Node)) {
+      values = selector;
+      selector = root;
+      root = document;
+    }
+    _.findEls(root, selector).forEach(function(el){el.classList.remove.apply(el.classList, values);});
   };
 
   _.addEventListener = function addEventListener(root, selector, event, f) {
@@ -618,14 +627,37 @@
 
   _.stripDOIPrefix = function (doi) { return _.stripPrefix('doi:', doi); };
 
-  // produce a presentable, not-too-high-precision string representation of a number
-  _.formatNumber = function formatNumber(x) {
+  function formatNumber(x) {
     if (typeof x !== 'number') return x;
     var xabs = Math.abs(x);
-    if (xabs >= 100) return x.toFixed(0);
-    if (xabs >= 10) return x.toFixed(1);
-    if (xabs >= 1) return x.toFixed(2);
+    // if (xabs >= 1000) return x.toFixed(0); // this would drop the decimal point from large values (needs tweaks in padNumber below)
+    if (xabs >= 100) return x.toFixed(1);
+    if (xabs >= 10) return x.toFixed(2);
+    // if (xabs >= 1) return x.toFixed(2);
     return x.toFixed(3);
+  }
+
+  // produce a presentable, not-too-high-precision string representation of a number
+  _.fillPaddedValue = function fillPaddedValue(root, selector, value) {
+    if (!(root instanceof Node)) {
+      value = selector;
+      selector = root;
+      root = document;
+    }
+
+    _.removeClasses(root, selector, ['pad1', 'pad2', 'pad3dot']);
+    if (typeof value == 'number') {
+      var padClass = null;
+      var valabs = Math.abs(value);
+      if (valabs >= 10) padClass = 'pad1';
+      if (valabs >= 100) padClass = 'pad2';
+      // if (valabs >= 1000) padClass = 'pad3dot'; // this would pad also for the decimal dot for large values that don't have it
+      if (padClass) _.addClass(root, selector, padClass);
+
+      value = formatNumber(value);
+    }
+
+    _.fillEls(root, selector, value);
   };
 
 
@@ -1056,7 +1088,7 @@
   _.addTest(function testFormatNumber(assert) {
     // use trimming so we can format the checks nicely
     function check(num,str) {
-      assert(_.formatNumber(num) === str, 'error formatting ' + num + ', expecting ' + str + ' but got ' + _.formatNumber(num));
+      assert(formatNumber(num) === str, 'error formatting ' + num + ', expecting ' + str + ' but got ' + formatNumber(num));
     }
 
     function check2(num,str) {
@@ -1075,12 +1107,12 @@
     check (     0.005   ,     '0.005' );
     check (     0.04    ,     '0.040' );
     check (     0.14    ,     '0.140' );
-    check (     3.1     ,     '3.10'  );
-    check (     3.14    ,     '3.14'  );
-    check (    13.14    ,    '13.1'   );
-    check (   113.14    ,   '113'     );
-    check (  1113.14    ,  '1113'     );
-    check ( 11113.14    , '11113'     );
+    check (     3.1     ,     '3.100' );
+    check (     3.14    ,     '3.140' );
+    check (    13.14    ,    '13.14'  );
+    check (   113.14    ,   '113.1'   );
+    check (  1113.14    ,  '1113.1'   );
+    check ( 11113.14    , '11113.1'   );
 
     check2(     Infinity,  'Infinity' );
     check2(     0.004   ,     '0.004' );
@@ -1090,12 +1122,12 @@
     check2(     0.005   ,     '0.005' );
     check2(     0.04    ,     '0.040' );
     check2(     0.14    ,     '0.140' );
-    check2(     3.1     ,     '3.10'  );
-    check2(     3.14    ,     '3.14'  );
-    check2(    13.14    ,    '13.1'   );
-    check2(   113.14    ,   '113'     );
-    check2(  1113.14    ,  '1113'     );
-    check2( 11113.14    , '11113'     );
+    check2(     3.1     ,     '3.100' );
+    check2(     3.14    ,     '3.140' );
+    check2(    13.14    ,    '13.14'  );
+    check2(   113.14    ,   '113.1'   );
+    check2(  1113.14    ,  '1113.1'   );
+    check2( 11113.14    , '11113.1'   );
 
     check ('foo', 'foo');
     check ('3', '3');
