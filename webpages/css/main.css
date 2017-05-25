@@ -1769,6 +1769,11 @@ body.page-about-you.editing .fullcolinfo header {
   padding-right: 23em; /* 15em for width of popupbox and 8em for width of overhanging column labels and new column box */
 }
 
+#metaanalysis table.aggregates td,  /* this catches grouping aggregates as well */
+#metaanalysis table.experiments td.computed {
+  text-align: right;
+}
+
 #paper table.experiments td span.value,
 #metaanalysis table.experiments td span.value {
   white-space: nowrap;

@@ -1950,11 +1950,11 @@
                 td.classList.remove('empty');
               }
 
-              // only show three significant digits for numbers
-              if (typeof val == 'number') val = val.toPrecision(3);
+              var fullval = val;
+              if (typeof val == 'number') val = _.formatNumber(val);
 
               _.fillEls(td, '.value', val);
-
+              _.fillEls(td, '.fullvalue', fullval);
 
               // fill in information about where the value was computed from
               _.setProps(td, '.formula', 'innerHTML', getColTitle(col, Infinity));
@@ -3337,10 +3337,11 @@
           aggregateValTd.classList.remove('empty');
         }
 
-        // only show three significant digits for numbers
-        if (typeof val == 'number') val = val.toPrecision(3);
+        var fullval = val;
+        if (typeof val == 'number') val = _.formatNumber(val);
 
         _.fillEls(aggregateValTd, '.value', val);
+        _.fillEls(aggregateValTd, '.fullvalue', fullval);
       });
 
       fillAggregateInformation(aggregateEl, aggregate);
@@ -3592,10 +3593,11 @@
             td.classList.remove('empty');
           }
 
-          // only show three significant digits for numbers
-          if (typeof val == 'number') val = val.toPrecision(3);
+          var fullval = val;
+          if (typeof val == 'number') val = _.formatNumber(val);
 
           _.fillEls(td, '.value', val);
+          _.fillEls(td, '.fullvalue', fullval);
           _.fillEls(td, '.group', group);
 
           setupPopupBoxPinning(td, '.popupbox', groupingAggregate.formula + ',' + group);
