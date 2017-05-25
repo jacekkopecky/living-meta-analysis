@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Gruppo|Raleway:300');
+@import url('https://fonts.googleapis.com/css?family=Gruppo|Raleway:300|Roboto:400,400i');
 
 body {
   font-family: "Arial", sans-serif;
@@ -1777,6 +1777,7 @@ body.page-about-you.editing .fullcolinfo header {
 #paper table.experiments td span.value,
 #metaanalysis table.experiments td span.value {
   white-space: nowrap;
+  font-family: "Roboto";
 }
 
 #paper.no-data table.experiments,
@@ -2635,6 +2636,29 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
   padding-right: 1.5em; /* to give space to the "exclude" checkbox */
   padding-left: 1.5em; /* for symmetry */
 }
+
+#paper span.pad1,
+#metaanalysis span.pad1 {
+  padding-right: 1ch;
+}
+
+#paper span.pad2,
+#metaanalysis span.pad2 {
+  padding-right: 2ch;
+}
+
+#paper span.pad3dot,
+#metaanalysis span.pad3dot {
+  padding-right: 3ch;
+}
+
+#paper span.pad3dot:after,
+#metaanalysis span.pad3dot:after {
+  content: '.';
+  display: inline;
+  color: transparent;
+}
+
 
 /* aggregates
  *

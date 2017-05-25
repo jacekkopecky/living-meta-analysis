@@ -1950,11 +1950,8 @@
                 td.classList.remove('empty');
               }
 
-              var fullval = val;
-              if (typeof val == 'number') val = _.formatNumber(val);
-
-              _.fillEls(td, '.value', val);
-              _.fillEls(td, '.fullvalue', fullval);
+              _.fillPaddedValue(td, '.value', val);
+              _.fillEls(td, '.fullvalue', val);
 
               // fill in information about where the value was computed from
               _.setProps(td, '.formula', 'innerHTML', getColTitle(col, Infinity));
@@ -3323,11 +3320,8 @@
           aggregateValTd.classList.remove('empty');
         }
 
-        var fullval = val;
-        if (typeof val == 'number') val = _.formatNumber(val);
-
-        _.fillEls(aggregateValTd, '.value', val);
-        _.fillEls(aggregateValTd, '.fullvalue', fullval);
+        _.fillPaddedValue(aggregateValTd, '.value', val);
+        _.fillEls(aggregateValTd, '.fullvalue', val);
       });
 
       fillObjectInformation(aggregateEl, aggregate);
@@ -3478,11 +3472,8 @@
             td.classList.remove('empty');
           }
 
-          var fullval = val;
-          if (typeof val == 'number') val = _.formatNumber(val);
-
-          _.fillEls(td, '.value', val);
-          _.fillEls(td, '.fullvalue', fullval);
+          _.fillPaddedValue(td, '.value', val);
+          _.fillEls(td, '.fullvalue', val);
           _.fillEls(td, '.group', group);
 
           setupPopupBoxPinning(td, '.popupbox', groupingAggregate.formula + ',' + group);
