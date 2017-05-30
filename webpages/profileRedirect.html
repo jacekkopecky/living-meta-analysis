@@ -16,11 +16,22 @@ window.lima.initPage = function initPage() {
 
   var user = lima.getAuthenticatedUserEmail();
   if (user) {
-    window.history.replaceState({}, "profile", '/' + user + '/');
-    window.location.href = '/' + user + '/';
+    lima.getGapiIDToken()
+    .then(function (idToken) {
+      return fetch('/api/profile/' + user, _.idTokenToFetchOptions(idToken));
+    })
+    .then(function(res){
+      console.log(res);
+    })
+    .catch(() => {
+      // user unknown - send to lima@local
+      user = 'lima@local';
+    });
+    // window.history.replaceState({}, "profile", '/' + user + '/');
+    // window.location.href = '/' + user + '/';
   } else {
-    window.history.replaceState({}, "signin", '/signin');
-    window.location.href = '/signin';
+    // window.history.replaceState({}, "signin", '/signin');
+    // window.location.href = '/signin';
   }
 
 }

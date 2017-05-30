@@ -290,6 +290,10 @@ module.exports.addUser = (email, user) => {
     return Promise.reject(new Error('must not add the user ' + LOCAL_STORAGE_SPECIAL_USER));
   }
 
+  if (!user.ctime) { // new user
+    user.ctime = tools.uniqueNow();
+  }
+
   return userCache.then(
     (users) => new Promise((resolve, reject) => {
       users[email] = user;

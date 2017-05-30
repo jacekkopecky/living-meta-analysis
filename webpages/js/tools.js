@@ -691,7 +691,9 @@
    * with fetch API, get the response JSON, but if the HTTP code wasn't 2xx, make the response a rejected promise
    */
   _.fetchJson = function fetchJson(response) {
-    if (response.ok) return response.json();
+    var foo = response.json();
+    console.log(foo);
+    if (response.ok) return foo;
     else return Promise.reject(response);
   };
 

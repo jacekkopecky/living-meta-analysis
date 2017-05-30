@@ -16,14 +16,27 @@
   <p class="edithighlight">
     <span class='customusername' contenteditable placeholder="custom username"></span>
   </p>
-  <p>or</p>
-  <label>
+  <h3>Suggestions:</h3>
+  <label class='suggestion'>
     same as email address
+    <input class='emailaddress' type="checkbox">
+  </label>
+  <label class='suggestion'>
+    same as email address first part
+    <input class='emailaddress' type="checkbox">
+  </label>
+  <label class='suggestion'>
+    same as Google display name (without spaces)
+    <input class='emailaddress' type="checkbox">
+  </label>
+  <label class='suggestion'>
+    same as Google given name (without spaces)
     <input class='emailaddress' type="checkbox">
   </label>
   <p>
     <button class="confirm">confirm</button>
   </p>
+  <p class="output"></p>
 </div>
 
 <footer>
@@ -39,6 +52,10 @@
   var lima = window.lima;
   var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
 
+  var globalUser;
+  /^[a-zA-Z0-9-_]+$/;
+  var USERNAME_RE = /^[a-zA-Z][a-zA-Z0-9-_@\.]+$/;
+
   window.lima.initPage = function () {
 
     var email = lima.getAuthenticatedUserEmail();
@@ -52,6 +69,10 @@
       return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
     })
     .then(_.fetchJson)
+    .then(function (user) {
+      globalUser = user;
+      return user;
+    })
     .then(fillUsernamePage)
     .catch(function (err) {
       if (err.status === 404) {
@@ -67,9 +88,43 @@
   }
 
   function register() {
-    // todo: remember where we janked them from, send them back.
-    // todo: validate the user input & save it
-    console.log("clicked");
+    // clear out old output
+    _.fillEls('.output', '');
+
+    // validate the user input
+    var usernameEl = _.findEl('.customusername');
+    var username = usernameEl.textContent.trim();
+
+    if (!username.match(USERNAME_RE)) {
+      _.fillEls('.output', 'invalid username');
+      return;
+    }
+
+    // register the user with the server
+    return lima.getGapiIDToken()
+      .then(function(idToken) {
+        var toSend = globalUser;
+        toSend.username = username;
+        toSend = JSON.stringify(toSend);
+        return fetch('/api/register', {
+          method: 'POST',
+          headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
+          body: toSend,
+        });
+      })
+      .catch((err) => {
+        // it didn't work, pass through to next catch error.
+      })
+      .then(function(res){
+        // todo: remember where we janked them from, send them back.
+        console.log("gonna drop user now");
+        window.location.href = '/profile';
+      })
+      .catch((err) => {
+        console.error('failed to register user');
+        console.error(err);
+        _.fillEls('.output', 'failed to register');
+      });
   }
 
   function fillUsernamePage(user) {

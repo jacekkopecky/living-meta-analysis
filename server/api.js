@@ -35,34 +35,35 @@ const api = module.exports = express.Router({
 
 api.get('/', (req, res) => res.redirect('/docs/api'));
 
-api.post('/register', GUARD, REGISTER_USER, (req, res) => res.sendStatus(200));
+api.post('/known', GUARD, KNOWN_USER, (req, res) => res.sendStatus(200));
+api.post('/register', GUARD, jsonBodyParser, saveUser);
 
 api.get('/topusers', listTopUsers);
 api.get('/toppapers', listTopPapers);
 api.get('/topmetaanalyses', listTopMetaanalyses);
 api.get('/titles', listTitles);
 
-api.get(`/profile/:email(${config.EMAIL_ADDRESS_RE})`, REGISTER_USER, returnUserProfile);
+api.get(`/profile/:email(${config.EMAIL_ADDRESS_RE})`, KNOWN_USER, returnUserProfile);
 
 api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})`,
-        REGISTER_USER, listPapersForUser);
+        KNOWN_USER, listPapersForUser);
 api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
-        REGISTER_USER, getPaperVersion);
+        KNOWN_USER, getPaperVersion);
 api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
-        REGISTER_USER, getPaperVersion);
+        KNOWN_USER, getPaperVersion);
 api.post(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         GUARD, SAME_USER, jsonBodyParser, savePaper);
 // todo above, a user that isn't SAME_USER should be able to submit new comments
 
 api.get('/columns', listColumns);
-api.post('/columns', GUARD, REGISTER_USER, jsonBodyParser, saveColumn);
+api.post('/columns', GUARD, KNOWN_USER, jsonBodyParser, saveColumn);
 
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})`,
-        REGISTER_USER, listMetaanalysesForUser);
+        KNOWN_USER, listMetaanalysesForUser);
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
-        REGISTER_USER, getMetaanalysisVersion);
+        KNOWN_USER, getMetaanalysisVersion);
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
-        REGISTER_USER, getMetaanalysisVersion);
+        KNOWN_USER, getMetaanalysisVersion);
 api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         GUARD, SAME_USER, jsonBodyParser, saveMetaanalysis);
 
@@ -121,29 +122,78 @@ function listTitles(req, res, next) {
  *
  *
  */
-function REGISTER_USER(req, res, next) {
+function KNOWN_USER(req, res, next) {
   if (req.user) {
     const email = req.user.emails[0].value;
+    // return res.redirect(301, '/register');
     storage.getUser(email)
-    .catch(() => { // register the user when not found
-      const user = req.user;
-      // creation time - when the user was first registered
-      user.ctime = tools.uniqueNow();
-      console.log('registering user ' + email);
-      return storage.addUser(email, user);
-    })
-    .then((user) => { // update access time
-      user.atime = Date.now();
-      next();
-    })
-    .catch((err) => {
-      console.error('failed to register user');
-      console.error(err);
-      next(err);
+    .catch(() => {
+      // user unknown - todo: maybe redirect to register page?
+      console.log("WE SHOULD BE REDIRECTING");
+      res.writeHead(302, { Location: '/register' });
+      res.end();
+      return res;
     });
+    // .then((user) => { // update access time
+    //   user.atime = Date.now();
+    //   next();
+    // });
   } else {
     next();
   }
+}
+
+function saveUser(req, res, next) {
+  // check that who we're trying to change is who is logged in.
+  // handle it, either save or return an error.
+  console.log('###################Hit register########################');
+  const user = req.user;
+  // for now, register passes in a copy of the user object w/ .username added.
+  // possible that a better way is simply username and then use the logged in
+  // user.
+  const recUser = req.body;
+
+  console.log(user);
+  console.log(recUser);
+
+  if (user.emails[0].value !== recUser.email) {
+    next(new InternalError());
+  } else {
+    recUser.atime = Date.now(); // update access time
+    storage.addUser(user.emails[0].value, extractReceivedUser(recUser));
+  }
+  next();
+}
+
+function extractReceivedUser(receivedUser) {
+  // expecting receivedUser to come from JSON.parse()
+  const retval = {
+    displayName:      tools.string(receivedUser.displayName),
+    name:             tools.assoc(receivedUser.name, extractReceivedName),
+    email:            tools.string(receivedUser.email),
+    photos:           tools.array(receivedUser.photos, extractReceivedPhoto),
+    joined:           tools.number(receivedUser.joined),
+    username:         tools.string(receivedUser.username),
+    atime:            tools.number(receivedUser.atime),
+    CHECKctime:       tools.number(receivedUser.ctime),
+  };
+
+  return retval;
+}
+
+function extractReceivedName(recName) {
+  const retval = {
+    familyName: tools.string(recName.familyName),
+    givenName: tools.string(recName.givenName),
+  };
+  return retval;
+}
+
+function extractReceivedPhoto(recPhoto) {
+  const retval = {
+    value: tools.string(recPhoto.value),
+  };
+  return retval;
 }
 
 function SAME_USER(req, res, next) {
@@ -180,6 +230,7 @@ function listTopUsers(req, res, next) {
     const retval = [];
     for (const key of Object.keys(users)) {
       const user = users[key];
+      if (key === 'lima@local') continue;
       retval.push({
         displayName: user.displayName,
         name: user.name,

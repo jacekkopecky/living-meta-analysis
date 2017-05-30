@@ -25,7 +25,7 @@
     // register the user with the server
     var idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
 
-    fetch('/api/register', {
+    fetch('/api/known', {
       method: 'POST',
       headers: _.idTokenToFetchHeaders(idToken),
     });
