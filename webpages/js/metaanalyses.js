@@ -2053,13 +2053,8 @@
     _.addEventListener(th, 'span.customcolname', 'input', function(e) {
       var customName = e.target.textContent.trim();
 
-      if (!customName) {
-        col.customName = null;
-        _.setProps(th, '.richcollabel', 'innerHTML', getColTitle(col, 1));
-      } else {
-        col.customName = customName;
-        _.fillEls(th, '.richcollabel', col.customName);
-      }
+      col.customName = customName;
+      fillObjectInformation(th, col, col.customName);
 
       _.scheduleSave(currentMetaanalysis);
     });
@@ -2076,21 +2071,21 @@
         if (!col.customName)
           _.setProps(th, '.richcollabel', 'innerHTML', getColTitle(col, 1));
       }
-      // we'll call setValidationErrorClass() in fillFormulaColumnsSelection
+      // we'll call setValidationErrorClass() in fillDropdownSelection
 
       // make sure formula columns array matches the number of expected parameters
       col.formulaParams.length = formula ? formula.parameters.length : 0;
       col.formula = lima.createFormulaString(col);
 
       // fill the columns selection
-      fillFormulaColumnsSelection(metaanalysis, col, th, formula);
+      fillDropdownSelection(metaanalysis, col, th, formula);
 
       _.scheduleSave(metaanalysis);
       recalculateComputedData();
     };
 
     var formula = col.formulaObj;
-    fillFormulaColumnsSelection(metaanalysis, col, th, formula);
+    fillDropdownSelection(metaanalysis, col, th, formula);
 
     setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.formula);
 
@@ -2102,31 +2097,28 @@
     return th;
   }
 
-  function fillFormulaColumnsSelection(metaanalysis, col, computedColumnsOptionsEl, formula) {
+  function fillDropdownSelection(metaanalysis, obj, objEl, formula, onlyColumns) {
     // editing drop-down boxes for parameter columns
-    var formulaColumnsSelectionEl = _.findEl(computedColumnsOptionsEl, '.colformulacolumnsselection');
+    var dropdownSelectionEl = _.findEl(objEl, '.dropdownselection');
     // clear out old children.
-    formulaColumnsSelectionEl.innerHTML = '';
-
-    fillComputedColumnInformation(computedColumnsOptionsEl, col);
+    dropdownSelectionEl.innerHTML = '';
 
     if (!formula) return;
 
     var noOfParams = formula.parameters.length;
 
     for (var i = 0; i < noOfParams; i++){
-      // todo this needs to be refactored with fillAggregateColumnsSelection and fillGraphColumnsSelection and fillGroupingAggregateColumnSelection
       // Make a select dropdown
       var label = document.createElement('label');
       label.textContent = formula.parameters[i] + ': ';
-      formulaColumnsSelectionEl.appendChild(label);
+      dropdownSelectionEl.appendChild(label);
 
       var select = document.createElement("select");
       label.appendChild(select);
 
       // the first option is an instruction
       var op = document.createElement("option");
-      op.textContent = 'Select a column or aggregate';
+      op.textContent = 'Select a column';
       op.value = '';
       select.appendChild(op);
       select.classList.add('validationerror');
@@ -2137,28 +2129,32 @@
       // account for computed columns in metaanalysis.columns
       for (var j = 0; j < metaanalysis.columns.length; j++){
         var colId = metaanalysis.columns[j];
-        var found = makeOption(colId, col, col.formulaParams[i], select);
+        var found = makeOption(colId, obj, obj.formulaParams[i], select);
         foundCurrentValue = foundCurrentValue || found;
       }
 
-      // Now make an option for each aggregate in metaanalysis
-      for (j = 0; j < metaanalysis.aggregates.length; j++){
-        var aggr = metaanalysis.aggregates[j];
-        found = makeOption(aggr, col, col.formulaParams[i], select);
-        foundCurrentValue = foundCurrentValue || found;
+      if (!onlyColumns) {
+        op.textContent = 'Select a column or aggregate';
+
+        // Now make an option for each aggregate in metaanalysis
+        for (j = 0; j < metaanalysis.aggregates.length; j++){
+          var aggr = metaanalysis.aggregates[j];
+          found = makeOption(aggr, obj, obj.formulaParams[i], select);
+          foundCurrentValue = foundCurrentValue || found;
+        }
+
+        // Now make an option for each grouping aggregate in metaanalysis
+        for (j = 0; j < metaanalysis.groupingAggregates.length; j++){
+          aggr = metaanalysis.groupingAggregates[j];
+          found = makeOption(aggr, obj, obj.formulaParams[i], select);
+          foundCurrentValue = foundCurrentValue || found;
+        }
       }
 
-      // Now make an option for each grouping aggregate in metaanalysis
-      for (j = 0; j < metaanalysis.groupingAggregates.length; j++){
-        aggr = metaanalysis.groupingAggregates[j];
-        found = makeOption(aggr, col, col.formulaParams[i], select);
-        foundCurrentValue = foundCurrentValue || found;
-      }
-
-      // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
-      if (!foundCurrentValue && col.formulaParams[i]) { // ignore undefined
-        colId = col.formulaParams[i];
-        makeOption(colId, col, colId, select);
+      // if the parameter is a computed value that isn't itself part of the metaanalysis, add it as the last option
+      if (!foundCurrentValue && obj.formulaParams[i]) { // ignore undefined
+        colId = obj.formulaParams[i];
+        makeOption(colId, obj, colId, select);
       }
 
       setValidationErrorClass();
@@ -2167,8 +2163,8 @@
       // preserve the value of i inside this code
       (function(i, select){
         select.onchange = function(e) {
-          col.formulaParams[i] = lima.parseFormulaString(e.target.value);
-          col.formula = lima.createFormulaString(col);
+          obj.formulaParams[i] = lima.parseFormulaString(e.target.value);
+          obj.formula = lima.createFormulaString(obj);
           if (e.target.value) {
             select.classList.remove('validationerror');
           } else {
@@ -2176,11 +2172,25 @@
           }
           setValidationErrorClass();
           _.scheduleSave(metaanalysis);
-          fillComputedColumnInformation(computedColumnsOptionsEl, col);
+          fillObjectInformation(objEl, obj);
           recalculateComputedData();
         };
       })(i, select);
     }
+    fillObjectInformation(objEl, obj);
+  }
+
+  function fillObjectInformation(th, obj, unsavedName) {
+    if (unsavedName) {
+      _.fillEls(th, '.richlabel', unsavedName);
+    } else if (obj.customName) {
+      _.fillEls(th, '.richlabel', obj.customName);
+    } else {
+      _.setProps(th, '.richlabel', 'innerHTML', getColTitle(obj, 1));
+    }
+
+    _.setProps(th, '.fulllabel', 'innerHTML', getColTitle(obj, Infinity));
+    // todo do more for non-editing; use computed-datum as inspiration but fix it to account for computed columns
   }
 
   function makeOption(optionColumn, currentTableColumn, currentValue, selectEl) {
@@ -2255,18 +2265,6 @@
     } else {
       return null;
     }
-  }
-
-  function fillComputedColumnInformation(th, col) {
-    // todo this needs to be refactored together with fillAggregateInformation and fillGraphInformation
-    if (col.customName) {
-      _.fillEls(th, '.richcollabel', col.customName);
-    } else {
-      _.setProps(th, '.richcollabel', 'innerHTML', getColTitle(col, 1));
-    }
-
-    _.setProps(th, '.fullcollabel', 'innerHTML', getColTitle(col, Infinity));
-    // todo do more for non-editing; use computed-datum as inspiration but fix it to account for computed columns
   }
 
   /* computed cols
@@ -3275,13 +3273,8 @@
       _.addEventListener(aggregateEl, 'span.customaggrname', 'input', function(e) {
         var customName = e.target.textContent.trim();
 
-        if (!customName) {
-          aggregate.customName = null;
-          _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
-        } else {
-          aggregate.customName = customName;
-          _.fillEls(aggregateEl, '.richaggrlabel', aggregate.customName);
-        }
+        aggregate.customName = customName;
+        fillObjectInformation(aggregateEl, aggregate, aggregate.customName);
 
         _.scheduleSave(currentMetaanalysis);
       });
@@ -3298,7 +3291,7 @@
           if (!aggregate.customName)
             _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
         }
-        // we'll call setValidationErrorClass() in fillAggregateColumnsSelection
+        // we'll call setValidationErrorClass() in fillDropdownSelection
 
         // make sure formula columns array matches the number of expected parameters
         aggregate.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -3308,14 +3301,14 @@
         _.fillEls(aggregateEl, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
 
         // fill the columns selection
-        fillAggregateColumnsSelection(metaanalysis, aggregate, aggregateEl, formula);
+        fillDropdownSelection(metaanalysis, aggregate, aggregateEl, formula);
 
         _.scheduleSave(metaanalysis);
         recalculateComputedData();
       };
 
       var aggrFormula = aggregate.formulaObj;
-      fillAggregateColumnsSelection(metaanalysis, aggregate, aggregateEl, aggrFormula);
+      fillDropdownSelection(metaanalysis, aggregate, aggregateEl, aggrFormula);
 
       setupPopupBoxPinning(aggregateEl, '.datum.popupbox', aggregate.formula);
       _.setDataProps(aggregateEl, '.datum.popupbox', 'index', aggregateIndex);
@@ -3343,7 +3336,7 @@
         _.fillEls(aggregateValTd, '.value', val);
       });
 
-      fillAggregateInformation(aggregateEl, aggregate);
+      fillObjectInformation(aggregateEl, aggregate);
       fillComments('comment-template', aggregateValTd, '.commentcount', '.datum.popupbox main', metaanalysis, ['aggregates', aggregateIndex, 'comments']);
     });
 
@@ -3352,98 +3345,6 @@
 
     var aggregatesContainer = _.findEl('#metaanalysis .aggregates');
     aggregatesContainer.appendChild(table);
-  }
-
-  function fillAggregateInformation(aggregateEl, aggregate) {
-    if (aggregate.customName) {
-      _.fillEls(aggregateEl, '.richaggrlabel', aggregate.customName);
-    } else {
-      _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
-    }
-
-    _.setProps(aggregateEl, '.fullaggrlabel', 'innerHTML', getColTitle(aggregate, Infinity));
-    // todo something for the non-editing case
-  }
-
-  function fillAggregateColumnsSelection(metaanalysis, aggregate, aggregateEl, formula) {
-    // editing drop-down boxes for parameter columns
-    var aggregateColumnsSelectionEl = _.findEl(aggregateEl, '.aggregatecolumnsselection');
-    // clear out old children.
-    aggregateColumnsSelectionEl.innerHTML = '';
-
-    if (!formula) return;
-
-    var noOfParams = formula.parameters.length;
-
-    for (var i = 0; i < noOfParams; i++){
-      // Make a select dropdown
-      var label = document.createElement('label');
-      label.textContent = formula.parameters[i] + ': ';
-      aggregateColumnsSelectionEl.appendChild(label);
-
-      var select = document.createElement("select");
-      label.appendChild(select);
-
-      // the first option is an instruction
-      var op = document.createElement("option");
-      op.textContent = 'Select a column or aggregate';
-      op.value = '';
-      select.appendChild(op);
-      select.classList.add('validationerror');
-
-      var foundCurrentValue = false;
-
-      // Now make an option for each column in metaanalysis
-      // account for computed columns in metaanalysis.columns
-      for (var j = 0; j < metaanalysis.columns.length; j++){
-        var colId = metaanalysis.columns[j];
-        var found = makeOption(colId, aggregate, aggregate.formulaParams[i], select);
-        foundCurrentValue = foundCurrentValue || found;
-      }
-
-      // Now make an option for each aggregate in metaanalysis
-      for (j = 0; j < metaanalysis.aggregates.length; j++){
-        var aggr = metaanalysis.aggregates[j];
-        found = makeOption(aggr, aggregate, aggregate.formulaParams[i], select);
-        foundCurrentValue = foundCurrentValue || found;
-      }
-
-      // Now make an option for each grouping aggregate in metaanalysis
-      for (j = 0; j < metaanalysis.groupingAggregates.length; j++){
-        aggr = metaanalysis.groupingAggregates[j];
-        found = makeOption(aggr, aggregate, aggregate.formulaParams[i], select);
-        foundCurrentValue = foundCurrentValue || found;
-      }
-
-      // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
-      if (!foundCurrentValue && aggregate.formulaParams[i]) {
-        colId = aggregate.formulaParams[i];
-        makeOption(colId, aggregate, colId, select);
-      }
-
-      setValidationErrorClass();
-
-      // listen to changes of the dropdown box
-      // preserve the value of i inside this code
-      (function(i, select){
-        select.onchange = function(e) {
-          aggregate.formulaParams[i] = lima.parseFormulaString(e.target.value);
-          aggregate.formula = lima.createFormulaString(aggregate);
-          if (e.target.value) {
-            select.classList.remove('validationerror');
-          } else {
-            select.classList.add('validationerror');
-          }
-          setValidationErrorClass();
-          _.scheduleSave(metaanalysis);
-          fillAggregateInformation(aggregateEl, aggregate);
-          recalculateComputedData();
-        };
-      })(i, select);
-
-    }
-
-    fillAggregateInformation(aggregateEl, aggregate);
   }
 
   function addNewAggregateToMetaanalysis() {
@@ -3503,7 +3404,7 @@
     metaanalysis.groupingAggregates.forEach(function (groupingAggregate, groupingAggregateIndex) {
       var tr = _.cloneTemplate('grouping-aggregate-row-template').children[0];
       tbody.insertBefore(tr, addGroupingAggregateNode);
-      fillAggregateInformation(tr, groupingAggregate);
+      fillObjectInformation(tr, groupingAggregate);
 
       // todo this could be factored out with aggregates
       // Add an option for every aggregate formula we know
@@ -3525,13 +3426,8 @@
       _.addEventListener(tr, 'span.customgroupingaggrname', 'input', function(e) {
         var customName = e.target.textContent.trim();
 
-        if (!customName) {
-          groupingAggregate.customName = null;
-          _.setProps(tr, '.richaggrlabel', 'innerHTML', getColTitle(groupingAggregate, 1));
-        } else {
-          groupingAggregate.customName = customName;
-          _.fillEls(tr, '.richaggrlabel', groupingAggregate.customName);
-        }
+        groupingAggregate.customName = customName;
+        fillObjectInformation(tr, groupingAggregate, groupingAggregate.customName);
 
         _.scheduleSave(currentMetaanalysis);
       });
@@ -3549,7 +3445,7 @@
           if (!groupingAggregate.customName)
             _.setProps(tr, '.richaggrlabel', 'innerHTML', getColTitle(groupingAggregate, 1));
         }
-        // we'll call setValidationErrorClass() in fillGroupingAggregateColumnsSelection
+        // we'll call setValidationErrorClass() in fillDropdownSelection
 
         // make sure formula columns array matches the number of expected parameters
         groupingAggregate.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -3559,14 +3455,14 @@
         _.fillEls(tr, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
 
         // fill the columns selection
-        fillGroupingAggregateColumnsSelection(metaanalysis, groupingAggregate, tr, formula);
+        fillDropdownSelection(metaanalysis, groupingAggregate, tr, formula);
 
         _.scheduleSave(metaanalysis);
         recalculateComputedData();
       };
 
       var groupingAggrFormula = groupingAggregate.formulaObj;
-      fillGroupingAggregateColumnsSelection(metaanalysis, groupingAggregate, tr, groupingAggrFormula);
+      fillDropdownSelection(metaanalysis, groupingAggregate, tr, groupingAggrFormula);
 
       setupPopupBoxPinning(tr, '.popupbox', groupingAggregate.formula);
       _.setDataProps(tr, '.popupbox', 'index', groupingAggregateIndex);
@@ -3602,7 +3498,7 @@
         });
       });
 
-      fillAggregateInformation(tr, groupingAggregate);
+      fillObjectInformation(tr, groupingAggregate);
       fillComments('comment-template', tr, '.commentcount', '.popupbox main', metaanalysis, ['groupingAggregates', groupingAggregateIndex, 'comments']);
     });
 
@@ -3646,88 +3542,6 @@
       _.scheduleSave(metaanalysis);
       updateMetaanalysisView();
     };
-  }
-
-  // this function fills the grouping aggregates formula param selection dropdowns
-  function fillGroupingAggregateColumnsSelection(metaanalysis, groupingAggregate, trEl, formula) {
-    // editing drop-down boxes for parameter columns
-    var groupingAggregateColumnsSelectionEl = _.findEl(trEl, '.groupingaggregatecolumnsselection');
-    // clear out old children.
-    groupingAggregateColumnsSelectionEl.innerHTML = '';
-
-    if (!formula) return;
-
-    var noOfParams = formula.parameters.length;
-
-    for (var i = 0; i < noOfParams; i++){
-      // Make a select dropdown
-      var label = document.createElement('label');
-      label.textContent = formula.parameters[i] + ': ';
-      groupingAggregateColumnsSelectionEl.appendChild(label);
-
-      var select = document.createElement("select");
-      label.appendChild(select);
-
-      // the first option is an instruction
-      var op = document.createElement("option");
-      op.textContent = 'Select a column or aggregate';
-      op.value = '';
-      select.appendChild(op);
-      select.classList.add('validationerror');
-
-      var foundCurrentValue = false;
-
-      // Now make an option for each column in metaanalysis
-      // account for computed columns in metaanalysis.columns
-      for (var j = 0; j < metaanalysis.columns.length; j++){
-        var colId = metaanalysis.columns[j];
-        var found = makeOption(colId, groupingAggregate, groupingAggregate.formulaParams[i], select);
-        foundCurrentValue = foundCurrentValue || found;
-      }
-
-      // Now make an option for each aggregate in metaanalysis
-      for (j = 0; j < metaanalysis.aggregates.length; j++){
-        var aggr = metaanalysis.aggregates[j];
-        found = makeOption(aggr, groupingAggregate, groupingAggregate.formulaParams[i], select);
-        foundCurrentValue = foundCurrentValue || found;
-      }
-
-      // Now make an option for each grouping aggregate in metaanalysis
-      for (j = 0; j < metaanalysis.groupingAggregates.length; j++){
-        aggr = metaanalysis.groupingAggregates[j];
-        found = makeOption(aggr, groupingAggregate, groupingAggregate.formulaParams[i], select);
-        foundCurrentValue = foundCurrentValue || found;
-      }
-
-      // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
-      if (!foundCurrentValue && groupingAggregate.formulaParams[i]) {
-        colId = groupingAggregate.formulaParams[i];
-        makeOption(colId, groupingAggregate, colId, select);
-      }
-
-      setValidationErrorClass();
-
-      // listen to changes of the dropdown box
-      // preserve the value of i inside this code
-      (function(i, select){
-        select.onchange = function(e) {
-          groupingAggregate.formulaParams[i] = lima.parseFormulaString(e.target.value);
-          groupingAggregate.formula = lima.createFormulaString(groupingAggregate);
-          if (e.target.value) {
-            select.classList.remove('validationerror');
-          } else {
-            select.classList.add('validationerror');
-          }
-          setValidationErrorClass();
-          _.scheduleSave(metaanalysis);
-          fillAggregateInformation(trEl, groupingAggregate);
-          recalculateComputedData();
-        };
-      })(i, select);
-
-    }
-
-    fillAggregateInformation(trEl, groupingAggregate);
   }
 
   function addNewGroupingAggregateToMetaanalysis() {
@@ -3808,13 +3622,8 @@
       _.addEventListener(graphEl, 'span.customgraphname', 'input', function(e) {
         var customName = e.target.textContent.trim();
 
-        if (!customName) {
-          graph.customName = null;
-          _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
-        } else {
-          graph.customName = customName;
-          _.fillEls(graphEl, '.richgraphlabel', graph.customName);
-        }
+        graph.customName = customName;
+        fillObjectInformation(graphEl, graph, graph.customName);
 
         _.scheduleSave(currentMetaanalysis);
       });
@@ -3830,7 +3639,7 @@
           if (!graph.customName)
             _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
         }
-        // we'll call setValidationErrorClass() in fillGraphColumnsSelection
+        // we'll call setValidationErrorClass() in fillDropdownSelection
 
         // make sure formula columns array matches the number of expected parameters
         graph.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -3840,14 +3649,14 @@
         _.fillEls(graphEl, '.formula', formula ? formula.label : 'error'); // the 'error' string should not be visible
 
         // fill the columns selection
-        fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula);
+        fillDropdownSelection(metaanalysis, graph, graphEl, formula, true);
 
         _.scheduleSave(metaanalysis);
         recalculateComputedData();
       };
 
       var graphFormula = graph.formulaObj;
-      fillGraphColumnsSelection(metaanalysis, graph, graphEl, graphFormula);
+      fillDropdownSelection(metaanalysis, graph, graphEl, graphFormula, true);
 
       setupPopupBoxPinning(graphEl, '.datum.popupbox', graph.formula);
       _.setDataProps(graphEl, '.datum.popupbox', 'index', graphIndex);
@@ -3855,7 +3664,7 @@
       _.addEventListener(graphEl, 'button.move', 'click', moveGraph);
       _.addEventListener(graphEl, 'button.delete', 'click', deleteGraph);
 
-      fillGraphInformation(graphEl, graph);
+      fillObjectInformation(graphEl, graph);
       fillComments('comment-template', graphValTd, '.commentcount', '.datum.popupbox main', metaanalysis, ['graphs', graphIndex, 'comments']);
     });
 
@@ -3864,84 +3673,6 @@
 
     var graphsContainer = _.findEl('#metaanalysis .graphs');
     graphsContainer.appendChild(table);
-  }
-
-  function fillGraphInformation(graphEl, graph) {
-    if (graph.customName) {
-      _.fillEls(graphEl, '.richgraphlabel', graph.customName);
-    } else {
-      _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
-    }
-
-    _.setProps(graphEl, '.fullgraphlabel', 'innerHTML', getColTitle(graph, Infinity));
-    // todo something for the non-editing case
-  }
-
-  function fillGraphColumnsSelection(metaanalysis, graph, graphEl, formula) {
-    // editing drop-down boxes for parameter columns
-    var graphColumnsSelectionEl = _.findEl(graphEl, '.graphcolumnsselection');
-    // clear out old children.
-    graphColumnsSelectionEl.innerHTML = '';
-
-    if (!formula) return;
-
-    var noOfParams = formula.parameters.length;
-
-    for (var i = 0; i < noOfParams; i++){
-      // Make a select dropdown
-      var label = document.createElement('label');
-      label.textContent = formula.parameters[i] + ': ';
-      graphColumnsSelectionEl.appendChild(label);
-
-      var select = document.createElement("select");
-      label.appendChild(select);
-
-      // the first option is an instruction
-      var op = document.createElement("option");
-      op.textContent = 'Select a column';
-      op.value = '';
-      select.appendChild(op);
-      select.classList.add('validationerror');
-
-      var foundCurrentValue = false;
-
-      // Now make an option for each column in metaanalysis
-      // account for computed columns in metaanalysis.columns
-      for (var j = 0; j < metaanalysis.columns.length; j++){
-        var colId = metaanalysis.columns[j];
-        var found = makeOption(colId, graph, graph.formulaParams[i], select);
-        foundCurrentValue = foundCurrentValue || found;
-      }
-
-      // if the parameter is a computed value that isn't itself a column of the metaanalysis, add it as the last option
-      if (!foundCurrentValue && graph.formulaParams[i]) { // ignore undefined
-        colId = graph.formulaParams[i];
-        makeOption(colId, graph, colId, select);
-      }
-
-      setValidationErrorClass();
-
-      // listen to changes of the dropdown box
-      // preserve the value of i inside this code
-      (function(i, select){
-        select.onchange = function(e) {
-          graph.formulaParams[i] = lima.parseFormulaString(e.target.value);
-          graph.formula = lima.createFormulaString(graph);
-          if (e.target.value) {
-            select.classList.remove('validationerror');
-          } else {
-            select.classList.add('validationerror');
-          }
-          setValidationErrorClass();
-          _.scheduleSave(metaanalysis);
-          fillGraphInformation(graphEl, graph);
-          recalculateComputedData();
-        };
-      })(i, select);
-
-    }
-
-    fillGraphInformation(graphEl, graph);
   }
 
   function addNewGraphToMetaanalysis() {

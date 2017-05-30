@@ -771,7 +771,7 @@
 
   function fillFormulaColumnsSelection(paper, col, computedColumnsOptionsEl, formula) {
     // editing drop-down boxes for parameter columns
-    var formulaColumnsSelectionEl = _.findEl(computedColumnsOptionsEl, '.colformulacolumnsselection');
+    var formulaColumnsSelectionEl = _.findEl(computedColumnsOptionsEl, '.dropdownselection');
     // clear out old children.
     formulaColumnsSelectionEl.innerHTML = '';
 
@@ -909,8 +909,8 @@
   }
 
   function fillComputedColumnInformation(th, col) {
-    _.setProps(th, '.richcollabel', 'innerHTML', getColTitle(col, 1));
-    _.setProps(th, '.fullcollabel', 'innerHTML', getColTitle(col, Infinity));
+    _.setProps(th, '.richlabel', 'innerHTML', getColTitle(col, 1));
+    _.setProps(th, '.fulllabel', 'innerHTML', getColTitle(col, Infinity));
     // todo do more for non-editing; use computed-datum as inspiration but fix it to account for computed columns
   }
 

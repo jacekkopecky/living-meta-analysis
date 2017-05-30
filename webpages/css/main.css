@@ -2607,10 +2607,10 @@ body:not(.page-about-you) #metaanalysis.no-data table.experiments {
   display: initial;
 }
 
-#paper .colformulacolumnsselection label,
-#paper .colformulacolumnsselection label > select,
-#metaanalysis .colformulacolumnsselection label,
-#metaanalysis .colformulacolumnsselection label > select {
+#paper .dropdownselection label,
+#paper .dropdownselection label > select,
+#metaanalysis .dropdownselection label,
+#metaanalysis .dropdownselection label > select {
   display: block;
 }
 
@@ -2676,12 +2676,12 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
   background-color: #eee;
 }
 
-#metaanalysis table.aggregates .aggregatecolumnsselection label {
+#metaanalysis table.aggregates .dropdownselection label {
   margin-top: .5em;
   display: block;
 }
 
-#metaanalysis table.aggregates .aggregatecolumnsselection select {
+#metaanalysis table.aggregates .dropdownselection select {
   display: block;
 }
 
@@ -2795,12 +2795,12 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
   background-color: #eee;
 }
 
-#metaanalysis table.graphs .graphcolumnsselection label {
+#metaanalysis table.graphs .dropdownselection label {
   margin-top: .5em;
   display: block;
 }
 
-#metaanalysis table.graphs .graphcolumnsselection select {
+#metaanalysis table.graphs .dropdownselection select {
   display: block;
 }
 
