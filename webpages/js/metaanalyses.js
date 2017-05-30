@@ -2068,8 +2068,7 @@
         formulasDropdown.classList.remove('validationerror');
       } else {
         formulasDropdown.classList.add('validationerror');
-        if (!col.customName)
-          _.setProps(th, '.richcollabel', 'innerHTML', getColTitle(col, 1));
+        fillObjectInformation(tr, col);
       }
       // we'll call setValidationErrorClass() in fillDropdownSelection
 
@@ -2183,8 +2182,6 @@
   function fillObjectInformation(th, obj, unsavedName) {
     if (unsavedName) {
       _.fillEls(th, '.richlabel', unsavedName);
-    } else if (obj.customName) {
-      _.fillEls(th, '.richlabel', obj.customName);
     } else {
       _.setProps(th, '.richlabel', 'innerHTML', getColTitle(obj, 1));
     }
@@ -2237,6 +2234,10 @@
 
   function getRichColumnLabel(col, level) {
     if (level == undefined) level = col.number == null ? 1 : 0;
+
+    if (col.customName && level != Infinity) { // Don't substitute full nesting for customName
+      return '<span>' + col.customName + '</span>';
+    }
 
     var retval = '';
     if (level != Infinity && col.number !== undefined) retval += '<span>' + col.number + '. </span>';
@@ -3288,8 +3289,7 @@
           aggregateFormulasDropdown.classList.remove('validationerror');
         } else {
           aggregateFormulasDropdown.classList.add('validationerror');
-          if (!aggregate.customName)
-            _.setProps(aggregateEl, '.richaggrlabel', 'innerHTML', getColTitle(aggregate, 1));
+          fillObjectInformation(aggregateEl, aggregate);
         }
         // we'll call setValidationErrorClass() in fillDropdownSelection
 
@@ -3442,8 +3442,7 @@
           groupingAggregateFormulasDropdown.classList.remove('validationerror');
         } else {
           groupingAggregateFormulasDropdown.classList.add('validationerror');
-          if (!groupingAggregate.customName)
-            _.setProps(tr, '.richaggrlabel', 'innerHTML', getColTitle(groupingAggregate, 1));
+          fillObjectInformation(tr, groupingAggregate);
         }
         // we'll call setValidationErrorClass() in fillDropdownSelection
 
@@ -3636,8 +3635,7 @@
           graphFormulasDropdown.classList.remove('validationerror');
         } else {
           graphFormulasDropdown.classList.add('validationerror');
-          if (!graph.customName)
-            _.setProps(graphEl, '.richgraphlabel', 'innerHTML', getColTitle(graph, 1));
+          fillObjectInformation(graphEl, graph);
         }
         // we'll call setValidationErrorClass() in fillDropdownSelection
 
