@@ -1,0 +1,118 @@
+<!doctype html>
+<title>Username | Living Meta-Analysis</title>
+<script src="/lib/promise.js"></script>
+<script src="/lib/fetch.js"></script>
+<script src="https://apis.google.com/js/platform.js"></script>
+<link rel="stylesheet" href="/css/main.css">
+
+<header>
+  <a href="/" id="logo-box">
+    <h1>LiMA</h1><h2>Living Meta-Analysis</h2>
+  </a>
+</header>
+
+<h1>Please choose a username:</h1>
+<div class="username">
+  <p class="edithighlight">
+    <span class='customusername' contenteditable placeholder="custom username"></span>
+  </p>
+  <p>or</p>
+  <label>
+    same as email address
+    <input class='emailaddress' type="checkbox">
+  </label>
+  <p>
+    <button class="confirm">confirm</button>
+  </p>
+</div>
+
+<footer>
+  <p>LiMA (Living Meta-Analysis) at <a href="http://port.ac.uk/">University of Portsmouth</a>, &copy; 2016–2017</p>
+  <p>Feedback and questions are welcome at <a href="mailto:lima@port.ac.uk">lima@port.ac.uk</a>.</p>
+</footer>
+
+
+<script src="/js/tools.js"></script>
+<script src="/js/auth.js"></script>
+<script>
+  'use strict';
+  var lima = window.lima;
+  var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
+
+  window.lima.initPage = function () {
+
+    var email = lima.getAuthenticatedUserEmail();
+
+    if (!email) {
+      window.location.href = '/signin';
+    }
+
+    lima.getGapiIDToken()
+    .then(function (idToken) {
+      return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
+    })
+    .then(_.fetchJson)
+    .then(fillUsernamePage)
+    .catch(function (err) {
+      if (err.status === 404) {
+        _.notFound();
+        return;
+      }
+      console.error("problem getting user");
+      console.error(err);
+      _.apiFail();
+    });
+
+    _.addEventListener('button.confirm', 'click', register);
+  }
+
+  function register() {
+    // todo: remember where we janked them from, send them back.
+    // todo: validate the user input & save it
+    console.log("clicked");
+  }
+
+  function fillUsernamePage(user) {
+    var customUsernameEl = _.findEl('.customusername');
+    var emailAddressEl = _.findEl('.emailaddress');
+    console.log(user);
+    if (user.username) {
+      if (user.username == user.email) {
+        _.fillEls('.customusername', user.email);
+        _.setProps('.emailaddress', 'checked', true);
+      } else {
+        _.fillEls('.customusername', user.username);
+        _.setProps('.emailaddress', 'checked', false);
+        _.setProps('.emailaddress', 'disabled', true);
+      }
+    }
+
+    // - if name has anything entered, toggle disabled the checkbox
+    _.addEventListener('.customusername', 'input', function(e){
+      var username = e.target.textContent.trim();
+      if (username) {
+        _.setProps('.emailaddress', 'checked', false);
+        _.setProps('.emailaddress', 'disabled', true);
+      } else if (username == user.email){
+        _.setProps('.emailaddress', 'checked', true);
+      } else {
+        _.setProps('.emailaddress', 'checked', false);
+        _.setProps('.emailaddress', 'disabled', false);
+      }
+    });
+
+    // - if checkbox is selected, toggle disabled on the text
+    _.addEventListener('.emailaddress', 'change',  function(e){
+      var checked = e.target.checked;
+      if (checked) {
+        _.fillEls('.customusername', user.email);
+      } else {
+        var usernameEl = _.findEl('.customusername');
+        if (usernameEl.textContent == user.email) {
+          _.fillEls('.customusername', '');
+        }
+      }
+    });
+  }
+
+</script>

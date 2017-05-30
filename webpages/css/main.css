@@ -531,7 +531,9 @@ body:not(.editing) #toggle-editing .ifon {
   display: none;
 }
 
-
+body.username {
+  display: block;
+}
 
 /* personalinfo
  *
