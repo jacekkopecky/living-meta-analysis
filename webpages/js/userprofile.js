@@ -5,6 +5,16 @@
 
   lima.localStorageUserEmailAddress = 'lima@local';
 
+  lima.onSignInChange(redirectLocalProfile);
+
+  // redirect /lima@local when a user is signed in
+  function redirectLocalProfile() {
+    var user = lima.getAuthenticatedUserEmail();
+    if (user && window.location.pathname == '/' + lima.localStorageUserEmailAddress + '/') {
+      window.location.href = '/profile';
+    }
+  }
+
   lima.requestAndFillUserProfile = function requestAndFillUserProfile() {
     var email = lima.extractUserProfileEmailFromUrl();
 
@@ -48,6 +58,11 @@
         window.location.reload();
       }
     });
+    _.addEventListener('#personalinfo .register', 'click', function() {
+      var signInButton = _.findEl('div.g-signin2.signin');
+      // the way Google have implemented this button, clicking on the first child of the button placeholder works
+      if (signInButton && signInButton.children[0]) signInButton.children[0].click();
+    });
   }
 
   function fillUserProfile(user) {
@@ -56,6 +71,7 @@
     functionsWaiting.forEach(function (f) { f(); });
     functionsWaiting = [];
 
+    _.fillEls('#personalinfo div.username span', user.username);
     _.fillEls('#personalinfo .name', user.displayName);
     _.fillEls('#personalinfo .email', user.email);
     _.fillEls('#personalinfo .joined .date', _.formatNiceDate(user.joined));

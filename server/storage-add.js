@@ -42,7 +42,7 @@ inputData
 
   if ('users' in data) {
     for (const userID of Object.keys(data.users)) {
-      promises.push(storage.addUser(userID, data.users[userID]));
+      promises.push(storage.saveUser(userID, data.users[userID]));
     }
   }
 

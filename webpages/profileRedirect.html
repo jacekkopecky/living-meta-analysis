@@ -12,15 +12,34 @@ redirecting...
 
 <script>
 window.lima.initPage = function initPage() {
+  'use strict';
+  var lima = window.lima;
+  var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
+
   // redirect to the user's profile
 
   var user = lima.getAuthenticatedUserEmail();
+
   if (user) {
-    window.history.replaceState({}, "profile", '/' + user + '/');
-    window.location.href = '/' + user + '/';
+    lima.getGapiIDToken()
+    .then(function (idToken) {
+      return fetch('/api/profile/' + user, {
+        method: 'GET',
+        headers: lima._.idTokenToFetchHeaders(idToken),
+      });
+    })
+    .then(_.fetchJson)
+    .then(function(userProfile) {
+      var userid = userProfile.username || user;
+      window.history.replaceState({}, "profile", '/' + userid +'/');
+      window.location.href = '/' + userid +'/';
+    })
+    .catch(function(err) {
+      _.apiFail();
+    });
   } else {
-    window.history.replaceState({}, "signin", '/signin');
-    window.location.href = '/signin';
+    window.history.replaceState({}, "local", '/lima@local');
+    window.location.href = '/lima@local';
   }
 
 }
