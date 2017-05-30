@@ -18,6 +18,7 @@ const fs = require('fs');
 const datastore = gcloud.datastore({ namespace: config.gcloudDatastoreNamespace });
 
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
+const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
 
 /* shared
  *
@@ -122,6 +123,17 @@ function checkForDisallowedChanges(current, original, columns) {
     }
   }
 
+  // check that username hasn't changed or if it has, that it is unique
+  if (current.username !== original.username) {
+    if (!USERNAME_REXP.test(current.username)) {
+      throw new ValidationError('username cannot contain spaces or special characters');
+    }
+    if (allUsernames.indexOf(current.username) !== -1) {
+      throw new ValidationError('username must be unique, must not be from the forbidden list');
+    }
+    // todo: do we need extra checks here? I.e. length of username? encodings? emojis?
+  }
+
   // check that every experiment has at least the data values that were there originally
   // check that only last comment by a given user has changed, if any
   if (current.experiments) {
@@ -178,11 +190,29 @@ function checkForDisallowedChanges(current, original, columns) {
   }
 }
 
+// Take either the email address, or username and return the email address
+function getEmailAddressOfUser(user) {
+  return userCache.then((users) => {
+    if (user.indexOf('@') === -1) {
+      for (const email of Object.keys(users)) {
+        if (users[email].username === user) {
+          return email;
+        }
+      }
+    }
+
+    return user;
+  });
+}
+
+module.exports.getEmailAddressOfUser = getEmailAddressOfUser;
+
 const allTitles = [];
 
 module.exports.listTitles = () =>
   metaanalysisCache.then(() => paperCache)
   .then(() => allTitles);
+
 
 /* users
  *
@@ -199,20 +229,11 @@ module.exports.listTitles = () =>
 
 /* a user record looks like this:
  * {
- *   "id": "100380000000000000000",
  *   "ctime": 1467367646989,
- *   "provider": "accounts.google.com",
- *   "emails": [
- *     {
- *       "value": "example@example.com",
- *       "verified": true
- *     }
- *   ],
+ *   "mtime": 1467367646989, // the user last 'registered' i.e. agreed to t&c's (may have changed username)
+ *   "email": "example@example.com",
  *   "displayName": "Example Exampleson",
- *   "name": {
- *     "givenName": "Example",
- *     "familyName": "Exampleson"
- *   },
+ *   "username": "ExampleUsername1234", // see regex for exact allowed names
  *   "photos": [
  *     {
  *       "value": "https://lh5.googleusercontent.com/EXAMPLE/photo.jpg"
@@ -220,6 +241,9 @@ module.exports.listTitles = () =>
  *   ]
  *   // todo favorites: [ "/id/p/4903", "/id/m/649803", ]
  * }
+ * API handles mtime, email, username.
+ * API forwards displayName, photos from Google
+ * Storage handles ctime & username regex checks
  */
 
 const LOCAL_STORAGE_SPECIAL_USER = 'lima@local';
@@ -241,8 +265,10 @@ function getAllUsers() {
       reject(err);
     })
     .on('data', (entity) => {
+      entity = migrateUser(entity);
+      allUsernames.push(entity.username);
       try {
-        retval[entity.emails[0].value] = entity;
+        retval[entity.email] = entity;
       } catch (err) {
         console.error('error in a user entity (ignoring)');
         console.error(err);
@@ -258,22 +284,40 @@ function getAllUsers() {
     // - after all other users are loaded so datastore never overrides this one
     // - we expect our auth providers never go issue this email address so no user can use it
     users[LOCAL_STORAGE_SPECIAL_USER] = {
-      emails: [
-        {
-          value: LOCAL_STORAGE_SPECIAL_USER,
-        },
-      ],
+      email: LOCAL_STORAGE_SPECIAL_USER,
     };
     return users;
   });
 }
 
-module.exports.getUser = (email) => {
-  if (!email) {
-    throw new Error('email parameter required');
+/*
+ * change user from an old format to the new one on load from datastore, if need be
+ */
+function migrateUser(user) {
+  // 2017-06-08: Only store limited user information
+  if (user.emails) {
+    user.email = user.emails[0].value;
+    delete user.emails;
+    delete user.CHECKid;
+    delete user.id;
+    delete user.name;
+    delete user.provider;
   }
-  return userCache.then(
-    (users) => users[email] || Promise.reject(`user ${email} not found`)
+  return user;
+}
+
+
+module.exports.getUser = (user) => {
+  if (!user) {
+    throw new Error('user parameter required');
+  }
+  return Promise.all([getEmailAddressOfUser(user), userCache])
+  .then(
+    (vals) => {
+      const email = vals[0];
+      const users = vals[1];
+      return users[email] || Promise.reject(`user ${email} not found`);
+    }
   );
 };
 
@@ -281,7 +325,8 @@ module.exports.listUsers = () => {
   return userCache;
 };
 
-module.exports.addUser = (email, user) => {
+module.exports.saveUser = (email, user) => {
+  // todo do we want to keep a Log of users?
   if (!email || !user) {
     throw new Error('email/user parameters required');
   }
@@ -290,11 +335,16 @@ module.exports.addUser = (email, user) => {
     return Promise.reject(new Error('must not add the user ' + LOCAL_STORAGE_SPECIAL_USER));
   }
 
+  if (!user.ctime) { // new user
+    user.ctime = tools.uniqueNow();
+  }
+
   return userCache.then(
     (users) => new Promise((resolve, reject) => {
-      users[email] = user;
+      const original = users[email];
+      checkForDisallowedChanges(user, original);
       const key = datastore.key(['User', email]);
-      console.log('addUser making a datastore request');
+      console.log('saveUser making a datastore request');
       datastore.save({
         key,
         data: user,
@@ -304,12 +354,26 @@ module.exports.addUser = (email, user) => {
           console.error(err);
           reject(err);
         } else {
+          // update the local cache of users
+          users[email] = user;
+          if (original.username) {
+            const index = allUsernames.indexOf(original.username);
+            if (index !== -1) {
+              allUsernames.splice(index, 1);
+            }
+          }
+          if (user.username) allUsernames.push(user.username);
+
+          // return the user
           resolve(user);
         }
       });
     })
   );
 };
+
+// all the forbidden usernames will be treated as taken
+const allUsernames = [].concat(config.FORBIDDEN_USERNAMES);
 
 /* papers
  *
@@ -452,19 +516,34 @@ function migratePaper(paper) {
 }
 
 
-module.exports.getPapersEnteredBy = (email) => {
-  // todo also return papers contributed to by `email`
-  return paperCache.then(
-    (papers) => papers.filter((p) => p.enteredBy === email)
+module.exports.getPapersEnteredBy = (user) => {
+  if (!user) {
+    throw new Error('user parameter required');
+  }
+  return Promise.all([getEmailAddressOfUser(user), paperCache])
+  .then(
+    (vals) => {
+      const email = vals[0];
+      const papers = vals[1];
+      return papers.filter((p) => p.enteredBy === email);
+    }
   );
 };
 
-module.exports.getPaperByTitle = (email, title, time) => {
+module.exports.getPaperByTitle = (user, title, time) => {
   // todo if time is specified, compute a version as of that time
   if (time) return Promise.reject(new NotImplementedError('getPaperByTitle with time not implemented'));
 
+  if (!user || !title) {
+    throw new Error('user and title parameters required');
+  }
+
   // todo different users can use different titles for the same thing
-  if (title === config.NEW_PAPER_TITLE) return Promise.resolve(newPaper(email));
+
+  if (title === config.NEW_PAPER_TITLE) {
+    return getEmailAddressOfUser(user).then((email) => newPaper(email));
+  }
+
   return paperCache
   .then((papers) => {
     for (const p of papers) {
@@ -712,21 +791,33 @@ function migrateMetaanalysis(metaanalysis) {
   return metaanalysis;
 }
 
-module.exports.getMetaanalysesEnteredBy = (email) => {
+module.exports.getMetaanalysesEnteredBy = (user) => {
   // todo also return metaanalyses contributed to by `email`
-  return metaanalysisCache.then(
-    (metaanalyses) => metaanalyses.filter((ma) => ma.enteredBy === email)
+  if (!user) {
+    throw new Error('user parameter required');
+  }
+  return Promise.all([getEmailAddressOfUser(user), metaanalysisCache])
+  .then(
+    (vals) => {
+      const email = vals[0];
+      const metaanalyses = vals[1];
+      return metaanalyses.filter((ma) => ma.enteredBy === email);
+    }
   );
 };
 
-module.exports.getMetaanalysisByTitle = (email, title, time, includePapers) => {
+module.exports.getMetaanalysisByTitle = (user, title, time, includePapers) => {
   // todo if time is specified, compute a version as of that time
   if (time) {
     return Promise.reject(new NotImplementedError('getMetaanalysisByTitle with time not implemented'));
   }
 
   // todo different users can use different titles for the same thing
-  if (title === config.NEW_META_TITLE) return Promise.resolve(newMetaanalysis(email));
+
+  if (title === config.NEW_META_TITLE) {
+    return getEmailAddressOfUser(user).then((email) => newMetaanalysis(email));
+  }
+
   return metaanalysisCache
   .then((metaanalyses) => {
     for (let ma of metaanalyses) {
@@ -981,9 +1072,7 @@ module.exports.saveColumn = (recvCol, email, options) => {
       recvCol.definedBy = origCol.definedBy;
       if (recvCol.title !== origCol.title ||
           recvCol.type !== origCol.type ||
-          recvCol.description !== origCol.description ||
-          recvCol.formula !== origCol.formula ||
-          JSON.stringify(recvCol.formulaColumns) !== JSON.stringify(origCol.formulaColumns)) {
+          recvCol.description !== origCol.description) {
         if (origCol.definedBy !== email) {
           throw new ValidationError(`only ${origCol.definedBy} can edit column ${recvCol.id}`);
         }

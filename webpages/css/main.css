@@ -39,7 +39,8 @@ _ {
 .loading .loadingspinner { display: block !important; }
 
 /* from https://codepen.io/flesler/pen/AEIFc */
-[contenteditable]:empty:before {
+[contenteditable]:empty:before,
+.withplaceholder:empty:before {
   content: attr(placeholder);
   color: #aaa;
   font-style: italic;
@@ -531,7 +532,31 @@ body:not(.editing) #toggle-editing .ifon {
   display: none;
 }
 
+.register label {
+  display: block;
+  padding-left: 1em;
+  cursor: pointer;
+}
 
+.register label > input[type="radio"],
+.register label > input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  padding-right: 10em;
+}
+
+.register div.firsttimeonly {
+  padding-top: 2em;
+}
+
+.register .hidden {
+  display: none;
+}
+
+.register button.cancel {
+  margin-left: 3em;
+  margin-right: 3em;
+}
 
 /* personalinfo
  *
@@ -561,6 +586,26 @@ section#personalinfo {
   font-style: italic;
   color: #444;
   cursor: pointer;
+}
+
+#personalinfo .register {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#personalinfo div.username a.changebutton {
+  visibility: hidden;
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  appearance: button;
+  text-decoration: none;
+  color: initial;
+  padding: 0.05em;
+  position: absolute;
+}
+
+#personalinfo div.username:hover a.changebutton{
+  visibility: visible;
 }
 
 #personalinfo .photo {

@@ -12,23 +12,40 @@
       return;
     }
 
-    var profile = googleUser.getBasicProfile();
-    _.addClass('body', 'signed-on');
-    _.fillEls('.userinfo .username', profile.getName());
-    _.findEls('.userinfo .userphoto').forEach(function(el){
-      if (!el.dataset.origsrc) el.dataset.origsrc = el.src;
-      if (profile.getImageUrl()) el.src = profile.getImageUrl();
-    });
+    // check if we should redirect to the /register page - if LiMA doesn't know the user who has just logged in
+    if (window.location.pathname != '/register') {
+      var idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+      fetch('/api/user', {
+        method: 'GET',
+        headers: _.idTokenToFetchHeaders(idToken),
+      })
+      .then(function (res) {
+        if (res.status == 401) {
+          // user isn't known but someone is signed in. Redirect to register.
+          window.location.href = '/register';
+          // don't call any more listeners
+          onSignInListeners = [];
+        } else if (res.status >= 400) {
+          // an unexpected error happened with /api/user, server not happy
+          _.apiFail();
+        } else {
+          return _.fetchJson(res);
+        }
+      })
+      .then(function(user) {
+        _.addClass('body', 'signed-on');
+        _.fillEls('.userinfo .username', user.username || user.email);
+        _.findEls('.userinfo .userphoto').forEach(function(el){
+          if (!el.dataset.origsrc) el.dataset.origsrc = el.src;
+          if (user.photos[0]) el.src = user.photos[0].value;
+        });
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+    }
 
     onSignInListeners.forEach(function (cb) { cb(); });
-
-    // register the user with the server
-    var idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
-
-    fetch('/api/register', {
-      method: 'POST',
-      headers: _.idTokenToFetchHeaders(idToken),
-    });
   }
 
   lima.getAuthenticatedUserEmail = function getAuthenticatedUserEmail() {

@@ -1,6 +1,22 @@
+const EMAIL_ADDRESS_RE = '[a-zA-Z0-9.+-]+@[a-zA-Z0-9.+-]+';
+const USERNAME_RE = '[a-zA-Z][a-zA-Z0-9_.-]{0,}';
+// when updating this, change the clientside copy in register.html
+// the above has to be {0,} rather than * because https://github.com/expressjs/express/issues/2495
+
 module.exports = {
   // shared constants
-  EMAIL_ADDRESS_RE: '[a-zA-Z0-9.+-]+@[a-zA-Z0-9.+-]+',
+  USERNAME_RE,
+  USER_RE: EMAIL_ADDRESS_RE + '|' + USERNAME_RE,
+  FORBIDDEN_USERNAMES: [
+    // routes
+    'api', 'version', 'profile',
+    // files in /webpages which is static root
+    'admin', 'css', 'docs', 'img', 'js', 'lib', 'profile', 'tests',
+    'apifail', 'apifail.html', 'coming-soon', 'coming-soon.html', 'index', 'index.html',
+    'profileRedirect', 'profileRedirect.html', 'register', 'register.html',
+    // future needs
+    'terms', 'terms.html', 'privacy', 'privacy.html',
+  ],
   NEW_PAPER_TITLE: 'new-paper',
   NEW_META_TITLE: 'new-metaanalysis',
 

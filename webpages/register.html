@@ -1,0 +1,226 @@
+<!doctype html>
+<title>Username | Living Meta-Analysis</title>
+<script src="/lib/promise.js"></script>
+<script src="/lib/fetch.js"></script>
+<script src="https://apis.google.com/js/platform.js"></script>
+<link rel="stylesheet" href="/css/main.css">
+
+<header>
+  <a href="/" id="logo-box">
+    <h1>LiMA</h1><h2>Living Meta-Analysis</h2>
+  </a>
+</header>
+
+<div class="register">
+  <h3>Please choose a username:</h3>
+  <label>
+    <!-- todo: This text box doesnt focus -->
+    <span class='customusername' contenteditable placeholder="custom username"></span>
+    <input type="radio" id="customusername" name="suggestion">
+  </label>
+  <label>
+    <span class="displayname">error</span>
+    <input type="radio" id="displayname" name="suggestion">
+  </label>
+  <label>
+    <span class="emailaddressfirst">error</span>
+    <input type="radio" id="emailaddressfirst" name="suggestion">
+  </label>
+  <label>
+    <span class="emailaddress">error</span>
+    <input type="radio" id="emailaddress" name="suggestion">
+  </label>
+  <div class="firsttimeonly hidden">
+    <h3>You must accept the following:</h3>
+    <label>
+      I accept terms and conditions (ADD LINK HERE)
+      <input type="checkbox" class="required" id="teesandcees">
+    </label>
+    <label>
+      I accept privacy statement (ADD LINK HERE)
+      <input type="checkbox" class="required" id="privacystatement">
+    </label>
+  </div>
+  <p>
+    <button class="register">register</button>
+    <button class="cancel">cancel</button>
+  </p>
+</div>
+
+<footer>
+  <p>LiMA (Living Meta-Analysis) at <a href="http://port.ac.uk/">University of Portsmouth</a>, &copy; 2016–2017</p>
+  <p>Feedback and questions are welcome at <a href="mailto:lima@port.ac.uk">lima@port.ac.uk</a>.</p>
+</footer>
+
+
+<script src="/js/tools.js"></script>
+<script src="/js/auth.js"></script>
+<script>
+  'use strict';
+  var lima = window.lima;
+  var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
+
+  // when updating this, change the serverside copy in config.js
+  var USERNAME_RE = /^[a-zA-Z][a-zA-Z0-9_\.-]{0,}$/;
+
+  window.lima.initPage = function () {
+
+    var email = lima.getAuthenticatedUserEmail();
+
+    if (!email) {
+      _.historyBackOrRedirect('/');
+    }
+
+    // set up 'on leave' to sign out the user
+    window.addEventListener('beforeunload', signOut);
+
+    var currUser;
+    var firstTimeUser = true;
+
+    lima.getGapiIDToken()
+    .then(function (idToken) {
+      return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
+    })
+    .then(_.fetchJson)
+    .then(function (user) {
+      currUser = user;
+      firstTimeUser = false;
+    })
+    .catch(function (err) {
+      if (err && err.status === 404) {
+        currUser = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+      }
+    })
+    .then(function() {
+      fillRegisterPage(currUser, firstTimeUser);
+    })
+    .catch(function(err) {
+      _.apiFail();
+    })
+
+    _.addEventListener('button.register', 'click', register);
+    _.addEventListener('button.cancel', 'click', function() {
+      _.historyBackOrRedirect('/');
+    });
+    _.addEventListener('input#customusername', 'click', function(e){
+      var customUsernameEl = _.findEl(e.target.parentElement, 'span.customusername');
+      customUsernameEl.focus();
+    });
+  }
+
+  var successfullySaved = false;
+  function signOut() {
+    // todo only sign out if the user isn't already registered in lima
+    if (!successfullySaved) gapi.auth2.getAuthInstance().signOut();
+  }
+
+  // todo sign-out/cancel button:
+  // if you are registering, the cancel button signs you out
+  // if you are changing your username, cancel button just goes back
+  // if you need to agree to new T&C, the cancel button becomes "sign out" if you don't click you agreed
+
+  function register() {
+    // validate the user input
+    var checked = _.findEls('input[name="suggestion"]:checked')[0];
+    var username;
+
+    if (!checked) return; // todo: wont need when button only shows when selected..
+    if (checked.id == 'customusername') {
+      var customSpan = _.findPrecedingEl(checked, 'span.customusername');
+      username = customSpan.textContent;
+    } else {
+      username = checked.value;
+    }
+    username = username.trim();
+
+    // todo: all the validation errors should be on input rather than when the button is clicked
+
+    if (!username.match(USERNAME_RE)) {
+      // todo: show validation error here
+      console.error('validation error');
+      return;
+    }
+
+    // todo: if username is taken or forbidden, show a validation error
+
+    // register the user with the server
+    return lima.getGapiIDToken()
+    .then(function(idToken) {
+      var toSend = { username: username };
+      return fetch('/api/user', {
+        method: 'POST',
+        headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
+        body: JSON.stringify(toSend),
+      });
+    })
+    .then(function(res){
+      successfullySaved = true;
+      // todo if we have actually changed the user name, we shouldn't go back because that will 404
+      _.historyBackOrRedirect('/profile');
+    })
+    .catch((err) => {
+      console.error('failed to register user');
+      console.error(err);
+      _.apiFail();
+      // todo: show validation error here
+    });
+  }
+
+  function fillRegisterPage(user, firstTimeUser) {
+      // todo fill the page so it matches the current state
+    var email = user.email || user.getEmail();
+    var emailFirst = email.split('@')[0];
+    var displayName = user.displayName || user.getName();
+    displayName = displayName.replace(/\s/g, '');
+
+    var found = false;
+    setupRadioButton(user.username, 'displayname', displayName);
+    setupRadioButton(user.username, 'emailaddressfirst', emailFirst);
+    setupRadioButton(user.username, 'emailaddress', email);
+
+    // none of the radio buttons matched the name, so fill the custom username in
+    if (!found) {
+      _.fillEls('div.register span.customusername', user.username);
+      _.setProps('div.register input#customusername', 'checked', true);
+    }
+
+    // Todo: check if mtime (last time user has accepted t&c's is > latest revision)
+    if (firstTimeUser) {
+      var firstTimeEl = _.findEl('.firsttimeonly');
+      firstTimeEl.classList.remove('hidden');
+      var registerButton = _.findEl('button.register');
+      _.setProps('button.register', 'disabled', true);
+
+      var checkboxes = _.findEls(firstTimeEl, '.required');
+      checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('click', function(e){
+          var firstTimeEl = _.findEl('.firsttimeonly');
+          var checkboxes = _.findEls(firstTimeEl, '.required');
+          var registerButton = _.findEl('button.register');
+          var noChecked = 0;
+          checkboxes.forEach(function(checkbox){
+            if (checkbox.checked) {
+              noChecked += 1;
+            }
+          });
+
+          if (noChecked == checkboxes.length) {
+            _.setProps('button.register', 'disabled', false);
+          } else {
+            _.setProps('button.register', 'disabled', true);
+          }
+        });
+      });
+    }
+
+    function setupRadioButton(username, selector, value) {
+      _.fillEls('div.register span.' + selector, value);
+      _.setProps('div.register input#' + selector, 'value', value);
+      if (username == value) {
+        _.setProps('div.register input#' + selector, 'checked', true);
+        found = true;
+      }
+    }
+  }
+
+</script>
