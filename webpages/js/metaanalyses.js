@@ -3327,6 +3327,11 @@
         if (typeof val == 'number') val = val.toPrecision(3);
 
         _.fillEls(aggregateValTd, '.value', val);
+
+        if (val > 0) {
+          var spanEl = _.findEl(aggregateValTd, '.value');
+          spanEl.innerHTML = '&nbsp;' + spanEl.innerHTML;
+        }
       });
 
       fillObjectInformation(aggregateEl, aggregate);
