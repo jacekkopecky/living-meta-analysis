@@ -2051,11 +2051,8 @@
 
     // todo this (and the same for aggrs/graggrs/graphs) should use addOnInputUpdater
     _.addEventListener(th, 'span.customcolname', 'input', function(e) {
-      var customName = e.target.textContent.trim();
-
-      col.customName = customName;
-      fillObjectInformation(th, col, col.customName);
-
+      col.customName = e.target.textContent.trim();
+      fillObjectInformation(th, col);
       _.scheduleSave(currentMetaanalysis);
     });
 
@@ -2068,7 +2065,7 @@
         formulasDropdown.classList.remove('validationerror');
       } else {
         formulasDropdown.classList.add('validationerror');
-        fillObjectInformation(tr, col);
+        fillObjectInformation(th, col);
       }
       // we'll call setValidationErrorClass() in fillDropdownSelection
 
@@ -2096,6 +2093,10 @@
     return th;
   }
 
+  // creates SELECT dropdown boxes inside .dropdownselection in objEl
+  // one for each parameter of the given `formula`
+  // and fills the SELECT with options for every column/aggregate/grouping aggregate,
+  // or only columns if `onlyColumns` is true-ish
   function fillDropdownSelection(metaanalysis, obj, objEl, formula, onlyColumns) {
     // editing drop-down boxes for parameter columns
     var dropdownSelectionEl = _.findEl(objEl, '.dropdownselection');
@@ -2179,13 +2180,8 @@
     fillObjectInformation(objEl, obj);
   }
 
-  function fillObjectInformation(th, obj, unsavedName) {
-    if (unsavedName) {
-      _.fillEls(th, '.richlabel', unsavedName);
-    } else {
-      _.setProps(th, '.richlabel', 'innerHTML', getColTitle(obj, 1));
-    }
-
+  function fillObjectInformation(th, obj) {
+    _.setProps(th, '.richlabel', 'innerHTML', getColTitle(obj, 1));
     _.setProps(th, '.fulllabel', 'innerHTML', getColTitle(obj, Infinity));
     // todo do more for non-editing; use computed-datum as inspiration but fix it to account for computed columns
   }
@@ -3272,11 +3268,8 @@
       _.fillEls(aggregateEl, 'span.customaggrname', aggregate.customName);
 
       _.addEventListener(aggregateEl, 'span.customaggrname', 'input', function(e) {
-        var customName = e.target.textContent.trim();
-
-        aggregate.customName = customName;
-        fillObjectInformation(aggregateEl, aggregate, aggregate.customName);
-
+        aggregate.customName = e.target.textContent.trim();
+        fillObjectInformation(aggregateEl, aggregate);
         _.scheduleSave(currentMetaanalysis);
       });
 
@@ -3424,11 +3417,8 @@
       _.fillEls(tr, 'span.customgroupingaggrname', groupingAggregate.customName);
 
       _.addEventListener(tr, 'span.customgroupingaggrname', 'input', function(e) {
-        var customName = e.target.textContent.trim();
-
-        groupingAggregate.customName = customName;
-        fillObjectInformation(tr, groupingAggregate, groupingAggregate.customName);
-
+        groupingAggregate.customName = e.target.textContent.trim();
+        fillObjectInformation(tr, groupingAggregate);
         _.scheduleSave(currentMetaanalysis);
       });
 
@@ -3619,11 +3609,8 @@
       _.fillEls(graphEl, 'span.customgraphname', graph.customName);
 
       _.addEventListener(graphEl, 'span.customgraphname', 'input', function(e) {
-        var customName = e.target.textContent.trim();
-
-        graph.customName = customName;
-        fillObjectInformation(graphEl, graph, graph.customName);
-
+        graph.customName = e.target.textContent.trim();
+        fillObjectInformation(graphEl, graph);
         _.scheduleSave(currentMetaanalysis);
       });
 
