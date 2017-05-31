@@ -1,7 +1,6 @@
 'use strict';
 
 const express = require('express');
-const jsonBodyParser = require('body-parser').json();
 
 // guard middleware enforcing that a user is logged in
 const GUARD = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
@@ -14,6 +13,8 @@ const NotImplementedError = require('./errors/NotImplementedError');
 const config = require('./config');
 const storage = require('./storage');
 const tools = require('./tools');
+
+const jsonBodyParser = require('body-parser').json(config.jsonParserOptions);
 
 const api = module.exports = express.Router({
   caseSensitive: true,

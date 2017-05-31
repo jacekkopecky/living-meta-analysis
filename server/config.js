@@ -29,4 +29,11 @@ module.exports = {
   httpsPort: 8443,
   httpsCert: '/etc/letsencrypt/live/lima.soc.port.ac.uk/fullchain.pem',
   httpsKey: '/etc/letsencrypt/live/lima.soc.port.ac.uk/privkey.pem',
+
+  // we hit the default of 100kb with one-click metaanalysis.
+  // recursive formulaParams are the largest offender (75% of total) but for now
+  // simply increase this until we understand any performance reason not to
+  jsonParserOptions: {
+    limit: '1024kb',
+  },
 };
