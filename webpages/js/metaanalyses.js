@@ -3732,6 +3732,51 @@
       }
     });
 
+    // Add a comment when a value is changed
+    var spanValue = null;
+
+    _.addEventListener(root, 'span.value.editing.oneline', 'focusin', function() {
+      var focusSpan = _.findEl(root, 'span.value.editing.oneline');
+      spanValue = focusSpan.innerHTML;
+    });
+
+    _.addEventListener(root, 'span.value.editing.oneline', 'focusout', function() {
+      var unfocusSpan = _.findEl(root, 'span.value.editing.oneline');
+
+      if (spanValue != unfocusSpan.innerHTML && spanValue != "") {
+        // Get the current paper, and then calculate the selected line
+        var paperRow = _.findPrecedingEl(root, 'tr');
+        var currentPaper = currentMetaanalysis.papers[paperRow.getAttribute('data-paper-index')];
+        var line = 0;
+
+        while (paperRow.getAttribute('class') != 'row paperstart') {
+          paperRow = paperRow.previousSibling;
+          line++;
+        }
+
+        // Get the column id, and then compare it with every other column ids to get the previous user name
+        var originalUser = null;
+        var currentUser = lima.getAuthenticatedUserEmail();
+        var columnId = _.findEl(root, '.datum.popupbox').getAttribute('data-boxid').split(',')[2];
+        var columnsInfos = Object.entries(currentPaper.experiments[line].data);
+
+        for (var i=0; i<columnsInfos.length; i++) {
+          if (columnsInfos[i][0] === columnId) {
+            originalUser = columnsInfos[i][1].enteredBy;
+            break;
+          }
+        }
+
+        // Add an update comment
+        var updateComment = "Previous value was \"" + spanValue + "\" (by " + originalUser + "), changed by " + currentUser + ".";
+        var comments = getDeepValue(metaanalyses, commentsPropPath, []);
+        comments.push({ text: updateComment });
+        fillComments(templateId, root, countSelector, textSelector, metaanalyses, commentsPropPath);
+        _.setYouOrName();
+        _.scheduleSave(metaanalyses);
+      }
+    });
+
     // cancel
     _.addEventListener(root, '.comment.new .buttons .cancel', 'click', function() {
       newComment.textContent = '';
