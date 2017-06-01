@@ -122,6 +122,8 @@ function listTitles(req, res, next) {
  *
  *
  */
+
+// Todo: This function might well be obsolete
 function KNOWN_USER(req, res, next) {
   if (req.user) {
     const email = req.user.emails[0].value;
@@ -129,10 +131,13 @@ function KNOWN_USER(req, res, next) {
     storage.getUser(email)
     .catch(() => {
       // user unknown - todo: maybe redirect to register page?
-      console.log("WE SHOULD BE REDIRECTING");
-      res.writeHead(302, { Location: '/register' });
-      res.end();
-      return res;
+      // console.log("WE SHOULD BE REDIRECTING");
+      // res.writeHead(302, { Location: '/register' });
+      // res.end();
+      // return res;
+    })
+    .then(() => {
+      next();
     });
     // .then((user) => { // update access time
     //   user.atime = Date.now();
@@ -144,24 +149,10 @@ function KNOWN_USER(req, res, next) {
 }
 
 function saveUser(req, res, next) {
-  // check that who we're trying to change is who is logged in.
-  // handle it, either save or return an error.
-  console.log('###################Hit register########################');
   const user = req.user;
-  // for now, register passes in a copy of the user object w/ .username added.
-  // possible that a better way is simply username and then use the logged in
-  // user.
-  const recUser = req.body;
-
-  console.log(user);
-  console.log(recUser);
-
-  if (user.emails[0].value !== recUser.email) {
-    next(new InternalError());
-  } else {
-    recUser.atime = Date.now(); // update access time
-    storage.addUser(user.emails[0].value, extractReceivedUser(recUser));
-  }
+  user.atime = Date.now(); // update access time
+  user.username = req.body.username;
+  storage.addUser(user.emails[0].value, extractReceivedUser(user));
   next();
 }
 
@@ -170,12 +161,14 @@ function extractReceivedUser(receivedUser) {
   const retval = {
     displayName:      tools.string(receivedUser.displayName),
     name:             tools.assoc(receivedUser.name, extractReceivedName),
-    email:            tools.string(receivedUser.email),
+    emails:           tools.array(receivedUser.emails, extractReceivedEmail),
     photos:           tools.array(receivedUser.photos, extractReceivedPhoto),
+    provider:         tools.string(receivedUser.provider),
     joined:           tools.number(receivedUser.joined),
     username:         tools.string(receivedUser.username),
     atime:            tools.number(receivedUser.atime),
     CHECKctime:       tools.number(receivedUser.ctime),
+    CHECKid:          tools.string(receivedUser.id),
   };
 
   return retval;
@@ -192,6 +185,14 @@ function extractReceivedName(recName) {
 function extractReceivedPhoto(recPhoto) {
   const retval = {
     value: tools.string(recPhoto.value),
+  };
+  return retval;
+}
+
+function extractReceivedEmail(recEmail) {
+  const retval = {
+    verified: tools.bool(recEmail.verified),
+    value: tools.string(recEmail.value),
   };
   return retval;
 }
@@ -216,10 +217,12 @@ function returnUserProfile(req, res, next) {
       email: user.emails[0].value,
       photos: user.photos,
       joined: user.ctime,
+      username: user.username,
     };
     res.json(retval);
   })
   .catch((err) => {
+    console.log(err);
     next(err || new NotFoundError());
   });
 }

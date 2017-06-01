@@ -535,6 +535,16 @@ body.username {
   display: block;
 }
 
+.register form.suggestions {
+  display: inline-block;
+}
+
+.register form.suggestions span {
+  display: block;
+  padding: 0.5em;
+  cursor: pointer;
+}
+
 /* personalinfo
  *
  *
@@ -563,6 +573,25 @@ section#personalinfo {
   font-style: italic;
   color: #444;
   cursor: pointer;
+}
+
+#personalinfo .register {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#personalinfo div.username a.changebutton {
+  visibility: hidden;
+}
+
+#personalinfo div.username:hover a.changebutton{
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  visibility: visible;
+  appearance: button;
+  text-decoration: none;
+  color: initial;
+  padding: 0.05em;
 }
 
 #personalinfo .photo {

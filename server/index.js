@@ -233,7 +233,7 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   } else {
     console.error('internal error');
     console.error(err);
-    if ('stack' in err) console.error(err.stack);
+    if (err.stack) console.error(err.stack);
     res.status(500).send('internal server error');
   }
 });

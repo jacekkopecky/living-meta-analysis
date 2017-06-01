@@ -12,27 +12,16 @@
 </header>
 
 <h1>Please choose a username:</h1>
-<div class="username">
+<div class="register">
   <p class="edithighlight">
     <span class='customusername' contenteditable placeholder="custom username"></span>
   </p>
+
+  <form class='suggestions'>
   <h3>Suggestions:</h3>
-  <label class='suggestion'>
-    same as email address
-    <input class='emailaddress' type="checkbox">
-  </label>
-  <label class='suggestion'>
-    same as email address first part
-    <input class='emailaddress' type="checkbox">
-  </label>
-  <label class='suggestion'>
-    same as Google display name (without spaces)
-    <input class='emailaddress' type="checkbox">
-  </label>
-  <label class='suggestion'>
-    same as Google given name (without spaces)
-    <input class='emailaddress' type="checkbox">
-  </label>
+    <span id='emailaddress'> same as email address</span>
+    <span id='emailaddressfirst'> same as email address first part</span>
+    <span id='displayname'> same as Google display name (without spaces)</span>
   <p>
     <button class="confirm">confirm</button>
   </p>
@@ -52,9 +41,8 @@
   var lima = window.lima;
   var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
 
-  var globalUser;
   /^[a-zA-Z0-9-_]+$/;
-  var USERNAME_RE = /^[a-zA-Z][a-zA-Z0-9-_@\.]+$/;
+  var USERNAME_RE = /^[a-zA-Z][a-zA-Z0-9-_@\.]*$/;
 
   window.lima.initPage = function () {
 
@@ -64,25 +52,27 @@
       window.location.href = '/signin';
     }
 
+    var currUser;
+
     lima.getGapiIDToken()
-    .then(function (idToken) {
-      return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
-    })
-    .then(_.fetchJson)
-    .then(function (user) {
-      globalUser = user;
-      return user;
-    })
-    .then(fillUsernamePage)
-    .catch(function (err) {
-      if (err.status === 404) {
-        _.notFound();
-        return;
+      .then(function (idToken) {
+        return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
+      })
+      .then(_.fetchJson)
+      .then(function (user) {
+        currUser = user;
+      })
+      .catch(function (err) {
+        if (err.status === 404) {
+          console.warn("Possibly this user isn't registered");
+        }
+      });
+
+      if (!currUser) {
+        // We don't have that user, so just use google's..
+        currUser = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
       }
-      console.error("problem getting user");
-      console.error(err);
-      _.apiFail();
-    });
+    fillRegisterPage(currUser);
 
     _.addEventListener('button.confirm', 'click', register);
   }
@@ -103,21 +93,18 @@
     // register the user with the server
     return lima.getGapiIDToken()
       .then(function(idToken) {
-        var toSend = globalUser;
-        toSend.username = username;
-        toSend = JSON.stringify(toSend);
+        var toSend = {'username':username};
         return fetch('/api/register', {
           method: 'POST',
           headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
-          body: toSend,
+          body: JSON.stringify(toSend),
         });
       })
       .catch((err) => {
         // it didn't work, pass through to next catch error.
       })
       .then(function(res){
-        // todo: remember where we janked them from, send them back.
-        console.log("gonna drop user now");
+        // todo: remember where we yanked them from, send them back.
         window.location.href = '/profile';
       })
       .catch((err) => {
@@ -127,46 +114,25 @@
       });
   }
 
-  function fillUsernamePage(user) {
-    var customUsernameEl = _.findEl('.customusername');
-    var emailAddressEl = _.findEl('.emailaddress');
-    console.log(user);
-    if (user.username) {
-      if (user.username == user.email) {
-        _.fillEls('.customusername', user.email);
-        _.setProps('.emailaddress', 'checked', true);
-      } else {
-        _.fillEls('.customusername', user.username);
-        _.setProps('.emailaddress', 'checked', false);
-        _.setProps('.emailaddress', 'disabled', true);
-      }
-    }
+  function fillRegisterPage(user) {
+    // todo: Feels like there should be a way to get logged in user information
+    // in a format we're used too, even if they don't exist saved yet.
+    _.fillEls('.customusername', user.username || '');
 
-    // - if name has anything entered, toggle disabled the checkbox
-    _.addEventListener('.customusername', 'input', function(e){
-      var username = e.target.textContent.trim();
-      if (username) {
-        _.setProps('.emailaddress', 'checked', false);
-        _.setProps('.emailaddress', 'disabled', true);
-      } else if (username == user.email){
-        _.setProps('.emailaddress', 'checked', true);
-      } else {
-        _.setProps('.emailaddress', 'checked', false);
-        _.setProps('.emailaddress', 'disabled', false);
-      }
+    _.addEventListener('#emailaddress', 'click',  function(e){
+      _.fillEls('.customusername', user.email || user.U3);
     });
 
-    // - if checkbox is selected, toggle disabled on the text
-    _.addEventListener('.emailaddress', 'change',  function(e){
-      var checked = e.target.checked;
-      if (checked) {
-        _.fillEls('.customusername', user.email);
-      } else {
-        var usernameEl = _.findEl('.customusername');
-        if (usernameEl.textContent == user.email) {
-          _.fillEls('.customusername', '');
-        }
-      }
+    _.addEventListener('#emailaddressfirst', 'click',  function(e){
+        var email = user.email || user.U3;
+        var split = email.split('@');
+      _.fillEls('.customusername', split[0]);
+    });
+
+    _.addEventListener('#displayname', 'click',  function(e){
+        var displayName = user.displayName || user.ig;
+        displayName = displayName.replace(/\s/g, '');
+      _.fillEls('.customusername', displayName);
     });
   }
 

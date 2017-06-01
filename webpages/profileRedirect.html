@@ -14,24 +14,31 @@ redirecting...
 window.lima.initPage = function initPage() {
   // redirect to the user's profile
 
-  var user = lima.getAuthenticatedUserEmail();
-  if (user) {
+  var loggedIn = lima.getAuthenticatedUserEmail();
+  var user;
+
+  if (loggedIn) {
     lima.getGapiIDToken()
     .then(function (idToken) {
-      return fetch('/api/profile/' + user, _.idTokenToFetchOptions(idToken));
+      return fetch('/api/profile/' + loggedIn, lima._.idTokenToFetchOptions(idToken));
     })
-    .then(function(res){
+    .then((res) => {
       console.log(res);
+      if (res.status === 200) { // user exists
+        user = loggedIn;
+      } else {
+        user = 'lima@local';
+      }
+      window.history.replaceState({}, "profile", '/' + user +'/');
+      window.location.href = '/' + user +'/';
     })
-    .catch(() => {
-      // user unknown - send to lima@local
-      user = 'lima@local';
+    .catch((err) => {
+      console.log(err);
+      console.error("profile didn't respond too well.")
     });
-    // window.history.replaceState({}, "profile", '/' + user + '/');
-    // window.location.href = '/' + user + '/';
   } else {
-    // window.history.replaceState({}, "signin", '/signin');
-    // window.location.href = '/signin';
+    window.history.replaceState({}, "signin", '/signin');
+    window.location.href = '/signin';
   }
 
 }
