@@ -20,21 +20,25 @@ window.lima.initPage = function initPage() {
   if (loggedIn) {
     lima.getGapiIDToken()
     .then(function (idToken) {
-      return fetch('/api/profile/' + loggedIn, lima._.idTokenToFetchOptions(idToken));
+      return fetch('/api/known/' + loggedIn, {
+        method: 'GET',
+        headers: lima._.idTokenToFetchHeaders(idToken),
+      });
     })
-    .then((res) => {
-      console.log(res);
-      if (res.status === 200) { // user exists
+    .then(function (res) {
+      if (res.status !== 403) {
         user = loggedIn;
       } else {
-        user = 'lima@local';
+        return Promise.reject();
       }
+    })
+    .catch(function(err) {
+      // todo: do we handle this?
+      console.error(err);
+    })
+    .then(function() {
       window.history.replaceState({}, "profile", '/' + user +'/');
       window.location.href = '/' + user +'/';
-    })
-    .catch((err) => {
-      console.log(err);
-      console.error("profile didn't respond too well.")
     });
   } else {
     window.history.replaceState({}, "signin", '/signin');

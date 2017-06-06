@@ -4,7 +4,7 @@ const express = require('express');
 const jsonBodyParser = require('body-parser').json();
 
 // guard middleware enforcing that a user is logged in
-const GUARD = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
+const GOOGLEUSER = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
 
 const NotFoundError = require('./errors/NotFoundError');
 const UnauthorizedError = require('./errors/UnauthorizedError');
@@ -35,37 +35,37 @@ const api = module.exports = express.Router({
 
 api.get('/', (req, res) => res.redirect('/docs/api'));
 
-api.post('/known', GUARD, KNOWN_USER, (req, res) => res.sendStatus(200));
-api.post('/register', GUARD, jsonBodyParser, saveUser);
+api.get(`/known/:email(${config.EMAIL_ADDRESS_RE})`, KNOWN_USER); // Todo: Do we need GOOGLEUSER here?
+api.post('/register', GOOGLEUSER, jsonBodyParser, saveUser);
 
 api.get('/topusers', listTopUsers);
 api.get('/toppapers', listTopPapers);
 api.get('/topmetaanalyses', listTopMetaanalyses);
 api.get('/titles', listTitles);
 
-api.get(`/profile/:email(${config.EMAIL_ADDRESS_RE})`, KNOWN_USER, returnUserProfile);
+api.get(`/profile/:email(${config.EMAIL_ADDRESS_RE})`, returnUserProfile);
 
 api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})`,
-        KNOWN_USER, listPapersForUser);
+    listPapersForUser);
 api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
-        KNOWN_USER, getPaperVersion);
+    getPaperVersion);
 api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
-        KNOWN_USER, getPaperVersion);
+    getPaperVersion);
 api.post(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
-        GUARD, SAME_USER, jsonBodyParser, savePaper);
+        GOOGLEUSER, SAME_USER, jsonBodyParser, savePaper);
 // todo above, a user that isn't SAME_USER should be able to submit new comments
 
 api.get('/columns', listColumns);
-api.post('/columns', GUARD, KNOWN_USER, jsonBodyParser, saveColumn);
+api.post('/columns', GOOGLEUSER, KNOWN_USER, jsonBodyParser, saveColumn);
 
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})`,
-        KNOWN_USER, listMetaanalysesForUser);
+        listMetaanalysesForUser);
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
-        KNOWN_USER, getMetaanalysisVersion);
+        getMetaanalysisVersion);
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
-        KNOWN_USER, getMetaanalysisVersion);
+        getMetaanalysisVersion);
 api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
-        GUARD, SAME_USER, jsonBodyParser, saveMetaanalysis);
+        GOOGLEUSER, SAME_USER, jsonBodyParser, saveMetaanalysis);
 
 
 /* shared
@@ -123,29 +123,25 @@ function listTitles(req, res, next) {
  *
  */
 
-// Todo: This function might well be obsolete
+// Todo: Jacek, this behaves as expected but will spew errors (Can't set headers after they are sent)
+// to the commandline. I understand it is because we're 'sendStatus'ing twice, and it's a final action.
+// I've tried to use statusCode = <> instead which should not make the http response become finished but
+// it didn't work. I figure you'll see the problem straight away.
 function KNOWN_USER(req, res, next) {
-  if (req.user) {
-    const email = req.user.emails[0].value;
-    // return res.redirect(301, '/register');
-    storage.getUser(email)
-    .catch(() => {
-      // user unknown - todo: maybe redirect to register page?
-      // console.log("WE SHOULD BE REDIRECTING");
-      // res.writeHead(302, { Location: '/register' });
-      // res.end();
-      // return res;
-    })
-    .then(() => {
-      next();
-    });
-    // .then((user) => { // update access time
-    //   user.atime = Date.now();
-    //   next();
-    // });
-  } else {
+  const email = req.params.email;
+  storage.getUser(email)
+  .catch(() => {
+    // User is not known, return 403 to be caught by caller
+    res.sendStatus(403);
+  })
+  .then(() => {
+    // User is known to LiMA
+    res.sendStatus(200);
     next();
-  }
+  })
+  .catch(() => {
+    return;
+  });
 }
 
 function saveUser(req, res, next) {
@@ -240,7 +236,7 @@ function listTopUsers(req, res, next) {
         email: user.emails[0].value,
       });
     }
-    res.json(retval);
+    res.json(users);
   })
   .catch(() => next(new InternalError()));
 }

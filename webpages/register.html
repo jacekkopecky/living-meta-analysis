@@ -11,21 +11,41 @@
   </a>
 </header>
 
-<h1>Please choose a username:</h1>
 <div class="register">
-  <p class="edithighlight">
-    <span class='customusername' contenteditable placeholder="custom username"></span>
-  </p>
-
+  <h3>Please choose a username:</h3>
   <form class='suggestions'>
-  <h3>Suggestions:</h3>
-    <span id='emailaddress'> same as email address</span>
-    <span id='emailaddressfirst'> same as email address first part</span>
-    <span id='displayname'> same as Google display name (without spaces)</span>
-  <p>
-    <button class="confirm">confirm</button>
-  </p>
-  <p class="output"></p>
+    <label>
+      <!-- todo: This text box doesnt focus -->
+      <span class='customusername' contenteditable placeholder="custom username"></span>
+      <input type="radio" id="customusername" name="suggestion">
+    </label>
+    <label>
+      <span class="emailaddress">error</span>
+      <input type="radio" id="emailaddress" name="suggestion">
+    </label>
+    <label>
+      <span class="emailaddressfirst">error</span>
+      <input type="radio" id="emailaddressfirst" name="suggestion">
+    </label>
+    <label>
+      <span class="displayname">error</span>
+      <input type="radio" id="displayname" name="suggestion">
+    </label>
+    <div class="firsttimeonly hidden">
+      <h3>You must accept the following:</h3>
+      <label>
+        I accept terms and conditions (ADD LINK HERE)
+        <input type="checkbox" class="required" id="teesandcees">
+      </label>
+      <label>
+        I accept privacy statement (ADD LINK HERE)
+        <input type="checkbox" class="required" id="privacystatement">
+      </label>
+    </div>
+    <p>
+      <button class="register">register</button>
+    </p>
+  </form>
 </div>
 
 <footer>
@@ -41,8 +61,7 @@
   var lima = window.lima;
   var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
 
-  /^[a-zA-Z0-9-_]+$/;
-  var USERNAME_RE = /^[a-zA-Z][a-zA-Z0-9-_@\.]*$/;
+  var USERNAME_RE = /^[a-zA-Z][a-zA-Z0-9_\.-]*$/;
 
   window.lima.initPage = function () {
 
@@ -53,40 +72,66 @@
     }
 
     var currUser;
+    var firstTimeUser = true;
 
     lima.getGapiIDToken()
-      .then(function (idToken) {
-        return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
-      })
-      .then(_.fetchJson)
-      .then(function (user) {
-        currUser = user;
-      })
-      .catch(function (err) {
-        if (err.status === 404) {
-          console.warn("Possibly this user isn't registered");
-        }
+    .then(function (idToken) {
+      return fetch('/api/known/' + email, {
+        method: 'GET',
+        headers: _.idTokenToFetchHeaders(idToken),
       });
-
+    })
+    .then(function (res) {
+      if (res.status !== 403) {
+        lima.getGapiIDToken()
+          .then(function (idToken) {
+            return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
+          })
+          .then(_.fetchJson)
+          .then(function (user) {
+            currUser = user;
+            firstTimeUser = false;
+          })
+          .catch(function (err) {
+            if (err.status === 404) {
+              console.warn("Possibly this user isn't registered");
+            }
+          })
+          .then(function() {
+            fillRegisterPage(currUser, firstTimeUser);
+          });
+      } else {
+        return Promise.reject();
+      }
+    })
+    .catch(function(err) {
       if (!currUser) {
         // We don't have that user, so just use google's..
         currUser = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
       }
-    fillRegisterPage(currUser);
+      fillRegisterPage(currUser, firstTimeUser);
+    })
 
-    _.addEventListener('button.confirm', 'click', register);
+    _.addEventListener('button.register', 'click', register);
   }
 
   function register() {
-    // clear out old output
-    _.fillEls('.output', '');
-
     // validate the user input
-    var usernameEl = _.findEl('.customusername');
-    var username = usernameEl.textContent.trim();
+    var checked = _.findEls('input[name="suggestion"]:checked')[0];
+    var username;
+
+    if (!checked) return; // todo: wont need when button only shows when selected..
+    if (checked.id == 'customusername') {
+      var customSpan = _.findPrecedingEl(checked, 'span.customusername');
+      username = customSpan.textContent;
+    } else {
+      username = checked.value;
+    }
+    username = username.trim();
+
 
     if (!username.match(USERNAME_RE)) {
-      _.fillEls('.output', 'invalid username');
+      // todo: show validation error here
       return;
     }
 
@@ -110,30 +155,54 @@
       .catch((err) => {
         console.error('failed to register user');
         console.error(err);
-        _.fillEls('.output', 'failed to register');
+        // todo: show validation error here
       });
   }
 
-  function fillRegisterPage(user) {
-    // todo: Feels like there should be a way to get logged in user information
-    // in a format we're used too, even if they don't exist saved yet.
-    _.fillEls('.customusername', user.username || '');
+  function fillRegisterPage(user, firstTimeUser) {
+    var email = user.email || user.getEmail();
+    var emailFirst = email.split('@')[0];
+    var displayName = user.displayName || user.getName();
+    displayName = displayName.replace(/\s/g, '');
 
-    _.addEventListener('#emailaddress', 'click',  function(e){
-      _.fillEls('.customusername', user.email || user.U3);
-    });
+    _.fillEls('form.suggestions span.emailaddress', email);
+    _.setProps('form.suggestions input#emailaddress', 'value', email);
 
-    _.addEventListener('#emailaddressfirst', 'click',  function(e){
-        var email = user.email || user.U3;
-        var split = email.split('@');
-      _.fillEls('.customusername', split[0]);
-    });
+    _.fillEls('form.suggestions span.emailaddressfirst', emailFirst);
+    _.setProps('form.suggestions input#emailaddressfirst', 'value', emailFirst);
 
-    _.addEventListener('#displayname', 'click',  function(e){
-        var displayName = user.displayName || user.ig;
-        displayName = displayName.replace(/\s/g, '');
-      _.fillEls('.customusername', displayName);
-    });
+    _.fillEls('form.suggestions span.displayname', displayName);
+    _.setProps('form.suggestions input#displayname', 'value', displayName);
+
+    if (firstTimeUser) {
+      var firstTimeEl = _.findEl('.firsttimeonly');
+      firstTimeEl.classList.remove('hidden');
+      var registerButton = _.findEl('button.register');
+      // todo: Is disabled strong enough? What do we want to happen if the user
+      // works around this? Presume it's our usual stance, ie. Their problem when things break
+      _.setProps('button.register', 'disabled', true);
+
+      var checkboxes = _.findEls(firstTimeEl, '.required');
+      checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('click', function(e){
+          var firstTimeEl = _.findEl('.firsttimeonly');
+          var checkboxes = _.findEls(firstTimeEl, '.required');
+          var registerButton = _.findEl('button.register');
+          var noChecked = 0;
+          checkboxes.forEach(function(checkbox){
+            if (checkbox.checked) {
+              noChecked += 1;
+            }
+          });
+
+          if (noChecked == checkboxes.length) {
+            _.setProps('button.register', 'disabled', false);
+          } else {
+            _.setProps('button.register', 'disabled', true);
+          }
+        });
+      });
+    }
   }
 
 </script>

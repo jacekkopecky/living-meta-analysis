@@ -22,13 +22,26 @@
 
     onSignInListeners.forEach(function (cb) { cb(); });
 
-    // register the user with the server
+    // check if we should redirect
     var idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
 
-    fetch('/api/known', {
-      method: 'POST',
-      headers: _.idTokenToFetchHeaders(idToken),
-    });
+    // todo: handle this better. Register page calls this, and without the IF
+    // there is a redirect loop. For now this fixes it by only allowing it to happen
+    // once.
+    if (window.location.pathname != '/register') {
+      fetch('/api/known/' + profile.getEmail(), {
+        method: 'GET',
+        headers: _.idTokenToFetchHeaders(idToken),
+      })
+      .then(function (res) {
+        if (res.status == 403) {
+          // user isn't known but someone is signed in. Redirect to register.
+          window.location.href = '/register';
+        } else if (res.status == 401) {
+          // todo: do we handle this somehow?
+        }
+      });
+    }
   }
 
   lima.getAuthenticatedUserEmail = function getAuthenticatedUserEmail() {

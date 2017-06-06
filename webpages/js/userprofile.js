@@ -17,18 +17,36 @@
 
     lima.getGapiIDToken()
     .then(function (idToken) {
-      return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
+      return fetch('/api/known/' + email, {
+        method: 'GET',
+        headers: _.idTokenToFetchHeaders(idToken),
+      });
     })
-    .then(_.fetchJson)
-    .then(fillUserProfile)
-    .catch(function (err) {
-      if (err.status === 404) {
-        _.notFound();
-        return;
+    .then(function (res) {
+      if (res.status !== 403) {
+        lima.getGapiIDToken()
+        .then(function (idToken) {
+          return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
+        })
+        .then(_.fetchJson)
+        .then(fillUserProfile)
+        .catch(function (err) {
+          if (err.status === 404) {
+            _.notFound();
+            return;
+          }
+          console.error("problem getting profile");
+          console.error(err);
+          _.apiFail();
+        });
+      } else {
+        return Promise.reject();
       }
-      console.error("problem getting profile");
+    })
+    .catch(function(err) {
+      // User unknown
+      // todo: do we handle this? Return lima@local?
       console.error(err);
-      _.apiFail();
     });
   };
 

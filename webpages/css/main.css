@@ -535,14 +535,35 @@ body.username {
   display: block;
 }
 
-.register form.suggestions {
-  display: inline-block;
+.register form.suggestions label {
+  display: block;
+  padding-left: 1em;
+  cursor: pointer;
 }
 
-.register form.suggestions span {
-  display: block;
-  padding: 0.5em;
-  cursor: pointer;
+.register form.suggestions label > input[type="radio"],
+.register form.suggestions label > input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  padding-right: 10em;
+}
+
+/*todo: These two don't work.. but the idea was to have the text box 'disabled' if it'supports
+radiobutton isn't selected*/
+.register form.suggestions input[type="radio"]:not(checked) + span.customusername {
+  color: pink;
+}
+
+.register form.suggestions input[type="radio"]:checked span {
+  float: right;
+}
+
+.register div.firsttimeonly {
+  padding-top: 2em;
+}
+
+.register button.register.hidden {
+  display: none;
 }
 
 /* personalinfo
