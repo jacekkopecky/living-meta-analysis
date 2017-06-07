@@ -13,39 +13,38 @@
 
 <div class="register">
   <h3>Please choose a username:</h3>
-  <form class='suggestions'>
+  <label>
+    <!-- todo: This text box doesnt focus -->
+    <span class='customusername' contenteditable placeholder="custom username"></span>
+    <input type="radio" id="customusername" name="suggestion">
+  </label>
+  <label>
+    <span class="displayname">error</span>
+    <input type="radio" id="displayname" name="suggestion">
+  </label>
+  <label>
+    <span class="emailaddressfirst">error</span>
+    <input type="radio" id="emailaddressfirst" name="suggestion">
+  </label>
+  <label>
+    <span class="emailaddress">error</span>
+    <input type="radio" id="emailaddress" name="suggestion">
+  </label>
+  <div class="firsttimeonly hidden">
+    <h3>You must accept the following:</h3>
     <label>
-      <!-- todo: This text box doesnt focus -->
-      <span class='customusername' contenteditable placeholder="custom username"></span>
-      <input type="radio" id="customusername" name="suggestion">
+      I accept terms and conditions (ADD LINK HERE)
+      <input type="checkbox" class="required" id="teesandcees">
     </label>
     <label>
-      <span class="emailaddress">error</span>
-      <input type="radio" id="emailaddress" name="suggestion">
+      I accept privacy statement (ADD LINK HERE)
+      <input type="checkbox" class="required" id="privacystatement">
     </label>
-    <label>
-      <span class="emailaddressfirst">error</span>
-      <input type="radio" id="emailaddressfirst" name="suggestion">
-    </label>
-    <label>
-      <span class="displayname">error</span>
-      <input type="radio" id="displayname" name="suggestion">
-    </label>
-    <div class="firsttimeonly hidden">
-      <h3>You must accept the following:</h3>
-      <label>
-        I accept terms and conditions (ADD LINK HERE)
-        <input type="checkbox" class="required" id="teesandcees">
-      </label>
-      <label>
-        I accept privacy statement (ADD LINK HERE)
-        <input type="checkbox" class="required" id="privacystatement">
-      </label>
-    </div>
-    <p>
-      <button class="register">register</button>
-    </p>
-  </form>
+  </div>
+  <p>
+    <button class="register">register</button>
+    <button class="cancel">cancel</button>
+  </p>
 </div>
 
 <footer>
@@ -68,51 +67,45 @@
     var email = lima.getAuthenticatedUserEmail();
 
     if (!email) {
-      window.location.href = '/signin';
+      _.historyBackOrRedirect('/');
     }
+
+    // set up 'on leave' to sign out the user
+    window.addEventListener('beforeunload', signOut);
 
     var currUser;
     var firstTimeUser = true;
 
     lima.getGapiIDToken()
     .then(function (idToken) {
-      return fetch('/api/known/' + email, {
-        method: 'GET',
-        headers: _.idTokenToFetchHeaders(idToken),
-      });
+      return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
     })
-    .then(function (res) {
-      if (res.status !== 403) {
-        lima.getGapiIDToken()
-          .then(function (idToken) {
-            return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
-          })
-          .then(_.fetchJson)
-          .then(function (user) {
-            currUser = user;
-            firstTimeUser = false;
-          })
-          .catch(function (err) {
-            if (err.status === 404) {
-              console.warn("Possibly this user isn't registered");
-            }
-          })
-          .then(function() {
-            fillRegisterPage(currUser, firstTimeUser);
-          });
-      } else {
-        return Promise.reject();
-      }
+    .then(_.fetchJson)
+    .then(function (user) {
+      currUser = user;
+      firstTimeUser = false;
     })
-    .catch(function(err) {
-      if (!currUser) {
-        // We don't have that user, so just use google's..
+    .catch(function (err) {
+      if (err && err.status === 404) {
         currUser = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
       }
+    })
+    .then(function() {
       fillRegisterPage(currUser, firstTimeUser);
+    })
+    .catch(function(err) {
+      _.apiFail();
     })
 
     _.addEventListener('button.register', 'click', register);
+    _.addEventListener('button.cancel', 'click', function() {
+      _.historyBackOrRedirect('/');
+    });
+  }
+
+  var successfullySaved = false;
+  function signOut() {
+    if (!successfullySaved) gapi.auth2.getAuthInstance().signOut();
   }
 
   function register() {
@@ -137,42 +130,41 @@
 
     // register the user with the server
     return lima.getGapiIDToken()
-      .then(function(idToken) {
-        var toSend = {'username':username};
-        return fetch('/api/register', {
-          method: 'POST',
-          headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
-          body: JSON.stringify(toSend),
-        });
-      })
-      .catch((err) => {
-        // it didn't work, pass through to next catch error.
-      })
-      .then(function(res){
-        // todo: remember where we yanked them from, send them back.
-        window.location.href = '/profile';
-      })
-      .catch((err) => {
-        console.error('failed to register user');
-        console.error(err);
-        // todo: show validation error here
+    .then(function(idToken) {
+      var toSend = { username: username };
+      return fetch('/api/user', {
+        method: 'POST',
+        headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
+        body: JSON.stringify(toSend),
       });
+    })
+    .then(function(res){
+      successfullySaved = true;
+      _.historyBackOrRedirect('/profile');
+    })
+    .catch((err) => {
+      console.error('failed to register user');
+      console.error(err);
+      _.apiFail();
+      // todo: show validation error here
+    });
   }
 
   function fillRegisterPage(user, firstTimeUser) {
+      // todo fill the page so it matches the current state
     var email = user.email || user.getEmail();
     var emailFirst = email.split('@')[0];
     var displayName = user.displayName || user.getName();
     displayName = displayName.replace(/\s/g, '');
 
-    _.fillEls('form.suggestions span.emailaddress', email);
-    _.setProps('form.suggestions input#emailaddress', 'value', email);
+    _.fillEls('div.register span.displayname', displayName);
+    _.setProps('div.register input#displayname', 'value', displayName);
 
-    _.fillEls('form.suggestions span.emailaddressfirst', emailFirst);
-    _.setProps('form.suggestions input#emailaddressfirst', 'value', emailFirst);
+    _.fillEls('div.register span.emailaddressfirst', emailFirst);
+    _.setProps('div.register input#emailaddressfirst', 'value', emailFirst);
 
-    _.fillEls('form.suggestions span.displayname', displayName);
-    _.setProps('form.suggestions input#displayname', 'value', displayName);
+    _.fillEls('div.register span.emailaddress', email);
+    _.setProps('div.register input#emailaddress', 'value', email);
 
     if (firstTimeUser) {
       var firstTimeEl = _.findEl('.firsttimeonly');

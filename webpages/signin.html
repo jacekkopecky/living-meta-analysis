@@ -24,11 +24,15 @@
 <script src="/js/tools.js"></script>
 <script src="/js/auth.js"></script>
 <script>
+'use strict';
+var lima = window.lima;
+var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
+
 window.lima.initPage = function () {
   window.lima.onSignInChange(signedIn);
 }
 
 function signedIn() {
-  window.location.href = '/profile';
+  _.historyBackOrRedirect('/profile');
 }
 </script>

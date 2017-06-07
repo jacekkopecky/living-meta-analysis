@@ -39,7 +39,8 @@ _ {
 .loading .loadingspinner { display: block !important; }
 
 /* from https://codepen.io/flesler/pen/AEIFc */
-[contenteditable]:empty:before {
+[contenteditable]:empty:before,
+.withplaceholder:empty:before {
   content: attr(placeholder);
   color: #aaa;
   font-style: italic;
@@ -531,18 +532,14 @@ body:not(.editing) #toggle-editing .ifon {
   display: none;
 }
 
-body.username {
-  display: block;
-}
-
-.register form.suggestions label {
+.register label {
   display: block;
   padding-left: 1em;
   cursor: pointer;
 }
 
-.register form.suggestions label > input[type="radio"],
-.register form.suggestions label > input[type="checkbox"] {
+.register label > input[type="radio"],
+.register label > input[type="checkbox"] {
   position: absolute;
   left: 0;
   padding-right: 10em;
@@ -550,11 +547,11 @@ body.username {
 
 /*todo: These two don't work.. but the idea was to have the text box 'disabled' if it'supports
 radiobutton isn't selected*/
-.register form.suggestions input[type="radio"]:not(checked) + span.customusername {
+.register input[type="radio"]:not(checked) + span.customusername {
   color: pink;
 }
 
-.register form.suggestions input[type="radio"]:checked span {
+.register input[type="radio"]:checked span {
   float: right;
 }
 
@@ -562,8 +559,13 @@ radiobutton isn't selected*/
   padding-top: 2em;
 }
 
-.register button.register.hidden {
+.register .hidden {
   display: none;
+}
+
+.register button.cancel {
+  margin-left: 3em;
+  margin-right: 3em;
 }
 
 /* personalinfo
@@ -603,16 +605,17 @@ section#personalinfo {
 
 #personalinfo div.username a.changebutton {
   visibility: hidden;
-}
-
-#personalinfo div.username:hover a.changebutton{
   -webkit-appearance: button;
   -moz-appearance: button;
-  visibility: visible;
   appearance: button;
   text-decoration: none;
   color: initial;
   padding: 0.05em;
+  position: absolute;
+}
+
+#personalinfo div.username:hover a.changebutton{
+  visibility: visible;
 }
 
 #personalinfo .photo {

@@ -199,20 +199,11 @@ module.exports.listTitles = () =>
 
 /* a user record looks like this:
  * {
- *   "id": "100380000000000000000",
  *   "ctime": 1467367646989,
- *   "provider": "accounts.google.com",
- *   "emails": [
- *     {
- *       "value": "example@example.com",
- *       "verified": true
- *     }
- *   ],
+ *   "mtime": 1467367646989, // the user last 'registered' i.e. agreed to t&c's (may have changed username)
+ *   "email": "example@example.com",
  *   "displayName": "Example Exampleson",
- *   "name": {
- *     "givenName": "Example",
- *     "familyName": "Exampleson"
- *   },
+ *   "username": "ExampleUsername1234", // see regex for exact allowed names
  *   "photos": [
  *     {
  *       "value": "https://lh5.googleusercontent.com/EXAMPLE/photo.jpg"
@@ -220,6 +211,9 @@ module.exports.listTitles = () =>
  *   ]
  *   // todo favorites: [ "/id/p/4903", "/id/m/649803", ]
  * }
+ * API handles mtime, email, username.
+ * API forwards displayName, photos from Google
+ * Storage handles ctime & username regex checks
  */
 
 const LOCAL_STORAGE_SPECIAL_USER = 'lima@local';
@@ -241,8 +235,9 @@ function getAllUsers() {
       reject(err);
     })
     .on('data', (entity) => {
+      entity = migrateUser(entity);
       try {
-        retval[entity.emails[0].value] = entity;
+        retval[entity.email] = entity;
       } catch (err) {
         console.error('error in a user entity (ignoring)');
         console.error(err);
@@ -258,15 +253,28 @@ function getAllUsers() {
     // - after all other users are loaded so datastore never overrides this one
     // - we expect our auth providers never go issue this email address so no user can use it
     users[LOCAL_STORAGE_SPECIAL_USER] = {
-      emails: [
-        {
-          value: LOCAL_STORAGE_SPECIAL_USER,
-        },
-      ],
+      email: LOCAL_STORAGE_SPECIAL_USER,
     };
     return users;
   });
 }
+
+/*
+ * change user from an old format to the new one on load from datastore, if need be
+ */
+function migrateUser(user) {
+  // 2017-06-08: Only store limited user information
+  if (user.emails) {
+    user.email = user.emails[0].value;
+    delete user.emails;
+    delete user.CHECKid;
+    delete user.id;
+    delete user.name;
+    delete user.provider;
+  }
+  return user;
+}
+
 
 module.exports.getUser = (email) => {
   if (!email) {
@@ -281,7 +289,8 @@ module.exports.listUsers = () => {
   return userCache;
 };
 
-module.exports.addUser = (email, user) => {
+module.exports.saveUser = (email, user) => {
+  // todo do we want to keep a Log of users?
   if (!email || !user) {
     throw new Error('email/user parameters required');
   }
@@ -298,7 +307,7 @@ module.exports.addUser = (email, user) => {
     (users) => new Promise((resolve, reject) => {
       users[email] = user;
       const key = datastore.key(['User', email]);
-      console.log('addUser making a datastore request');
+      console.log('saveUser making a datastore request');
       datastore.save({
         key,
         data: user,
@@ -985,9 +994,7 @@ module.exports.saveColumn = (recvCol, email, options) => {
       recvCol.definedBy = origCol.definedBy;
       if (recvCol.title !== origCol.title ||
           recvCol.type !== origCol.type ||
-          recvCol.description !== origCol.description ||
-          recvCol.formula !== origCol.formula ||
-          JSON.stringify(recvCol.formulaColumns) !== JSON.stringify(origCol.formulaColumns)) {
+          recvCol.description !== origCol.description) {
         if (origCol.definedBy !== email) {
           throw new ValidationError(`only ${origCol.definedBy} can edit column ${recvCol.id}`);
         }

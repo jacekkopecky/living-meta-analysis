@@ -17,36 +17,18 @@
 
     lima.getGapiIDToken()
     .then(function (idToken) {
-      return fetch('/api/known/' + email, {
-        method: 'GET',
-        headers: _.idTokenToFetchHeaders(idToken),
-      });
+      return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
     })
-    .then(function (res) {
-      if (res.status !== 403) {
-        lima.getGapiIDToken()
-        .then(function (idToken) {
-          return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
-        })
-        .then(_.fetchJson)
-        .then(fillUserProfile)
-        .catch(function (err) {
-          if (err.status === 404) {
-            _.notFound();
-            return;
-          }
-          console.error("problem getting profile");
-          console.error(err);
-          _.apiFail();
-        });
-      } else {
-        return Promise.reject();
+    .then(_.fetchJson)
+    .then(fillUserProfile)
+    .catch(function (err) {
+      if (err.status === 404) {
+        _.notFound();
+        return;
       }
-    })
-    .catch(function(err) {
-      // User unknown
-      // todo: do we handle this? Return lima@local?
+      console.error("problem getting profile");
       console.error(err);
+      _.apiFail();
     });
   };
 
@@ -67,31 +49,28 @@
       }
     });
     _.addEventListener('#personalinfo .register', 'click', function() {
-      window.location.href = '/register';
+      var signInButton = _.findEl('div.g-signin2.signin');
+      // the way Google have implemented this button, clicking on the first child of the button placeholder works
+      if (signInButton && signInButton.children[0]) signInButton.children[0].click();
     });
   }
 
   function fillUserProfile(user) {
-    if (JSON.stringify(user) != JSON.stringify({})) { // we have a user
-      lima.userPageIsAbout = user;
+    lima.userPageIsAbout = user;
 
-      functionsWaiting.forEach(function (f) { f(); });
-      functionsWaiting = [];
+    functionsWaiting.forEach(function (f) { f(); });
+    functionsWaiting = [];
 
-      _.fillEls('#personalinfo div.username span', user.username || 'none');
-      _.fillEls('#personalinfo .name', user.displayName);
-      _.fillEls('#personalinfo .email', user.email);
-      _.fillEls('#personalinfo .joined .date', _.formatNiceDate(user.joined));
-      if (user.photos && user.photos[0] && user.photos[0].value) {
-        _.setProps('#personalinfo .photo', 'src', user.photos[0].value);
-      }
-      _.removeClass('#personalinfo', 'loading');
-
-      _.setYouOrName();
-    } else { // we have a signed in user, but they've not registered. Redirect them.
-      console.log("User is not registered?");
-      window.location.href = '/register';
+    _.fillEls('#personalinfo div.username span', user.username);
+    _.fillEls('#personalinfo .name', user.displayName);
+    _.fillEls('#personalinfo .email', user.email);
+    _.fillEls('#personalinfo .joined .date', _.formatNiceDate(user.joined));
+    if (user.photos && user.photos[0] && user.photos[0].value) {
+      _.setProps('#personalinfo .photo', 'src', user.photos[0].value);
     }
+    _.removeClass('#personalinfo', 'loading');
+
+    _.setYouOrName();
   }
 
   var functionsWaiting = [];

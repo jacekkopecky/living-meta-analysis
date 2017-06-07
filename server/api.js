@@ -4,10 +4,12 @@ const express = require('express');
 const jsonBodyParser = require('body-parser').json();
 
 // guard middleware enforcing that a user is logged in
-const GOOGLEUSER = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
+const GOOGLE_USER = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
 
 const NotFoundError = require('./errors/NotFoundError');
 const UnauthorizedError = require('./errors/UnauthorizedError');
+// this will be needed when we can save somebody else's work e.g. by adding comments
+// const ForbiddenError = require('./errors/ForbiddenError');
 const InternalError = require('./errors/InternalError');
 const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
@@ -35,11 +37,13 @@ const api = module.exports = express.Router({
 
 api.get('/', (req, res) => res.redirect('/docs/api'));
 
-api.get(`/known/:email(${config.EMAIL_ADDRESS_RE})`, KNOWN_USER); // Todo: Do we need GOOGLEUSER here?
-api.post('/register', GOOGLEUSER, jsonBodyParser, saveUser);
+api.get('/user', GOOGLE_USER, checkUser);
+api.post('/user', GOOGLE_USER, jsonBodyParser, saveUser);
 
-api.get('/topusers', listTopUsers);
-api.get('/toppapers', listTopPapers);
+// todo top users/papers/metaanalyses would currently return all of them, which is a privacy issue
+// we may need editorial control, tags like 'public' or absence of tags like 'private'
+// api.get('/topusers', listTopUsers);
+// api.get('/toppapers', listTopPapers);
 api.get('/topmetaanalyses', listTopMetaanalyses);
 api.get('/titles', listTitles);
 
@@ -52,11 +56,11 @@ api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE
 api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
     getPaperVersion);
 api.post(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
-        GOOGLEUSER, SAME_USER, jsonBodyParser, savePaper);
+        GOOGLE_USER, SAME_USER, jsonBodyParser, savePaper);
 // todo above, a user that isn't SAME_USER should be able to submit new comments
 
 api.get('/columns', listColumns);
-api.post('/columns', GOOGLEUSER, KNOWN_USER, jsonBodyParser, saveColumn);
+api.post('/columns', GOOGLE_USER, KNOWN_USER, jsonBodyParser, saveColumn);
 
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})`,
         listMetaanalysesForUser);
@@ -65,7 +69,7 @@ api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TI
 api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
         getMetaanalysisVersion);
 api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
-        GOOGLEUSER, SAME_USER, jsonBodyParser, saveMetaanalysis);
+        GOOGLE_USER, SAME_USER, jsonBodyParser, saveMetaanalysis);
 
 
 /* shared
@@ -122,75 +126,17 @@ function listTitles(req, res, next) {
  *
  *
  */
-
-// Todo: Jacek, this behaves as expected but will spew errors (Can't set headers after they are sent)
-// to the commandline. I understand it is because we're 'sendStatus'ing twice, and it's a final action.
-// I've tried to use statusCode = <> instead which should not make the http response become finished but
-// it didn't work. I figure you'll see the problem straight away.
 function KNOWN_USER(req, res, next) {
-  const email = req.params.email;
+  const email = req.user.emails[0].value;
   storage.getUser(email)
-  .catch(() => {
-    // User is not known, return 403 to be caught by caller
-    res.sendStatus(403);
-  })
   .then(() => {
     // User is known to LiMA
-    res.sendStatus(200);
     next();
   })
   .catch(() => {
-    return;
+    // User is not known, return 401 to be caught by caller
+    next(new UnauthorizedError('Please register with LiMA at /register'));
   });
-}
-
-function saveUser(req, res, next) {
-  const user = req.user;
-  user.atime = Date.now(); // update access time
-  user.username = req.body.username;
-  storage.addUser(user.emails[0].value, extractReceivedUser(user));
-  next();
-}
-
-function extractReceivedUser(receivedUser) {
-  // expecting receivedUser to come from JSON.parse()
-  const retval = {
-    displayName:      tools.string(receivedUser.displayName),
-    name:             tools.assoc(receivedUser.name, extractReceivedName),
-    emails:           tools.array(receivedUser.emails, extractReceivedEmail),
-    photos:           tools.array(receivedUser.photos, extractReceivedPhoto),
-    provider:         tools.string(receivedUser.provider),
-    joined:           tools.number(receivedUser.joined),
-    username:         tools.string(receivedUser.username),
-    atime:            tools.number(receivedUser.atime),
-    CHECKctime:       tools.number(receivedUser.ctime),
-    CHECKid:          tools.string(receivedUser.id),
-  };
-
-  return retval;
-}
-
-function extractReceivedName(recName) {
-  const retval = {
-    familyName: tools.string(recName.familyName),
-    givenName: tools.string(recName.givenName),
-  };
-  return retval;
-}
-
-function extractReceivedPhoto(recPhoto) {
-  const retval = {
-    value: tools.string(recPhoto.value),
-  };
-  return retval;
-}
-
-function extractReceivedEmail(recEmail) {
-  const retval = {
-    verified: tools.bool(recEmail.verified),
-    value: tools.string(recEmail.value),
-  };
-  return retval;
 }
 
 function SAME_USER(req, res, next) {
@@ -204,51 +150,109 @@ function SAME_USER(req, res, next) {
   throw new UnauthorizedError();
 }
 
-function returnUserProfile(req, res, next) {
-  storage.getUser(req.params.email)
-  .then((user) => {
-    const retval = {
-      displayName: user.displayName,
-      name: user.name,
-      email: user.emails[0].value,
-      photos: user.photos,
-      joined: user.ctime,
-      username: user.username,
-    };
-    res.json(retval);
-  })
-  .catch((err) => {
-    console.log(err);
-    next(err || new NotFoundError());
-  });
-}
-
-function listTopUsers(req, res, next) {
-  storage.listUsers()
-  .then((users) => {
-    const retval = [];
-    for (const key of Object.keys(users)) {
-      const user = users[key];
-      if (key === 'lima@local') continue;
-      retval.push({
-        displayName: user.displayName,
-        name: user.name,
-        email: user.emails[0].value,
-      });
-    }
-    res.json(users);
-  })
-  .catch(() => next(new InternalError()));
-}
-
-
-module.exports.checkUserExists = function (req, res, next) {
+module.exports.EXISTS_USER = function (req, res, next) {
   storage.getUser(req.params.email)
   .then(
     () => next(),
     () => next(new NotFoundError())
   );
 };
+
+function saveUser(req, res, next) {
+  const user = extractReceivedUser(req.user);
+  user.mtime = Date.now(); // update modification time - this is the last time the user agreed to T&C&PP
+  user.username = tools.string(req.body.username);
+  storage.saveUser(user.email, user)
+  .then((storageUser) => {
+    res.json(extractUserForSending(storageUser));
+  })
+  .catch((err) => {
+    next(new InternalError(err));
+  });
+}
+
+// Check that the user is known to LiMA and that LiMA has up-to-date values from the identity provider.
+function checkUser(req, res, next) {
+  const email = req.user.emails[0].value;
+  storage.getUser(email)
+  .then((storageUser) => {
+    // Check whether there are any changes to the Google Object
+    const strippedGoogleUser = extractReceivedUser(req.user);
+    if (strippedGoogleUser.displayName !== storageUser.displayName ||
+        strippedGoogleUser.email !== storageUser.email ||
+        JSON.stringify(strippedGoogleUser.photos) !== JSON.stringify(storageUser.photos)) {
+      Object.assign(storageUser, strippedGoogleUser);
+      storage.saveUser(storageUser.email, storageUser)
+      .then((savedUser) => {
+        res.json(extractUserForSending(savedUser));
+      })
+      .catch((err) => {
+        next(new InternalError(err));
+      });
+    }
+  })
+  .catch(() => {
+    // User is not known to LiMA, return 401 to be caught by caller
+    next(new UnauthorizedError('Please register with LiMA at /register'));
+  });
+}
+
+function extractReceivedUser(receivedUser) {
+  // expecting receivedUser to be a Javascript object
+  const retval = {
+    displayName:      tools.string(receivedUser.displayName),
+    email:            tools.string(receivedUser.emails[0].value),
+    photos:           tools.array(receivedUser.photos, extractReceivedPhoto),
+  };
+
+  return retval;
+}
+
+function extractReceivedPhoto(recPhoto) {
+  const retval = {
+    value: tools.string(recPhoto.value),
+  };
+  return retval;
+}
+
+function returnUserProfile(req, res, next) {
+  storage.getUser(req.params.email)
+  .then((user) => {
+    res.json(extractUserForSending(user));
+  })
+  .catch(() => {
+    next(new NotFoundError());
+  });
+}
+
+function extractUserForSending(user) {
+  const retval = {
+    displayName: user.displayName,
+    name: user.name,
+    email: user.email,
+    photos: user.photos,
+    joined: user.ctime,
+    username: user.username,
+  };
+  return retval;
+}
+// function listTopUsers(req, res, next) {
+//   storage.listUsers()
+//   .then((users) => {
+//     const retval = [];
+//     for (const key of Object.keys(users)) {
+//       const user = users[key];
+//       if (key === 'lima@local') continue;
+//       retval.push({
+//         displayName: user.displayName,
+//         name: user.name,
+//         email: user.email,
+//       });
+//     }
+//     res.json(retval);
+//   })
+//   .catch(() => next(new InternalError()));
+// }
 
 
 /* papers
@@ -387,20 +391,20 @@ function extractReceivedComment(receivedComment) {
   return retval;
 }
 
-function listTopPapers(req, res, next) {
-  storage.listPapers()
-  .then((papers) => {
-    const retval = [];
-    for (const p of papers) {
-      retval.push({
-        title: p.title,
-        enteredBy: p.enteredBy,
-      });
-    }
-    res.json(retval);
-  })
-  .catch(() => next(new InternalError()));
-}
+// function listTopPapers(req, res, next) {
+//   storage.listPapers()
+//   .then((papers) => {
+//     const retval = [];
+//     for (const p of papers) {
+//       retval.push({
+//         title: p.title,
+//         enteredBy: p.enteredBy,
+//       });
+//     }
+//     res.json(retval);
+//   })
+//   .catch(() => next(new InternalError()));
+// }
 
 
 /* metaanalyses
@@ -546,6 +550,7 @@ function extractReceivedGraph(recGraph) {
   };
 }
 
+// todo filter by tag 'showcase' here rather than in index.html
 function listTopMetaanalyses(req, res, next) {
   storage.listMetaanalyses()
   .then((mas) => {
