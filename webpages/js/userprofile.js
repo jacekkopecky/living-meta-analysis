@@ -5,6 +5,17 @@
 
   lima.localStorageUserEmailAddress = 'lima@local';
 
+  lima.onSignInChange(redirectLocalProfile);
+
+  // redirect /lima@local when a user is signed in
+  function redirectLocalProfile() {
+    var email = lima.extractUserProfileEmailFromUrl();
+    var user = lima.getAuthenticatedUserEmail();
+    if (email == lima.localStorageUserEmailAddress && user && email == window.location.pathname) {
+      window.location.href = '/' + user;
+    }
+  }
+
   lima.requestAndFillUserProfile = function requestAndFillUserProfile() {
     var email = lima.extractUserProfileEmailFromUrl();
 
