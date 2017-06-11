@@ -101,6 +101,10 @@
     _.addEventListener('button.cancel', 'click', function() {
       _.historyBackOrRedirect('/');
     });
+    _.addEventListener('input#customusername', 'click', function(e){
+      var customUsernameEl = _.findEl(e.target.parentElement, 'span.customusername');
+      customUsernameEl.focus();
+    });
   }
 
   var successfullySaved = false;
@@ -157,21 +161,22 @@
     var displayName = user.displayName || user.getName();
     displayName = displayName.replace(/\s/g, '');
 
-    _.fillEls('div.register span.displayname', displayName);
-    _.setProps('div.register input#displayname', 'value', displayName);
+    var found = false;
+    setupRadioButton(user.username, 'displayname', displayName);
+    setupRadioButton(user.username, 'emailaddressfirst', emailFirst);
+    setupRadioButton(user.username, 'emailaddress', email);
 
-    _.fillEls('div.register span.emailaddressfirst', emailFirst);
-    _.setProps('div.register input#emailaddressfirst', 'value', emailFirst);
+    // none of the radio buttons matched the name, so fill the custom username in
+    if (!found) {
+      _.fillEls('div.register span.customusername', user.username);
+      _.setProps('div.register input#customusername', 'checked', true);
+    }
 
-    _.fillEls('div.register span.emailaddress', email);
-    _.setProps('div.register input#emailaddress', 'value', email);
-
+    // Todo: check if mtime (last time user has accepted t&c's is > latest revision)
     if (firstTimeUser) {
       var firstTimeEl = _.findEl('.firsttimeonly');
       firstTimeEl.classList.remove('hidden');
       var registerButton = _.findEl('button.register');
-      // todo: Is disabled strong enough? What do we want to happen if the user
-      // works around this? Presume it's our usual stance, ie. Their problem when things break
       _.setProps('button.register', 'disabled', true);
 
       var checkboxes = _.findEls(firstTimeEl, '.required');
@@ -194,6 +199,15 @@
           }
         });
       });
+    }
+
+    function setupRadioButton(username, selector, value) {
+      _.fillEls('div.register span.' + selector, value);
+      _.setProps('div.register input#' + selector, 'value', value);
+      if (username == value) {
+        _.setProps('div.register input#' + selector, 'checked', true);
+        found = true;
+      }
     }
   }
 
