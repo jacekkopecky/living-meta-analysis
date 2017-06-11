@@ -1,6 +1,7 @@
 module.exports = {
   // shared constants
   EMAIL_ADDRESS_RE: '[a-zA-Z0-9.+-]+@[a-zA-Z0-9.+-]+',
+  USERNAME_RE: '^[a-zA-Z][a-zA-Z0-9_.-]*$', // when updating this, change the clientside copy in register.html
   NEW_PAPER_TITLE: 'new-paper',
   NEW_META_TITLE: 'new-metaanalysis',
 

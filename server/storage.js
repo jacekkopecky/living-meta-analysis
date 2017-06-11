@@ -18,6 +18,7 @@ const fs = require('fs');
 const datastore = gcloud.datastore({ namespace: config.gcloudDatastoreNamespace });
 
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
+const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
 
 /* shared
  *
@@ -120,6 +121,17 @@ function checkForDisallowedChanges(current, original, columns) {
     if (current.title === config.NEW_PAPER_TITLE || current.title === config.NEW_META_TITLE) {
       throw new ValidationError('cannot use a reserved name');
     }
+  }
+
+  // check that username hasn't changed or if it has, that it is unique
+  if (current.username !== original.username) {
+    if (!USERNAME_REXP.test(current.username)) {
+      throw new ValidationError('username cannot contain spaces or special characters');
+    }
+    if (allUsernames.indexOf(current.username) !== -1) {
+      throw new ValidationError('username must be unique');
+    }
+    // todo: do we need extra checks here? I.e. length of username?
   }
 
   // check that every experiment has at least the data values that were there originally
@@ -236,6 +248,7 @@ function getAllUsers() {
     })
     .on('data', (entity) => {
       entity = migrateUser(entity);
+      allUsernames.push(entity.username);
       try {
         retval[entity.email] = entity;
       } catch (err) {
@@ -305,7 +318,10 @@ module.exports.saveUser = (email, user) => {
 
   return userCache.then(
     (users) => new Promise((resolve, reject) => {
+      const original = users[email] || null;
+      checkForDisallowedChanges(user, original);
       users[email] = user;
+      allUsernames.push(user.username);
       const key = datastore.key(['User', email]);
       console.log('saveUser making a datastore request');
       datastore.save({
@@ -323,6 +339,8 @@ module.exports.saveUser = (email, user) => {
     })
   );
 };
+
+const allUsernames = [];
 
 /* papers
  *
