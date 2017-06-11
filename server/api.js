@@ -189,6 +189,8 @@ function checkUser(req, res, next) {
       .catch((err) => {
         next(new InternalError(err));
       });
+    } else {
+      res.json(extractUserForSending(storageUser));
     }
   })
   .catch(() => {
