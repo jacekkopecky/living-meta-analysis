@@ -11,7 +11,7 @@
   function redirectLocalProfile() {
     var email = lima.extractUserProfileEmailFromUrl();
     var user = lima.getAuthenticatedUserEmail();
-    if (email == lima.localStorageUserEmailAddress && user && email == window.location.pathname) {
+    if (email == lima.localStorageUserEmailAddress && user && email == '/'+ window.location.pathname +'/') {
       window.location.href = '/' + user;
     }
   }

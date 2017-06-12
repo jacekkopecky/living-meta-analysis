@@ -190,11 +190,32 @@ function checkForDisallowedChanges(current, original, columns) {
   }
 }
 
+// Take either the email address, or username and return the email address
+function getEmailAddressOfUser(emailOrUsername) {
+  let email;
+
+  if (emailOrUsername.indexOf('@') === -1) {
+    return userCache.then((users) => {
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].username === emailOrUsername) {
+          email = users[i].email;
+          break;
+        }
+      }
+    });
+  } else {
+    email = emailOrUsername;
+  }
+
+  return email;
+}
+
 const allTitles = [];
 
 module.exports.listTitles = () =>
   metaanalysisCache.then(() => paperCache)
   .then(() => allTitles);
+
 
 /* users
  *
@@ -289,10 +310,11 @@ function migrateUser(user) {
 }
 
 
-module.exports.getUser = (email) => {
-  if (!email) {
-    throw new Error('email parameter required');
+module.exports.getUser = (emailOrUsername) => {
+  if (!emailOrUsername) {
+    throw new Error('emailOrUsername parameter required');
   }
+  var email = getEmailAddressOfUser(emailOrUsername);
   return userCache.then(
     (users) => users[email] || Promise.reject(`user ${email} not found`)
   );
@@ -483,16 +505,19 @@ function migratePaper(paper) {
 }
 
 
-module.exports.getPapersEnteredBy = (email) => {
+module.exports.getPapersEnteredBy = (emailOrUsername) => {
+  var email = getEmailAddressOfUser(emailOrUsername);
   // todo also return papers contributed to by `email`
   return paperCache.then(
     (papers) => papers.filter((p) => p.enteredBy === email)
   );
 };
 
-module.exports.getPaperByTitle = (email, title, time) => {
+module.exports.getPaperByTitle = (emailOrUsername, title, time) => {
   // todo if time is specified, compute a version as of that time
   if (time) return Promise.reject(new NotImplementedError('getPaperByTitle with time not implemented'));
+
+  var email = getEmailAddressOfUser(emailOrUsername);
 
   // todo different users can use different titles for the same thing
   if (title === config.NEW_PAPER_TITLE) return Promise.resolve(newPaper(email));
@@ -743,18 +768,21 @@ function migrateMetaanalysis(metaanalysis) {
   return metaanalysis;
 }
 
-module.exports.getMetaanalysesEnteredBy = (email) => {
+module.exports.getMetaanalysesEnteredBy = (emailOrUsername) => {
   // todo also return metaanalyses contributed to by `email`
+  var email = getEmailAddressOfUser(emailOrUsername);
   return metaanalysisCache.then(
     (metaanalyses) => metaanalyses.filter((ma) => ma.enteredBy === email)
   );
 };
 
-module.exports.getMetaanalysisByTitle = (email, title, time, includePapers) => {
+module.exports.getMetaanalysisByTitle = (emailOrUsername, title, time, includePapers) => {
   // todo if time is specified, compute a version as of that time
   if (time) {
     return Promise.reject(new NotImplementedError('getMetaanalysisByTitle with time not implemented'));
   }
+
+  var email = getEmailAddressOfUser(emailOrUsername);
 
   // todo different users can use different titles for the same thing
   if (title === config.NEW_META_TITLE) return Promise.resolve(newMetaanalysis(email));

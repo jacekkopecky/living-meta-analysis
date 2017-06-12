@@ -47,28 +47,28 @@ api.post('/user', GOOGLE_USER, jsonBodyParser, saveUser);
 api.get('/topmetaanalyses', listTopMetaanalyses);
 api.get('/titles', listTitles);
 
-api.get(`/profile/:email(${config.EMAIL_ADDRESS_RE})`, returnUserProfile);
+api.get(`/profile/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})`, returnUserProfile);
 
-api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})`,
+api.get(`/papers/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})`,
     listPapersForUser);
-api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
+api.get(`/papers/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
     getPaperVersion);
-api.get(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+api.get(`/papers/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
     getPaperVersion);
-api.post(`/papers/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
+api.post(`/papers/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
         GOOGLE_USER, SAME_USER, jsonBodyParser, savePaper);
 // todo above, a user that isn't SAME_USER should be able to submit new comments
 
 api.get('/columns', listColumns);
 api.post('/columns', GOOGLE_USER, KNOWN_USER, jsonBodyParser, saveColumn);
 
-api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})`,
+api.get(`/metaanalyses/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})`,
         listMetaanalysesForUser);
-api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
+api.get(`/metaanalyses/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
         getMetaanalysisVersion);
-api.get(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+api.get(`/metaanalyses/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
         getMetaanalysisVersion);
-api.post(`/metaanalyses/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
+api.post(`/metaanalyses/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
         GOOGLE_USER, SAME_USER, jsonBodyParser, saveMetaanalysis);
 
 
@@ -92,11 +92,11 @@ function apiMetaanalysisURL(email, title) {
   return `/api/metaanalyses/${email}/${title || config.NEW_META_TITLE}`;
 }
 
-module.exports.getKindForTitle = function getKindForTitle(email, title) {
+module.exports.getKindForTitle = function getKindForTitle(emailOrUsername, title) {
   return new Promise((resolve, reject) => {
-    storage.getMetaanalysisByTitle(email, title)
+    storage.getMetaanalysisByTitle(emailOrUsername, title)
     .then(() => resolve('metaanalysis'))
-    .catch(() => storage.getPaperByTitle(email, title))
+    .catch(() => storage.getPaperByTitle(emailOrUsername, title))
     .then(() => resolve('paper'))
     .catch((err) => reject(err));
   });
@@ -151,7 +151,7 @@ function SAME_USER(req, res, next) {
 }
 
 module.exports.EXISTS_USER = function (req, res, next) {
-  storage.getUser(req.params.email)
+  storage.getUser(req.params.emailOrUsername)
   .then(
     () => next(),
     () => next(new NotFoundError())
@@ -218,7 +218,7 @@ function extractReceivedPhoto(recPhoto) {
 }
 
 function returnUserProfile(req, res, next) {
-  storage.getUser(req.params.email)
+  storage.getUser(req.params.emailOrUsername)
   .then((user) => {
     res.json(extractUserForSending(user));
   })
@@ -270,7 +270,7 @@ function extractUserForSending(user) {
  *
  */
 function listPapersForUser(req, res, next) {
-  storage.getPapersEnteredBy(req.params.email)
+  storage.getPapersEnteredBy(req.params.emailOrUsername)
   .then((papers) => {
     if (papers.length === 0) throw new Error('no papers found');
 
@@ -284,9 +284,9 @@ function listPapersForUser(req, res, next) {
 }
 
 function getPaperVersion(req, res, next) {
-  storage.getPaperByTitle(req.params.email, req.params.title, req.params.time)
+  storage.getPaperByTitle(req.params.emailOrUsername, req.params.title, req.params.time)
   .then((p) => {
-    res.json(extractPaperForSending(p, true, req.params.email));
+    res.json(extractPaperForSending(p, true, req.params.emailOrUsername));
   })
   .catch((e) => {
     next(e || new NotFoundError());
@@ -300,7 +300,7 @@ function savePaper(req, res, next) {
     req.user.emails[0].value,
     req.params.title)
   .then((p) => {
-    res.json(extractPaperForSending(p, true, req.params.email));
+    res.json(extractPaperForSending(p, true, req.params.emailOrUsername));
   })
   .catch((e) => {
     if (e instanceof ValidationError || e instanceof NotImplementedError) {
@@ -422,13 +422,13 @@ function extractReceivedComment(receivedComment) {
  *
  */
 function listMetaanalysesForUser(req, res, next) {
-  storage.getMetaanalysesEnteredBy(req.params.email)
+  storage.getMetaanalysesEnteredBy(req.params.emailOrUsername)
   .then((mas) => {
     if (mas.length === 0) throw new Error('no metaanalyses found');
 
     const retval = [];
     mas.forEach((m) => {
-      retval.push(extractMetaanalysisForSending(m, false, req.params.email));
+      retval.push(extractMetaanalysisForSending(m, false, req.params.emailOrUsername));
     });
     res.json(retval);
   })
@@ -436,9 +436,9 @@ function listMetaanalysesForUser(req, res, next) {
 }
 
 function getMetaanalysisVersion(req, res, next) {
-  storage.getMetaanalysisByTitle(req.params.email, req.params.title, req.params.time, true)
+  storage.getMetaanalysisByTitle(req.params.emailOrUsername, req.params.title, req.params.time, true)
   .then((ma) => {
-    res.json(extractMetaanalysisForSending(ma, true, req.params.email));
+    res.json(extractMetaanalysisForSending(ma, true, req.params.emailOrUsername));
   })
   .catch((e) => {
     next(e || new NotFoundError());
@@ -452,7 +452,7 @@ function saveMetaanalysis(req, res, next) {
     req.user.emails[0].value,
     req.params.title)
   .then((ma) => {
-    res.json(extractMetaanalysisForSending(ma, false, req.params.email));
+    res.json(extractMetaanalysisForSending(ma, false, req.params.emailOrUsername));
   })
   .catch((e) => {
     if (e instanceof ValidationError || e instanceof NotImplementedError) {
