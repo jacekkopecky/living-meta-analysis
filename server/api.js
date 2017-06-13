@@ -47,28 +47,52 @@ api.post('/user', GOOGLE_USER, jsonBodyParser, saveUser);
 api.get('/topmetaanalyses', listTopMetaanalyses);
 api.get('/titles', listTitles);
 
-api.get(`/profile/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})`, returnUserProfile);
+api.get(`/profile/:emailOrUsername(${config.EMAIL_ADDRESS_RE})`, returnUserProfile);
+api.get(`/profile/:emailOrUsername(${config.USERNAME_RE})`, returnUserProfile);
 
-api.get(`/papers/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})`,
+api.get(`/papers/:emailOrUsername(${config.EMAIL_ADDRESS_RE})`,
     listPapersForUser);
-api.get(`/papers/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
+api.get(`/papers/:emailOrUsername(${config.USERNAME_RE})`,
+    listPapersForUser);
+
+api.get(`/papers/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
     getPaperVersion);
-api.get(`/papers/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+api.get(`/papers/:emailOrUsername(${config.USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
     getPaperVersion);
-api.post(`/papers/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
+
+api.get(`/papers/:emailOrUsername(${config.EMAIL_ADDRESS_RE})\/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+    getPaperVersion);
+api.get(`/papers/:emailOrUsername(${config.USERNAME_RE})\/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+    getPaperVersion);
+
+api.post(`/papers/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         GOOGLE_USER, SAME_USER, jsonBodyParser, savePaper);
+api.post(`/papers/:emailOrUsername(${config.USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
+        GOOGLE_USER, SAME_USER, jsonBodyParser, savePaper);
+
 // todo above, a user that isn't SAME_USER should be able to submit new comments
 
 api.get('/columns', listColumns);
 api.post('/columns', GOOGLE_USER, KNOWN_USER, jsonBodyParser, saveColumn);
 
-api.get(`/metaanalyses/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})`,
+api.get(`/metaanalyses/:emailOrUsername(${config.EMAIL_ADDRESS_RE})`,
         listMetaanalysesForUser);
-api.get(`/metaanalyses/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
+api.get(`/metaanalyses/:emailOrUsername(${config.USERNAME_RE})`,
+        listMetaanalysesForUser);
+
+api.get(`/metaanalyses/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
         getMetaanalysisVersion);
-api.get(`/metaanalyses/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+api.get(`/metaanalyses/:emailOrUsername(${config.USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
         getMetaanalysisVersion);
-api.post(`/metaanalyses/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
+
+api.get(`/metaanalyses/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+        getMetaanalysisVersion);
+api.get(`/metaanalyses/:emailOrUsername(${config.USERNAME_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+        getMetaanalysisVersion);
+
+api.post(`/metaanalyses/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
+        GOOGLE_USER, SAME_USER, jsonBodyParser, saveMetaanalysis);
+api.post(`/metaanalyses/:emailOrUsername(${config.USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
         GOOGLE_USER, SAME_USER, jsonBodyParser, saveMetaanalysis);
 
 
@@ -270,6 +294,7 @@ function extractUserForSending(user) {
  *
  */
 function listPapersForUser(req, res, next) {
+  console.log(req.params.emailOrUsername);
   storage.getPapersEnteredBy(req.params.emailOrUsername)
   .then((papers) => {
     if (papers.length === 0) throw new Error('no papers found');
@@ -284,6 +309,8 @@ function listPapersForUser(req, res, next) {
 }
 
 function getPaperVersion(req, res, next) {
+  console.log(req.params.emailOrUsername);
+  console.log("here");
   storage.getPaperByTitle(req.params.emailOrUsername, req.params.title, req.params.time)
   .then((p) => {
     res.json(extractPaperForSending(p, true, req.params.emailOrUsername));

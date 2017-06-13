@@ -15,7 +15,7 @@ const tools = require('./tools');
 const gcloud = require('google-cloud')(config.gcloudProject);
 const fs = require('fs');
 
-const datastore = gcloud.datastore({ namespace: config.gcloudDatastoreNamespace });
+const datastore = gcloud.datastore({ namespace: config.gcloudDatastoreNamespace, apiEndpoint: "http://localhost:8081" });
 
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
 const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
@@ -544,6 +544,7 @@ module.exports.getPaperByTitle = (emailOrUsername, title, time) => {
           for (const p of papers) {
             console.log(p.title);
             if (p.title === title) {
+              console.log(p);
               return p;
             }
           }
@@ -792,9 +793,16 @@ function migrateMetaanalysis(metaanalysis) {
 
 module.exports.getMetaanalysesEnteredBy = (emailOrUsername) => {
   // todo also return metaanalyses contributed to by `email`
-  var email = getEmailAddressOfUser(emailOrUsername);
-  return metaanalysisCache.then(
-    (metaanalyses) => metaanalyses.filter((ma) => ma.enteredBy === email)
+  if (!emailOrUsername) {
+    throw new Error('emailOrUsername parameter required');
+  }
+  return Promise.all([getEmailAddressOfUser(emailOrUsername), metaanalysisCache])
+  .then(
+    (vals) => {
+      const email = vals[0];
+      const papers = vals[1];
+      return metaanalyses.filter((ma) => ma.enteredBy === email)
+    }
   );
 };
 

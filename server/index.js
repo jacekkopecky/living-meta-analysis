@@ -136,19 +136,49 @@ app.get(['/profile', '/profile/*'],
 
 app.use('/', express.static('webpages', { extensions: ['html'] }));
 
-app.use(`/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/`, SLASH_URL);
-app.get(`/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/`,
+app.use(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/`, SLASH_URL);
+app.use(`/:emailOrUsername(${config.USERNAME_RE})/`, SLASH_URL);
+
+// todo: there is merit (now that they are repeated) for these 'simple' functions to be named and called
+app.get(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/`,
+        api.EXISTS_USER,
+        (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
+app.get(`/:emailOrUsername(${config.USERNAME_RE})/`,
         api.EXISTS_USER,
         (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
 
-app.use(`/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/`, SLASH_URL);
-app.get(`/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/${config.NEW_PAPER_TITLE}/`,
+app.use(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`, SLASH_URL);
+app.use(`/:emailOrUsername(${config.USERNAME_RE})/:title(${config.URL_TITLE_RE})/`, SLASH_URL);
+
+app.get(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/${config.NEW_PAPER_TITLE}/`,
         api.EXISTS_USER,
         (req, res) => res.sendFile('profile/paper.html', { root: './webpages/' }));
-app.get(`/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/${config.NEW_META_TITLE}/`,
+app.get(`/:emailOrUsername(${config.USERNAME_RE})/${config.NEW_PAPER_TITLE}/`,
+        api.EXISTS_USER,
+        (req, res) => res.sendFile('profile/paper.html', { root: './webpages/' }));
+
+app.get(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/${config.NEW_META_TITLE}/`,
         api.EXISTS_USER,
         (req, res) => res.sendFile('profile/metaanalysis.html', { root: './webpages/' }));
-app.get(`/:emailOrUsername(${config.EMAIL_OR_USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
+app.get(`/:emailOrUsername(${config.USERNAME_RE})/${config.NEW_META_TITLE}/`,
+        api.EXISTS_USER,
+        (req, res) => res.sendFile('profile/metaanalysis.html', { root: './webpages/' }));
+
+app.get(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
+        api.EXISTS_USER,
+        (req, res, next) => {
+          Promise.resolve(req.query.type || api.getKindForTitle(req.params.emailOrUsername, req.params.title))
+          .then((kind) => {
+            if (kind === 'paper' || kind === 'metaanalysis') {
+              const file = `profile/${kind}.html`;
+              res.sendFile(file, { root: './webpages/' });
+            } else {
+              next(new NotFoundError());
+            }
+          })
+          .catch(() => next(new NotFoundError()));
+        });
+app.get(`/:emailOrUsername(${config.USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
         api.EXISTS_USER,
         (req, res, next) => {
           Promise.resolve(req.query.type || api.getKindForTitle(req.params.emailOrUsername, req.params.title))
