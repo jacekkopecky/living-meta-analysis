@@ -126,11 +126,14 @@
     }
     username = username.trim();
 
+    // todo: all the validation errors should be on input rather than when the button is clicked
 
     if (!username.match(USERNAME_RE)) {
       // todo: show validation error here
       return;
     }
+
+    // todo: if username is taken or forbidden, show a validation error
 
     // register the user with the server
     return lima.getGapiIDToken()

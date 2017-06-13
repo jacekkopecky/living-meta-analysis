@@ -119,6 +119,14 @@ app.use('/', (req, res, next) => {
  *
  */
 
+if (config.demoApiDelay) {
+  // this is a delay for demonstration purposes so the server seems slow
+  app.use((req, res, next) => setTimeout(next, config.demoApiDelay));
+}
+
+app.use('/api', api);
+
+
 app.get('/version', oneLineVersion);
 app.get('/version/log',
         (req, res) => res.redirect('https://github.com/jacekkopecky/living-meta-analysis/commits/master'));
@@ -210,13 +218,6 @@ exec('git log -1 --date=short --pretty=format:"%ad"',
  *
  *
  */
-
-if (config.demoApiDelay) {
-  // this is a delay for demonstration purposes so the server seems slow
-  app.use((req, res, next) => setTimeout(next, config.demoApiDelay));
-}
-
-app.use('/api', api);
 
 app.use(() => { throw new NotFoundError(); });
 

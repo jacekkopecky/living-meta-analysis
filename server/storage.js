@@ -129,9 +129,9 @@ function checkForDisallowedChanges(current, original, columns) {
       throw new ValidationError('username cannot contain spaces or special characters');
     }
     if (allUsernames.indexOf(current.username) !== -1) {
-      throw new ValidationError('username must be unique');
+      throw new ValidationError('username must be unique, must not be from the forbidden list');
     }
-    // todo: do we need extra checks here? I.e. length of username?
+    // todo: do we need extra checks here? I.e. length of username? encodings? emojis?
   }
 
   // check that every experiment has at least the data values that were there originally
@@ -192,22 +192,17 @@ function checkForDisallowedChanges(current, original, columns) {
 
 // Take either the email address, or username and return the email address
 function getEmailAddressOfUser(emailOrUsername) {
-  let email;
-
-  if (emailOrUsername.indexOf('@') === -1) {
-    return userCache.then((users) => {
-      for (var i = 0; i < users.length; i++) {
-        if (users[i].username === emailOrUsername) {
-          email = users[i].email;
-          break;
+  return userCache.then((users) => {
+    if (emailOrUsername.indexOf('@') === -1) {
+      for (const email of Object.keys(users)) {
+        if (users[email].username === emailOrUsername) {
+          return email;
         }
       }
-    });
-  } else {
-    email = emailOrUsername;
-  }
+    }
 
-  return email;
+    return emailOrUsername;
+  });
 }
 
 const allTitles = [];
@@ -314,9 +309,13 @@ module.exports.getUser = (emailOrUsername) => {
   if (!emailOrUsername) {
     throw new Error('emailOrUsername parameter required');
   }
-  var email = getEmailAddressOfUser(emailOrUsername);
-  return userCache.then(
-    (users) => users[email] || Promise.reject(`user ${email} not found`)
+  return Promise.all([getEmailAddressOfUser(emailOrUsername), userCache])
+  .then(
+    (vals) => {
+      const email = vals[0];
+      const users = vals[1];
+      return users[email] || Promise.reject(`user ${email} not found`);
+    }
   );
 };
 
@@ -362,7 +361,8 @@ module.exports.saveUser = (email, user) => {
   );
 };
 
-const allUsernames = [];
+// all the forbidden usernames will be treated as taken
+const allUsernames = [].concat(config.FORBIDDEN_USERNAMES);
 
 /* papers
  *
@@ -506,30 +506,52 @@ function migratePaper(paper) {
 
 
 module.exports.getPapersEnteredBy = (emailOrUsername) => {
-  var email = getEmailAddressOfUser(emailOrUsername);
-  // todo also return papers contributed to by `email`
-  return paperCache.then(
-    (papers) => papers.filter((p) => p.enteredBy === email)
+  if (!emailOrUsername) {
+    throw new Error('emailOrUsername parameter required');
+  }
+  return Promise.all([getEmailAddressOfUser(emailOrUsername), paperCache])
+  .then(
+    (vals) => {
+      const email = vals[0];
+      const papers = vals[1];
+      return papers.filter((p) => p.enteredBy === email);
+    }
   );
 };
 
 module.exports.getPaperByTitle = (emailOrUsername, title, time) => {
+  console.log('we are');
   // todo if time is specified, compute a version as of that time
   if (time) return Promise.reject(new NotImplementedError('getPaperByTitle with time not implemented'));
 
-  var email = getEmailAddressOfUser(emailOrUsername);
+  if (!emailOrUsername || !title) {
+    throw new Error('emailOrUsername and title parameters required');
+  }
+
+  console.log('being');
 
   // todo different users can use different titles for the same thing
-  if (title === config.NEW_PAPER_TITLE) return Promise.resolve(newPaper(email));
-  return paperCache
-  .then((papers) => {
-    for (const p of papers) {
-      if (p.title === title) {
-        return p;
-      }
+  return getEmailAddressOfUser(emailOrUsername)
+  .then(
+    (email) => {
+      if (title === config.NEW_PAPER_TITLE) return newPaper(email);
+
+      console.log('not new');
+
+      return paperCache.then(
+        (papers) => {
+          console.log('got papers');
+          for (const p of papers) {
+            console.log(p.title);
+            if (p.title === title) {
+              return p;
+            }
+          }
+          return Promise.reject();
+        }
+      );
     }
-    return Promise.reject();
-  });
+  );
 };
 
 function newPaper(email) {
