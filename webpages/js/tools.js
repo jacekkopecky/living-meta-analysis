@@ -696,7 +696,7 @@
     var currentUser = lima.getAuthenticatedUserEmail();
 
     var y = (currentUser == lima.userPageIsAbout.email || lima.userLocalStorage);
-    var n = !lima.userLocalStorage && lima.userPageIsAbout.name.givenName || 'User';
+    var n = !lima.userLocalStorage && lima.userPageIsAbout.name && lima.userPageIsAbout.name.givenName || 'User';
 
     lima.pageAboutYou = y;
 
@@ -941,15 +941,15 @@
     return 'new_' + type + '_' + currTime;
   };
 
-  /* page leave
+  /* navigation
    *
    *
-   *   #####    ##    ####  ######    #      ######   ##   #    # ######
-   *   #    #  #  #  #    # #         #      #       #  #  #    # #
-   *   #    # #    # #      #####     #      #####  #    # #    # #####
-   *   #####  ###### #  ### #         #      #      ###### #    # #
-   *   #      #    # #    # #         #      #      #    #  #  #  #
-   *   #      #    #  ####  ######    ###### ###### #    #   ##   ######
+   *   #    #   ##   #    # #  ####    ##   ##### #  ####  #    #
+   *   ##   #  #  #  #    # # #    #  #  #    #   # #    # ##   #
+   *   # #  # #    # #    # # #      #    #   #   # #    # # #  #
+   *   #  # # ###### #    # # #  ### ######   #   # #    # #  # #
+   *   #   ## #    #  #  #  # #    # #    #   #   # #    # #   ##
+   *   #    # #    #   ##   #  ####  #    #   #   #  ####  #    #
    *
    *
    */
@@ -971,6 +971,14 @@
       return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
     }
   });
+
+  _.historyBackOrRedirect = function (url) {
+    // go back in history, or if we can't, go to the provided url
+    window.history.back();
+    setTimeout(function(){
+      window.location.href = url;
+    }, 500);
+  };
 
   /* tests
    *

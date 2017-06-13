@@ -119,6 +119,14 @@ app.use('/', (req, res, next) => {
  *
  */
 
+if (config.demoApiDelay) {
+  // this is a delay for demonstration purposes so the server seems slow
+  app.use((req, res, next) => setTimeout(next, config.demoApiDelay));
+}
+
+app.use('/api', api);
+
+
 app.get('/version', oneLineVersion);
 app.get('/version/log',
         (req, res) => res.redirect('https://github.com/jacekkopecky/living-meta-analysis/commits/master'));
@@ -128,22 +136,52 @@ app.get(['/profile', '/profile/*'],
 
 app.use('/', express.static('webpages', { extensions: ['html'] }));
 
-app.use(`/:email(${config.EMAIL_ADDRESS_RE})/`, SLASH_URL);
-app.get(`/:email(${config.EMAIL_ADDRESS_RE})/`,
-        api.checkUserExists,
+app.use(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/`, SLASH_URL);
+app.use(`/:emailOrUsername(${config.USERNAME_RE})/`, SLASH_URL);
+
+// todo: there is merit (now that they are repeated) for these 'simple' functions to be named and called
+app.get(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/`,
+        api.EXISTS_USER,
+        (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
+app.get(`/:emailOrUsername(${config.USERNAME_RE})/`,
+        api.EXISTS_USER,
         (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
 
-app.use(`/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`, SLASH_URL);
-app.get(`/:email(${config.EMAIL_ADDRESS_RE})/${config.NEW_PAPER_TITLE}/`,
-        api.checkUserExists,
+app.use(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`, SLASH_URL);
+app.use(`/:emailOrUsername(${config.USERNAME_RE})/:title(${config.URL_TITLE_RE})/`, SLASH_URL);
+
+app.get(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/${config.NEW_PAPER_TITLE}/`,
+        api.EXISTS_USER,
         (req, res) => res.sendFile('profile/paper.html', { root: './webpages/' }));
-app.get(`/:email(${config.EMAIL_ADDRESS_RE})/${config.NEW_META_TITLE}/`,
-        api.checkUserExists,
+app.get(`/:emailOrUsername(${config.USERNAME_RE})/${config.NEW_PAPER_TITLE}/`,
+        api.EXISTS_USER,
+        (req, res) => res.sendFile('profile/paper.html', { root: './webpages/' }));
+
+app.get(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/${config.NEW_META_TITLE}/`,
+        api.EXISTS_USER,
         (req, res) => res.sendFile('profile/metaanalysis.html', { root: './webpages/' }));
-app.get(`/:email(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
-        api.checkUserExists,
+app.get(`/:emailOrUsername(${config.USERNAME_RE})/${config.NEW_META_TITLE}/`,
+        api.EXISTS_USER,
+        (req, res) => res.sendFile('profile/metaanalysis.html', { root: './webpages/' }));
+
+app.get(`/:emailOrUsername(${config.EMAIL_ADDRESS_RE})/:title(${config.URL_TITLE_RE})/`,
+        api.EXISTS_USER,
         (req, res, next) => {
-          Promise.resolve(req.query.type || api.getKindForTitle(req.params.email, req.params.title))
+          Promise.resolve(req.query.type || api.getKindForTitle(req.params.emailOrUsername, req.params.title))
+          .then((kind) => {
+            if (kind === 'paper' || kind === 'metaanalysis') {
+              const file = `profile/${kind}.html`;
+              res.sendFile(file, { root: './webpages/' });
+            } else {
+              next(new NotFoundError());
+            }
+          })
+          .catch(() => next(new NotFoundError()));
+        });
+app.get(`/:emailOrUsername(${config.USERNAME_RE})/:title(${config.URL_TITLE_RE})/`,
+        api.EXISTS_USER,
+        (req, res, next) => {
+          Promise.resolve(req.query.type || api.getKindForTitle(req.params.emailOrUsername, req.params.title))
           .then((kind) => {
             if (kind === 'paper' || kind === 'metaanalysis') {
               const file = `profile/${kind}.html`;
@@ -211,13 +249,6 @@ exec('git log -1 --date=short --pretty=format:"%ad"',
  *
  */
 
-if (config.demoApiDelay) {
-  // this is a delay for demonstration purposes so the server seems slow
-  app.use((req, res, next) => setTimeout(next, config.demoApiDelay));
-}
-
-app.use('/api', api);
-
 app.use(() => { throw new NotFoundError(); });
 
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
@@ -233,7 +264,7 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   } else {
     console.error('internal error');
     console.error(err);
-    if ('stack' in err) console.error(err.stack);
+    if (err && err.stack) console.error(err.stack);
     res.status(500).send('internal server error');
   }
 });
