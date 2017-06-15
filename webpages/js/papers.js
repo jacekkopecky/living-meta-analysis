@@ -346,8 +346,8 @@
     _.addEventListener(paperEl, '.link .value.editing', 'click', _.blurAndFocus);
     _.addEventListener(paperEl, '.doi .value.editing', 'click', _.blurAndFocus);
 
-    addOnInputUpdater(paperEl, ".reference .value", 'textContent', identity, paper, 'reference');
-    addOnInputUpdater(paperEl, ".description .value", 'textContent', identity, paper, 'description');
+    _.addOnInputUpdater(paperEl, ".reference .value", 'textContent', identity, paper, 'reference');
+    _.addOnInputUpdater(paperEl, ".description .value", 'textContent', identity, paper, 'description');
 
     currentPaperOrigTitle = paper.title;
     addConfirmedUpdater('#paper .title.editing', '#paper .title + .titlerename', '#paper .title ~ * .titlerenamecancel', 'textContent', checkTitleUnique, paper, 'title');
@@ -371,8 +371,8 @@
 
     if (pinnedBox) pinPopupBox(pinnedBox);
 
-    setValidationErrorClass();
-    setUnsavedClass();
+    _.setValidationErrorClasses();
+    _.setUnsavedClasses();
 
     recalculateComputedData();
   }
@@ -582,7 +582,7 @@
         _.fillEls(tr, '.exptitle + .exptitlerename', 'rename');
       }
 
-      addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
+      _.addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
 
       _.setDataProps(tr, '.exptitle.editing', 'origTitle', experiment.title);
       addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', null, 'textContent', checkExperimentTitle, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
@@ -609,7 +609,7 @@
             _.fillEls(td, '.value', val.value);
           }
 
-          addOnInputUpdater(td, '.value', 'textContent', trimmingSanitizer, paper, ['experiments', expIndex, 'data', col, 'value'], recalculateComputedData);
+          _.addOnInputUpdater(td, '.value', 'textContent', trimmingSanitizer, paper, ['experiments', expIndex, 'data', col, 'value'], recalculateComputedData);
 
           var user = lima.getAuthenticatedUserEmail();
           _.fillEls (td, '.valenteredby', val && val.enteredBy || user);
@@ -700,7 +700,7 @@
       _.fillEls(th, '.coltitle + .coltitlerename', 'confirm');
     }
 
-    addOnInputUpdater(th, '.coldescription', 'textContent', identity, col, ['description']);
+    _.addOnInputUpdater(th, '.coldescription', 'textContent', identity, col, ['description']);
 
     addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, col, 'title', deleteNewColumn, function(){_.scheduleSave(currentPaper);});
 
@@ -743,7 +743,7 @@
       } else {
         formulasDropdown.classList.add('validationerror');
       }
-      // we'll call setValidationErrorClass() later
+      // we'll call setValidationErrorClasses() later
 
       // make sure formula columns array matches the number of expected parameters
       col.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -813,7 +813,7 @@
         makeOption(colId, col, colId, select);
       }
 
-      setValidationErrorClass();
+      _.setValidationErrorClasses();
 
 
       // listen to changes of the dropdown box
@@ -827,7 +827,7 @@
           } else {
             select.classList.add('validationerror');
           }
-          setValidationErrorClass();
+          _.setValidationErrorClasses();
           _.scheduleSave(paper);
           fillComputedColumnInformation(computedColumnsOptionsEl, col);
           recalculateComputedData();
@@ -1295,7 +1295,7 @@
       _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime || Date.now()));
       _.fillEls(el, '.text', comment.text);
 
-      addOnInputUpdater(el, '.text', 'textContent', identity, paper, commentsPropPath.concat(i, 'text'));
+      _.addOnInputUpdater(el, '.text', 'textContent', identity, paper, commentsPropPath.concat(i, 'text'));
       textTargetEl.appendChild(el);
     }
 
@@ -1631,7 +1631,7 @@
       setTimeout(doChangeColumnTypeConfirmOrCancel, 0, coltypeEl);
     } else {
       coltypeEl.classList.add('unsaved');
-      setUnsavedClass();
+      _.setUnsavedClasses();
     }
   }
 
@@ -1664,7 +1664,7 @@
     }
 
     coltypeEl.classList.remove('unsaved');
-    setUnsavedClass();
+    _.setUnsavedClasses();
 
     if (!btn.classList.contains('cancel')) {
       col.type = coltypeEl.dataset.newType;
@@ -1757,44 +1757,6 @@
 
   function trimmingSanitizer(val) { if (typeof val === 'string') return val.trim(); else return val; }
 
-  function addOnInputUpdater(root, selector, property, validatorSanitizer, target, targetProp, onchange) {
-    if (!(root instanceof Node)) {
-      onchange = targetProp;
-      targetProp = target;
-      target = validatorSanitizer;
-      validatorSanitizer = property;
-      property = selector;
-      selector = root;
-      root = document;
-    }
-
-    _.findEls(root, selector).forEach(function (el) {
-      if (el.classList.contains('editing') || el.isContentEditable || el.contentEditable === 'true') {
-        el.addEventListener('keydown', _.deferScheduledSave);
-        el.oninput = function () {
-          var value = el[property];
-          if (typeof value === 'string' && value.trim() === '') value = '';
-          try {
-            if (validatorSanitizer) value = validatorSanitizer(value, el, property);
-          } catch (err) {
-            el.classList.add('validationerror');
-            el.dataset.validationmessage = err.message || err;
-            setValidationErrorClass();
-            _.cancelScheduledSave(target);
-            return;
-          }
-          el.classList.remove('validationerror');
-          setValidationErrorClass();
-          assignDeepValue(target, targetProp, value);
-          if (onchange) onchange(el);
-          _.scheduleSave(target);
-        };
-      } else {
-        el.oninput = null;
-      }
-    });
-  }
-
   function addConfirmedUpdater(root, selector, confirmselector, cancelselector, property, validatorSanitizer, target, targetProp, deleteFunction, onconfirm) {
     if (!(root instanceof Node)) {
       onconfirm = deleteFunction;
@@ -1835,7 +1797,7 @@
       } catch (err) {
         editingEl.classList.add('validationerror');
         editingEl.dataset.validationmessage = err && err.message || err || '';
-        if (ev) setValidationErrorClass();
+        if (ev) _.setValidationErrorClasses();
         confirmEl.disabled = true;
         _.cancelScheduledSave(target);
         return;
@@ -1853,8 +1815,8 @@
       // the following calls are expensive and unnecessary when building the dom
       // but when building the dom, we don't have `ev`
       if (ev) {
-        setValidationErrorClass();
-        setUnsavedClass();
+        _.setValidationErrorClasses();
+        _.setUnsavedClasses();
       }
     };
 
@@ -1870,8 +1832,8 @@
         if (editingEl.classList.contains('new') && deleteFunction) {
           editingEl.classList.remove('unsaved');
           editingEl.classList.remove('validationerror');
-          setUnsavedClass();
-          setValidationErrorClass();
+          _.setUnsavedClasses();
+          _.setValidationErrorClasses();
           deleteFunction();
         } else {
           cancel();
@@ -1895,10 +1857,10 @@
         // any validation reporting is done above in the handler on editingEl
         return;
       }
-      assignDeepValue(target, targetProp, value);
+      _.assignDeepValue(target, targetProp, value);
       confirmEl.disabled = true;
       editingEl.classList.remove('unsaved');
-      setUnsavedClass();
+      _.setUnsavedClasses();
       updatePaperView();
       _.scheduleSave(target);
       if (onconfirm) onconfirm();
@@ -1907,25 +1869,6 @@
     cancelEls.forEach(function (cancelEl) {
       cancelEl.onclick = cancel;
     });
-  }
-
-  function assignDeepValue(target, targetProp, value) {
-    if (Array.isArray(targetProp)) {
-      // copy targetProp so we can manipulate it
-      targetProp = targetProp.slice();
-      while (targetProp.length > 1) {
-        var prop = targetProp.shift();
-        if (!(prop in target) || target[prop] == null) {
-          if (Number.isInteger(targetProp[0])) target[prop] = [];
-          else target[prop] = {};
-        }
-        target = target[prop];
-      }
-      targetProp = targetProp[0];
-    }
-
-    target[targetProp] = value;
-    return value;
   }
 
   function getDeepValue(target, targetProp, addDefaultValue) {
@@ -1950,16 +1893,6 @@
     }
 
     return target;
-  }
-
-  function setValidationErrorClass() {
-    if (_.findEl('#paper .validationerror')) _.addClass('#paper', 'validationerror');
-    else _.removeClass('#paper', 'validationerror');
-  }
-
-  function setUnsavedClass() {
-    if (_.findEl('#paper .unsaved')) _.addClass('#paper', 'unsaved');
-    else _.removeClass('#paper', 'unsaved');
   }
 
 
@@ -2266,7 +2199,6 @@
     // for testing
     lima.pinPopupBox = pinPopupBox;
     lima.unpinPopupBox = unpinPopupBox;
-    lima.assignDeepValue = assignDeepValue;
     lima.getDeepValue = getDeepValue;
     lima.getPaperTitles = function(){return allTitles;};
     lima.getCurrentPaper = function(){return currentPaper;};
