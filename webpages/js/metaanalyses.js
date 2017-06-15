@@ -399,9 +399,9 @@
 
     _.setDataProps(metaanalysisEl, '.enteredby.needs-owner', 'owner', metaanalysis.enteredBy);
 
-    addOnInputUpdater(metaanalysisEl, ".authors .value", 'textContent', identity, metaanalysis, 'authors');
-    addOnInputUpdater(metaanalysisEl, ".published .value", 'textContent', identity, metaanalysis, 'published');
-    addOnInputUpdater(metaanalysisEl, ".description .value", 'textContent', identity, metaanalysis, 'description');
+    _.addOnInputUpdater(metaanalysisEl, ".authors .value", 'textContent', identity, metaanalysis, 'authors');
+    _.addOnInputUpdater(metaanalysisEl, ".published .value", 'textContent', identity, metaanalysis, 'published');
+    _.addOnInputUpdater(metaanalysisEl, ".description .value", 'textContent', identity, metaanalysis, 'description');
 
     _.setDataProps('#metaanalysis .title.editing', 'origTitle', metaanalysis.title);
     addConfirmedUpdater('#metaanalysis .title.editing', '#metaanalysis .title + .titlerename', '#metaanalysis .title ~ * .titlerenamecancel', 'textContent', checkTitleUnique, metaanalysis, 'title');
@@ -422,8 +422,8 @@
 
     if (pinnedBox) pinPopupBox(pinnedBox);
 
-    setValidationErrorClass();
-    setUnsavedClass();
+    _.setValidationErrorClasses();
+    _.setUnsavedClasses();
 
     // first clear out the old
     addComputedDatumSetter(dropPlots);
@@ -1847,8 +1847,8 @@
           _.addEventListener(paperTitleEl, '.paplink .value.editing', 'click', _.blurAndFocus);
           _.addEventListener(paperTitleEl, '.papdoi .value.editing', 'click', _.blurAndFocus);
 
-          addOnInputUpdater(paperTitleEl, ".papreference .value", 'textContent', identity, paper, 'reference');
-          addOnInputUpdater(paperTitleEl, ".papdescription .value", 'textContent', identity, paper, 'description');
+          _.addOnInputUpdater(paperTitleEl, ".papreference .value", 'textContent', identity, paper, 'reference');
+          _.addOnInputUpdater(paperTitleEl, ".papdescription .value", 'textContent', identity, paper, 'description');
 
           if (!paper.title) {
             _.addClass(tr, '.paptitle.editing', 'new');
@@ -1880,7 +1880,7 @@
           _.fillEls(tr, '.exptitle + .exptitlerename', 'rename');
         }
 
-        addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
+        _.addOnInputUpdater(tr, ".expdescription.editing", 'textContent', identity, paper, ['experiments', expIndex, 'description']);
 
         _.setDataProps(tr, '.exptitle.editing', 'origTitle', experiment.title);
         addConfirmedUpdater(tr, '.exptitle.editing', '.exptitle + .exptitlerename', '.exptitle.editing ~ * .exprenamecancel', 'textContent', checkExperimentTitle, paper, ['experiments', expIndex, 'title'], deleteNewExperiment);
@@ -1914,7 +1914,7 @@
               _.fillEls(td, '.value', val.value);
             }
 
-            addOnInputUpdater(td, '.value', 'textContent', trimmingSanitizer, paper, ['experiments', expIndex, 'data', col, 'value'], recalculateComputedData);
+            _.addOnInputUpdater(td, '.value', 'textContent', trimmingSanitizer, paper, ['experiments', expIndex, 'data', col, 'value'], recalculateComputedData);
 
             var user = lima.getAuthenticatedUserEmail();
             _.fillEls (td, '.valenteredby', val && val.enteredBy || user);
@@ -2010,7 +2010,7 @@
       _.fillEls(th, '.coltitle + .coltitlerename', 'confirm');
     }
 
-    addOnInputUpdater(th, '.coldescription', 'textContent', identity, col, ['description']);
+    _.addOnInputUpdater(th, '.coldescription', 'textContent', identity, col, ['description']);
 
     addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', '.coltitle ~ * .colrenamecancel', 'textContent', checkColTitle, col, 'title', deleteNewColumn, function(){_.scheduleSave(currentMetaanalysis);});
 
@@ -2046,7 +2046,7 @@
 
     _.fillEls(th, 'span.customcolname', col.customName);
 
-    // todo this (and the same for aggrs/graggrs/graphs) should use addOnInputUpdater
+    // todo this (and the same for aggrs/graggrs/graphs) should use _.addOnInputUpdater
     _.addEventListener(th, 'span.customcolname', 'input', function(e) {
       col.customName = e.target.textContent.trim();
       fillObjectInformation(th, col);
@@ -2064,7 +2064,7 @@
         formulasDropdown.classList.add('validationerror');
         fillObjectInformation(th, col);
       }
-      // we'll call setValidationErrorClass() in fillDropdownSelection
+      // we'll call _.setValidationErrorClasses() in fillDropdownSelection
 
       // make sure formula columns array matches the number of expected parameters
       col.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -2154,7 +2154,7 @@
         makeOption(colId, obj, colId, select);
       }
 
-      setValidationErrorClass();
+      _.setValidationErrorClasses();
 
       // listen to changes of the dropdown box
       // preserve the value of i inside this code
@@ -2167,7 +2167,7 @@
           } else {
             select.classList.add('validationerror');
           }
-          setValidationErrorClass();
+          _.setValidationErrorClasses();
           _.scheduleSave(metaanalysis);
           fillObjectInformation(objEl, obj);
           recalculateComputedData();
@@ -3281,7 +3281,7 @@
           aggregateFormulasDropdown.classList.add('validationerror');
           fillObjectInformation(aggregateEl, aggregate);
         }
-        // we'll call setValidationErrorClass() in fillDropdownSelection
+        // we'll call _.setValidationErrorClasses() in fillDropdownSelection
 
         // make sure formula columns array matches the number of expected parameters
         aggregate.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -3429,7 +3429,7 @@
           groupingAggregateFormulasDropdown.classList.add('validationerror');
           fillObjectInformation(tr, groupingAggregate);
         }
-        // we'll call setValidationErrorClass() in fillDropdownSelection
+        // we'll call _.setValidationErrorClasses() in fillDropdownSelection
 
         // make sure formula columns array matches the number of expected parameters
         groupingAggregate.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -3515,7 +3515,7 @@
       makeOption(colId, null, colId, select);
     }
 
-    setValidationErrorClass();
+    _.setValidationErrorClasses();
 
     // listen to changes of the dropdown box
     select.onchange = function(e) {
@@ -3617,7 +3617,7 @@
           graphFormulasDropdown.classList.add('validationerror');
           fillObjectInformation(graphEl, graph);
         }
-        // we'll call setValidationErrorClass() in fillDropdownSelection
+        // we'll call _.setValidationErrorClasses() in fillDropdownSelection
 
         // make sure formula columns array matches the number of expected parameters
         graph.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -3706,7 +3706,7 @@
       _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime || Date.now()));
       _.fillEls(el, '.text', comment.text);
 
-      addOnInputUpdater(el, '.text', 'textContent', identity, metaanalyses, commentsPropPath.concat(i, 'text'));
+      _.addOnInputUpdater(el, '.text', 'textContent', identity, metaanalyses, commentsPropPath.concat(i, 'text'));
       textTargetEl.appendChild(el);
     }
 
@@ -4216,7 +4216,7 @@
       setTimeout(doChangeColumnTypeConfirmOrCancel, 0, coltypeEl);
     } else {
       coltypeEl.classList.add('unsaved');
-      setUnsavedClass();
+      _.setUnsavedClasses();
     }
   }
 
@@ -4249,7 +4249,7 @@
     }
 
     coltypeEl.classList.remove('unsaved');
-    setUnsavedClass();
+    _.setUnsavedClasses();
 
     if (!btn.classList.contains('cancel')) {
       col.type = coltypeEl.dataset.newType;
@@ -4535,44 +4535,7 @@
 
   function trimmingSanitizer(val) { if (typeof val === 'string') return val.trim(); else return val; }
 
-  function addOnInputUpdater(root, selector, property, validatorSanitizer, target, targetProp, onchange) {
-    if (!(root instanceof Node)) {
-      onchange = targetProp;
-      targetProp = target;
-      target = validatorSanitizer;
-      validatorSanitizer = property;
-      property = selector;
-      selector = root;
-      root = document;
-    }
-
-    _.findEls(root, selector).forEach(function (el) {
-      if (el.classList.contains('editing') || el.isContentEditable || el.contentEditable === 'true') {
-        el.addEventListener('keydown', _.deferScheduledSave);
-        el.oninput = function () {
-          var value = el[property];
-          if (typeof value === 'string' && value.trim() === '') value = '';
-          try {
-            if (validatorSanitizer) value = validatorSanitizer(value, el, property);
-          } catch (err) {
-            el.classList.add('validationerror');
-            el.dataset.validationmessage = err.message || err;
-            setValidationErrorClass();
-            _.cancelScheduledSave(target);
-            return;
-          }
-          el.classList.remove('validationerror');
-          setValidationErrorClass();
-          assignDeepValue(target, targetProp, value);
-          if (onchange) onchange(el);
-          _.scheduleSave(target);
-        };
-      } else {
-        el.oninput = null;
-      }
-    });
-  }
-
+  // todo: rework and move more of these to tools.js (thereby removing duplicate in papers.js)
   function addConfirmedUpdater(root, selector, confirmselector, cancelselector, property, validatorSanitizer, target, targetProp, deleteFunction, onconfirm) {
     if (!(root instanceof Node)) {
       onconfirm = deleteFunction;
@@ -4613,7 +4576,7 @@
       } catch (err) {
         editingEl.classList.add('validationerror');
         editingEl.dataset.validationmessage = err && err.message || err || '';
-        if (ev) setValidationErrorClass();
+        if (ev) _.setValidationErrorClasses();
         confirmEl.disabled = true;
         _.cancelScheduledSave(target);
         return;
@@ -4631,8 +4594,8 @@
       // the following calls are expensive and unnecessary when building the dom
       // but when building the dom, we don't have 'ev'
       if (ev) {
-        setValidationErrorClass();
-        setUnsavedClass();
+        _.setValidationErrorClasses();
+        _.setUnsavedClasses();
       }
     };
 
@@ -4648,8 +4611,8 @@
         if (editingEl.classList.contains('new') && deleteFunction) {
           editingEl.classList.remove('unsaved');
           editingEl.classList.remove('validationerror');
-          setUnsavedClass();
-          setValidationErrorClass();
+          _.setUnsavedClasses();
+          _.setValidationErrorClasses();
           deleteFunction(editingEl);
         } else {
           cancel();
@@ -4673,10 +4636,10 @@
         // any validation reporting is done above in the handler on editingEl
         return;
       }
-      assignDeepValue(target, targetProp, value);
+      _.assignDeepValue(target, targetProp, value);
       confirmEl.disabled = true;
       editingEl.classList.remove('unsaved');
-      setUnsavedClass();
+      _.setUnsavedClasses();
       updateMetaanalysisView();
       _.scheduleSave(target);
       if (onconfirm) onconfirm();
@@ -4685,25 +4648,6 @@
     cancelEls.forEach(function (cancelEl) {
       cancelEl.onclick = cancel;
     });
-  }
-
-  function assignDeepValue(target, targetProp, value) {
-    if (Array.isArray(targetProp)) {
-      // copy targetProp so we can manipulate it
-      targetProp = targetProp.slice();
-      while (targetProp.length > 1) {
-        var prop = targetProp.shift();
-        if (!(prop in target) || target[prop] == null) {
-          if (Number.isInteger(targetProp[0])) target[prop] = [];
-          else target[prop] = {};
-        }
-        target = target[prop];
-      }
-      targetProp = targetProp[0];
-    }
-
-    target[targetProp] = value;
-    return value;
   }
 
   function getDeepValue(target, targetProp, addDefaultValue) {
@@ -4728,16 +4672,6 @@
     }
 
     return target;
-  }
-
-  function setValidationErrorClass() {
-    if (_.findEl('#metaanalysis .validationerror')) _.addClass('#metaanalysis', 'validationerror');
-    else _.removeClass('#metaanalysis', 'validationerror');
-  }
-
-  function setUnsavedClass() {
-    if (_.findEl('#metaanalysis .unsaved')) _.addClass('#metaanalysis', 'unsaved');
-    else _.removeClass('#metaanalysis', 'unsaved');
   }
 
 
@@ -5045,7 +4979,6 @@
     // for testing
     lima.pinPopupBox = pinPopupBox;
     lima.unpinPopupBox = unpinPopupBox;
-    lima.assignDeepValue = assignDeepValue;
     lima.getDeepValue = getDeepValue;
     lima.getAllTitles = function(){return allTitles;};
     lima.getCurrentMetaanalysis = function(){return currentMetaanalysis;};

@@ -255,6 +255,85 @@
     if (document.activeElement === editEl) ev.preventDefault();
   };
 
+  _.addOnInputUpdater = function addOnInputUpdater(root, selector, property, validatorSanitizer, target, targetProp, onchange) {
+    if (!(root instanceof Node)) {
+      onchange = targetProp;
+      targetProp = target;
+      target = validatorSanitizer;
+      validatorSanitizer = property;
+      property = selector;
+      selector = root;
+      root = document;
+    }
+
+    _.findEls(root, selector).forEach(function (el) {
+      if (el.classList.contains('editing') || el.isContentEditable || el.contentEditable === 'true') {
+        el.addEventListener('keydown', _.deferScheduledSave);
+        el.oninput = function () {
+          var value = el[property];
+          if (typeof value === 'string' && value.trim() === '') value = '';
+          try {
+            if (validatorSanitizer) value = validatorSanitizer(value, el, property);
+          } catch (err) {
+            el.classList.add('validationerror');
+            el.dataset.validationmessage = err.message || err;
+            _.setValidationErrorClasses();
+            if (target) _.cancelScheduledSave(target);
+            return;
+          }
+          el.classList.remove('validationerror');
+          _.setValidationErrorClasses();
+          if (target) {
+            _.assignDeepValue(target, targetProp, value);
+            _.scheduleSave(target);
+          }
+          if (onchange) onchange(el);
+        };
+      } else {
+        el.oninput = null;
+      }
+    });
+  };
+
+  _.assignDeepValue = function assignDeepValue(target, targetProp, value) {
+    if (Array.isArray(targetProp)) {
+      // copy targetProp so we can manipulate it
+      targetProp = targetProp.slice();
+      while (targetProp.length > 1) {
+        var prop = targetProp.shift();
+        if (!(prop in target) || target[prop] == null) {
+          if (Number.isInteger(targetProp[0])) target[prop] = [];
+          else target[prop] = {};
+        }
+        target = target[prop];
+      }
+      targetProp = targetProp[0];
+    }
+
+    target[targetProp] = value;
+    return value;
+  };
+
+  _.setValidationErrorClasses = function setValidationErrorClasses() {
+    setValidationErrorClass('#metaanalysis');
+    setValidationErrorClass('#paper');
+  };
+
+  function setValidationErrorClass(rootSelector) {
+    var el = _.findEl(rootSelector);
+    if (el) el.classList.toggle('validationerror', !!(_.findEl(rootSelector + ' .validationerror')));
+  }
+
+  _.setUnsavedClasses = function setUnsavedClasses() {
+    setUnsavedClass('#metaanalysis');
+    setUnsavedClass('#paper');
+  };
+
+  function setUnsavedClass(rootSelector) {
+    var el = _.findEl(rootSelector);
+    if (el) el.classList.toggle('unsaved', !!(_.findEl(rootSelector + ' .unsaved')));
+  }
+
   /* array manipulation
    *
    *
@@ -296,6 +375,8 @@
     }
     return true;
   };
+
+
 
   /* bounds arrays
    *
