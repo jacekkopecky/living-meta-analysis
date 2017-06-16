@@ -61,10 +61,7 @@
     _.fillEls('.registerroot span.emailaddress', email);
     _.addEventListener('.registerroot input#emailaddress', 'click', removeCustomUsernameValidationError);
 
-    lima.getGapiIDToken()
-    .then(function (idToken) {
-      return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
-    })
+    fetch('/api/profile/' + email)
     .then(_.fetchJson)
     .then(fillRegisterPage)
     .catch(function(err) {
@@ -100,7 +97,7 @@
     if (!checked) return; // todo: wont need when button only shows when selected..
 
     if (checked.id == 'customusername') {
-      var customSpan = _.findPrecedingEl(checked, 'span.customusername span');
+      var customSpan = _.findEl('.customusername span');
       username = customSpan.textContent.trim();
     } else {
       username = null;
