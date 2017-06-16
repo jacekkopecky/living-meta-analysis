@@ -39,6 +39,9 @@ api.get('/', (req, res) => res.redirect('/docs/api'));
 api.get('/user', GOOGLE_USER, checkUser);
 api.post('/user', GOOGLE_USER, jsonBodyParser, saveUser);
 
+api.get('/usernames/', listUsernames);
+api.get('/usernames/forbidden', listForbiddenUsernames);
+
 // todo top users/papers/metaanalyses would currently return all of them, which is a privacy issue
 // we may need editorial control, tags like 'public' or absence of tags like 'private'
 // api.get('/topusers', listTopUsers);
@@ -126,6 +129,18 @@ function listTitles(req, res, next) {
  *
  *
  */
+function listForbiddenUsernames(req, res) {
+  return new Promise(() => {
+    res.json(config.FORBIDDEN_USERNAMES);
+  });
+}
+
+function listUsernames(req, res) {
+  return new Promise(() => {
+    res.json(storage.listUsernames());
+  });
+}
+
 function KNOWN_USER(req, res, next) {
   const email = req.user.emails[0].value;
   storage.getUser(email)
