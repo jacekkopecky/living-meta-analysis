@@ -9,6 +9,7 @@
 
 const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
+const ForbiddenError = require('./errors/ForbiddenError');
 const config = require('./config');
 const tools = require('./tools');
 
@@ -311,6 +312,11 @@ module.exports.getUser = (user) => {
   if (!user) {
     throw new Error('user parameter required');
   }
+
+  if (config.FORBIDDEN_USERNAMES.indexOf(user) !== -1) {
+    return Promise.reject(new ForbiddenError('provided username is a reserved word'));
+  }
+
   return Promise.all([getEmailAddressOfUser(user), userCache])
   .then(
     (vals) => {

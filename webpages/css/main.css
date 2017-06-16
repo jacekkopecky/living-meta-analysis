@@ -34,6 +34,18 @@ _ {
   display: none !important;
 }
 
+.not-valid {
+  display: none;
+}
+
+.validationroot.validationerror .not-valid {
+  display: initial;
+}
+
+.validationroot.validationerror .only-valid {
+  display: none;
+}
+
 .loadingspinner { display: none !important; }
 
 .loading .loadingspinner { display: block !important; }
@@ -532,30 +544,105 @@ body:not(.editing) #toggle-editing .ifon {
   display: none;
 }
 
-.register label {
+.registerroot label {
   display: block;
   padding-left: 1em;
   cursor: pointer;
 }
 
-.register label > input[type="radio"],
-.register label > input[type="checkbox"] {
+.registerroot label > input[type="radio"],
+.registerroot label > input[type="checkbox"] {
   position: absolute;
   left: 0;
   padding-right: 10em;
 }
 
-.register div.firsttimeonly {
+.registerroot .confirmtcpp {
   padding-top: 2em;
 }
 
-.register .hidden {
+.registerroot .hidden {
   display: none;
 }
 
-.register button.cancel {
+.registerroot.checking button.register {
+  display: none;
+}
+
+.registerroot.checking button.register.not-valid {
+  display: initial;
+}
+
+.registerroot.checking .customusername:after {
+  display: inline-block;
+  position: absolute;
+  content: '…';
+  margin: 0 0 0 1em;
+  padding: 0;
+  width: 0;
+  line-height: 1rem;
+  height: 1rem;
+  overflow: hidden;
+  color: grey;
+  font-size: 1rem;
+
+  animation-duration: 1000ms;
+  animation-name: grow1Em;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes grow1Em {
+    0%   { width: 0; }
+    100% { width: 1em; }
+}
+
+.registerroot:not(.checking):not(.validationerror) .customusername:not(.empty):after {
+  display: inline-block;
+  position: absolute;
+  content: '✓';
+  margin: 0 0 0 1em;
+  padding: 0;
+  width: 0;
+  line-height: 1rem;
+  height: 1rem;
+  color: #60b044;
+  font-size: 1rem;
+}
+
+.registerroot button.cancel {
   margin-left: 3em;
   margin-right: 3em;
+}
+
+.registerroot h2 {
+  font-size: 120%;
+  font-weight: bold;
+}
+
+.registerroot h3 {
+  font-size: 1rem;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+  line-height: 200%;
+}
+
+.registerroot .suggestion {
+  font-style: italic;
+  color: grey;
+  line-height: 150%;
+  margin-left: 2rem;
+  cursor: pointer;
+}
+
+.registerroot .suggestion span {
+  font-style: normal;
+  color: black;
+}
+
+.registerroot .suggestion:last-of-type {
+  margin-bottom: 1em;
 }
 
 /* personalinfo
@@ -600,7 +687,7 @@ section#personalinfo {
   appearance: button;
   text-decoration: none;
   color: initial;
-  padding: 0.05em;
+  padding: 0.05em 0.3em;
   position: absolute;
 }
 
