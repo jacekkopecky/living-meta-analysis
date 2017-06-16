@@ -255,9 +255,9 @@
     if (document.activeElement === editEl) ev.preventDefault();
   };
 
-  _.addOnInputUpdater = function addOnInputUpdater(root, selector, property, validatorSanitizer, target, targetProp, onchange) {
+  _.addOnInputUpdater = function addOnInputUpdater(root, selector, property, validatorSanitizer, target, targetProp, doAfterChange) {
     if (!(root instanceof Node)) {
-      onchange = targetProp;
+      doAfterChange = targetProp;
       targetProp = target;
       target = validatorSanitizer;
       validatorSanitizer = property;
@@ -277,17 +277,17 @@
           } catch (err) {
             el.classList.add('validationerror');
             if (err) el.dataset.validationmessage = err.message || err;
-            _.setValidationErrorClasses();
+            _.setValidationErrorClass();
             if (target) _.cancelScheduledSave(target);
             return;
           }
           el.classList.remove('validationerror');
-          _.setValidationErrorClasses();
+          _.setValidationErrorClass();
           if (target) {
             _.assignDeepValue(target, targetProp, value);
             _.scheduleSave(target);
           }
-          if (onchange) onchange(el);
+          if (doAfterChange) doAfterChange(el);
         };
       } else {
         el.oninput = null;
@@ -314,25 +314,16 @@
     return value;
   };
 
-  _.setValidationErrorClasses = function setValidationErrorClasses() {
-    setValidationErrorClass('#metaanalysis');
-    setValidationErrorClass('#paper');
+  _.setValidationErrorClass = function setValidationErrorClass() {
+    var el = _.findEl('.validationroot');
+    if (el) el.classList.toggle('validationerror', !!(_.findEl('.validationroot .validationerror')));
   };
 
-  function setValidationErrorClass(rootSelector) {
-    var el = _.findEl(rootSelector);
-    if (el) el.classList.toggle('validationerror', !!(_.findEl(rootSelector + ' .validationerror')));
-  }
-
-  _.setUnsavedClasses = function setUnsavedClasses() {
-    setUnsavedClass('#metaanalysis');
-    setUnsavedClass('#paper');
+  _.setUnsavedClass = function setUnsavedClass() {
+    var el = _.findEl('.validationroot');
+    if (el) el.classList.toggle('unsaved', !!(_.findEl('.validationroot .unsaved')));
   };
 
-  function setUnsavedClass(rootSelector) {
-    var el = _.findEl(rootSelector);
-    if (el) el.classList.toggle('unsaved', !!(_.findEl(rootSelector + ' .unsaved')));
-  }
 
   /* array manipulation
    *
@@ -375,7 +366,6 @@
     }
     return true;
   };
-
 
 
   /* bounds arrays
