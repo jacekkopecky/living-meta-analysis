@@ -307,13 +307,12 @@ function migrateUser(user) {
   return user;
 }
 
-
 module.exports.getUser = (user) => {
   if (!user) {
     throw new Error('user parameter required');
   }
 
-  if (config.FORBIDDEN_USERNAMES.indexOf(user) !== -1) {
+  if (forbiddenUsernames.indexOf(user) !== -1) {
     return Promise.reject(new ForbiddenError('provided username is a reserved word'));
   }
 
@@ -378,8 +377,35 @@ module.exports.saveUser = (email, user) => {
   );
 };
 
+// on start of web server put all file names in /webpages into this list, with and without filename extensions
+const forbiddenUsernames = getForbiddenUsernames();
+
+function getForbiddenUsernames() {
+  // start initially with those defined in config
+  const retval = [].concat(config.FORBIDDEN_USERNAMES);
+
+  // then populate the rest by taking a look at /webpages
+  const files = fs.readdirSync(__dirname + '/../webpages');
+
+  files.forEach((name) => {
+    addUsernameIfNotThere(retval, name);
+    addUsernameIfNotThere(retval, name.replace(/\..*$/, ''));
+  });
+
+  function addUsernameIfNotThere(arr, name) {
+    // don't add usernames that wouldn't be allowed anyway
+    if (!name) return;
+    if (!name.match(USERNAME_REXP)) return;
+
+    if (arr.indexOf(name) === -1) arr.push(name);
+  }
+
+  console.log('forbidden names', retval);
+  return retval;
+}
+
 // all the forbidden usernames will be treated as taken
-const allUsernames = [].concat(config.FORBIDDEN_USERNAMES);
+const allUsernames = [].concat(forbiddenUsernames);
 
 
 /* papers
