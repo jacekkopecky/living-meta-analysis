@@ -124,12 +124,12 @@ function checkForDisallowedChanges(current, original, columns) {
     }
   }
 
-  // check that username hasn't changed or if it has, that it is unique
-  if (current.username !== original.username) {
+  // check that username hasn't changed or if it has, that it is empty or unique
+  if (current.username == null && current.username !== original.username) {
     if (!USERNAME_REXP.test(current.username)) {
       throw new ValidationError('username cannot contain spaces or special characters');
     }
-    if (allUsernames.indexOf(current.username) !== -1) {
+    if (allUsernames.indexOf(current.username.toLowerCase()) !== -1) {
       throw new ValidationError('username must be unique, must not be from the forbidden list');
     }
     // todo: do we need extra checks here? I.e. length of username? encodings? emojis?
@@ -267,7 +267,7 @@ function getAllUsers() {
     })
     .on('data', (entity) => {
       entity = migrateUser(entity);
-      allUsernames.push(entity.username);
+      if (entity.username) allUsernames.push(entity.username.toLowerCase());
       try {
         retval[entity.email] = entity;
       } catch (err) {
@@ -361,13 +361,13 @@ module.exports.saveUser = (email, user) => {
         } else {
           // update the local cache of users
           users[email] = user;
-          if (original.username) {
-            const index = allUsernames.indexOf(original.username);
+          if (original && original.username) {
+            const index = allUsernames.indexOf(original.username.toLowerCase());
             if (index !== -1) {
               allUsernames.splice(index, 1);
             }
           }
-          if (user.username) allUsernames.push(user.username);
+          if (user.username) allUsernames.push(user.username.toLowerCase());
 
           // return the user
           resolve(user);
@@ -397,10 +397,9 @@ function getForbiddenUsernames() {
     if (!name) return;
     if (!name.match(USERNAME_REXP)) return;
 
-    if (arr.indexOf(name) === -1) arr.push(name);
+    if (arr.indexOf(name) === -1) arr.push(name.toLowerCase());
   }
 
-  console.log('forbidden names', retval);
   return retval;
 }
 

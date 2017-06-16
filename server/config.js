@@ -7,11 +7,11 @@ module.exports = {
   // shared constants
   USERNAME_RE,
   USER_RE: EMAIL_ADDRESS_RE + '|' + USERNAME_RE,
-  FORBIDDEN_USERNAMES: [
+  FORBIDDEN_USERNAMES: [ // should be treated as case-insensitive
     // routes
     'api', 'version', 'profile',
     // just common words
-    'test',
+    'test', 'lima',
   ],
   NEW_PAPER_TITLE: 'new-paper',
   NEW_META_TITLE: 'new-metaanalysis',

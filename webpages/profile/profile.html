@@ -27,7 +27,9 @@
   <h2>User Profile</h2>
   <img class="photo" src="/img/user.png" alt="photo of the person">
   <h2 class="only localediting">Editing Locally</h2>
-  <div class="username">Username: <span class="withplaceholder" placeholder="none"></span>&nbsp;<a class="changebutton when-signed-on only-if-page-about-you" href="/settings/profile">change</a></div>
+  <!-- todo the "same as email" bit below is showing while the page is loading, which may be incorrect -->
+  <!-- todo the username shouldn't be showing if it's same as email but this is not my profile page -->
+  <div class="username">Username: <span class="withplaceholder" placeholder="same as email"></span>&nbsp;<a class="changebutton when-signed-on only-if-page-about-you" href="/settings/profile">change</a></div>
   <div class="name">loading&hellip;</div>
   <div class="email"></div>
   <div class="joined">Joined on <span class="date">&hellip;</span></div>

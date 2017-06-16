@@ -13,6 +13,7 @@
     }
 
     // check if we should redirect to the /register page - if LiMA doesn't know the user who has just logged in
+    // if the user has canceled registration by leaving the page, we will sign them out
     if (window.location.pathname != '/register') {
       var idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
       fetch('/api/user', {
@@ -21,10 +22,16 @@
       })
       .then(function (res) {
         if (res.status == 401) {
-          // user isn't known but someone is signed in. Redirect to register.
-          window.location.href = '/register';
-          // don't call any more listeners
-          onSignInListeners = [];
+          if (localStorage.limaUnfinishedRegistration) {
+            // we've already been to the registration page and we left it, so sign out instead of redirecting
+            gapi.auth2.getAuthInstance().signOut();
+            delete localStorage.limaUnfinishedRegistration;
+          } else {
+            // user isn't known but someone is signed in. Redirect to register.
+            window.location.href = '/register';
+            // don't call any more listeners
+            onSignInListeners = [];
+          }
         } else if (res.status >= 400) {
           // an unexpected error happened with /api/user, server not happy
           _.apiFail();
