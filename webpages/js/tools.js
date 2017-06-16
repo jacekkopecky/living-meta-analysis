@@ -546,6 +546,7 @@
 
   _.apiFail = function apiFail() {
     document.body.innerHTML = '';
+    console.error('apifail');
     fetch('/apifail', { credentials: 'same-origin' })
     .then(_.fetchText)
     .catch(function (err) {

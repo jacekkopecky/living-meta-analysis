@@ -19,8 +19,8 @@
   </label>
   <span class="suggestionsbox hidden">
     <h3>Suggestions:</h3>
-    <div class="suggestion"><span class="displayname">error</span> – your Google name (without spaces)</div>
-    <div class="suggestion"><span class=" emailaddressfirst">error</span> – your email up to the @ sign</div>
+    <div class="suggestion hidden"><span class="displayname">error</span> – your Google name (without spaces)</div>
+    <div class="suggestion hidden"><span class="emailaddressfirst">error</span> – your email up to the @ sign</div>
   </span>
   <h3>– or –</h3>
   <label>
@@ -68,6 +68,7 @@
     .then(_.fetchJson)
     .then(fillRegisterPage)
     .catch(function(err) {
+      console.error(err);
       _.apiFail();
     })
 
@@ -82,6 +83,12 @@
       customUsernameEl.focus();
       // trigger input event to update the validation error we may have hidden.
       customUsernameEl.oninput();
+    });
+
+    _.addEventListener('.customusername span', 'focus', function(e) {
+      // check the radio button when the custom username focuses
+      var customUsernameEl = _.findEl('input#customusername');
+      customUsernameEl.checked = true;
     });
   }
 
@@ -125,8 +132,9 @@
 
     _.fillEls('.registerroot .customusername span', user.username);
     if (!user.username) _.addClass('.registerroot .customusername', 'empty');
-    _.fillEls('.registerroot .suggestion .displayname', displayName);
-    _.fillEls('.registerroot .suggestion .emailaddressfirst', emailFirst);
+
+    validateAndFillSuggestion('.registerroot .suggestion .displayname', displayName);
+    validateAndFillSuggestion('.registerroot .suggestion .emailaddressfirst', emailFirst);
 
     if (user.username) {
       _.setProps('.registerroot input#customusername', 'checked', true);
@@ -134,19 +142,25 @@
       _.setProps('.registerroot input#emailaddress', 'checked', true);
     }
 
-    _.addOnInputUpdater('.registerroot .customusername span', 'textContent', checkUsernameValid)
+    _.addOnInputUpdater('.registerroot .customusername span', 'textContent', validateUsername)
 
     _.addEventListener('.registerroot .suggestion', 'click', function (e) {
-      _.fillEl('.customusername span', _.findEl(e.target, 'span').textContent);
+      _.fillEls('.customusername span', _.findEl(e.currentTarget, 'span').textContent);
+      _.putCursorAtEnd(_.findEl('.customusername span'));
       removeCustomUsernameValidationError();
     })
 
     // todo if we want to force users to re-accept T&Cs and Privacy Policy, we'll want to copy some of register.html
 
+    var asyncValidationTimeout;
 
-    //todo get back to this hedgehog
-    // We don't care for the property param, but addOnInputUpdater give it
-    function checkUsernameValid(username, el, property) {
+    // synchronously validates the username
+    // and if that succeeds, triggers asynchronous check for username uniqueness
+    function validateUsername(username) {
+      _.removeClass('.registerroot', 'checking');
+      clearTimeout(asyncValidationTimeout);
+      asyncValidationTimeout = null;
+
       _.toggleClass('.registerroot .customusername', 'empty', !username);
 
       if (username === user.username) return username; // no change
@@ -156,16 +170,44 @@
       // disable the "confirm" button while we're checking for changes
       _.addClass('.registerroot', 'checking');
 
-      checkUsernameIsUnique(username);
+      asyncValidationTimeout = setTimeout(function () {
+        checkUsernameIsUnique(username)
+        .catch(function (err) {
+          _.addClass('.customusername span', 'validationerror');
+          _.setDataProps('.customusername span', 'validationmessage', err);
+          _.setValidationErrorClass();
+        })
+        .then(function () {
+          // enable again the "confirm" button
+          _.removeClass('.registerroot', 'checking');
+        });
+      }, 1000);
 
-      // until the check above returns, we'll pretend the user name is OK
+      // until the check above happens, we'll pretend the user name is OK
       return username;
     }
 
-    var checkUsernameIsUnique = _.debounce(function (username) {
-      // poke /api/profile/<username> to check if username is taken
+    function validateAndFillSuggestion(selector, suggestion) {
+      if (suggestion === user.username ||
+          suggestion === '' ||
+          !suggestion.match(USERNAME_RE)) return; // suggestion not appropriate
 
-      fetch('/api/profile/' + username)
+      checkUsernameIsUnique(suggestion)
+      .then(function () {
+        _.fillEls(selector, suggestion);
+        var el = _.findEl(selector);
+        el.parentElement.classList.remove('hidden');
+        el.parentElement.parentElement.classList.remove('hidden');
+      })
+    }
+
+    // poke /api/profile/<username> to check if username is taken
+    function checkUsernameIsUnique (username) {
+      return fetch('/api/profile/' + username)
+      .catch(function (err) {
+        cb('api fail');
+        throw _.apiFail();
+      })
       .then(function (res) {
         var error;
         if (res.status === 200) { // username exists
@@ -174,20 +216,9 @@
           error = username + ' is a reserved word';
         }
 
-        if (error) {
-          _.addClass('.customusername span', 'validationerror');
-          _.setDataProps('.customusername span', 'validationmessage', error);
-          _.setValidationErrorClass();
-        }
-      })
-      .catch(function (err) {
-        _.apiFail();
-      })
-      .then(function () {
-        // enable again the "confirm" button
-        _.removeClass('.registerroot', 'checking');
+        if (error) throw error;
       });
-    }, 1000);
+    }
   }
 
   function removeCustomUsernameValidationError() {
