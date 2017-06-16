@@ -422,8 +422,8 @@
 
     if (pinnedBox) pinPopupBox(pinnedBox);
 
-    _.setValidationErrorClasses();
-    _.setUnsavedClasses();
+    _.setValidationErrorClass();
+    _.setUnsavedClass();
 
     // first clear out the old
     addComputedDatumSetter(dropPlots);
@@ -2064,7 +2064,7 @@
         formulasDropdown.classList.add('validationerror');
         fillObjectInformation(th, col);
       }
-      // we'll call _.setValidationErrorClasses() in fillDropdownSelection
+      // we'll call _.setValidationErrorClass() in fillDropdownSelection
 
       // make sure formula columns array matches the number of expected parameters
       col.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -2154,7 +2154,7 @@
         makeOption(colId, obj, colId, select);
       }
 
-      _.setValidationErrorClasses();
+      _.setValidationErrorClass();
 
       // listen to changes of the dropdown box
       // preserve the value of i inside this code
@@ -2167,7 +2167,7 @@
           } else {
             select.classList.add('validationerror');
           }
-          _.setValidationErrorClasses();
+          _.setValidationErrorClass();
           _.scheduleSave(metaanalysis);
           fillObjectInformation(objEl, obj);
           recalculateComputedData();
@@ -3281,7 +3281,7 @@
           aggregateFormulasDropdown.classList.add('validationerror');
           fillObjectInformation(aggregateEl, aggregate);
         }
-        // we'll call _.setValidationErrorClasses() in fillDropdownSelection
+        // we'll call _.setValidationErrorClass() in fillDropdownSelection
 
         // make sure formula columns array matches the number of expected parameters
         aggregate.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -3429,7 +3429,7 @@
           groupingAggregateFormulasDropdown.classList.add('validationerror');
           fillObjectInformation(tr, groupingAggregate);
         }
-        // we'll call _.setValidationErrorClasses() in fillDropdownSelection
+        // we'll call _.setValidationErrorClass() in fillDropdownSelection
 
         // make sure formula columns array matches the number of expected parameters
         groupingAggregate.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -3515,7 +3515,7 @@
       makeOption(colId, null, colId, select);
     }
 
-    _.setValidationErrorClasses();
+    _.setValidationErrorClass();
 
     // listen to changes of the dropdown box
     select.onchange = function(e) {
@@ -3617,7 +3617,7 @@
           graphFormulasDropdown.classList.add('validationerror');
           fillObjectInformation(graphEl, graph);
         }
-        // we'll call _.setValidationErrorClasses() in fillDropdownSelection
+        // we'll call _.setValidationErrorClass() in fillDropdownSelection
 
         // make sure formula columns array matches the number of expected parameters
         graph.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -4216,7 +4216,7 @@
       setTimeout(doChangeColumnTypeConfirmOrCancel, 0, coltypeEl);
     } else {
       coltypeEl.classList.add('unsaved');
-      _.setUnsavedClasses();
+      _.setUnsavedClass();
     }
   }
 
@@ -4249,7 +4249,7 @@
     }
 
     coltypeEl.classList.remove('unsaved');
-    _.setUnsavedClasses();
+    _.setUnsavedClass();
 
     if (!btn.classList.contains('cancel')) {
       col.type = coltypeEl.dataset.newType;
@@ -4576,7 +4576,7 @@
       } catch (err) {
         editingEl.classList.add('validationerror');
         editingEl.dataset.validationmessage = err && err.message || err || '';
-        if (ev) _.setValidationErrorClasses();
+        if (ev) _.setValidationErrorClass();
         confirmEl.disabled = true;
         _.cancelScheduledSave(target);
         return;
@@ -4594,8 +4594,8 @@
       // the following calls are expensive and unnecessary when building the dom
       // but when building the dom, we don't have 'ev'
       if (ev) {
-        _.setValidationErrorClasses();
-        _.setUnsavedClasses();
+        _.setValidationErrorClass();
+        _.setUnsavedClass();
       }
     };
 
@@ -4611,8 +4611,8 @@
         if (editingEl.classList.contains('new') && deleteFunction) {
           editingEl.classList.remove('unsaved');
           editingEl.classList.remove('validationerror');
-          _.setUnsavedClasses();
-          _.setValidationErrorClasses();
+          _.setUnsavedClass();
+          _.setValidationErrorClass();
           deleteFunction(editingEl);
         } else {
           cancel();
@@ -4639,7 +4639,7 @@
       _.assignDeepValue(target, targetProp, value);
       confirmEl.disabled = true;
       editingEl.classList.remove('unsaved');
-      _.setUnsavedClasses();
+      _.setUnsavedClass();
       updateMetaanalysisView();
       _.scheduleSave(target);
       if (onconfirm) onconfirm();

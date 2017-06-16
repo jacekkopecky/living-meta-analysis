@@ -371,8 +371,8 @@
 
     if (pinnedBox) pinPopupBox(pinnedBox);
 
-    _.setValidationErrorClasses();
-    _.setUnsavedClasses();
+    _.setValidationErrorClass();
+    _.setUnsavedClass();
 
     recalculateComputedData();
   }
@@ -743,7 +743,7 @@
       } else {
         formulasDropdown.classList.add('validationerror');
       }
-      // we'll call setValidationErrorClasses() later
+      // we'll call _.setValidationErrorClass() later
 
       // make sure formula columns array matches the number of expected parameters
       col.formulaParams.length = formula ? formula.parameters.length : 0;
@@ -813,7 +813,7 @@
         makeOption(colId, col, colId, select);
       }
 
-      _.setValidationErrorClasses();
+      _.setValidationErrorClass();
 
 
       // listen to changes of the dropdown box
@@ -827,7 +827,7 @@
           } else {
             select.classList.add('validationerror');
           }
-          _.setValidationErrorClasses();
+          _.setValidationErrorClass();
           _.scheduleSave(paper);
           fillComputedColumnInformation(computedColumnsOptionsEl, col);
           recalculateComputedData();
@@ -1631,7 +1631,7 @@
       setTimeout(doChangeColumnTypeConfirmOrCancel, 0, coltypeEl);
     } else {
       coltypeEl.classList.add('unsaved');
-      _.setUnsavedClasses();
+      _.setUnsavedClass();
     }
   }
 
@@ -1664,7 +1664,7 @@
     }
 
     coltypeEl.classList.remove('unsaved');
-    _.setUnsavedClasses();
+    _.setUnsavedClass();
 
     if (!btn.classList.contains('cancel')) {
       col.type = coltypeEl.dataset.newType;
@@ -1797,7 +1797,7 @@
       } catch (err) {
         editingEl.classList.add('validationerror');
         editingEl.dataset.validationmessage = err && err.message || err || '';
-        if (ev) _.setValidationErrorClasses();
+        if (ev) _.setValidationErrorClass();
         confirmEl.disabled = true;
         _.cancelScheduledSave(target);
         return;
@@ -1815,8 +1815,8 @@
       // the following calls are expensive and unnecessary when building the dom
       // but when building the dom, we don't have `ev`
       if (ev) {
-        _.setValidationErrorClasses();
-        _.setUnsavedClasses();
+        _.setValidationErrorClass();
+        _.setUnsavedClass();
       }
     };
 
@@ -1832,8 +1832,8 @@
         if (editingEl.classList.contains('new') && deleteFunction) {
           editingEl.classList.remove('unsaved');
           editingEl.classList.remove('validationerror');
-          _.setUnsavedClasses();
-          _.setValidationErrorClasses();
+          _.setUnsavedClass();
+          _.setValidationErrorClass();
           deleteFunction();
         } else {
           cancel();
@@ -1860,7 +1860,7 @@
       _.assignDeepValue(target, targetProp, value);
       confirmEl.disabled = true;
       editingEl.classList.remove('unsaved');
-      _.setUnsavedClasses();
+      _.setUnsavedClass();
       updatePaperView();
       _.scheduleSave(target);
       if (onconfirm) onconfirm();
