@@ -374,7 +374,6 @@ module.exports.saveUser = (email, user) => {
 
 // all the forbidden usernames will be treated as taken
 const allUsernames = [].concat(config.FORBIDDEN_USERNAMES);
-module.exports.listUsernames = () => allUsernames;
 
 
 /* papers
