@@ -131,6 +131,16 @@
     _.findEls(root, selector).forEach(function(el){el.classList.add(valOrFun(value, el));});
   };
 
+  _.toggleClass = function toggleClass(root, selector, value, force) {
+    if (!(root instanceof Node)) {
+      force = value;
+      value = selector;
+      selector = root;
+      root = document;
+    }
+    _.findEls(root, selector).forEach(function(el){el.classList.toggle(valOrFun(value, el), force);});
+  };
+
   _.removeClass = function removeClass(root, selector, value) {
     if (!(root instanceof Node)) {
       value = selector;

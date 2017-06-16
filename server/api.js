@@ -231,8 +231,12 @@ function returnUserProfile(req, res, next) {
   .then((user) => {
     res.json(extractUserForSending(user));
   })
-  .catch(() => {
-    next(new NotFoundError());
+  .catch((err) => {
+    if (err && err.status) {
+      next(err);
+    } else {
+      next(new NotFoundError());
+    }
   });
 }
 

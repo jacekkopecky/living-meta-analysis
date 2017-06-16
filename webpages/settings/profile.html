@@ -1,0 +1,198 @@
+<!doctype html>
+<title>Profile settings | Living Meta-Analysis</title>
+<script src="/lib/promise.js"></script>
+<script src="/lib/fetch.js"></script>
+<script src="https://apis.google.com/js/platform.js"></script>
+<link rel="stylesheet" href="/css/main.css">
+
+<header>
+  <a href="/" id="logo-box">
+    <h1>LiMA</h1><h2>Living Meta-Analysis</h2>
+  </a>
+</header>
+
+<div class="registerroot validationroot">
+  <h2>Please choose a username:</h2>
+  <label>
+    <span class='customusername empty'><span contenteditable placeholder="custom username"></span></span>
+    <input type="radio" id="customusername" name="usernametype">
+  </label>
+  <span class="suggestionsbox hidden">
+    <h3>Suggestions:</h3>
+    <div class="suggestion"><span class="displayname">error</span> – your Google name (without spaces)</div>
+    <div class="suggestion"><span class=" emailaddressfirst">error</span> – your email up to the @ sign</div>
+  </span>
+  <h3>– or –</h3>
+  <label>
+    Same as your email address: <span class="emailaddress">loading</span>
+    <input type="radio" id="emailaddress" name="usernametype">
+  </label>
+  <p>
+    <button class="register only-valid">confirm</button>
+    <button class="register not-valid" disabled>confirm</button>
+    <button class="cancel">cancel</button>
+  </p>
+</div>
+
+<footer>
+  <p>LiMA (Living Meta-Analysis) at <a href="http://port.ac.uk/">University of Portsmouth</a>, &copy; 2016–2017</p>
+  <p>Feedback and questions are welcome at <a href="mailto:lima@port.ac.uk">lima@port.ac.uk</a>.</p>
+</footer>
+
+
+<script src="/js/tools.js"></script>
+<script src="/js/auth.js"></script>
+<script>
+  'use strict';
+  var lima = window.lima;
+  var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
+
+  // when updating this, change the serverside copy in config.js
+  var USERNAME_RE = /^[a-zA-Z][a-zA-Z0-9_\.-]{0,}$/;
+
+  window.lima.initPage = function () {
+
+    var email = lima.getAuthenticatedUserEmail();
+
+    if (!email) {
+      _.historyBackOrRedirect('/');
+    }
+
+    _.fillEls('.registerroot span.emailaddress', email);
+    _.addEventListener('.registerroot input#emailaddress', 'click', removeCustomUsernameValidationError);
+
+    lima.getGapiIDToken()
+    .then(function (idToken) {
+      return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
+    })
+    .then(_.fetchJson)
+    .then(fillRegisterPage)
+    .catch(function(err) {
+      _.apiFail();
+    })
+
+    _.addEventListener('button.register', 'click', register);
+    _.addEventListener('button.cancel', 'click', function() {
+      _.historyBackOrRedirect('/profile');
+    });
+
+    _.addEventListener('input#customusername', 'click', function(e) {
+      // focus the text box when the custom username radio button gets focus
+      var customUsernameEl = _.findEl(e.target.parentElement, 'span.customusername span');
+      customUsernameEl.focus();
+      // trigger input event to update the validation error we may have hidden.
+      customUsernameEl.oninput();
+    });
+  }
+
+  function register() {
+    // validate the user input
+    var checked = _.findEls('input[name="usernametype"]:checked')[0];
+    var username;
+
+    if (!checked) return; // todo: wont need when button only shows when selected..
+
+    if (checked.id == 'customusername') {
+      var customSpan = _.findPrecedingEl(checked, 'span.customusername span');
+      username = customSpan.textContent.trim();
+    } else {
+      username = null;
+    }
+
+    // submit the username to the server
+    return lima.getGapiIDToken()
+    .then(function(idToken) {
+      var toSend = { username: username };
+      return fetch('/api/user', {
+        method: 'POST',
+        headers: _.idTokenToFetchHeaders(idToken, {'Content-type': 'application/json'}),
+        body: JSON.stringify(toSend),
+      });
+    })
+    .then(function(res){
+      window.location.href = '/profile';
+    })
+    .catch((err) => {
+      console.error('failed to submit user name');
+      console.error(err);
+      _.apiFail();
+    });
+  }
+
+  function fillRegisterPage(user) {
+    var emailFirst = user.email.split('@')[0];
+    var displayName = user.displayName.replace(/\s/g, '');
+
+    _.fillEls('.registerroot .customusername span', user.username);
+    if (!user.username) _.addClass('.registerroot .customusername', 'empty');
+    _.fillEls('.registerroot .suggestion .displayname', displayName);
+    _.fillEls('.registerroot .suggestion .emailaddressfirst', emailFirst);
+
+    if (user.username) {
+      _.setProps('.registerroot input#customusername', 'checked', true);
+    } else {
+      _.setProps('.registerroot input#emailaddress', 'checked', true);
+    }
+
+    _.addOnInputUpdater('.registerroot .customusername span', 'textContent', checkUsernameValid)
+
+    _.addEventListener('.registerroot .suggestion', 'click', function (e) {
+      _.fillEl('.customusername span', _.findEl(e.target, 'span').textContent);
+      removeCustomUsernameValidationError();
+    })
+
+    // todo if we want to force users to re-accept T&Cs and Privacy Policy, we'll want to copy some of register.html
+
+
+    //todo get back to this hedgehog
+    // We don't care for the property param, but addOnInputUpdater give it
+    function checkUsernameValid(username, el, property) {
+      _.toggleClass('.registerroot .customusername', 'empty', !username);
+
+      if (username === user.username) return username; // no change
+      if (username === '') throw 'username cannot be blank';
+      if (!username.match(USERNAME_RE)) throw 'username must start with a letter, and may only contain underscores, dots and dashes';
+
+      // disable the "confirm" button while we're checking for changes
+      _.addClass('.registerroot', 'checking');
+
+      checkUsernameIsUnique(username);
+
+      // until the check above returns, we'll pretend the user name is OK
+      return username;
+    }
+
+    var checkUsernameIsUnique = _.debounce(function (username) {
+      // poke /api/profile/<username> to check if username is taken
+
+      fetch('/api/profile/' + username)
+      .then(function (res) {
+        var error;
+        if (res.status === 200) { // username exists
+          error = 'username already exists';
+        } else if (res.status === 403) {
+          error = username + ' is a reserved word';
+        }
+
+        if (error) {
+          _.addClass('.customusername span', 'validationerror');
+          _.setDataProps('.customusername span', 'validationmessage', error);
+          _.setValidationErrorClass();
+        }
+      })
+      .catch(function (err) {
+        _.apiFail();
+      })
+      .then(function () {
+        // enable again the "confirm" button
+        _.removeClass('.registerroot', 'checking');
+      });
+    }, 1000);
+  }
+
+  function removeCustomUsernameValidationError() {
+    _.removeClass('.customusername span', 'validationerror');
+    _.setValidationErrorClass();
+  }
+
+</script>
