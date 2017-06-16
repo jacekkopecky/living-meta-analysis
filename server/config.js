@@ -12,12 +12,6 @@ module.exports = {
     'api', 'version', 'profile',
     // just common words
     'test',
-    // files in /webpages which is static root
-    'admin', 'css', 'docs', 'img', 'js', 'lib', 'profile', 'tests',
-    'apifail', 'apifail.html', 'coming-soon', 'coming-soon.html', 'index', 'index.html',
-    'profileRedirect', 'profileRedirect.html', 'register', 'register.html',
-    // future needs
-    'terms', 'terms.html', 'privacy', 'privacy.html',
   ],
   NEW_PAPER_TITLE: 'new-paper',
   NEW_META_TITLE: 'new-metaanalysis',
