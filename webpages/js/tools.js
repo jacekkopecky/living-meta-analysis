@@ -276,7 +276,7 @@
             if (validatorSanitizer) value = validatorSanitizer(value, el, property);
           } catch (err) {
             el.classList.add('validationerror');
-            el.dataset.validationmessage = err.message || err;
+            if (err) el.dataset.validationmessage = err.message || err;
             _.setValidationErrorClasses();
             if (target) _.cancelScheduledSave(target);
             return;

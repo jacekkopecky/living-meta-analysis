@@ -62,6 +62,8 @@
 
   // when updating this, change the serverside copy in config.js
   var USERNAME_RE = /^[a-zA-Z][a-zA-Z0-9_\.-]{0,}$/;
+  var forbiddenUsernames = null;
+  var takenUsernames = null;
 
   window.lima.initPage = function () {
 
@@ -71,12 +73,44 @@
       _.historyBackOrRedirect('/');
     }
 
+    // todo: If we don't care about showing the user 'Username taken' vs 'Username is a reserved word', then we can drop this
+    // forbiddenUsernames is a subset of takenUsernames. We could instead show 'Invalid username' and simplify it?
+    // populate forbiddenUsernames from /api/usernames/forbidden
+    lima.getGapiIDToken()
+    .then(function (idToken) {
+      return fetch('/api/usernames/forbidden', _.idTokenToFetchOptions(idToken));
+    })
+    .then(_.fetchJson)
+    .then(function (values) {
+      forbiddenUsernames = values;
+    })
+    .catch(function(err) {
+      console.err(err);
+      _.apiFail();
+    });
+
+    // todo: Since other elements on the page rely on this, do we want to stick it outside/before initPage?
+    // populate takenUsernames from /api/usernames/
+    lima.getGapiIDToken()
+    .then(function (idToken) {
+      return fetch('/api/usernames/', _.idTokenToFetchOptions(idToken));
+    })
+    .then(_.fetchJson)
+    .then(function (values) {
+      takenUsernames = values;
+    })
+    .catch(function(err) {
+      console.err(err);
+      _.apiFail();
+    });
+
     // set up 'on leave' to sign out the user
     window.addEventListener('beforeunload', signOut);
 
     var currUser;
     var firstTimeUser = true;
 
+    // todo: Jacek, do we need the idtoken here? It worked without..
     lima.getGapiIDToken()
     .then(function (idToken) {
       return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
@@ -103,8 +137,13 @@
       _.historyBackOrRedirect('/');
     });
     _.addEventListener('input#customusername', 'click', function(e){
+      // do this here so that the text box gets set up when it is selected, but will
+      // not show validation errors (based on its content) when it is not selected.
+      _.addOnInputUpdater('span.customusername', 'textContent', checkUsernameUnique)
       var customUsernameEl = _.findEl(e.target.parentElement, 'span.customusername');
       customUsernameEl.focus();
+      // trigger input event to update the validation error we may have hidden.
+      customUsernameEl.oninput();
     });
   }
 
@@ -114,12 +153,49 @@
     if (!successfullySaved) gapi.auth2.getAuthInstance().signOut();
   }
 
+  // We don't care for the property param, but addOnInputUpdater give it
+  function checkUsernameUnique(username, el, property, skipRegex) {
+    if (username === el.dataset.origUsername) return username; // no change
+    if (username === '') throw '';
+    if (forbiddenUsernames.indexOf(username) !== -1) throw 'Username is a reserved word';
+    if (!skipRegex) {
+      if (!username.match(USERNAME_RE)) throw 'Username must start with a letter, and may only contain certain special characters';
+    }
+    if (takenUsernames.indexOf(username) !== -1) throw 'Username already exists';
+    // passed
+    return username;
+    // todo: This is an old attempt - Didn't work as couldn't throw out of the promise into the catch in tools.js
+
+    // // poke /api/profile/<username> to check if username is taken
+    // var exists = false;
+    // lima.getGapiIDToken()
+    // .then(function (idToken) {
+    //   return fetch('/api/profile/' + username, _.idTokenToFetchOptions(idToken));
+    // })
+    // .then(function (res) {
+    //   if (res.status !== 404) { // username exists
+    //     Promise.reject('Username already exists');
+    //   }
+    // })
+    // .catch(function (err) {
+    //   _.apiFail();
+    // });
+  }
+
   // todo sign-out/cancel button:
   // if you are registering, the cancel button signs you out
   // if you are changing your username, cancel button just goes back
   // if you need to agree to new T&C, the cancel button becomes "sign out" if you don't click you agreed
 
   function register() {
+    // do nothing if validationerror exists
+    var firstValidationError = _.findEl('.validationerror');
+    if (firstValidationError) {
+      console.error('validation error, do nothing');
+      firstValidationError.focus();
+      return;
+    }
+
     // validate the user input
     var checked = _.findEls('input[name="suggestion"]:checked')[0];
     var username;
@@ -132,16 +208,6 @@
       username = checked.value;
     }
     username = username.trim();
-
-    // todo: all the validation errors should be on input rather than when the button is clicked
-
-    if (!username.match(USERNAME_RE)) {
-      // todo: show validation error here
-      console.error('validation error');
-      return;
-    }
-
-    // todo: if username is taken or forbidden, show a validation error
 
     // register the user with the server
     return lima.getGapiIDToken()
@@ -173,10 +239,12 @@
     var displayName = user.displayName || user.getName();
     displayName = displayName.replace(/\s/g, '');
 
+    _.setDataProps('span.customusername', 'origUsername', user.username);
+
     var found = false;
     setupRadioButton(user.username, 'displayname', displayName);
     setupRadioButton(user.username, 'emailaddressfirst', emailFirst);
-    setupRadioButton(user.username, 'emailaddress', email);
+    setupRadioButton(user.username, 'emailaddress', email, true);
 
     // none of the radio buttons matched the name, so fill the custom username in
     if (!found) {
@@ -213,13 +281,22 @@
       });
     }
 
-    function setupRadioButton(username, selector, value) {
+    function setupRadioButton(username, selector, value, skipRegex) {
+      try {
+        checkUsernameUnique(value, _.findEl('div.register span.' + selector), null, skipRegex);
+      } catch (err) {
+        // todo: handle this radiobutton's option being invalid..? Don't show it?
+      }
       _.fillEls('div.register span.' + selector, value);
       _.setProps('div.register input#' + selector, 'value', value);
       if (username == value) {
         _.setProps('div.register input#' + selector, 'checked', true);
         found = true;
       }
+      _.addEventListener('div.register input#' + selector, 'click', function(){
+        var el = _.findEl('.customusername');
+        el.classList.remove('validationerror');
+      });
     }
   }
 
