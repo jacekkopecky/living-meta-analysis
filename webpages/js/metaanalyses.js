@@ -93,7 +93,7 @@
         if (!metaanalysis.storedLocally) {
           _.setProps(li, 'a.mainlink', 'href', metaanalysis.title);
         } else {
-          _.setProps(li, 'a.mainlink', 'href', '/' + lima.localStorageUserEmailAddress + '/' + metaanalysis.title + '?type=metaanalysis'); // hint in case of local storage
+          _.setProps(li, 'a.mainlink', 'href', '/' + lima.localStorageUsername + '/' + metaanalysis.title + '?type=metaanalysis'); // hint in case of local storage
           li.classList.add('local');
           // todo do something with the above class - highlight local papers
         }
@@ -383,7 +383,7 @@
 
     // for now, do local storage "edit your copy"
     // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), metaanalysis.title);
-    var ownURL = createPageURL(lima.localStorageUserEmailAddress, metaanalysis.title);
+    var ownURL = createPageURL(lima.localStorageUsername, metaanalysis.title);
     _.setProps(metaanalysisEl, '.edityourcopy', 'href', ownURL + '?type=metaanalysis');
 
     metaanalysisEl.classList.toggle('localsaving', !!lima.userLocalStorage);
@@ -3957,7 +3957,7 @@
     try {
       loadLocalMetaanalysesList();
       if (lima.updatePageURL && metaanalysis.new) lima.updatePageURL();
-      var localURL = createPageURL(lima.localStorageUserEmailAddress, metaanalysis.title);
+      var localURL = createPageURL(lima.localStorageUsername, metaanalysis.title);
       localMetaanalyses[localURL] = metaanalysis.id;
 
       if (!metaanalysis.storedLocally) {

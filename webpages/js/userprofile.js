@@ -3,14 +3,14 @@
   var lima = window.lima;
   var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
 
-  lima.localStorageUserEmailAddress = 'lima@local';
+  lima.localStorageUsername = 'local';
 
   lima.onSignInChange(redirectLocalProfile);
 
-  // redirect /lima@local when a user is signed in
+  // redirect /local when a user is signed in
   function redirectLocalProfile() {
     var user = lima.getAuthenticatedUserEmail();
-    if (user && window.location.pathname == '/' + lima.localStorageUserEmailAddress + '/') {
+    if (user && window.location.pathname == '/' + lima.localStorageUsername + '/') {
       window.location.href = '/profile';
     }
   }
@@ -18,7 +18,7 @@
   lima.requestAndFillUserProfile = function requestAndFillUserProfile() {
     var email = lima.extractUserProfileEmailFromUrl();
 
-    if (email == lima.localStorageUserEmailAddress) {
+    if (email == lima.localStorageUsername) {
       lima.userLocalStorage = true;
       lima.userPageIsAbout = {};
       hideUserProfile();

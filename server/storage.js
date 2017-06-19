@@ -231,6 +231,7 @@ module.exports.listTitles = () =>
  */
 
 const LOCAL_STORAGE_SPECIAL_USER = 'lima@local';
+const LOCAL_STORAGE_SPECIAL_USERNAME = 'local';
 
 let userCache;
 
@@ -269,6 +270,7 @@ function getAllUsers() {
     // - we expect our auth providers never go issue this email address so no user can use it
     users[LOCAL_STORAGE_SPECIAL_USER] = {
       email: LOCAL_STORAGE_SPECIAL_USER,
+      username: LOCAL_STORAGE_SPECIAL_USERNAME,
     };
     return users;
   });
@@ -389,7 +391,7 @@ function getForbiddenUsernames() {
 }
 
 // all the forbidden usernames will be treated as taken
-const allUsernames = [].concat(forbiddenUsernames);
+const allUsernames = forbiddenUsernames.concat([LOCAL_STORAGE_SPECIAL_USERNAME]);
 
 // Take either the email address, or username and return the email address
 function getEmailAddressOfUser(user) {
