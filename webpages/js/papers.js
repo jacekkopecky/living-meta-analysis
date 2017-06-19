@@ -90,7 +90,7 @@
         if (!paper.storedLocally) {
           _.setProps(li, 'a.mainlink', 'href', paper.title);
         } else {
-          _.setProps(li, 'a.mainlink', 'href', '/' + lima.localStorageUserEmailAddress + '/' + paper.title + '?type=paper'); // hint in case of local storage
+          _.setProps(li, 'a.mainlink', 'href', '/' + lima.localStorageUsername + '/' + paper.title + '?type=paper'); // hint in case of local storage
           li.classList.add('local');
           // todo do something with the above class - highlight local papers
         }
@@ -319,7 +319,7 @@
 
     // for now, do local storage "edit your copy"
     // var ownURL = createPageURL(lima.getAuthenticatedUserEmail(), paper.title);
-    var ownURL = createPageURL(lima.localStorageUserEmailAddress, paper.title);
+    var ownURL = createPageURL(lima.localStorageUsername, paper.title);
     _.setProps(paperEl, '.edityourcopy', 'href', ownURL + '?type=paper');
 
     paperEl.classList.toggle('localsaving', !!lima.userLocalStorage);
@@ -1529,7 +1529,7 @@
     try {
       loadLocalPapersList();
       if (lima.updatePageURL && paper.new) lima.updatePageURL();
-      var localURL = createPageURL(lima.localStorageUserEmailAddress, paper.title);
+      var localURL = createPageURL(lima.localStorageUsername, paper.title);
       localPapers[localURL] = paper.id;
 
       paper.storedLocally = Date.now();
