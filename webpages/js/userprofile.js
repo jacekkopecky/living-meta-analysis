@@ -30,7 +30,10 @@
       return fetch('/api/profile/' + email, _.idTokenToFetchOptions(idToken));
     })
     .then(_.fetchJson)
-    .then(fillUserProfile)
+    .then(function (user) {
+      changeUrlToUsername(user, email);
+      fillUserProfile(user);
+    })
     .catch(function (err) {
       if (err.status === 404) {
         _.notFound();
@@ -63,6 +66,14 @@
       // the way Google have implemented this button, clicking on the first child of the button placeholder works
       if (signInButton && signInButton.children[0]) signInButton.children[0].click();
     });
+  }
+
+  function changeUrlToUsername(user, email) {
+    // email might actually already be a username in which case do nothing
+    if (user.username && email.indexOf('@') !== -1) {
+      var newHref = '/' + user.username + window.location.pathname.substring(window.location.pathname.indexOf('/', 1));
+      window.history.replaceState({}, 'username', newHref);
+    }
   }
 
   function fillUserProfile(user) {
