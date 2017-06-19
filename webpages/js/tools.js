@@ -993,11 +993,11 @@
       console.error(currentSavingFunction);
     }
 
-    Promise.resolve(savePromise)
+    return Promise.resolve(savePromise)
     .then(
       function success() {
         currentSavingFunction = null;
-        doSave();
+        return doSave();
       },
       function failure() {
         // put the failed save back in the queue
@@ -1007,6 +1007,7 @@
         if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
         pendingSaveTimeout = null;
         if (lima.saveError) lima.saveError();
+        return Promise.reject();
       }
     );
   }

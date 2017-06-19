@@ -125,7 +125,7 @@ function checkForDisallowedChanges(current, original, columns) {
   }
 
   // check that username hasn't changed or if it has, that it is empty or unique
-  if (current.username == null && current.username !== original.username) {
+  if (current.username != null && current.username !== original.username) {
     if (!USERNAME_REXP.test(current.username)) {
       throw new ValidationError('username cannot contain spaces or special characters');
     }
