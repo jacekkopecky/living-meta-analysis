@@ -282,10 +282,13 @@ function listPapersForUser(req, res, next) {
 function getPaperVersion(req, res, next) {
   storage.getPaperByTitle(req.params.user, req.params.title, req.params.time)
   .then((p) => {
-    res.json(extractPaperForSending(p, true, req.params.user));
+    return storage.getUsernameOfUser(p.enteredBy)
+    .then((username) => {
+      res.json(extractPaperForSending(p, true, req.params.user, username));
+    });
   })
   .catch((e) => {
-    next(e || new NotFoundError());
+    next(e.status ? e : new NotFoundError());
   });
 }
 
@@ -307,11 +310,12 @@ function savePaper(req, res, next) {
   });
 }
 
-function extractPaperForSending(storagePaper, includeDataValues, user) {
+function extractPaperForSending(storagePaper, includeDataValues, user, username) {
   const retval = {
     id: storagePaper.id,
     title: storagePaper.title,
     enteredBy: storagePaper.enteredBy,
+    enteredByUsername: username,
     ctime: storagePaper.ctime,
     mtime: storagePaper.mtime,
     reference: storagePaper.reference,
@@ -419,10 +423,13 @@ function listMetaanalysesForUser(req, res, next) {
 function getMetaanalysisVersion(req, res, next) {
   storage.getMetaanalysisByTitle(req.params.user, req.params.title, req.params.time, true)
   .then((ma) => {
-    res.json(extractMetaanalysisForSending(ma, true, req.params.user));
+    return storage.getUsernameOfUser(ma.enteredBy)
+    .then((username) => {
+      res.json(extractMetaanalysisForSending(ma, true, req.params.user, username));
+    });
   })
   .catch((e) => {
-    next(e || new NotFoundError());
+    next(e.status ? e : new NotFoundError());
   });
 }
 
@@ -444,11 +451,12 @@ function saveMetaanalysis(req, res, next) {
   });
 }
 
-function extractMetaanalysisForSending(storageMetaanalysis, includePapers, user) {
+function extractMetaanalysisForSending(storageMetaanalysis, includePapers, user, username) {
   const retval = {
     id: storageMetaanalysis.id,
     title: storageMetaanalysis.title,
     enteredBy: storageMetaanalysis.enteredBy,
+    enteredByUsername: username,
     ctime: storageMetaanalysis.ctime,
     mtime: storageMetaanalysis.mtime,
     published: storageMetaanalysis.published,

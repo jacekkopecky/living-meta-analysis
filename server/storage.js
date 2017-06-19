@@ -191,23 +191,6 @@ function checkForDisallowedChanges(current, original, columns) {
   }
 }
 
-// Take either the email address, or username and return the email address
-function getEmailAddressOfUser(user) {
-  return userCache.then((users) => {
-    if (user.indexOf('@') === -1) {
-      for (const email of Object.keys(users)) {
-        if (users[email].username === user) {
-          return email;
-        }
-      }
-    }
-
-    return user;
-  });
-}
-
-module.exports.getEmailAddressOfUser = getEmailAddressOfUser;
-
 const allTitles = [];
 
 module.exports.listTitles = () =>
@@ -307,7 +290,7 @@ function migrateUser(user) {
   return user;
 }
 
-module.exports.getUser = (user) => {
+function getUser(user) {
   if (!user) {
     throw new Error('user parameter required');
   }
@@ -324,7 +307,9 @@ module.exports.getUser = (user) => {
       return users[email] || Promise.reject(`user ${email} not found`);
     }
   );
-};
+}
+
+module.exports.getUser = getUser;
 
 module.exports.listUsers = () => {
   return userCache;
@@ -405,6 +390,31 @@ function getForbiddenUsernames() {
 
 // all the forbidden usernames will be treated as taken
 const allUsernames = [].concat(forbiddenUsernames);
+
+// Take either the email address, or username and return the email address
+function getEmailAddressOfUser(user) {
+  if (user.indexOf('@') !== -1) return Promise.resolve(user);
+
+  return userCache.then((users) => {
+    for (const email of Object.keys(users)) {
+      if (users[email].username === user) {
+        return email;
+      }
+    }
+    return null;
+  });
+}
+
+module.exports.getEmailAddressOfUser = getEmailAddressOfUser;
+
+// Take either the email address, or username and return the username (or null if there is none)
+function getUsernameOfUser(user) {
+  if (user.indexOf('@') === -1) return Promise.resolve(user);
+
+  return userCache.then((users) => users[user].username);
+}
+
+module.exports.getUsernameOfUser = getUsernameOfUser;
 
 
 /* papers
@@ -576,7 +586,8 @@ module.exports.getPaperByTitle = (user, title, time) => {
     return getEmailAddressOfUser(user).then((email) => newPaper(email));
   }
 
-  return paperCache
+  return getUser(user) // check that the user exists (we ignore the return value)
+  .then(() => paperCache)
   .then((papers) => {
     for (const p of papers) {
       if (p.title === title) {

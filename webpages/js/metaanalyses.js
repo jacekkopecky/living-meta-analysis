@@ -392,10 +392,12 @@
     _.fillEls (metaanalysisEl, '.authors .value', metaanalysis.authors);
     _.fillEls (metaanalysisEl, '.published .value', metaanalysis.published);
     _.fillEls (metaanalysisEl, '.description .value', metaanalysis.description);
-    _.fillEls (metaanalysisEl, '.enteredby .value', metaanalysis.enteredBy);
-    _.setProps(metaanalysisEl, '.enteredby .value', 'href', '/' + metaanalysis.enteredBy + '/');
     _.fillEls (metaanalysisEl, '.ctime .value', _.formatDateTime(metaanalysis.ctime));
     _.fillEls (metaanalysisEl, '.mtime .value', _.formatDateTime(metaanalysis.mtime));
+
+    var enteredBy = metaanalysis.enteredByUsername || metaanalysis.enteredBy;
+    _.fillEls (metaanalysisEl, '.enteredby .value', enteredBy);
+    _.setProps(metaanalysisEl, '.enteredby .value', 'href', '/' + enteredBy + '/');
 
     _.setDataProps(metaanalysisEl, '.enteredby.needs-owner', 'owner', metaanalysis.enteredBy);
 

@@ -86,7 +86,11 @@
   var functionsWaiting = [];
 
   lima.whenUserPageIsAboutIsKnown = function whenUserPageIsAboutIsKnown(f) {
-    if (functionsWaiting.indexOf(f) === -1) functionsWaiting.push(f);
+    if (lima.userPageIsAbout) {
+      setTimeout(f, 0); // call the function asynchronously
+    } else {
+      if (functionsWaiting.indexOf(f) === -1) functionsWaiting.push(f);
+    }
   };
 
 })(window, document);
