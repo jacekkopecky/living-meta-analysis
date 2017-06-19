@@ -27,7 +27,8 @@
             gapi.auth2.getAuthInstance().signOut();
             delete localStorage.limaUnfinishedRegistration;
           } else {
-            // user isn't known but someone is signed in. Redirect to register.
+            // user isn't known but someone is signed in. Save and then redirect to register.
+            if (lima.userLocalStorage) _.manualSave();
             window.location.href = '/register';
             // don't call any more listeners
             onSignInListeners = [];
@@ -40,6 +41,8 @@
         }
       })
       .then(function(user) {
+        if (!user) return;
+
         _.addClass('body', 'signed-on');
         _.fillEls('.userinfo .username', user.username || user.email);
         _.findEls('.userinfo .userphoto').forEach(function(el){
@@ -86,17 +89,26 @@
 
 
   function signOut() {
-    gapi.auth2.getAuthInstance().signOut().then(
-      function () {
-        _.findEls('.userinfo .userphoto').forEach(function(el){
-          if (el.dataset.origsrc) el.src = el.dataset.origsrc;
+    // if there are unsaved changes when the user presses sign out,
+    // that likely means they want to go and haven't thought of the save delay, so save right now
+    _.manualSave()
+    .catch(function () {
+      var doSignOut = window.confirm('Save failed before signing out,\ndo you still wish to sign out AND lose your changes?');
+      if (!doSignOut) return Promise.reject('sign out aborted by user');
+    })
+    .then(function() {
+      gapi.auth2.getAuthInstance().signOut().then(
+        function () {
+          _.findEls('.userinfo .userphoto').forEach(function(el){
+            if (el.dataset.origsrc) el.src = el.dataset.origsrc;
+          });
+          onSignInListeners.forEach(function (cb) { cb(); });
+        },
+        function (err) {
+          console.log('error signing out');
+          console.log(err);
         });
-        onSignInListeners.forEach(function (cb) { cb(); });
-      },
-      function (err) {
-        console.log('error signing out');
-        console.log(err);
-      });
+    });
   }
 
   /*
