@@ -331,10 +331,12 @@
     _.setProps(paperEl, '.link a.value', 'href', paper.link);
     _.fillEls (paperEl, '.doi .value', paper.doi);
     _.setProps(paperEl, '.doi a.value', 'href', function(el){return el.dataset.base + paper.doi;});
-    _.fillEls (paperEl, '.enteredby .value', paper.enteredBy);
-    _.setProps(paperEl, '.enteredby .value', 'href', '/' + paper.enteredBy + '/');
     _.fillEls (paperEl, '.ctime .value', _.formatDateTime(paper.ctime));
     _.fillEls (paperEl, '.mtime .value', _.formatDateTime(paper.mtime));
+
+    var enteredBy = paper.enteredByUsername || paper.enteredBy;
+    _.fillEls (paperEl, '.enteredby .value', enteredBy);
+    _.setProps(paperEl, '.enteredby .value', 'href', '/' + enteredBy + '/');
 
     _.setDataProps(paperEl, '.enteredby.needs-owner', 'owner', paper.enteredBy);
 

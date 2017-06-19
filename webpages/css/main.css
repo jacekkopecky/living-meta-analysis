@@ -30,6 +30,7 @@ body.editing.page-about-you .notediting,
 .only-if-yours:not(.yours),
 .only-not-yours.yours,
 body.editing.page-about-you .notediting-or-not-yours.yours,
+body.page-about-you .if-not-yours-or-page-not-about-you.yours,
 _ {
   display: none !important;
 }
