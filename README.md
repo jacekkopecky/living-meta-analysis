@@ -75,3 +75,8 @@ To restore from a dumpfile, first stop LiMA server, then run the following:
 `npm run db-add < dumpfile`
 
 After restoring data, start LiMA server again and it should see the new data.
+
+
+## monitoring
+
+For monitoring LiMA, see monitoring/README.md
