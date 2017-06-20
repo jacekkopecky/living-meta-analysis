@@ -1,21 +1,15 @@
-# hdd.sh: Compute the total free disk space in mb
-# Author: Raphael Ragoomundun
-# email: raphael.ragoomundun@openmailbox.org
+#!/bin/bash
+# hdd.sh: Compute the total used disk space in %
 
-getFreeSpace() {
-    lineCount=$(($(df | wc -l) - 1))
+# expects to be run with the `source` command:
+# . hdd.sh
 
-    df | tail -n ${lineCount} | {
-        totalMemory=0
-        totalAvailable=0
+if [ -z "$running_with_source" ]
+then
+  echo "this script expects to be run from monitor.sh"
+fi
 
-        while IFS= read -r line; do
-            totalMemory=$((totalMemory + $(echo $line | cut -d ' ' -f 2)))
-            totalAvailable=$((totalAvailable + $(echo $line | cut -d ' ' -f 4)))
-        done
 
-        echo "scale=2;$totalAvailable / (1024 ^ 2)" | bc -l
-    }
-}
-
-hdd=$(getFreeSpace)
+hdd=`df -k | tail -n +2 |
+     awk '    {totalMem += $2; usedMem += $3}
+          END {printf "%1.0f", (usedMem*100/totalMem)}'`

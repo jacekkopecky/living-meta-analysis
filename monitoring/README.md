@@ -15,8 +15,8 @@ The VM expects to use port 8080 for the graphite frontend. (Change the commands 
 
 ### Requirements:
 
- - ubuntu/debian VM
- - install docker
+ - Ubuntu/Debian VM
+ - Install Docker
 
 ### Setup:
 
@@ -40,7 +40,7 @@ This should be all that's needed, verify it is running correctly by browsing to 
 
 Docker will automatically start the image when docker itself starts, including on VM boot.
 
-## Persistent Files:
+### Persistent Files:
 
 The `run` command sets up the following persistent data volume:
 
@@ -48,7 +48,7 @@ The `run` command sets up the following persistent data volume:
 
 This data directory will persist between boots; you will probably want to back it up.
 
-## Useful Docker Commands
+### Useful Docker Commands
 
 command | comment
 --------|--------
@@ -58,3 +58,10 @@ command | comment
 `docker rmi graphiteimg` | clear the built container image `graphiteimg`
 `docker logs graphite` | shows the runtime logs of the container
 `docker exec -it graphite /bin/bash` | open a `bash` inside the container (e.g. for inspection)
+
+
+## Deployment of OS-level monitoring scripts
+
+- On LiMA server, create `living-meta-analysis/statsd-server-conf.sh` that specifies the location of the StatsD VM as `STATSD_HOST` and `STATSD_PORT`
+- Make sure that `living-meta-analysis/monitoring/scripts/monitor.sh` gets run at boot
+- Example init files for Debian are provided in `deployment/`  TODO
