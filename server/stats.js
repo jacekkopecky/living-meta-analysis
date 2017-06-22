@@ -13,7 +13,7 @@ function StatsDClient(options) {
 
   // Create socket (ignore errors)
   this.socket = dgram.createSocket('udp4');
-  this.socket.on('error', () => {});
+  this.socket.on('error', (e) => { console.error('udp error', e); });
 }
 
 StatsDClient.prototype.timing = function (bucket, value) {
@@ -42,9 +42,7 @@ StatsDClient.prototype.send = function (bucket, value) {
   const buffer = new Buffer(this.prefix + bucket + ':' + value);
 
   // Send (ignore errors)
-  this.socket.send(buffer, 0, buffer.length, this.port, this.host,
-      () => {} // ignore errors
-  );
+  this.socket.send(buffer, 0, buffer.length, this.port, this.host);
 };
 
 
