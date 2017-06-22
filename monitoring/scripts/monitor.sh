@@ -3,23 +3,9 @@
 
 dir=`dirname $0`
 
-# configure the statsd server in living-meta-analysis/statsd-server-conf.sh
-# provide STATSD_HOST, STATSD_PORT, and STATSD_PREFIX
-if [ -f "$dir/../../statsd-server-conf.sh" ]
-then
-  . "$dir/../../statsd-server-conf.sh"
-else
-  echo "using default configuration, missing $dir/../../statsd-server-conf.sh"
-fi
+. $dir/default-config.sh
 
-# please provide STATSD_HOST and STATSD_PORT environment variables
-
-# this needs to be kept in sync with config-to-json.sh
-host=${STATSD_HOST:-localhost}
-port=${STATSD_PORT:-8125}
-prefix=${STATSD_PREFIX:-test.}
-
-echo "using statsd server $host:$port"
+echo "using statsd server $host:$port with prefix '$prefix'"
 
 # Need exactly three parameters and a valid metric type
 sendStatsDPacket() {
