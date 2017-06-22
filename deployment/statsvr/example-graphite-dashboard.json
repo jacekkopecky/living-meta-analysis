@@ -1,7 +1,50 @@
 [
   {
+    "lineMode": "connected",
+    "target": [
+      "stats.gauges.lima.usernames",
+      "stats.gauges.lima.users"
+    ],
+    "title": "Users and Usernames",
+    "_salt": "1498139126.944",
+    "lineWidth": "3",
+    "drawNullAsZero": "false"
+  },
+  {
+    "lineMode": "connected",
+    "drawNullAsZero": "false",
+    "title": "Papers and Metaanalyses",
+    "_salt": "1498140176.945",
+    "lineWidth": "3",
+    "target": [
+      "stats.gauges.lima.metaanalyses",
+      "stats.gauges.lima.papers"
+    ]
+  },
+  {
     "drawNullAsZero": "true",
-    "title": "CPU, HDD, MEM",
+    "yStep": "10",
+    "yUnitSystem": "si",
+    "_salt": "1498081397.434",
+    "lineWidth": "3",
+    "target": [
+      "summarize(stats_counts.lima.access.total,\"1min\")"
+    ]
+  },
+  {
+    "logBase": "",
+    "target": [
+      "alias(color(stacked(summarize(stats_counts.lima.started,\"10min\")),\"red\"),\"boot (per 10min)\")",
+      "alias(secondYAxis(color(stacked(scale(movingAverage(stats_counts.lima.alive,18),6)),\"green\")),\"alive ping\")"
+    ],
+    "areaAlpha": ".5",
+    "yStepRight": "1",
+    "_salt": "1498145802.782",
+    "lineWidth": "3"
+  },
+  {
+    "drawNullAsZero": "true",
+    "title": "LiMA CPU, HDD, MEM",
     "minorY": "0",
     "_salt": "1497974833.397",
     "target": [
@@ -14,12 +57,29 @@
     "yMax": "100"
   },
   {
+    "drawNullAsZero": "true",
+    "title": "Statsvr CPU, HDD, MEM",
+    "minorGridLineColor": "#602020",
+    "majorGridLineColor": "#804040",
+    "minorY": "0",
+    "_salt": "1497974833.397",
+    "target": [
+      "cactiStyle(alias(movingAverage(stats.gauges.statsvr.os.cpu,20),\"CPU\"))",
+      "cactiStyle(alias(movingAverage(stats.gauges.statsvr.os.mem,20),\"MEM\"))",
+      "cactiStyle(alias(movingAverage(stats.gauges.statsvr.os.hdd,20),\"HDD\"))"
+    ],
+    "lineWidth": "2",
+    "colorList": "#800000,#008000,#404080",
+    "yMax": "100"
+  },
+  {
     "logBase": "",
+    "lineWidth": "2",
     "target": [
       "cactiStyle(alias(transformNull(removeBelowValue(movingAverage(stats.lima.os.net.tx,20),1024),0),\"TX\")))",
       "cactiStyle(alias(transformNull(removeBelowValue(movingAverage(stats.lima.os.net.rx,20),1024),0),\"RX\")))"
     ],
-    "title": "Network",
+    "title": "LiMA Network",
     "areaMode": "all",
     "yUnitSystem": "si",
     "areaAlpha": "0.5",
@@ -27,16 +87,36 @@
     "minorX": "0",
     "_salt": "1497974852.364",
     "hideGrid": "false",
-    "lineWidth": "2",
-    "colorList": "red,green",
     "yMin": "0",
+    "colorList": "red,green",
+    "yMax": ""
+  },
+  {
+    "logBase": "",
+    "lineWidth": "2",
+    "target": [
+      "cactiStyle(alias(transformNull(removeBelowValue(movingAverage(stats.statsvr.os.net.tx,20),1024),0),\"TX\")))",
+      "cactiStyle(alias(transformNull(removeBelowValue(movingAverage(stats.statsvr.os.net.rx,20),1024),0),\"RX\")))"
+    ],
+    "title": "Statsvr Network",
+    "minorGridLineColor": "#602020",
+    "areaAlpha": "0.5",
+    "areaMode": "all",
+    "yUnitSystem": "si",
+    "majorGridLineColor": "#804040",
+    "minorY": "0",
+    "minorX": "0",
+    "_salt": "1497974852.364",
+    "hideGrid": "false",
+    "yMin": "0",
+    "colorList": "#800000,#008000",
     "yMax": ""
   },
   {
     "hideYAxis": "true",
     "drawNullAsZero": "true",
     "yMax": "1.1",
-    "title": "Stats gaps",
+    "title": "LiMA OS Stats gaps",
     "minorGridLineColor": "black",
     "yMin": "0",
     "areaMode": "all",
@@ -51,52 +131,15 @@
     ]
   },
   {
-    "drawNullAsZero": "true",
-    "title": "Stat svr: CPU, HDD, MEM",
-    "minorY": "0",
-    "majorGridLineColor": "#804040",
-    "minorGridLineColor": "#602020",
-    "_salt": "1497974833.397",
-    "target": [
-      "cactiStyle(alias(movingAverage(stats.gauges.statsvr.os.cpu,20),\"CPU\"))",
-      "cactiStyle(alias(movingAverage(stats.gauges.statsvr.os.mem,20),\"MEM\"))",
-      "cactiStyle(alias(movingAverage(stats.gauges.statsvr.os.hdd,20),\"HDD\"))"
-    ],
-    "lineWidth": "2",
-    "colorList": "#800000,#008000,#404080",
-    "yMax": "100"
-  },
-  {
-    "logBase": "",
-    "target": [
-      "cactiStyle(alias(transformNull(removeBelowValue(movingAverage(stats.statsvr.os.net.tx,20),1024),0),\"TX\")))",
-      "cactiStyle(alias(transformNull(removeBelowValue(movingAverage(stats.statsvr.os.net.rx,20),1024),0),\"RX\")))"
-    ],
-    "title": "Stat svr: Network",
-    "areaMode": "all",
-    "yUnitSystem": "si",
-    "areaAlpha": "0.5",
-    "minorY": "0",
-    "minorX": "0",
-    "_salt": "1497974852.364",
-    "hideGrid": "false",
-    "lineWidth": "2",
-    "colorList": "#800000,#008000",
-    "yMin": "0",
-    "majorGridLineColor": "#804040",
-    "minorGridLineColor": "#602020",
-    "yMax": ""
-  },
-  {
     "hideYAxis": "true",
     "drawNullAsZero": "true",
     "yMax": "1.1",
-    "title": "Stats gaps",
+    "title": "Statsvr OS Stats gaps",
+    "minorGridLineColor": "black",
     "yMin": "0",
     "areaMode": "all",
     "yUnitSystem": "si",
     "majorGridLineColor": "#804040",
-    "minorGridLineColor": "black",
     "minorY": "0",
     "hideGrid": "false",
     "lineWidth": "2",
