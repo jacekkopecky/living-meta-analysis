@@ -4,21 +4,25 @@
 dir=`dirname $0`
 
 # configure the statsd server in living-meta-analysis/statsd-server-conf.sh
-# provide STATSD_HOST and STATSD_PORT
+# provide STATSD_HOST, STATSD_PORT, and STATSD_PREFIX
 if [ -f "$dir/../../statsd-server-conf.sh" ]
 then
   . "$dir/../../statsd-server-conf.sh"
+else
+  echo "using default configuration, missing $dir/../../statsd-server-conf.sh"
 fi
 
 # please provide STATSD_HOST and STATSD_PORT environment variables
 
 host=${STATSD_HOST:-localhost}
 port=${STATSD_PORT:-8125}
+prefix=${STATSD_PREFIX:-test.}
 
 echo "using statsd server $host:$port"
 
-# Need exactly five parameters and a valid metric type
+# Need exactly three parameters and a valid metric type
 sendStatsDPacket() {
+  # if we have no value, send no packet (we initially don't have values for CPU and NET)
   if [ -z "$2" ]
   then
     return
@@ -36,7 +40,7 @@ sendStatsDPacket() {
 
   # Display the selected data on stdout and then send it to @host on port @port
 
-  packet="$dataName:$data|$metricType"
+  packet="$prefix$dataName:$data|$metricType"
   echo -n "$packet" | nc -q 0 -u $host $port
   echo "Sent: $packet to $host on port $port"
 }
