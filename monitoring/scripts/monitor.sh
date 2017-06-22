@@ -14,6 +14,7 @@ fi
 
 # please provide STATSD_HOST and STATSD_PORT environment variables
 
+# this needs to be kept in sync with config-to-json.sh
 host=${STATSD_HOST:-localhost}
 port=${STATSD_PORT:-8125}
 prefix=${STATSD_PREFIX:-test.}

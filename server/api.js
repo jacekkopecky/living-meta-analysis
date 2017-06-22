@@ -12,6 +12,7 @@ const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const config = require('./config');
 const storage = require('./storage');
+const stats = require('./stats').instance;
 const tools = require('./tools');
 
 const jsonBodyParser = require('body-parser').json(config.jsonParserOptions);
@@ -20,6 +21,11 @@ const api = module.exports = express.Router({
   caseSensitive: true,
 });
 
+// log stats
+api.use('/', (req, res, next) => {
+  stats.count('access.api');
+  next();
+});
 
 /* routes
  *

@@ -22,6 +22,7 @@ const config = require('./config');
 const api = require('./api');
 const storage = require('./storage');
 const NotFoundError = require('./errors/NotFoundError');
+const stats = require('./stats').instance;
 
 const exec = require('child_process').exec;
 
@@ -71,6 +72,31 @@ if (config.logDirectory) {
 } else {
   console.log('not logging HTTP accesses');
 }
+
+/* stats
+ *
+ *
+ *    ####  #####   ##   #####  ####
+ *   #        #    #  #    #   #
+ *    ####    #   #    #   #    ####
+ *        #   #   ######   #        #
+ *   #    #   #   #    #   #   #    #
+ *    ####    #   #    #   #    ####
+ *
+ *
+ */
+
+// send server-is-alive statistics
+stats.count('started');
+setInterval(() => {
+  stats.count('alive');
+}, 60000);
+
+// send path access statistics
+app.use('/', (req, res, next) => {
+  stats.count('access.total');
+  next();
+});
 
 
 /* closed beta
@@ -236,6 +262,7 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
     if (err && err.stack) console.error(err.stack);
     res.status(500).send('internal server error');
   }
+  stats.count('http.code' + res.statusCode);
 });
 
 process.on('unhandledRejection', (err) => {
