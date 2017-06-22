@@ -957,18 +957,18 @@
   };
 
   function doSave() {
-    if (currentSavingFunction) return;
+    if (currentSavingFunction) return Promise.resolve(currentSavingFunction);
 
     if (pendingSaveTimeout && lima.savePendingStopped) lima.savePendingStopped();
 
     if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
     pendingSaveTimeout = null;
 
-    if (lima.checkToPreventForcedSaving && lima.checkToPreventForcedSaving()) return;
+    if (lima.checkToPreventForcedSaving && lima.checkToPreventForcedSaving()) return Promise.reject();
 
     if (pendingSaveFunctions.length === 0) {
       if (lima.saveStopped) lima.saveStopped();
-      return;
+      return Promise.resolve();
     }
 
     // call the next saving function, on its success come to the rest
