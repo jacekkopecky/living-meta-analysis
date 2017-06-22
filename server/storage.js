@@ -11,6 +11,7 @@ const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const ForbiddenError = require('./errors/ForbiddenError');
 const config = require('./config');
+const stats = require('./stats').instance;
 const tools = require('./tools');
 
 const gcloud = require('google-cloud')(config.gcloudProject);
@@ -272,8 +273,16 @@ function getAllUsers() {
       email: LOCAL_STORAGE_SPECIAL_USER,
       username: LOCAL_STORAGE_SPECIAL_USERNAME,
     };
+
+    sendUserStats(users);
     return users;
   });
+}
+
+function sendUserStats(users) {
+  // stats of how many users we have and how many have usernames
+  stats.gauge('users', Object.keys(users).length);
+  stats.gauge('usernames', allUsernames.length - forbiddenUsernames.length);
 }
 
 /*
@@ -355,6 +364,8 @@ module.exports.saveUser = (email, user) => {
             }
           }
           if (user.username) allUsernames.push(user.username.toLowerCase());
+
+          sendUserStats(users);
 
           // return the user
           resolve(user);
@@ -542,9 +553,14 @@ function getAllPapers() {
     })
     .on('end', () => {
       console.log(`getAllPapers: ${retval.length} done`);
+      sendPaperStats(retval);
       resolve(retval);
     });
   });
+}
+
+function sendPaperStats(papers) {
+  stats.gauge('papers', papers.length);
 }
 
 /*
@@ -646,6 +662,7 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
       doAddPaperToCache = () => {
         papers.push(paper);
         allTitles.push(paper.title);
+        sendPaperStats(papers);
       };
     } else {
       let i = 0;
@@ -798,9 +815,14 @@ function getAllMetaanalyses() {
     })
     .on('end', () => {
       console.log(`getAllMetaanalyses: ${retval.length} done`);
+      sendMetaanalysisStats(retval);
       resolve(retval);
     });
   });
+}
+
+function sendMetaanalysisStats(metaanalyses) {
+  stats.gauge('metaanalyses', metaanalyses.length);
 }
 
 /*
@@ -940,6 +962,7 @@ module.exports.saveMetaanalysis = (metaanalysis, email, origTitle, options) => {
       doAddMetaanalysisToCache = () => {
         metaanalyses.push(metaanalysis);
         allTitles.push(metaanalysis.title);
+        sendMetaanalysisStats(metaanalyses);
       };
     } else {
       let i = 0;
