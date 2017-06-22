@@ -24,6 +24,8 @@ const api = module.exports = express.Router({
 // log stats
 api.use('/', (req, res, next) => {
   stats.count('access.api');
+  // this will make index.js log the request time specially
+  res.limaStatsIsAPI = true;
   next();
 });
 

@@ -16,6 +16,7 @@ const fs = require('fs');
 const morgan = require('morgan');
 const rfs = require('rotating-file-stream');
 const cookieParser = require('cookie-parser');
+const onHeaders = require('on-headers');
 
 const config = require('./config');
 
@@ -94,9 +95,17 @@ setInterval(() => {
 
 // send path access statistics
 app.use('/', (req, res, next) => {
+  res.limaStatsStartTime = Date.now();
   stats.count('access.total');
+  onHeaders(res, sendRequestTimeStats);
   next();
 });
+
+function sendRequestTimeStats() {
+  const time = Date.now() - this.limaStatsStartTime;
+  const metricName = this.limaStatsIsAPI ? 'access.apiTime' : 'access.totalTime';
+  stats.timing(metricName, time);
+}
 
 
 /* closed beta
