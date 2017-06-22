@@ -38,6 +38,8 @@ docker run -d \
 
 This should be all that's needed, verify it is running correctly by browsing to the IP address of the VM (port 8080) or running `docker ps`.
 
+Graphite will come up with no pre-configured graphs or dashboards. In `statsd/example-graphite-dashboard.json` you'll find a beginner dashboard that shows OS stats for the lima server and for the stats server. You can import this into Graphite using the Web UI through Dashboard -> Edit Dashboard.
+
 Docker will automatically start the image when docker itself starts, including on VM boot.
 
 ### Persistent Files:
@@ -62,6 +64,13 @@ command | comment
 
 ## Deployment of OS-level monitoring scripts
 
+LiMA server:
+
 - On LiMA server, create `living-meta-analysis/statsd-server-conf.sh` that specifies the location of the StatsD VM as `STATSD_HOST` and `STATSD_PORT`
+- In the above file, also include `STATSD_PREFIX=lima.` (with the trailing `.`) so it ties to the prepared dashboard above
 - Make sure that `living-meta-analysis/monitoring/scripts/monitor.sh` gets run at boot
 - Example init files for Debian are provided in `deployment/`  TODO
+
+Stats server:
+
+- On the stats server (where StatsD and Graphite are deployed) repeat the above steps, but use the prefix `STATSD_PREFIX=statsvr.`
