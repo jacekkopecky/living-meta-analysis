@@ -3,15 +3,21 @@
 # DON'T CHANGE THIS FILE
 
 # custom config should be in the following file:
-config_path="$dir/../../statsd-server-conf.sh"
+config_filename=statsd-server-conf.sh
+
+config_path1="$dir/../../../$config_filename"
+config_path2="$dir/$config_filename"
 
 # configure the statsd server in living-meta-analysis/statsd-server-conf.sh
 # provide STATSD_HOST, STATSD_PORT, and STATSD_PREFIX
-if [ -f "$config_path" ]
+if [ -f "$config_path1" ]
 then
-  . "$config_path"
+  . "$config_path1"
+elif [ -f "$config_path2" ]
+then
+  . "$config_path2"
 else
-  echo "using default configuration, missing $config_path"
+  echo "using default configuration, missing $config_filename in ../../.. or ."
 fi
 
 host=${STATSD_HOST:-localhost}

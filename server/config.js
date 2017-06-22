@@ -9,10 +9,10 @@ const USERNAME_RE = '[a-zA-Z][a-zA-Z0-9_.-]{0,}';
 
 function getStatsdConfig() {
   try {
-    const json = execSync(__dirname + '/../monitoring/scripts/config-to-json.sh');
+    const json = execSync(__dirname + '/../deployment/shared/monitoring-os-scripts/config-to-json.sh');
     return JSON.parse(json);
   } catch (e) {
-    console.error('failed getting statsd config', e);
+    console.error('failed getting statsd config');
     return {};
   }
 }
