@@ -2,3 +2,4 @@ node_modules
 *-google-key.json
 log
 invites.txt
+statsd-server-conf.sh
