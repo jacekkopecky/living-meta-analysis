@@ -63,8 +63,8 @@ while true; do
   sendStatsDPacket "os.mem" "$mem" "g"
   sendStatsDPacket "os.cpu" "$cpu" "g"
   sendStatsDPacket "os.hdd" "$hdd" "g"
-  sendStatsDPacket "os.net.tx" "$net_tx_bps" "g"
-  sendStatsDPacket "os.net.rx" "$net_rx_bps" "g"
+  sendStatsDPacket "os.net.tx" "$net_tx" "c"
+  sendStatsDPacket "os.net.rx" "$net_rx" "c"
 
   # Send a counter event if n < 10
 
