@@ -275,9 +275,10 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 });
 
 process.on('unhandledRejection', (err) => {
-  console.error('unhandled promise, logging err and Error');
-  console.error(err);
-  console.error(new Error());
+  console.error('unhandled promise, logging the error (if any)');
+  if (err) {
+    console.error(err.stack || err);
+  }
 });
 
 /* start server
