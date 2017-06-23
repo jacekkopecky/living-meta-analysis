@@ -3,3 +3,4 @@ node_modules
 log
 invites.txt
 statsd-server-conf.sh
+test/gemini/screens

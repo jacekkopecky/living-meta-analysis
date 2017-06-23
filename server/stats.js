@@ -45,6 +45,11 @@ StatsDClient.prototype.send = function (bucket, value) {
   this.socket.send(buffer, 0, buffer.length, this.port, this.host);
 };
 
+// don't send stats if we're running for tests
+if (process.env.TESTING) {
+  StatsDClient.prototype.send = function () {};
+}
+
 
 module.exports = StatsDClient;
 module.exports.instance = new StatsDClient(config.statsdConfig);
