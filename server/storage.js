@@ -11,8 +11,8 @@ const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const ForbiddenError = require('./errors/ForbiddenError');
 const config = require('./config');
-const stats = require('./stats').instance;
-const tools = require('./tools');
+const stats = require('./lib/stats').instance;
+const tools = require('./lib/tools');
 
 const gcloud = require('google-cloud')(config.gcloudProject);
 const fs = require('fs');
