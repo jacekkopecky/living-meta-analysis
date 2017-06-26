@@ -37,7 +37,7 @@ module.exports.string = function string(val) {
 module.exports.number = function number(val) {
   if (val === undefined || val === null) return val;
 
-  if (typeof val === 'object' || typeof val === 'function' || isNaN(val)) {
+  if (val === '' || typeof val === 'object' || typeof val === 'function' || isNaN(val)) {
     console.error(`not a number: ${val}`);
     console.error(new Error());
     return undefined;

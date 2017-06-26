@@ -8,7 +8,8 @@
     "nodemon": "node_modules/.bin/nodemon -w server/ server",
     "forever": "node_modules/.bin/nodemon -w server/ server",
     "db-dump": "fn=\"storage-dump-`date '+%Y-%m-%d--%H-%M-%S'`.json\"; echo saving into \"$fn\"; node server/storage-dump > \"$fn\"; echo saved into \"$fn\"",
-    "db-add": "node server/storage-add"
+    "db-add": "node server/storage-add",
+    "jasmine": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/jasmine || true # ignore jasmine exit status"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
     "eslint-plugin-import": "^1.7.0",
     "eslint-plugin-jsx-a11y": "^1.2.0",
     "eslint-plugin-react": "^5.0.1",
+    "jasmine": "^2.6.0",
     "nodemon": "^1.11.0"
   },
   "dependencies": {
