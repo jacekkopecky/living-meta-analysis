@@ -23,9 +23,13 @@ const config = require('./config');
 const api = require('./api');
 const storage = require('./storage');
 const NotFoundError = require('./errors/NotFoundError');
-const stats = require('./lib/stats').instance;
+const stats = require('./lib/stats');
 
 const exec = require('child_process').exec;
+
+stats.init();
+storage.init();
+api.init();
 
 const app = express({ caseSensitive: true });
 app.set('case sensitive routing', true);
@@ -301,7 +305,7 @@ process.on('unhandledRejection', (err) => {
 const port = process.env.PORT || config.port;
 let httpsPort = process.env.HTTPSPORT || config.httpsPort;
 
-api.ready.then(() => {
+storage.ready.then(() => {
   if (process.env.TESTING) {
     console.info('**************************************************');
     console.info('');

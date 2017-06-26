@@ -2,54 +2,67 @@
 'use strict';
 
 const dgram = require('dgram');
+const execSync = require('child_process').execSync;
 
-const config = require('./../config');
+module.exports.init = () => {
+  if (process.env.TESTING) return;
 
-function StatsDClient(options) {
-  options = options || {};
-  this.host = options.host || 'localhost';
-  this.port = options.port || 8125;
-  this.prefix = options.prefix || '';
+  const options = getStatsdConfig();
+  if (!options || !options.host || !options.port) return;
+
+  const host = options.host;
+  const port = options.port;
+  const prefix = options.prefix || '';
 
   // Create socket (ignore errors)
-  this.socket = dgram.createSocket('udp4');
-  this.socket.on('error', (e) => { console.error('udp error', e); });
-}
+  const socket = dgram.createSocket('udp4');
+  socket.on('error', (e) => { console.error('udp error', e); });
 
-StatsDClient.prototype.timing = function (bucket, value) {
-  this.send(bucket, value + '|ms');
+  send = function (bucket, value) {
+    const buffer = new Buffer(prefix + bucket + ':' + value);
+
+    // Send (ignore errors)
+    socket.send(buffer, 0, buffer.length, port, host);
+  };
 };
 
-StatsDClient.prototype.count = function (bucket, value, sampling) {
+function timing(bucket, value) {
+  send(bucket, value + '|ms');
+}
+
+function count(bucket, value, sampling) {
   if (value == null) value = 1;
   if (sampling == null) sampling = 1;
-  this.send(bucket, value + '|c|@' + sampling);
-};
-
-StatsDClient.prototype.increment = function (bucket) {
-  this.count(bucket, 1);
-};
-
-StatsDClient.prototype.decrement = function (bucket) {
-  this.count(bucket, -1);
-};
-
-StatsDClient.prototype.gauge = function (bucket, value) {
-  this.send(bucket, value + '|g');
-};
-
-StatsDClient.prototype.send = function (bucket, value) {
-  const buffer = new Buffer(this.prefix + bucket + ':' + value);
-
-  // Send (ignore errors)
-  this.socket.send(buffer, 0, buffer.length, this.port, this.host);
-};
-
-// don't send stats if we're running for tests
-if (process.env.TESTING) {
-  StatsDClient.prototype.send = function () {};
+  send(bucket, value + '|c|@' + sampling);
 }
 
+function increment(bucket) {
+  count(bucket, 1);
+}
 
-module.exports = StatsDClient;
-module.exports.instance = new StatsDClient(config.statsdConfig);
+function decrement(bucket) {
+  count(bucket, -1);
+}
+
+function gauge(bucket, value) {
+  send(bucket, value + '|g');
+}
+
+module.exports.timing = timing;
+module.exports.count = count;
+module.exports.increment = increment;
+module.exports.decrement = decrement;
+module.exports.gauge = gauge;
+
+// don't send stats until initialized
+let send = () => {};
+
+function getStatsdConfig() {
+  try {
+    const json = execSync(__dirname + '/../../deployment/shared/monitoring-os-scripts/config-to-json.sh');
+    return JSON.parse(json);
+  } catch (e) {
+    console.error('failed getting statsd config');
+    return null;
+  }
+}

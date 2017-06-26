@@ -11,7 +11,7 @@ const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const ForbiddenError = require('./errors/ForbiddenError');
 const config = require('./config');
-const stats = require('./lib/stats').instance;
+const stats = require('./lib/stats');
 const tools = require('./lib/tools');
 
 const gcloud = require('google-cloud')(config.gcloudProject);
@@ -237,9 +237,6 @@ const LOCAL_STORAGE_SPECIAL_USERNAME = 'local';
 
 let userCache;
 
-// get all users immediately on the start of the server
-getAllUsers();
-
 function getAllUsers() {
   userCache = new Promise((resolve, reject) => {
     console.log('getAllUsers: making a datastore request');
@@ -383,7 +380,7 @@ module.exports.saveUser = (email, user, options) => {
 };
 
 // on start of web server put all file names in /webpages into this list, with and without filename extensions
-const forbiddenUsernames = getForbiddenUsernames();
+const forbiddenUsernames = [];
 
 function getForbiddenUsernames() {
   // start initially with those defined in config
@@ -405,11 +402,13 @@ function getForbiddenUsernames() {
     if (arr.indexOf(name) === -1) arr.push(name.toLowerCase());
   }
 
-  return retval;
+  // push all the found forbidden usernames into the global array
+  Array.prototype.push.apply(forbiddenUsernames, retval);
+  Array.prototype.push.apply(allUsernames, forbiddenUsernames);
 }
 
 // all the forbidden usernames will be treated as taken
-const allUsernames = forbiddenUsernames.concat([LOCAL_STORAGE_SPECIAL_USERNAME]);
+const allUsernames = [LOCAL_STORAGE_SPECIAL_USERNAME];
 
 // Take either the email address, or username and return the email address
 function getEmailAddressOfUser(user) {
@@ -539,9 +538,6 @@ a column record looks like this: (see /api/columns)
  */
 
 let paperCache;
-
-// get all users immediately on the start of the server
-getAllPapers();
 
 function getAllPapers() {
   paperCache = new Promise((resolve, reject) => {
@@ -802,9 +798,6 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
  */
 
 let metaanalysisCache;
-
-// get all immediately on the start of the server
-getAllMetaanalyses();
 
 function getAllMetaanalyses() {
   metaanalysisCache = new Promise((resolve, reject) => {
@@ -1089,9 +1082,6 @@ const COLUMN_TYPES = ['characteristic', 'result'];
 
 let columnCache;
 
-// get all users immediately on the start of the server
-getAllColumns();
-
 function getAllColumns() {
   columnCache = new Promise((resolve, reject) => {
     console.log('getAllColumns: making a datastore request');
@@ -1213,7 +1203,7 @@ module.exports.saveColumn = (recvCol, email, options) => {
  *
  */
 
-if (!process.env.TESTING) {
+function setupClosedBeta() {
   // a hash keyed on invite codes for closed beta users
   module.exports.betaCodes = {};
 
@@ -1287,25 +1277,36 @@ function createStubDatastore() {
  *
  */
 
-module.exports.ready =
-  metaanalysisCache
-  .then(() => paperCache)
-  .then(() => userCache)
-  .then(() => columnCache)
-  .then(() => {
-    if (!process.env.TESTING) return;
 
-    // load testing data
-    try {
-      const storageTools = require('./lib/storage-tools'); // eslint-disable-line global-require
-      const data = fs.readFileSync(__dirname + '/../test/data.json', 'utf8');
+module.exports.init = () => {
+  getForbiddenUsernames();
+  getAllUsers();
+  getAllPapers();
+  getAllMetaanalyses();
+  getAllColumns();
+  if (!process.env.TESTING) setupClosedBeta();
 
-      return tools.waitForPromise(storageTools.add(JSON.parse(data))) // eslint-disable-line consistent-return
-      .then(() => {
-        console.log('storage: Testing data imported');
-      });
-    } catch (e) {
-      console.error(e && e.stack);
-    }
-  })
-  .then(() => console.log('storage: all is now loaded'));
+  module.exports.ready =
+    Promise.resolve()
+    .then(() => metaanalysisCache)
+    .then(() => paperCache)
+    .then(() => userCache)
+    .then(() => columnCache)
+    .then(() => {
+      if (!process.env.TESTING) return;
+
+      // load testing data
+      try {
+        const storageTools = require('./lib/storage-tools'); // eslint-disable-line global-require
+        const data = fs.readFileSync(__dirname + '/../test/data.json', 'utf8');
+
+        return tools.waitForPromise(storageTools.add(JSON.parse(data))) // eslint-disable-line consistent-return
+        .then(() => {
+          console.log('storage: Testing data imported');
+        });
+      } catch (e) {
+        console.error(e && e.stack);
+      }
+    })
+    .then(() => console.log('storage: all is now loaded'));
+};
