@@ -326,7 +326,8 @@ module.exports.listUsers = () => {
   return userCache;
 };
 
-module.exports.saveUser = (email, user) => {
+module.exports.saveUser = (email, user, options) => {
+  options = options || {};
   // todo do we want to keep a Log of users?
   if (!email || !user) {
     throw new Error('email/user parameters required');
@@ -343,6 +344,11 @@ module.exports.saveUser = (email, user) => {
   return userCache.then(
     (users) => new Promise((resolve, reject) => {
       const original = users[email];
+      // reject the save if we're restoring from another datastore and we already have this user
+      if (options.restoring && original) {
+        reject(new Error(`user ${user.email} already exists`));
+        return;
+      }
       checkForDisallowedChanges(user, original);
       const key = datastore.key(['User', email]);
       console.log('saveUser making a datastore request');
@@ -630,6 +636,7 @@ module.exports.listPapers = () => paperCache;
 let currentPaperSave = Promise.resolve();
 
 module.exports.savePaper = (paper, email, origTitle, options) => {
+  options = options || {};
   // todo multiple users' views on one paper
   // compute this user's version of this paper, as it is in the database
   // compute a diff between what's submitted and the user's version of this paper
@@ -673,7 +680,7 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
         }
       }
 
-      if (options && options.restoring) {
+      if (options.restoring) {
         // paper is a paper we're restoring from some other datastore
         // reject the save if we already have it
         if (original) return Promise.reject(new Error(`paper ${paper.id} already exists`));
@@ -724,7 +731,7 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
     // this is here until we add versioning on the papers themselves
     const logKey = datastore.key(['Paper', paper.id,
                                   'PaperLog', paper.id + '/' + paper.mtime]);
-    console.log('savePaper saving (into Paper and PaperLog)');
+    if (!options.restoring) console.log('savePaper saving (into Paper and PaperLog)');
     return new Promise((resolve, reject) => {
       datastore.save(
         [
@@ -934,6 +941,7 @@ module.exports.listMetaanalyses = () => metaanalysisCache;
 let currentMetaanalysisSave = Promise.resolve();
 
 module.exports.saveMetaanalysis = (metaanalysis, email, origTitle, options) => {
+  options = options || {};
   // todo multiple users' views on one metaanalysis
   // compute this user's version of this metaanalysis, as it is in the database
   // compute a diff between what's submitted and the user's version of this metaanalysis
@@ -973,7 +981,7 @@ module.exports.saveMetaanalysis = (metaanalysis, email, origTitle, options) => {
         }
       }
 
-      if (options && options.restoring) {
+      if (options.restoring) {
         // metaanalysis is a metaanalysis we're restoring from some other datastore
         // reject the save if we already have it
         if (original) return Promise.reject(new Error(`metaanalysis ${metaanalysis.id} already exists`));
@@ -1024,7 +1032,7 @@ module.exports.saveMetaanalysis = (metaanalysis, email, origTitle, options) => {
     // this is here until we add versioning on the metaanalyses themselves
     const logKey = datastore.key(['Metaanalysis', metaanalysis.id,
                                   'MetaanalysisLog', metaanalysis.id + '/' + metaanalysis.mtime]);
-    console.log('saveMetaanalysis saving (into Metaanalysis and MetaanalysisLog)');
+    if (!options.restoring) console.log('saveMetaanalysis saving (into Metaanalysis and MetaanalysisLog)');
     return new Promise((resolve, reject) => {
       datastore.save(
         [
@@ -1110,6 +1118,7 @@ function getAllColumns() {
 }
 
 module.exports.saveColumn = (recvCol, email, options) => {
+  options = options || {};
   // todo identify the columns to be saved and actually save them
   return columnCache
   .then((columns) => {
@@ -1120,7 +1129,7 @@ module.exports.saveColumn = (recvCol, email, options) => {
 
     const origCol = columns[recvCol.id];
 
-    if (options && options.restoring) {
+    if (options.restoring) {
       // recvCol is a column we're restoring from some other datastore
       // reject the save if we already have it
       if (origCol) return Promise.reject(new Error(`column ${recvCol.id} already exists`));
@@ -1156,7 +1165,7 @@ module.exports.saveColumn = (recvCol, email, options) => {
     // this is here until we add versioning on the columns themselves
     const logKey = datastore.key(['Column', recvCol.id,
                                   'ColumnLog', recvCol.id + '/' + recvCol.mtime]);
-    console.log('saveColumn saving (into Column and ColumnLog)');
+    if (!options.restoring) console.log('saveColumn saving (into Column and ColumnLog)');
     return new Promise((resolve, reject) => {
       datastore.save(
         [
