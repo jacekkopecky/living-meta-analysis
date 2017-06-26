@@ -3,7 +3,9 @@ module.exports = {
   spec_files: [
     "**/*[sS]pec.js"
   ],
-  helpers: [ ],
+  helpers: [
+    "helpers/**/*.js"
+  ],
   stopSpecOnExpectationFailure: false,
   random: false
 }
