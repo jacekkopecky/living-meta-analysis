@@ -12,7 +12,7 @@ const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const config = require('./config');
 const storage = require('./storage');
-const stats = require('./lib/stats').instance;
+const stats = require('./lib/stats');
 const tools = require('./lib/tools');
 
 const jsonBodyParser = require('body-parser').json(config.jsonParserOptions);
@@ -21,13 +21,18 @@ const api = module.exports = express.Router({
   caseSensitive: true,
 });
 
-// log stats
-api.use('/', (req, res, next) => {
-  stats.count('access.api');
-  // this will make index.js log the request time specially
-  res.limaStatsIsAPI = true;
-  next();
-});
+module.exports.init = () => {
+  // log stats
+  api.use('/', (req, res, next) => {
+    stats.count('access.api');
+    // this will make index.js log the request time specially
+    res.limaStatsIsAPI = true;
+    next();
+  });
+
+  setUpRoutes();
+  return module.exports;
+};
 
 /* routes
  *
@@ -42,42 +47,44 @@ api.use('/', (req, res, next) => {
  *
  */
 
-api.get('/', (req, res) => res.redirect('/docs/api'));
+function setUpRoutes() {
+  api.get('/', (req, res) => res.redirect('/docs/api'));
 
-api.get('/user', GOOGLE_USER, checkUser);
-api.post('/user', GOOGLE_USER, jsonBodyParser, saveUser);
+  api.get('/user', GOOGLE_USER, checkUser);
+  api.post('/user', GOOGLE_USER, jsonBodyParser, saveUser);
 
-// todo top users/papers/metaanalyses would currently return all of them, which is a privacy issue
-// we may need editorial control, tags like 'public' or absence of tags like 'private'
-// api.get('/topusers', listTopUsers);
-// api.get('/toppapers', listTopPapers);
-api.get('/topmetaanalyses', listTopMetaanalyses);
-api.get('/titles', listTitles);
+  // todo top users/papers/metaanalyses would currently return all of them, which is a privacy issue
+  // we may need editorial control, tags like 'public' or absence of tags like 'private'
+  // api.get('/topusers', listTopUsers);
+  // api.get('/toppapers', listTopPapers);
+  api.get('/topmetaanalyses', listTopMetaanalyses);
+  api.get('/titles', listTitles);
 
-api.get(`/profile/:user(${config.USER_RE})`, returnUserProfile);
+  api.get(`/profile/:user(${config.USER_RE})`, returnUserProfile);
 
-api.get(`/papers/:user(${config.USER_RE})/`,
-    listPapersForUser);
-api.get(`/papers/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
-    getPaperVersion);
-api.get(`/papers/:user(${config.USER_RE})\/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
-    getPaperVersion);
-api.post(`/papers/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
-        GOOGLE_USER, SAME_USER, jsonBodyParser, savePaper);
+  api.get(`/papers/:user(${config.USER_RE})/`,
+      listPapersForUser);
+  api.get(`/papers/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
+      getPaperVersion);
+  api.get(`/papers/:user(${config.USER_RE})\/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+      getPaperVersion);
+  api.post(`/papers/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
+          GOOGLE_USER, SAME_USER, jsonBodyParser, savePaper);
 
-// todo above, a user that isn't SAME_USER should be able to submit new comments
+  // todo above, a user that isn't SAME_USER should be able to submit new comments
 
-api.get('/columns', listColumns);
-api.post('/columns', GOOGLE_USER, KNOWN_USER, jsonBodyParser, saveColumn);
+  api.get('/columns', listColumns);
+  api.post('/columns', GOOGLE_USER, KNOWN_USER, jsonBodyParser, saveColumn);
 
-api.get(`/metaanalyses/:user(${config.USER_RE})`,
-        listMetaanalysesForUser);
-api.get(`/metaanalyses/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
-        getMetaanalysisVersion);
-api.get(`/metaanalyses/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
-        getMetaanalysisVersion);
-api.post(`/metaanalyses/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
-        GOOGLE_USER, SAME_USER, jsonBodyParser, saveMetaanalysis);
+  api.get(`/metaanalyses/:user(${config.USER_RE})`,
+          listMetaanalysesForUser);
+  api.get(`/metaanalyses/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
+          getMetaanalysisVersion);
+  api.get(`/metaanalyses/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+          getMetaanalysisVersion);
+  api.post(`/metaanalyses/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
+          GOOGLE_USER, SAME_USER, jsonBodyParser, saveMetaanalysis);
+}
 
 
 /* shared
@@ -631,5 +638,3 @@ function extractReceivedColumn(recCol) {
     // mtime: tools.number(recCol.mtime),           // will be updated
   };
 }
-
-module.exports.ready = storage.ready;

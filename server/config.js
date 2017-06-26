@@ -1,21 +1,9 @@
 'use strict';
 
-const execSync = require('child_process').execSync;
-
 const EMAIL_ADDRESS_RE = '[a-zA-Z0-9.+-]+@[a-zA-Z0-9.+-]+';
 const USERNAME_RE = '[a-zA-Z][a-zA-Z0-9_.-]{0,}';
 // when updating this, change the clientside copy in register.html
 // the above has to be {0,} rather than * because https://github.com/expressjs/express/issues/2495
-
-function getStatsdConfig() {
-  try {
-    const json = execSync(__dirname + '/../deployment/shared/monitoring-os-scripts/config-to-json.sh');
-    return JSON.parse(json);
-  } catch (e) {
-    console.error('failed getting statsd config');
-    return {};
-  }
-}
 
 module.exports = {
   // shared constants
@@ -62,6 +50,4 @@ module.exports = {
   jsonParserOptions: {
     limit: '1024kb',
   },
-
-  statsdConfig: getStatsdConfig(),
 };
