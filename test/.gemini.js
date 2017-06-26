@@ -1,5 +1,5 @@
 module.exports = {
-  rootUrl: 'http://localhost:8080',
+  rootUrl: 'http://localhost:8081',
   compositeImage: true,
 
   browsers: {
