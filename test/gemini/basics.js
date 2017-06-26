@@ -2,12 +2,14 @@ gemini.suite('basics', (suite) => {
 
   suite.setUrl('/')
     .setCaptureElements('body')
-    .capture('invite-page')
-
-    .capture('home', function (actions, find) {
-      actions.sendKeys(find('#invitecode'), '1');
-      actions.sendKeys(gemini.RETURN);
-    });
+    .capture('home')
+    //// use this instead of the line above to get past the invite-only barrier
+    // .capture('invite-page')
+    //
+    // .capture('home', function (actions, find) {
+    //   actions.sendKeys(find('#invitecode'), '1');
+    //   actions.sendKeys(gemini.RETURN);
+    // })
 
   gemini.suite('401', (suite) => {
     suite.setUrl('/401')
