@@ -12,8 +12,8 @@ const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const config = require('./config');
 const storage = require('./storage');
-const stats = require('./stats').instance;
-const tools = require('./tools');
+const stats = require('./lib/stats').instance;
+const tools = require('./lib/tools');
 
 const jsonBodyParser = require('body-parser').json(config.jsonParserOptions);
 

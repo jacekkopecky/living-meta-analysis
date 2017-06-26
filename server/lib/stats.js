@@ -3,7 +3,7 @@
 
 const dgram = require('dgram');
 
-const config = require('./config');
+const config = require('./../config');
 
 function StatsDClient(options) {
   options = options || {};

@@ -23,7 +23,7 @@ const config = require('./config');
 const api = require('./api');
 const storage = require('./storage');
 const NotFoundError = require('./errors/NotFoundError');
-const stats = require('./stats').instance;
+const stats = require('./lib/stats').instance;
 
 const exec = require('child_process').exec;
 
