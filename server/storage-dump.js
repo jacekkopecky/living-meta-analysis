@@ -1,23 +1,17 @@
 'use strict';
 
-// normal logging goes to stderr
+// send stdout to stderr, but in the end send the data to stdout
 const log = console.log;
 console.log = console.error;
 
-const storage = require('./storage');
+const storageTools = require('./lib/storage-tools');
 
-const data = {};
+// normal logging goes to stderr
 
-storage.ready
-.then(storage.listUsers)
-.then((d) => { data.users = d; })
-.then(storage.listPapers)
-.then((d) => { data.papers = d; })
-.then(storage.listMetaanalyses)
-.then((d) => { data.metaanalyses = d; })
-.then(storage.listColumns)
-.then((d) => { data.columns = d; })
-.then(() => {
+storageTools.ready
+.then(() => storageTools.dump())
+.then((data) => {
   console.error('storage-dump done');
   log(JSON.stringify(data, null, 2));
+  process.exit();
 });
