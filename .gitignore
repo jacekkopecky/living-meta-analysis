@@ -4,3 +4,4 @@ log
 invites.txt
 statsd-server-conf.sh
 test/gemini/screens
+coverage
