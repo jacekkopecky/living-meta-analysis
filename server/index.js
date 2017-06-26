@@ -310,7 +310,7 @@ api.ready.then(() => {
     console.info('**************************************************');
   }
 
-  if (process.env.DISABLE_HTTPS) {
+  if (process.env.DISABLE_HTTPS || process.env.TESTING) {
     if (!process.env.TESTING) {
       console.warn('**************************************************');
       console.warn('');

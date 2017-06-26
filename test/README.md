@@ -2,9 +2,14 @@
 
 We use [Gemini](https://github.com/gemini-testing/gemini) for testing. Follow the Gemini installation instructions first.
 
-The tests expect LiMA to be running at localhost:8080.
+The tests expect LiMA to be running at localhost:8081 and selenium-standalone; you can start those with
 
-TODO: tests should start their own server
+```
+PORT=8081 TESTING=1 node server &
+selenium-standalone start &
+```
+
+TODO: tests could start their own server
 
 ## Setup
 
