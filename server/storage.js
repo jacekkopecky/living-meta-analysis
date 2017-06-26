@@ -17,7 +17,8 @@ const tools = require('./lib/tools');
 const gcloud = require('google-cloud')(config.gcloudProject);
 const fs = require('fs');
 
-const datastore = gcloud.datastore({ namespace: config.gcloudDatastoreNamespace });
+const datastore = process.env.TESTING ? createStubDatastore() :
+                    gcloud.datastore({ namespace: config.gcloudDatastoreNamespace });
 
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
 const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
@@ -1245,6 +1246,32 @@ module.exports.betaCodes = {};
 module.exports.touchBetaCode = (code, email) => void email;
 
 
+/* testing datastore
+ *
+ *
+ *   ##### ######  ####  ##### # #    #  ####     #####    ##   #####   ##    ####  #####  ####  #####  ######
+ *     #   #      #        #   # ##   # #    #    #    #  #  #    #    #  #  #        #   #    # #    # #
+ *     #   #####   ####    #   # # #  # #         #    # #    #   #   #    #  ####    #   #    # #    # #####
+ *     #   #           #   #   # #  # # #  ###    #    # ######   #   ######      #   #   #    # #####  #
+ *     #   #      #    #   #   # #   ## #    #    #    # #    #   #   #    # #    #   #   #    # #   #  #
+ *     #   ######  ####    #   # #    #  ####     #####  #    #   #   #    #  ####    #    ####  #    # ######
+ *
+ *
+ */
+
+function createStubDatastore() {
+  const retval = {};
+  function empty() { return retval; }
+  function asyncCall(x, cb) { setImmediate(cb); return retval; }
+  function asyncCallIfEnd(x, cb) { if (x === 'end') setImmediate(cb); return retval; }
+  retval.key = empty;
+  retval.save = asyncCall;
+  retval.createQuery = empty;
+  retval.runStream = empty;
+  retval.on = asyncCallIfEnd;
+  return retval;
+}
+
 /* ready function
  *
  *
@@ -1263,4 +1290,20 @@ module.exports.ready =
   .then(() => paperCache)
   .then(() => userCache)
   .then(() => columnCache)
+  .then(() => {
+    if (!process.env.TESTING) return;
+
+    // load testing data
+    try {
+      const storageTools = require('./lib/storage-tools'); // eslint-disable-line global-require
+      const data = fs.readFileSync(__dirname + '/../test/data.json', 'utf8');
+
+      return tools.waitForPromise(storageTools.add(JSON.parse(data))) // eslint-disable-line consistent-return
+      .then(() => {
+        console.log('storage: Testing data imported');
+      });
+    } catch (e) {
+      console.error(e && e.stack);
+    }
+  })
   .then(() => console.log('storage: all is now loaded'));

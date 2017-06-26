@@ -49,7 +49,7 @@ app.use(cookieParser());
 
 let loggingMiddleware;
 
-if (config.logDirectory) {
+if (config.logDirectory && !process.env.TESTING) {
   morgan.token('invite', (req) => {
     if (!req.cookies) return '-';
     let retval = req.cookies['lima-beta-code'] || '';
@@ -125,21 +125,23 @@ function sendRequestTimeStats() {
 // if we don't get a valid closed-beta code in the lima-beta-code cookie,
 // we will redirect to a coming-soon page
 
-// regex for quickly checking for selected paths to be allowed: /css, /js, /img, /api
-const closedBetaAllowedURLs = /^\/(css|js|img|api|\.well-known)\//;
+if (!process.env.TESTING) {
+  // regex for quickly checking for selected paths to be allowed: /css, /js, /img, /api
+  const closedBetaAllowedURLs = /^\/(css|js|img|api|\.well-known)\//;
 
-app.use('/', (req, res, next) => {
-  if (req.url.match(closedBetaAllowedURLs)) {
-    next();
-  } else if (req.cookies && storage.betaCodes.hasOwnProperty(req.cookies['lima-beta-code'])) {
-    storage.touchBetaCode(req.cookies['lima-beta-code'], req.user ? req.user.emails[0].value : undefined);
-    next();
-  } else if (req.url === '/') {
-    res.sendFile('coming-soon.html', { root: './webpages/' });
-  } else {
-    res.redirect('/');
-  }
-});
+  app.use('/', (req, res, next) => {
+    if (req.url.match(closedBetaAllowedURLs)) {
+      next();
+    } else if (req.cookies && storage.betaCodes.hasOwnProperty(req.cookies['lima-beta-code'])) {
+      storage.touchBetaCode(req.cookies['lima-beta-code'], req.user ? req.user.emails[0].value : undefined);
+      next();
+    } else if (req.url === '/') {
+      res.sendFile('coming-soon.html', { root: './webpages/' });
+    } else {
+      res.redirect('/');
+    }
+  });
+}
 
 /* routes
  *
@@ -300,12 +302,22 @@ const port = process.env.PORT || config.port;
 let httpsPort = process.env.HTTPSPORT || config.httpsPort;
 
 api.ready.then(() => {
+  if (process.env.TESTING) {
+    console.info('**************************************************');
+    console.info('');
+    console.info('RUNNING IN TESTING MODE');
+    console.info('');
+    console.info('**************************************************');
+  }
+
   if (process.env.DISABLE_HTTPS) {
-    console.warn('**************************************************');
-    console.warn('');
-    console.warn('WARNING: DISABLING HTTPS, THIS SERVER IS INSECURE');
-    console.warn('');
-    console.warn('**************************************************');
+    if (!process.env.TESTING) {
+      console.warn('**************************************************');
+      console.warn('');
+      console.warn('WARNING: DISABLING HTTPS, THIS SERVER IS INSECURE');
+      console.warn('');
+      console.warn('**************************************************');
+    }
     httpsPort = null;
   }
 
@@ -336,4 +348,8 @@ api.ready.then(() => {
       console.error('error starting HTTPS', e.message || e);
     }
   }
+})
+.catch((err) => {
+  console.error('startup failed', err && err.stack);
+  process.exit(-1);
 });
