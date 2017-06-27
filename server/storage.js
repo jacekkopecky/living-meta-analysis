@@ -540,24 +540,26 @@ a column record looks like this: (see /api/columns)
 let paperCache;
 
 function getAllPapers() {
-  paperCache = new Promise((resolve, reject) => {
-    console.log('getAllPapers: making a datastore request');
-    const retval = [];
-    datastore.createQuery('Paper').runStream()
-    .on('error', (err) => {
-      console.error('error retrieving papers');
-      console.error(err);
-      setTimeout(getAllPapers, 60 * 1000); // try loading again in a minute
-      reject(err);
-    })
-    .on('data', (entity) => {
-      retval.push(migratePaper(entity));
-      allTitles.push(entity.title);
-    })
-    .on('end', () => {
-      console.log(`getAllPapers: ${retval.length} done`);
-      sendPaperStats(retval);
-      resolve(retval);
+  columnCache.then((columns) => {
+    paperCache = new Promise((resolve, reject) => {
+      console.log('getAllPapers: making a datastore request');
+      const retval = [];
+      datastore.createQuery('Paper').runStream()
+      .on('error', (err) => {
+        console.error('error retrieving papers');
+        console.error(err);
+        setTimeout(getAllPapers, 60 * 1000); // try loading again in a minute
+        reject(err);
+      })
+      .on('data', (entity) => {
+        retval.push(migratePaper(entity, columns));
+        allTitles.push(entity.title);
+      })
+      .on('end', () => {
+        console.log(`getAllPapers: ${retval.length} done`);
+        sendPaperStats(retval);
+        resolve(retval);
+      });
     });
   });
 }
@@ -569,7 +571,7 @@ function sendPaperStats(papers) {
 /*
  * change paper from an old format to the new one on load from datastore, if need be
  */
-function migratePaper(paper) {
+function migratePaper(paper, columns) {
   // 2017-02-23: move columnOrder to columns
   if (paper.columnOrder) {
     paper.columns = paper.columnOrder;
@@ -577,6 +579,8 @@ function migratePaper(paper) {
   }
   return paper;
 }
+
+tools.exportTestAPI(module.exports, migratePaper);
 
 
 module.exports.getPapersEnteredBy = (user) => {
@@ -858,6 +862,8 @@ function migrateMetaanalysis(metaanalysis) {
 
   return metaanalysis;
 }
+
+tools.exportTestAPI(module.exports, migrateMetaanalysis);
 
 module.exports.getMetaanalysesEnteredBy = (user) => {
   // todo also return metaanalyses contributed to by `email`
@@ -1280,10 +1286,10 @@ function createStubDatastore() {
 
 module.exports.init = () => {
   getForbiddenUsernames();
+  getAllColumns();
   getAllUsers();
   getAllPapers();
   getAllMetaanalyses();
-  getAllColumns();
   if (!process.env.TESTING) setupClosedBeta();
 
   module.exports.ready =
