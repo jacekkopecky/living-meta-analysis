@@ -54,4 +54,10 @@ Put your tests in `test/gemini/`, follow the existing `.js` files already there.
 
 Run the tests, check that the screenshots are OK and no other tests broke, then you can accept the new screenshots.
 
+**Screenshotting quirks:**
+
+- If you want to screenshot an element that fits entirely on a screen, just set that as the capture element.
+- If you want the whole page, use `body`
+- If you want just the current screen, use `#testing-screenshot-element` which is an empty element that covers the entire viewport.
+
 **Note that Gemini-GUI needs restarting when you change tests.**
