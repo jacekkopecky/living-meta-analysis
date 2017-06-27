@@ -104,6 +104,13 @@ module.exports.waitForPromise = function waitForPromise(p) {
   });
 };
 
+// a promise that rejects (but Node doesn't report it as unhandled)
+module.exports.notInitialized = function () {
+  const retval = Promise.reject(new Error('not initialized'));
+  retval.catch(() => {}); // this tells node this promise was handled
+  return retval;
+};
+
 // this is a function that allows us to export methods only for testing, keeping them out of the usual interface
 module.exports.exportTestAPI = function (exports, f) {
   if (!process.env.TESTING) return;
