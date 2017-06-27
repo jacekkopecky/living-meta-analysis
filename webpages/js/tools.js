@@ -574,6 +574,14 @@
    *
    */
 
+  // add an empty element to every page so that we can use it in UI tests
+  function addTestingElement() {
+    var el = document.createElement('div');
+    el.id = 'testing-screenshot-element';
+    document.body.insertBefore(el, document.body.children[0]);
+  }
+  if (window.localStorage.geminiTesting) addTestingElement();
+
   var tests = [];
   var globalErrors = [];
 
