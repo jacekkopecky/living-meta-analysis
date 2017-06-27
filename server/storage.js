@@ -235,7 +235,7 @@ module.exports.listTitles = () =>
 const LOCAL_STORAGE_SPECIAL_USER = 'lima@local';
 const LOCAL_STORAGE_SPECIAL_USERNAME = 'local';
 
-let userCache;
+let userCache = tools.notInitialized();
 
 function getAllUsers() {
   userCache = new Promise((resolve, reject) => {
@@ -537,11 +537,11 @@ a column record looks like this: (see /api/columns)
   //   but we need to highlight where the orig. author made a change after our non-approved change
  */
 
-let paperCache;
+let paperCache = tools.notInitialized();
 
 function getAllPapers() {
-  columnCache.then((columns) => {
-    paperCache = new Promise((resolve, reject) => {
+  paperCache = columnCache.then((columns) => {
+    return new Promise((resolve, reject) => {
       console.log('getAllPapers: making a datastore request');
       const retval = [];
       datastore.createQuery('Paper').runStream()
@@ -876,7 +876,7 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
 }
  */
 
-let metaanalysisCache;
+let metaanalysisCache = tools.notInitialized();
 
 function getAllMetaanalyses() {
   metaanalysisCache = new Promise((resolve, reject) => {
@@ -1161,7 +1161,7 @@ module.exports.listColumns = () => columnCache;
 
 const COLUMN_TYPES = ['characteristic', 'result'];
 
-let columnCache;
+let columnCache = tools.notInitialized();
 
 function getAllColumns() {
   columnCache = new Promise((resolve, reject) => {
