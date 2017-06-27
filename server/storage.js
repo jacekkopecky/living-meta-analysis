@@ -577,6 +577,81 @@ function migratePaper(paper, columns) {
     paper.columns = paper.columnOrder;
     delete paper.columnOrder;
   }
+
+  // 2017-06-27: migrate global columns to private columns
+  // if we have a datum whose column ID isn't in paper.columns then add it there
+  if (!paper.columns) paper.columns = [];
+  if (paper.experiments) {
+    paper.experiments.forEach((exp) => {
+      if (exp.data) {
+        Object.keys(exp.data).forEach((colId) => {
+          if (colId.startsWith('/id/col/') && paper.columns.indexOf(colId) === -1) {
+            paper.columns.push(colId);
+          }
+        });
+      }
+    });
+  }
+
+  let maxId = 0;
+  paper.columns.forEach((col, colIndex) => {
+    if (typeof col === 'string') {
+      // migrate the string into an object
+      const colObject = {
+        id: '' + (maxId += 1),
+        title: columns[col].title,
+        description: columns[col].description,
+        type: columns[col].type,
+      };
+      paper.columns[colIndex] = colObject;
+      // migrate experiment data so it uses the column ID
+      if (paper.experiments) {
+        paper.experiments.forEach((exp) => {
+          if (exp.data && col in exp.data) {
+            exp.data[colObject.id] = exp.data[col];
+            delete exp.data[col];
+          }
+        });
+      }
+      // migrate hidden columns so it uses the right column ID
+      if (paper.hiddenCols) {
+        const colPos = paper.hiddenCols.indexOf(col);
+        if (colPos !== -1) {
+          paper.hiddenCols[colPos] = colObject.id;
+        }
+      }
+      // migrate every parameter in computed anything into the right ID
+      paper.columns.forEach((computed) => {
+        if (!computed.formula) return; // not computed
+        computed.formula = computed.formula.replace(col, colObject.id);
+      });
+    }
+  });
+  // check that every computed column's formula doesn't contain '/id/col/',
+  // remove offending ones because they don't have data in the paper anyway so no loss
+  // also migrate customName to title and add type: result
+  let computedIndex = paper.columns.length - 1;
+  while (computedIndex >= 0) {
+    const computed = paper.columns[computedIndex];
+    if (computed.formula) {
+      if (computed.formula.indexOf('/id/col/') !== -1) paper.columns.splice(computedIndex, 1);
+      if (!computed.title) {
+        computed.title = computed.customName;
+      }
+      delete computed.customName;
+      computed.type = 'result';
+    }
+    computedIndex -= 1;
+  }
+  // if we have a hiddenColumn that's not migrated, drop it
+  if (paper.hiddenCols) {
+    let hiddenIndex = paper.hiddenCols.length - 1;
+    while (hiddenIndex >= 0) {
+      if (paper.hiddenCols[hiddenIndex].startsWith('/id/col/')) paper.hiddenCols.splice(hiddenIndex, 1);
+      hiddenIndex -= 1;
+    }
+  }
+
   return paper;
 }
 
