@@ -103,3 +103,10 @@ module.exports.waitForPromise = function waitForPromise(p) {
     Promise.resolve(p).then(() => resolve(), () => resolve());
   });
 };
+
+// this is a function that allows us to export methods only for testing, keeping them out of the usual interface
+module.exports.exportTestAPI = function (exports, f) {
+  if (!process.env.TESTING) return;
+  if (exports.tests == null) exports.tests = {};
+  exports.tests[f.name] = f;
+};
