@@ -163,11 +163,6 @@
               <p class="coldescription">error</p>
               <p class="unpopulated">To see details of a column, move over it with your mouse.</p>
               <!-- todo comments -->
-              <footer>
-                <span class="coltype"><span class="type-characteristic">characteristic/moderator</span><span class="type-result">result</span> column</span>
-                <span class="definedby only-not-yours needs-owner"> defined by <a class="value" href="error">error</a>,</span>
-                last updated <span class="colmtime"> on <span class="value date">error</span></span>
-              </footer>
             </div>
           </div>
           <div class="oneclick popupboxtrigger">
@@ -200,7 +195,7 @@
   </table>
 </template>
 <template id="column-list-item-template">
-  <li><span class="coltitle">foo</span><span class="definedby only-not-yours needs-owner">(by <a class="value" href="error">error</a>)</span>
+  <li><span class="coltitle">error</span>
 </template>
 <template id="col-heading-template">
   <th class="popupboxtrigger">
@@ -221,37 +216,14 @@
       <button class="when-unsaved editing" disabled title="can't move columns when some changes are unsaved">»</button>
       <button class="when-unsaved editing" disabled title="can't move columns when some changes are unsaved">»|</button>
       <header>
-        <p class="coltitle notediting-or-not-yours needs-owner">error</p>
-        <p class="coltitle editing only-if-yours needs-owner oneline" contenteditable placeholder="enter a column title">error</p>
-        <button class="coltitlerename editing only-if-yours needs-owner" disabled>rename</button>
-        <div class="colrenamewarning">
-          <h1>Are you sure to rename the column from "<span class="coltitle"></span>"?</h1>
-          <p>If others are using the column, a change of the name might surprise them.
-            To undo, press <button class="colrenamecancel">cancel</button>
-          </p>
-        </div>
+        <p class="coltitle notediting">error</p>
+        <p class="coltitle editing oneline" contenteditable placeholder="enter a column title">error</p>
+        <button class="coltitlerename editing" disabled>rename</button>
       </header>
-      <p class="coldescription notediting-or-not-yours needs-owner">error</p>
-      <p class="coldescription editing only-if-yours needs-owner" contenteditable placeholder="add column description">error</p>
+      <p class="coldescription notediting">error</p>
+      <p class="coldescription editing" contenteditable placeholder="add column description">error</p>
       <!-- todo comments -->
       <!-- todo add a way of cloning a column -->
-      <footer>
-        <span class="coltype needs-owner when-unsaved" title="can't change the type of a column when some changes are unsaved"><span class="type-characteristic">characteristic/moderator</span><span class="type-result">result</span><span class="aftertype"> column</span></span>
-        <span class="coltype needs-owner not-unsaved"><span class="type-characteristic switch" data-new-type='characteristic'>characteristic/moderator</span><span class="type-result switch" data-new-type='result'>result</span><span class="aftertype"> column</span></span>
-        <span class="definedby only-not-yours needs-owner"> defined by <a class="value" href="error">error</a>,</span>
-        last updated <span class="colmtime"> on <span class="value date">error</span></span>
-        <div class="coltypeconfirm">
-          <p>
-            Are you sure to change column
-            "<span class="coltitle">error</span>" to be a
-            <span class="type-characteristic">result</span><span class="type-result">characteristic/moderator</span>
-            column?
-          </p>
-          <p>If others are using the column, a change of its type might surprise them.</p>
-          <button class="confirm">confirm</button>
-          <button class="cancel">cancel</button>
-        </div>
-      </footer>
     </div>
   </th>
 </template>
@@ -1402,7 +1374,6 @@
 <script src="/js/tools.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/userprofile.js"></script>
-<script src="/js/columns.js"></script>
 <script src="/js/formulas.js"></script>
 <script src="/js/graphs.js"></script>
 <script src="/js/papers.js"></script>

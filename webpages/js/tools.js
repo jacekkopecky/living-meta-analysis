@@ -377,6 +377,15 @@
     return true;
   };
 
+  // turn an array of objects that may have IDs into a hash of objects keyed by ID values
+  _.generateIDHash = function generateIDHash(objects) {
+    var retval = {};
+    objects.forEach(function (obj) {
+      if (obj.id) retval[obj.id] = obj;
+    });
+    return retval;
+  };
+
 
   /* bounds arrays
    *
