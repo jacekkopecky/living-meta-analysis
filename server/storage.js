@@ -94,7 +94,7 @@ function fillByAndCtimeInComments(comments, origComments, email) {
   }
 }
 
-function checkForDisallowedChanges(current, original, columns) {
+function checkForDisallowedChanges(current, original) {
   // todo really, this should use a diff format and check that all diffs are allowed
   //   this will be a diff from the user's last version to the incoming version,
   //   not from the existing version to the incoming version,
@@ -136,6 +136,25 @@ function checkForDisallowedChanges(current, original, columns) {
     }
     // todo: do we need extra checks here? I.e. length of username? encodings? emojis?
   }
+
+  // check that no two columns have the same ID
+  // check that computed columns don't have IDs and that the others do
+  // also prepare a hash of known column IDs for use later
+  const knownColumnIDs = {};
+  if (current.columns) {
+    current.columns.forEach((colObject) => {
+      if (colObject.formula && colObject.id) throw new ValidationError('computed column must not have ID');
+      if (!colObject.formula && !colObject.id) throw new ValidationError('column without ID must have formula');
+
+      if (colObject.id) {
+        if (knownColumnIDs[colObject]) {
+          throw new ValidationError('two columns cannot have the same ID');
+        }
+        knownColumnIDs[colObject] = true;
+      }
+    });
+  }
+
 
   // check that every experiment has at least the data values that were there originally
   // check that only last comment by a given user has changed, if any
@@ -184,7 +203,7 @@ function checkForDisallowedChanges(current, original, columns) {
       }
       if (exp.data) {
         for (const dataKey of Object.keys(exp.data)) {
-          if (!(dataKey in columns)) {
+          if (!knownColumnIDs[dataKey]) {
             throw new ValidationError('cannot include data with unknown column ID ' + dataKey);
           }
         }
@@ -733,11 +752,7 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
   // the following serializes this save after the previous one, whether it fails or succeeds
   // this way we can't have two concurrent saves create papers with the same title
 
-  let columns;
-
   currentPaperSave = tools.waitForPromise(currentPaperSave)
-  .then(() => columnCache)
-  .then((cols) => { columns = cols; })
   .then(() => paperCache)
   .then((papers) => {
     // prepare the paper for saving
@@ -798,7 +813,7 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
     }
 
     // validate incoming data
-    checkForDisallowedChanges(paper, original, columns);
+    checkForDisallowedChanges(paper, original);
 
     // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
     fillByAndCtimes(paper, original, email);
@@ -1251,9 +1266,7 @@ module.exports.saveMetaanalysis = (metaanalysis, email, origTitle, options) => {
  *
  */
 
-module.exports.listColumns = () => columnCache;
-
-const COLUMN_TYPES = ['characteristic', 'result'];
+// columns can go away when we no longer need them for migrating
 
 let columnCache = tools.notInitialized();
 
@@ -1282,87 +1295,6 @@ function getAllColumns() {
     });
   });
 }
-
-module.exports.saveColumn = (recvCol, email, options) => {
-  options = options || {};
-  // todo identify the columns to be saved and actually save them
-  return columnCache
-  .then((columns) => {
-    // first validate title and type
-    if (!recvCol.title || !recvCol.title.trim() || COLUMN_TYPES.indexOf(recvCol.type) === -1) {
-      throw new ValidationError('column invalid: must have title and allowed type');
-    }
-
-    const origCol = columns[recvCol.id];
-
-    if (options.restoring) {
-      // recvCol is a column we're restoring from some other datastore
-      // reject the save if we already have it
-      if (origCol) return Promise.reject(new Error(`column ${recvCol.id} already exists`));
-      // otherwise save unchanged
-    } else if (!origCol) {
-      // recvCol is a new column
-      if (recvCol.id != null) {
-        console.warn('new column should not have an ID');
-      }
-      recvCol.ctime = recvCol.mtime = tools.uniqueNow();
-      recvCol.id = '/id/col/' + recvCol.ctime;
-      recvCol.definedBy = email;
-    } else {
-      // recvCol is a column that already exists
-      recvCol.ctime = origCol.ctime;
-      recvCol.mtime = origCol.mtime;
-      recvCol.definedBy = origCol.definedBy;
-      if (recvCol.title !== origCol.title ||
-          recvCol.type !== origCol.type ||
-          recvCol.description !== origCol.description) {
-        if (origCol.definedBy !== email) {
-          throw new ValidationError(`only ${origCol.definedBy} can edit column ${recvCol.id}`);
-        }
-        recvCol.mtime = tools.uniqueNow();
-      }
-      // todo column comments - a non-owner can add/edit comments
-    }
-
-    tools.deleteCHECKvalues(recvCol);
-
-    // save the column in the data store
-    const key = datastore.key(['Column', recvCol.id]);
-    // this is here until we add versioning on the columns themselves
-    const logKey = datastore.key(['Column', recvCol.id,
-                                  'ColumnLog', recvCol.id + '/' + recvCol.mtime]);
-    if (!options.restoring) console.log('saveColumn saving (into Column and ColumnLog)');
-    return new Promise((resolve, reject) => {
-      datastore.save(
-        [
-          { key, data: recvCol },
-          { key: logKey,
-            data:
-            [
-              { name: 'mtime',
-                value: recvCol.mtime },
-              { name: 'column',
-                value: recvCol,
-                excludeFromIndexes: true },
-            ] },
-        ],
-        (err) => {
-          if (err) {
-            console.error('error saving column');
-            console.error(err);
-            reject(err);
-          } else {
-            resolve();
-          }
-        }
-      );
-    })
-    .then(() => {
-      columns[recvCol.id] = recvCol;
-      return recvCol;
-    });
-  });
-};
 
 
 /* closed beta
@@ -1469,7 +1401,6 @@ module.exports.init = () => {
     .then(() => metaanalysisCache)
     .then(() => paperCache)
     .then(() => userCache)
-    .then(() => columnCache)
     .then(() => {
       if (!process.env.TESTING) return;
 
