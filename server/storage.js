@@ -603,6 +603,7 @@ function migratePaper(paper, columns) {
         title: columns[col].title,
         description: columns[col].description,
         type: columns[col].type,
+        obsoleteIDForMigration: col,
       };
       paper.columns[colIndex] = colObject;
       // migrate experiment data so it uses the column ID
@@ -881,24 +882,28 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
 let metaanalysisCache = tools.notInitialized();
 
 function getAllMetaanalyses() {
-  metaanalysisCache = new Promise((resolve, reject) => {
-    console.log('getAllMetaanalyses: making a datastore request');
-    const retval = [];
-    datastore.createQuery('Metaanalysis').runStream()
-    .on('error', (err) => {
-      console.error('error retrieving metaanalyses');
-      console.error(err);
-      setTimeout(getAllMetaanalyses, 60 * 1000); // try loading again in a minute
-      reject(err);
-    })
-    .on('data', (entity) => {
-      retval.push(migrateMetaanalysis(entity));
-      allTitles.push(entity.title);
-    })
-    .on('end', () => {
-      console.log(`getAllMetaanalyses: ${retval.length} done`);
-      sendMetaanalysisStats(retval);
-      resolve(retval);
+  metaanalysisCache = columnCache.then((columns) => {
+    return paperCache.then((papers) => {
+      return new Promise((resolve, reject) => {
+        console.log('getAllMetaanalyses: making a datastore request');
+        const retval = [];
+        datastore.createQuery('Metaanalysis').runStream()
+        .on('error', (err) => {
+          console.error('error retrieving metaanalyses');
+          console.error(err);
+          setTimeout(getAllMetaanalyses, 60 * 1000); // try loading again in a minute
+          reject(err);
+        })
+        .on('data', (entity) => {
+          retval.push(migrateMetaanalysis(entity, papers, columns));
+          allTitles.push(entity.title);
+        })
+        .on('end', () => {
+          console.log(`getAllMetaanalyses: ${retval.length} done`);
+          sendMetaanalysisStats(retval);
+          resolve(retval);
+        });
+      });
     });
   });
 }
@@ -910,7 +915,7 @@ function sendMetaanalysisStats(metaanalyses) {
 /*
  * change metaanalysis from an old format to the new one on load from datastore, if need be
  */
-function migrateMetaanalysis(metaanalysis) {
+function migrateMetaanalysis(metaanalysis, papers, columns) {
   // 2017-02-23: move columnOrder to columns
   // 2017-05-02: move graph aggregates to graphs
   if (metaanalysis.columnOrder) {
@@ -934,6 +939,91 @@ function migrateMetaanalysis(metaanalysis) {
         }
         metaanalysis.graphs.unshift(graph);
       }
+    }
+  }
+
+  // 2017-06-28: migrate global columns to private columns
+  // prepare the papers this metaanalysis depends on
+  const maPapers = metaanalysis.paperOrder.map((paperId) => {
+    // find the paper with the matching ID
+    const retval = papers.find((paper) => paper.id === paperId);
+    if (!retval) {
+      throw new Error(`metaanalysis ${metaanalysis.title} has a paper ${paperId} that isn't in the datastore`);
+    }
+    return retval;
+  });
+
+  // convert columns from string to object
+  if (!metaanalysis.columns) metaanalysis.columns = [];
+  let maxId = 0;
+  metaanalysis.columns.forEach((col, colIndex) => {
+    if (typeof col === 'string') {
+      // migrate the string into an object
+      if (!columns[col]) throw new Error(`metaanalysis ${metaanalysis.title} uses nonexistent column ${col}`);
+      const colObject = {
+        id: '' + (maxId += 1),
+        title: columns[col].title,
+        description: columns[col].description,
+        type: columns[col].type,
+      };
+      // add sourceColumnMap { paperId: columnId }
+      colObject.sourceColumnMap = {};
+      maPapers.forEach((paper) => {
+        // go through paper's columns, find the one whose obsolete id matches col, use its ID in this map
+        const paperCol = paper.columns.find((paperColObject) => paperColObject.obsoleteIDForMigration === col);
+        if (paperCol) colObject.sourceColumnMap[paper.id] = paperCol.id;
+        // if the paper doesn't have such a column, just don't have a mapping;
+        // the column in the paper, and the mapping here, will get added when
+        // the metaanalysis is being edited and the user puts in a datum in this column
+      });
+      metaanalysis.columns[colIndex] = colObject;
+      // migrate hidden columns so it uses the right column ID
+      if (metaanalysis.hiddenCols) {
+        const colPos = metaanalysis.hiddenCols.indexOf(col);
+        if (colPos !== -1) {
+          metaanalysis.hiddenCols[colPos] = colObject.id;
+        }
+      }
+      // convert grouping column to new ID
+      if (metaanalysis.groupingColumn === col) metaanalysis.groupingColumn = colObject.id;
+      // migrate every parameter in computed anything into the right ID
+      for (const fieldName of ['columns', 'aggregates', 'groupingAggregates', 'graphs']) {
+        if (metaanalysis[fieldName]) {
+          metaanalysis[fieldName].forEach((computed) => {
+            if (!computed.formula) return; // not computed
+            // replace all occurrences of col in the formula with colObject.id
+            computed.formula = computed.formula.split(col).join(colObject.id);
+          });
+        }
+      }
+    }
+  });
+  // check that every computed thing's formula doesn't contain '/id/col/',
+  // remove offending ones because they don't have data in the metaanalysis anyway so no loss
+  // also migrate customName to title and add type: result
+  for (const fieldName of ['columns', 'aggregates', 'groupingAggregates', 'graphs']) {
+    if (metaanalysis[fieldName]) {
+      let computedIndex = metaanalysis[fieldName].length - 1;
+      while (computedIndex >= 0) {
+        const computed = metaanalysis[fieldName][computedIndex];
+        if (computed.formula) {
+          if (computed.formula.indexOf('/id/col/') !== -1) metaanalysis[fieldName].splice(computedIndex, 1);
+          if (!computed.title) {
+            computed.title = computed.customName;
+          }
+          delete computed.customName;
+          if (fieldName === 'columns') computed.type = 'result';
+        }
+        computedIndex -= 1;
+      }
+    }
+  }
+  // if we have a hiddenColumn that's not migrated, drop it
+  if (metaanalysis.hiddenCols) {
+    let hiddenIndex = metaanalysis.hiddenCols.length - 1;
+    while (hiddenIndex >= 0) {
+      if (metaanalysis.hiddenCols[hiddenIndex].startsWith('/id/col/')) metaanalysis.hiddenCols.splice(hiddenIndex, 1);
+      hiddenIndex -= 1;
     }
   }
 
@@ -1362,9 +1452,10 @@ function createStubDatastore() {
 
 
 module.exports.init = () => {
+  // the order here matters:
   getForbiddenUsernames();
-  getAllColumns();
   getAllUsers();
+  getAllColumns();
   getAllPapers();
   getAllMetaanalyses();
   if (!process.env.TESTING) setupClosedBeta();
