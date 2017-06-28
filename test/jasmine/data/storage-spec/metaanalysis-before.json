@@ -1,0 +1,193 @@
+{
+  "id": "/id/ma/1489071495934",
+  "title": "MisinformationEffect",
+  "enteredBy": "tomas.rubin@port.ac.uk",
+  "ctime": 1489071495934,
+  "mtime": 1495739290234,
+  "tags": [],
+  "columns": [
+    "/id/col/1489339309841",
+    "/id/col/1489071615796",
+    "/id/col/1489062688680",
+    "/id/col/1489060716372",
+    "/id/col/1489062685563",
+    "/id/col/1489060716759",
+    {
+      "formula": "logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563)",
+      "customName": "Log Odds Ratio"
+    },
+    {
+      "formula": "weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)",
+      "customName": "FEM Weight"
+    },
+    {
+      "formula": "fixedEffectError(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759),weightedMeanAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)))",
+      "customName": "FEM Effect Error"
+    },
+    {
+      "formula": "randomEffectWeightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759,tauSquaredAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)))",
+      "customName": "REM Weight"
+    }
+  ],
+  "paperOrder": [
+    "/id/p/1489072434411",
+    "/id/p/1489074863028"
+  ],
+  "hiddenCols": [
+    "/id/col/1489062688680",
+    "/id/col/notthere"
+  ],
+  "hiddenExperiments": [
+    "/id/p/1489072434411,2"
+  ],
+  "excludedExperiments": [
+    "/id/p/1489072434411,1"
+  ],
+  "aggregates": [
+    {
+      "formula": "weightedMeanAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "Fixed Effect Model (FEM) Point Estimate"
+    },
+    {
+      "formula": "standardErrorAggr(weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "FEM Standard Error"
+    },
+    {
+      "formula": "varianceAggr(weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "FEM Variance"
+    },
+    {
+      "formula": "lowerConfidenceLimitAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "FEM 95% Lower Confidence Limit"
+    },
+    {
+      "formula": "upperConfidenceLimitAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "FEM 95% Upper Confidence Limit"
+    },
+    {
+      "formula": "zValueAggr(logOddsRatioPercent(/id/col/gibberish,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "FEM Z-value broken"
+    },
+    {
+      "formula": "zValueAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "FEM Z-value"
+    },
+    {
+      "formula": "pValue2TailedAggr(zValueAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)))",
+      "customName": "FEM P-value (2-tail)"
+    },
+    {
+      "formula": "sumAggr(fixedEffectError(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759),weightedMeanAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))))",
+      "customName": "FEM Heterogeneity Q-value"
+    },
+    {
+      "formula": "degreesOfFreedomAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563))",
+      "customName": "FEM Degrees of Freedom"
+    },
+    {
+      "formula": "heterogeneityPValueAggr(sumAggr(fixedEffectError(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759),weightedMeanAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)))), degreesOfFreedomAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563)))",
+      "customName": "FEM Heterogeneity P-value"
+    },
+    {
+      "formula": "iSquaredAggr(sumAggr(fixedEffectError(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759),weightedMeanAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)))), degreesOfFreedomAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563)))",
+      "customName": "FEM Heterogeneity I²"
+    },
+    {
+      "formula": "tauSquaredAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "FEM 𝛕²"
+    },
+    {
+      "formula": "tauStandardErrorAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "FEM 𝛕 Standard Error"
+    },
+    {
+      "formula": "tauVarianceAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "FEM 𝛕 Variance"
+    },
+    {
+      "formula": "tauAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "FEM 𝛕"
+    },
+    {
+      "formula": "weightedMeanAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),randomEffectWeightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759,tauSquaredAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))))",
+      "customName": "Random Effect Model (REM) Point Estimate"
+    },
+    {
+      "formula": "standardErrorAggr(randomEffectWeightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759,tauSquaredAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))))",
+      "customName": "REM Standard Error"
+    },
+    {
+      "formula": "varianceAggr(randomEffectWeightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759,tauSquaredAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))))",
+      "customName": "REM Variance"
+    },
+    {
+      "formula": "lowerConfidenceLimitAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),randomEffectWeightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759,tauSquaredAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))))",
+      "customName": "REM 95% Lower Confidence Limit"
+    },
+    {
+      "formula": "upperConfidenceLimitAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),randomEffectWeightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759,tauSquaredAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))))",
+      "customName": "REM 95% Upper Confidence Limit"
+    },
+    {
+      "formula": "zValueAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),randomEffectWeightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759,tauSquaredAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))))",
+      "customName": "REM Z-value"
+    },
+    {
+      "formula": "pValue2TailedAggr(zValueAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),randomEffectWeightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759,tauSquaredAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)))))",
+      "customName": "REM P-value (2-tail)"
+    },
+    {
+      "formula": "sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759),weightedMeanAggr*(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)))))",
+      "customName": "Moderator Analysis (MA) Total Heterogeneity Q-value Within Groups"
+    },
+    {
+      "formula": "sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563)))",
+      "customName": "MA Total Degrees of Freedom Within Groups"
+    },
+    {
+      "formula": "heterogeneityPValueAggr(sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759),weightedMeanAggr*(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))))), sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563))))",
+      "customName": "MA Total Heterogeneity P-value Within Groups"
+    },
+    {
+      "formula": "subtractAggr(sumAggr(fixedEffectError(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759),weightedMeanAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)))),sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759),weightedMeanAggr*(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))))))",
+      "customName": "MA Heterogeneity Q-value Between Groups"
+    },
+    {
+      "formula": "subtractAggr(degreesOfFreedomAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563)),sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563))))",
+      "customName": "MA Degrees of Freedom Between Groups"
+    },
+    {
+      "formula": "heterogeneityPValueAggr(subtractAggr(sumAggr(fixedEffectError(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759),weightedMeanAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)))),sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759),weightedMeanAggr*(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)))))), subtractAggr(degreesOfFreedomAggr(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563)),sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563)))))",
+      "customName": "MA Heterogeneity P-value Between Groups"
+    }
+  ],
+  "groupingColumn": "/id/col/1489071615796",
+  "groupingAggregates": [
+    {
+      "formula": "weightedMeanAggr*(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))",
+      "customName": "FEM Group Point Estimates"
+    },
+    {
+      "formula": "sumAggr*(fixedEffectError(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759),weightedMeanAggr*(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563),weightPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759))))",
+      "customName": "Within-group Heterogeneity Q-values"
+    },
+    {
+      "formula": "degreesOfFreedomAggr*(logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062685563))",
+      "customName": "Within-group Degrees of Freedom"
+    }
+  ],
+  "graphs": [
+    {
+      "formula": "forestPlotPercentGraph(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)",
+      "customName": "Forest Plot"
+    },
+    {
+      "formula": "grapeChartPercentGraph(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759,/id/col/1489071615796)",
+      "customName": "Grape Chart"
+    },
+    {
+      "formula": "forestPlotGroupPercentGraph(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759,/id/col/1489071615796)",
+      "customName": "Forest Plot with Groups"
+    }
+  ]
+}

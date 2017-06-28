@@ -122,26 +122,31 @@
   {
     "type": "characteristic",
     "title": "Specification",
+    "obsoleteIDForMigration": "\/id\/col\/1489339309841",
     "id": "1"
   },
   {
     "type": "characteristic",
     "title": "Group",
+    "obsoleteIDForMigration": "\/id\/col\/1489071615796",
     "description": "something",
     "id": "2"
   },
   {
     "title": "Experimental Output [%]",
+    "obsoleteIDForMigration": "\/id\/col\/1489062688680",
     "type": "characteristic",
     "id": "3"
   },
   {
     "type": "characteristic",
+    "obsoleteIDForMigration": "\/id\/col\/1489060716372",
     "title": "Experimental [N]",
     "id": "4"
   },
   {
     "title": "Control Output [%]",
+    "obsoleteIDForMigration": "\/id\/col\/1489062685563",
     "type": "characteristic",
     "id": "5"
   },
@@ -153,6 +158,7 @@
   {
     "title": "Control [N]",
     "type": "characteristic",
+    "obsoleteIDForMigration": "\/id\/col\/1489060716759",
     "id": "6"
   }
  ],

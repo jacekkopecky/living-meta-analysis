@@ -1,0 +1,82 @@
+{
+ "id": "\/id\/p\/1489074863028",
+ "title": "ZaragozaLane1994",
+ "enteredBy": "tomas.rubin@port.ac.uk",
+ "ctime": 1489074863028,
+ "mtime": 1489412627438,
+ "tags": [],
+ "experiments": [
+  {
+   "enteredBy": "tomas.rubin@port.ac.uk",
+   "title": "4",
+   "ctime": 1489074863029,
+   "data": {
+    "\/id\/col\/1489062688680": {
+     "value": "35",
+     "enteredBy": "tomas.rubin@port.ac.uk",
+     "ctime": 1489074863031
+    },
+    "\/id\/col\/1489071615796": {
+     "value": "warning",
+     "enteredBy": "tomas.rubin@port.ac.uk",
+     "ctime": 1489074863030
+    },
+    "\/id\/col\/1489062685563": {
+     "ctime": 1489074863033,
+     "value": "15",
+     "enteredBy": "tomas.rubin@port.ac.uk"
+    },
+    "\/id\/col\/1489339309841": {
+     "enteredBy": "tomas.rubin@port.ac.uk",
+     "ctime": 1489339497339,
+     "value": "explicitWarning"
+    },
+    "\/id\/col\/1489060716759": {
+     "value": "66",
+     "enteredBy": "tomas.rubin@port.ac.uk",
+     "ctime": 1489074863034
+    }
+   }
+  },
+  {
+   "enteredBy": "tomas.rubin@port.ac.uk",
+   "title": "4",
+   "ctime": 1489074863035,
+   "data": {
+    "\/id\/col\/1489339309841": {
+     "enteredBy": "tomas.rubin@port.ac.uk",
+     "ctime": 1489339497340,
+     "value": "explicitWarning"
+    },
+    "\/id\/col\/1489060716759": {
+     "value": "66",
+     "enteredBy": "tomas.rubin@port.ac.uk",
+     "ctime": 1489074863040
+    },
+    "\/id\/col\/1489062688680": {
+     "enteredBy": "tomas.rubin@port.ac.uk",
+     "ctime": 1489074863037,
+     "value": "30"
+    },
+    "\/id\/col\/1489071615796": {
+     "ctime": 1489074863036,
+     "value": "no warning",
+     "enteredBy": "tomas.rubin@port.ac.uk"
+    },
+    "\/id\/col\/1489062685563": {
+     "enteredBy": "tomas.rubin@port.ac.uk",
+     "ctime": 1489074863039,
+     "value": "16"
+    }
+   }
+  }
+ ],
+ "columns": [
+  "\/id\/col\/1489062688680",
+  "\/id\/col\/1489071615796",
+  "\/id\/col\/1489062685563",
+  "\/id\/col\/1489060716759",
+  "\/id\/col\/1489339309841"
+ ],
+ "hiddenCols": []
+}
