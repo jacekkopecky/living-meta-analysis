@@ -716,11 +716,12 @@
   // this regexp matches the outside of function formulas of the type
   // "sum*(/id/col/1473674381680,neg(/id/col/1473674325686))"
   var functionRegex = /^([^*(),\s]+)(\*?)\s*(\((.*)\))?$/;
+  var paramRegex = /^(undefined|[1-9][0-9]*)$/;
 
   // parse nested function formulas of the type "a(b(c,d),e,f(g))"
   // where parameters can contain any character except (),\s
-  lima.parseFormulaString = function parseFormulaString(str) {
-    if (typeof str !== 'string') return null;
+  lima.parseFormulaString = function parseFormulaString(str, columnsHash) {
+    if (typeof str !== 'string') return void console.error('given non-string', new Error(), str);
 
     str = str.trim();
     if (str.length == 0) return null;
@@ -731,7 +732,11 @@
     // if we don't have parentheses, the string is just a single identifier
     if (!match[3]) {
       if (match[2]) return null; // single identifiers cannot use * for grouping
-      return match[1];
+      if (!match[1]) throw new Error('referencing empty column id');
+      if (!(match[1].match(paramRegex))) throw new Error('invalid column id ' + match[1]);
+      if (match[1] == 'undefined') return 'undefined'; // special case for incomplete formulas (some params are missing)
+      if (!columnsHash[match[1]]) throw new Error('referencing unknown column id ' + match[1]);
+      return columnsHash[match[1]]; // return the column object with the given id
     }
 
     // otherwise it's a function
@@ -743,7 +748,7 @@
 
       retval.formulaParams = [];
       for (var i=0; i<params.length; i+=1) {
-        var param = lima.parseFormulaString(params[i]);
+        var param = lima.parseFormulaString(params[i], columnsHash);
         if (param == null) return null;
         retval.formulaParams.push(param);
       }
@@ -793,6 +798,7 @@
 
   lima.createFormulaString = function createFormulaString(obj) {
     if (typeof obj === 'string') return obj;
+    if (obj.id) return obj.id;
     var retval = '';
     retval += obj.formulaName || 'undefined';
     if (obj.grouping) retval += '*';
@@ -833,21 +839,21 @@
     testObject({}, 'undefined()');
     testObject('foo', 'foo');
     testObject({formulaName: 'a'}, 'a()');
-    testObject({formulaName: 'a', formulaParams: ['b', 'c']}, 'a(b,c)');
-    testObject({formulaName: 'a', grouping: true, formulaParams: ['b', 'c']}, 'a*(b,c)');
-    testObject({formulaName: 'a', grouping: false, formulaParams: ['b', 'c']}, 'a(b,c)');
-    testObject({formulaParams: ['b', 'c']}, 'undefined(b,c)');
-    testObject({formulaParams: [ null, 'c']}, 'undefined(undefined,c)');
+    testObject({formulaName: 'a', formulaParams: [{id:'b'}, {id:'c'}]}, 'a(b,c)');
+    testObject({formulaName: 'a', grouping: true, formulaParams: [{id:'b'}, {id:'c'}]}, 'a*(b,c)');
+    testObject({formulaName: 'a', grouping: false, formulaParams: [{id:'b'}, {id:'c'}]}, 'a(b,c)');
+    testObject({formulaParams: [{id:'b'}, {id:'c'}]}, 'undefined(b,c)');
+    testObject({formulaParams: [ null, {id:'c'}]}, 'undefined(undefined,c)');
 
     var sparseArray = [];
-    sparseArray[1] = 'c';
+    sparseArray[1] = {id:'c'};
     sparseArray.length = 4;
     testObject({formulaParams: sparseArray}, 'undefined(undefined,c,undefined,undefined)');
     testObject({formulaParams: sparseArray,grouping:true}, 'undefined*(undefined,c,undefined,undefined)');
-    testObject({formulaParams: [ {formulaName: 'a', formulaParams: ['b', 'c']}, 'd']}, 'undefined(a(b,c),d)');
-    testObject({formulaName:"a",formulaParams:[{formulaName:"b",formulaParams:["c","d"]},"e",{formulaName:"f",formulaParams:["g"]}]}, 'a(b(c,d),e,f(g))');
-    testObject({formulaName:"a",formulaParams:[{formulaName:"b",formulaParams:[null,"d"]},"e",{formulaParams:["g"]}]}, 'a(b(undefined,d),e,undefined(g))');
-    testObject({formulaName:"a",formulaParams:[{formulaName:"b",formulaParams:[null,"d"],grouping:1},"e",{formulaParams:["g"]}]}, 'a(b*(undefined,d),e,undefined(g))');
+    testObject({formulaParams: [ {formulaName: 'a', formulaParams: [{id:'b'}, {id:'c'}]}, {id:'d'}]}, 'undefined(a(b,c),d)');
+    testObject({formulaName:"a",formulaParams:[{formulaName:"b",formulaParams:[{id:"c"},{id:"d"}]},{id:"e"},{formulaName:"f",formulaParams:[{id:"g"}]}]}, 'a(b(c,d),e,f(g))');
+    testObject({formulaName:"a",formulaParams:[{formulaName:"b",formulaParams:[null,{id:"d"}]},{id:"e"},{formulaParams:[{id:"g"}]}]}, 'a(b(undefined,d),e,undefined(g))');
+    testObject({formulaName:"a",formulaParams:[{formulaName:"b",formulaParams:[null,{id:"d"}],grouping:1},{id:"e"},{formulaParams:[{id:"g"}]}]}, 'a(b*(undefined,d),e,undefined(g))');
   });
 
   _.addTest(function testSplitParams(assert) {
@@ -858,86 +864,116 @@
     assert(val.length == 1, 'bad split array len in ' + JSON.stringify(val));
     assert(val[0] == '', 'bad param value in ' + JSON.stringify(val));
 
-    val = splitParams('/id/col/4390');
+    val = splitParams('4390');
     assert(val.length == 1, 'bad split array len in ' + JSON.stringify(val));
-    assert(val[0] == '/id/col/4390', 'bad param value in ' + JSON.stringify(val));
+    assert(val[0] == '4390', 'bad param value in ' + JSON.stringify(val));
 
-    val = splitParams('/id/col/4390,');
+    val = splitParams('4390,');
     assert(val.length == 2, 'bad split array len in ' + JSON.stringify(val));
-    assert(val[0] == '/id/col/4390', 'bad param value in ' + JSON.stringify(val));
+    assert(val[0] == '4390', 'bad param value in ' + JSON.stringify(val));
     assert(val[1] == '', 'bad param value in ' + JSON.stringify(val));
 
-    val = splitParams('/id/col/4390() ,');
+    val = splitParams('4390() ,');
     assert(val.length == 2, 'bad split array len in ' + JSON.stringify(val));
-    assert(val[0] == '/id/col/4390() ', 'bad param value in ' + JSON.stringify(val));
+    assert(val[0] == '4390() ', 'bad param value in ' + JSON.stringify(val));
     assert(val[1] == '', 'bad param value in ' + JSON.stringify(val));
 
-    val = splitParams('/id/col/4390(,)');
+    val = splitParams('4390(,)');
     assert(val.length == 1, 'bad split array len in ' + JSON.stringify(val));
-    assert(val[0] == '/id/col/4390(,)', 'bad param value in ' + JSON.stringify(val));
+    assert(val[0] == '4390(,)', 'bad param value in ' + JSON.stringify(val));
 
-    val = splitParams('/id/col/4390(,');
+    val = splitParams('4390(,');
     assert(val == null, 'should not split invalid string');
 
-    val = splitParams('/id/col/4390),');
+    val = splitParams('4390),');
     assert(val == null, 'should not split invalid string');
   });
 
   _.addTest(function testParseFormulaString(assert) {
-    var val = lima.parseFormulaString('a(b)');
+    var t = {id:"2"};
+    var columnsHash = { // uses strings where normal code would use objects, that's for ease of testing
+      1: 'a',
+      2: t,
+      3: 'c',
+      4: 'd',
+      5: 'e',
+      6: 'f',
+      7: 'g',
+      8: 'h',
+      9: 'i',
+      10: 'j',
+      11: 'k',
+      12: 'l',
+      13: 'm',
+      14: 'n',
+      15: 'o',
+      16: 'p',
+      17: 'q',
+      18: 'r',
+      19: 's',
+      20: 't',
+      21: 'u',
+      22: 'v',
+      23: {id:"23"},
+      24: 'x',
+      25: 'y',
+      26: 'z',
+    };
+
+    var val = lima.parseFormulaString('a(2)', columnsHash);
     assert(val.formulaName == 'a', "bad formula name in " + JSON.stringify(val));
     assert(val.formulaParams.length == 1, "bad formula params len in " + JSON.stringify(val));
-    assert(val.formulaParams[0] == 'b', "bad formula params in " + JSON.stringify(val));
+    assert(val.formulaParams[0] == t, "bad formula params in " + JSON.stringify(val));
 
-    val = lima.parseFormulaString('a(b(c,d),e,f(g))');
+    val = lima.parseFormulaString('a(b(3,4),5,f(7))', columnsHash);
     assert(JSON.stringify(val) == '{"formulaName":"a","formulaParams":[{"formulaName":"b","formulaParams":["c","d"],"formula":"b(c,d)","formulaObj":null},"e",{"formulaName":"f","formulaParams":["g"],"formula":"f(g)","formulaObj":null}],"formula":"a(b(c,d),e,f(g))","formulaObj":null}', "bad formula parsed in " + JSON.stringify(val));
 
-    val = lima.parseFormulaString('a(b(c(d(e)),f),g,h(i))');
+    val = lima.parseFormulaString('a(b(c(d(5)),6),7,h(9))', columnsHash);
     assert(JSON.stringify(val) == '{"formulaName":"a","formulaParams":[{"formulaName":"b","formulaParams":[{"formulaName":"c","formulaParams":[{"formulaName":"d","formulaParams":["e"],"formula":"d(e)","formulaObj":null}],"formula":"c(d(e))","formulaObj":null},"f"],"formula":"b(c(d(e)),f)","formulaObj":null},"g",{"formulaName":"h","formulaParams":["i"],"formula":"h(i)","formulaObj":null}],"formula":"a(b(c(d(e)),f),g,h(i))","formulaObj":null}', "bad formula parsed in " + JSON.stringify(val));
 
-    val = lima.parseFormulaString('logOddsRatio(b,c)');
-    assert(JSON.stringify(val) == '{"formulaName":"logOddsRatio","formulaParams":["b","c"],"formula":"logOddsRatio(b,c)","formulaObj":{"id":"logOddsRatio","label":"Log Odds Ratio (fractions)","parameters":["group 1 (e.g. experimental)","group 2 (e.g. control)"],"type":{"type":"formula"}}}', "bad formula parsed in " + JSON.stringify(val));
+    val = lima.parseFormulaString('logOddsRatio(2,23)', columnsHash);
+    assert(JSON.stringify(val) == '{"formulaName":"logOddsRatio","formulaParams":[{"id":"2"},{"id":"23"}],"formula":"logOddsRatio(2,23)","formulaObj":{"id":"logOddsRatio","label":"Log Odds Ratio (fractions)","parameters":["group 1 (e.g. experimental)","group 2 (e.g. control)"],"type":{"type":"formula"}}}', "bad formula parsed in " + JSON.stringify(val));
 
-    val = lima.parseFormulaString("undefined(undefined,undefined)");
+    val = lima.parseFormulaString("undefined(13,13)", columnsHash);
     assert(val.formulaName == 'undefined', "bad formula name in " + JSON.stringify(val));
     assert(val.formulaParams.length == 2, "bad formula params len in " + JSON.stringify(val));
-    assert(val.formulaParams[0] == 'undefined', "bad formula params in " + JSON.stringify(val));
-    assert(val.formulaParams[1] == 'undefined', "bad formula params in " + JSON.stringify(val));
+    assert(val.formulaParams[0] == 'm', "bad formula params in " + JSON.stringify(val));
+    assert(val.formulaParams[1] == 'm', "bad formula params in " + JSON.stringify(val));
 
-    val = lima.parseFormulaString('a(b,c)');
+    val = lima.parseFormulaString('a(2,3)', columnsHash);
     assert(val.formulaName == 'a', "bad formula name in " + JSON.stringify(val));
     assert(val.formulaParams.length == 2, "bad formula params len in " + JSON.stringify(val));
-    assert(val.formulaParams[0] == 'b', "bad formula params in " + JSON.stringify(val));
+    assert(val.formulaParams[0] == t, "bad formula params in " + JSON.stringify(val));
     assert(val.formulaParams[1] == 'c', "bad formula params in " + JSON.stringify(val));
 
-    val = lima.parseFormulaString('logOddsRatio(/id/col/3490,/id/col/49306,/id/col/493)');
+    val = lima.parseFormulaString('logOddsRatio(14,15,16)', columnsHash);
     assert(val.formulaName == 'logOddsRatio', "bad formula name in " + JSON.stringify(val));
     assert(val.formulaParams.length == 3, "bad formula params len in " + JSON.stringify(val));
-    assert(val.formulaParams[0] == '/id/col/3490', "bad formula params in " + JSON.stringify(val));
-    assert(val.formulaParams[1] == '/id/col/49306', "bad formula params in " + JSON.stringify(val));
-    assert(val.formulaParams[2] == '/id/col/493', "bad formula params in " + JSON.stringify(val));
+    assert(val.formulaParams[0] == 'n', "bad formula params in " + JSON.stringify(val));
+    assert(val.formulaParams[1] == 'o', "bad formula params in " + JSON.stringify(val));
+    assert(val.formulaParams[2] == 'p', "bad formula params in " + JSON.stringify(val));
 
-    val = lima.parseFormulaString('a3490/4836()');
+    val = lima.parseFormulaString('a3490/4836()', columnsHash);
     assert(val.formulaName == 'a3490/4836', "bad formula name in " + JSON.stringify(val));
     assert(val.formulaParams.length == 0, "bad formula params len in " + JSON.stringify(val));
 
-    val = lima.parseFormulaString(' a3490/4836 (  ) ');
+    val = lima.parseFormulaString(' a3490/4836 (  ) ', columnsHash);
     assert(val.formulaName == 'a3490/4836', "bad formula name in " + JSON.stringify(val));
     assert(val.formulaParams.length == 0, "bad formula params len in " + JSON.stringify(val));
 
-    val = lima.parseFormulaString('a3 490/4836()');
+    val = lima.parseFormulaString('a3 490/4836()', columnsHash);
     assert(val == null, "erroneously parsed formula " + JSON.stringify(val));
 
-    val = lima.parseFormulaString('a(b*,c)');
+    val = lima.parseFormulaString('a(b*,c)', columnsHash);
     assert(val == null, "erroneously parsed formula " + JSON.stringify(val));
 
-    val = lima.parseFormulaString(' a3490/4836  ');
-    assert(val == 'a3490/4836', "erroneously parsed formula " + JSON.stringify(val));
+    val = lima.parseFormulaString(' 26  ', columnsHash);
+    assert(val == 'z', "erroneously parsed formula " + JSON.stringify(val));
 
-    val = lima.parseFormulaString('a(b,x(y,z),c(),d)');
+    val = lima.parseFormulaString('a(2,x(25,26),c(),4)', columnsHash);
     assert(val.formulaName == 'a', "bad formula name in " + JSON.stringify(val));
     assert(val.formulaParams.length == 4, "bad formula params len in " + JSON.stringify(val));
-    assert(val.formulaParams[0] == 'b', "bad formula params in " + JSON.stringify(val));
+    assert(val.formulaParams[0] == t, "bad formula params in " + JSON.stringify(val));
     assert(val.formulaParams[3] == 'd', "bad formula params in " + JSON.stringify(val));
     assert(val.formulaParams[1].formulaName == 'x', "bad first nested formula param in " + JSON.stringify(val));
     assert(val.formulaParams[1].formulaParams.length == 2, "bad first nested formula param in " + JSON.stringify(val));
@@ -946,11 +982,11 @@
     assert(val.formulaParams[2].formulaName == 'c', "bad second nested formula param in " + JSON.stringify(val));
     assert(val.formulaParams[2].formulaParams.length == 0, "bad second nested formula param in " + JSON.stringify(val));
 
-    val = lima.parseFormulaString('a*(b,x(y,z),c*(),d)');
+    val = lima.parseFormulaString('a*(2,x(25,26),c*(),4)', columnsHash);
     assert(val.formulaName == 'a', "bad formula name in " + JSON.stringify(val));
     assert(val.grouping, "bad grouping in " + JSON.stringify(val));
     assert(val.formulaParams.length == 4, "bad formula params len in " + JSON.stringify(val));
-    assert(val.formulaParams[0] == 'b', "bad formula params in " + JSON.stringify(val));
+    assert(val.formulaParams[0] == t, "bad formula params in " + JSON.stringify(val));
     assert(val.formulaParams[3] == 'd', "bad formula params in " + JSON.stringify(val));
     assert(val.formulaParams[1].formulaName == 'x', "bad first nested formula param in " + JSON.stringify(val));
     assert(val.formulaParams[1].formulaParams.length == 2, "bad first nested formula param in " + JSON.stringify(val));
@@ -1003,6 +1039,35 @@
     testCase = "a*b(a,b)"; shouldFail();
     testCase = "*b(a,b)"; shouldFail();
     testCase = "*(b,b)"; shouldFail();
+  });
+
+  _.addTest(function testParamRegex(assert) {
+    var testCase;
+
+    function shouldPass() {
+      assert(testCase.match(paramRegex), '"' + testCase + '" should match but does not');
+    }
+
+    function shouldFail() {
+      assert(!testCase.match(paramRegex), '"' + testCase + '" should not match but does');
+    }
+
+    // positive test cases
+    testCase = "1"; shouldPass();
+    testCase = "10"; shouldPass();
+    testCase = "1094"; shouldPass();
+    testCase = "999"; shouldPass();
+    testCase = "undefined"; shouldPass();
+
+    // negative test cases
+    testCase = ""; shouldFail();
+    testCase = " undefined "; shouldFail();
+    testCase = "  fls kjdf/ewr"; shouldFail();
+    testCase = "0"; shouldFail();
+    testCase = "09"; shouldFail();
+    testCase = "0 9"; shouldFail();
+    testCase = "1 9"; shouldFail();
+    testCase = "undefined1"; shouldFail();
   });
 
   _.addTest(function testStatsFunctions(assert) {

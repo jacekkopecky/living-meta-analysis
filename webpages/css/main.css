@@ -1105,8 +1105,7 @@ body.page-about-you.editing .fullcolinfo header {
 }
 
 #metaanalysis .exprenamewarning,
-#metaanalysis .paprenamewarning,
-#metaanalysis .colrenamewarning {
+#metaanalysis .paprenamewarning {
   position: absolute;
   left: 1em;
   right: 1em;
@@ -1135,22 +1134,19 @@ body.page-about-you.editing .fullcolinfo header {
 
 #metaanalysis .titlerenamewarning h1,
 #metaanalysis .exprenamewarning h1,
-#metaanalysis .paprenamewarning h1,
-#metaanalysis .colrenamewarning h1 {
+#metaanalysis .paprenamewarning h1 {
   margin-bottom: 1em;
 }
 
 #metaanalysis .exprenamewarning h1,
-#metaanalysis .paprenamewarning h1,
-#metaanalysis .colrenamewarning h1 {
+#metaanalysis .paprenamewarning h1 {
   font-size: 1.2em;
   font-weight: normal;
 }
 
 #metaanalysis > header .title.editing.unsaved ~ .titlerenamewarning,
 #metaanalysis .exptitle.editing.unsaved ~ .exprenamewarning,
-#metaanalysis .paptitle.editing.unsaved ~ .paprenamewarning,
-#metaanalysis th:not(.newcol) .coltitle.editing.unsaved ~ .colrenamewarning {
+#metaanalysis .paptitle.editing.unsaved ~ .paprenamewarning {
   transition: visibility 0s 1s;
 }
 
@@ -1178,12 +1174,7 @@ body.page-about-you.editing .fullcolinfo header {
 #metaanalysis .paptitle.editing:not(.new).unsaved:hover ~ .paprenamewarning,
 #metaanalysis .paptitle.editing:not(.new).unsaved + .paptitlerename:hover ~ .paprenamewarning,
 #metaanalysis .paptitle.editing:not(.new).unsaved + .paptitlerename:focus ~ .paprenamewarning,
-#metaanalysis .paptitle.editing:not(.new).unsaved ~ .paprenamewarning:hover,
-#metaanalysis th:not(.newcol) .coltitle.editing.unsaved:focus ~ .colrenamewarning,
-#metaanalysis th:not(.newcol) .coltitle.editing.unsaved:hover ~ .colrenamewarning,
-#metaanalysis th:not(.newcol) .coltitle.editing.unsaved + .coltitlerename:hover ~ .colrenamewarning,
-#metaanalysis th:not(.newcol) .coltitle.editing.unsaved + .coltitlerename:focus ~ .colrenamewarning,
-#metaanalysis th:not(.newcol) .coltitle.editing.unsaved ~ .colrenamewarning:hover {
+#metaanalysis .paptitle.editing:not(.new).unsaved ~ .paprenamewarning:hover {
   visibility: visible;
   transition: visibility 0s;
 }
@@ -1683,13 +1674,8 @@ body:not(.editing) #metaanalysis table.experiments tr:first-child th:not(:nth-la
   display: none;
 }
 
-#metaanalysis table.experiments th.newcol .fullcolinfo .type-characteristic,
-#metaanalysis table.experiments th.newcol .fullcolinfo .type-result {
-  font-weight: bold;
-}
-
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours .type-characteristic,
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours .type-result {
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype .type-characteristic,
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype .type-result {
   border: 1px solid transparent;
   border-radius: .5em;
   background: none;
@@ -1699,85 +1685,50 @@ body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours .type-r
   left: calc(-.5em - 1px);
 }
 
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours .aftertype {
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype .aftertype {
   background: none;
   margin-left: calc(-.5em - .5em - 1px - 1px); /* moving towards the type text which is laid out to have .5em horizontal padding and 1px border */
 }
 
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours:hover .type-result,
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours:hover .type-characteristic {
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype:hover .type-result,
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype:hover .type-characteristic {
   border: 1px solid black;
   background: white;
   z-index: 2;
   box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
 }
 
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.result:hover .type-characteristic,
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.characteristic:hover .type-result {
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype.result:hover .type-characteristic,
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype.characteristic:hover .type-result {
   position: absolute;
   top: calc(-2.2em - .5em - 1px);
   display: inline;
   z-index: 1;
 }
 
-body.editing #metaanalysis:not(.unsaved):not(.validationerror) table.experiments .fullcolinfo .coltype.newcol.when-unsaved,
-body.editing #metaanalysis.unsaved table.experiments .fullcolinfo .coltype.newcol.not-unsaved,
-body.editing #metaanalysis.validationerror table.experiments .fullcolinfo .coltype.newcol.not-unsaved {
-  display: initial;
-}
-
-body.editing #metaanalysis:not(.unsaved):not(.validationerror) table.experiments .fullcolinfo .coltype.newcol.not-unsaved,
-body.editing #metaanalysis.unsaved table.experiments .fullcolinfo .coltype.newcol.when-unsaved,
-body.editing #metaanalysis.validationerror table.experiments .fullcolinfo .coltype.newcol.when-unsaved {
-  display: none;
-}
-
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype:not(.when-unsaved).yours.result .type-characteristic:hover,
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype:not(.when-unsaved).yours.characteristic .type-result:hover {
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype:not(.when-unsaved).result .type-characteristic:hover,
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype:not(.when-unsaved).characteristic .type-result:hover {
   background: rgba(243,230,255,1);
   cursor: pointer;
   z-index: 3;
 }
 
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.result .type-result,
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.characteristic .type-characteristic {
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype.result .type-result,
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype.characteristic .type-characteristic {
   border-top-left-radius: 0;
 }
 
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.result .type-result {
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype.result .type-result {
   border-top-right-radius: 0;
 }
 
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.result .type-characteristic,
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.characteristic .type-result {
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype.result .type-characteristic,
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype.characteristic .type-result {
   border-bottom-left-radius: 0;
 }
 
-body.editing #metaanalysis table.experiments .fullcolinfo .coltype.yours.characteristic .type-result {
+body.editing #metaanalysis table.experiments .fullcolinfo .coltype.characteristic .type-result {
   border-bottom-right-radius: 0 0;
-}
-
-#metaanalysis table.experiments .fullcolinfo .coltypeconfirm {
-  position: absolute;
-  left: 1em;
-  right: 1em;
-  top: 100%;
-  margin-top: 1em;
-  background: white;
-  border: 1px solid black;
-  border-radius: .5em;
-  box-shadow: 0 0 .3em .3em rgba(128,0,255,.2);
-  padding: 0 1em 1em 1em;
-  display: none;
-}
-
-#metaanalysis table.experiments .fullcolinfo .coltypeconfirm .type-characteristic,
-#metaanalysis table.experiments .fullcolinfo .coltypeconfirm .type-result {
-  font-weight: bold;
-}
-
-#metaanalysis table.experiments .fullcolinfo .coltype.unsaved ~ .coltypeconfirm {
-  display: block;
 }
 
 #metaanalysis table.experiments .fullcolinfo .value,
