@@ -1,35 +1,38 @@
 [
   {
     "lineMode": "connected",
-    "target": [
-      "stats.gauges.lima.usernames",
-      "stats.gauges.lima.users"
-    ],
+    "drawNullAsZero": "false",
     "title": "Users and Usernames",
     "_salt": "1498139126.944",
+    "lineWidth": "3",
+    "target": [
+      "stats.gauges.lima.usernames",
+      "stats.gauges.lima.users",
+      "stats.gauges.lima.users_migrated"
+    ]
+  },
+  {
+    "lineMode": "connected",
+    "target": [
+      "stats.gauges.lima.metaanalyses",
+      "stats.gauges.lima.papers",
+      "stats.gauges.lima.metaanalyses_migrated",
+      "stats.gauges.lima.papers_migrated"
+    ],
+    "title": "Papers and Metaanalyses",
+    "_salt": "1498140176.945",
     "lineWidth": "3",
     "drawNullAsZero": "false"
   },
   {
-    "lineMode": "connected",
-    "drawNullAsZero": "false",
-    "title": "Papers and Metaanalyses",
-    "_salt": "1498140176.945",
-    "lineWidth": "3",
     "target": [
-      "stats.gauges.lima.metaanalyses",
-      "stats.gauges.lima.papers"
-    ]
-  },
-  {
-    "drawNullAsZero": "true",
+      "summarize(stats_counts.lima.access.total,\"1min\")"
+    ],
     "yStep": "10",
     "yUnitSystem": "si",
     "_salt": "1498081397.434",
     "lineWidth": "3",
-    "target": [
-      "summarize(stats_counts.lima.access.total,\"1min\")"
-    ]
+    "drawNullAsZero": "true"
   },
   {
     "logBase": "",
@@ -44,14 +47,14 @@
   },
   {
     "drawNullAsZero": "true",
-    "title": "LiMA CPU, HDD, MEM",
-    "minorY": "0",
-    "_salt": "1497974833.397",
     "target": [
       "cactiStyle(alias(movingAverage(stats.gauges.lima.os.cpu,20),\"CPU\"))",
       "cactiStyle(alias(movingAverage(stats.gauges.lima.os.mem,20),\"MEM\"))",
       "cactiStyle(alias(movingAverage(stats.gauges.lima.os.hdd,20),\"HDD\"))"
     ],
+    "title": "LiMA CPU, HDD, MEM",
+    "minorY": "0",
+    "_salt": "1497974833.397",
     "lineWidth": "2",
     "colorList": "red,blue,green",
     "yMax": "100"

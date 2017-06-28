@@ -299,6 +299,7 @@ function getAllUsers() {
 function sendUserStats(users) {
   // stats of how many users we have and how many have usernames
   stats.gauge('users', Object.keys(users).length);
+  stats.gauge('users_migrated', countMigrated(Object.keys(users).map((key) => users[key])));
   stats.gauge('usernames', allUsernames.length - forbiddenUsernames.length);
 }
 
@@ -314,6 +315,7 @@ function migrateUser(user) {
     delete user.id;
     delete user.name;
     delete user.provider;
+    user.migrated = true;
   }
   return user;
 }
@@ -587,6 +589,7 @@ function getAllPapers() {
 
 function sendPaperStats(papers) {
   stats.gauge('papers', papers.length);
+  stats.gauge('papers_migrated', countMigrated(papers));
 }
 
 /*
@@ -597,6 +600,7 @@ function migratePaper(paper, columns) {
   if (paper.columnOrder) {
     paper.columns = paper.columnOrder;
     delete paper.columnOrder;
+    paper.migrated = true;
   }
 
   // 2017-06-27: migrate global columns to private columns
@@ -608,6 +612,7 @@ function migratePaper(paper, columns) {
         Object.keys(exp.data).forEach((colId) => {
           if (colId.startsWith('/id/col/') && paper.columns.indexOf(colId) === -1) {
             paper.columns.push(colId);
+            paper.migrated = true;
           }
         });
       }
@@ -649,6 +654,7 @@ function migratePaper(paper, columns) {
         // replace all occurrences of col in the formula with colObject.id
         computed.formula = computed.formula.split(col).join(colObject.id);
       });
+      paper.migrated = true;
     }
   });
   // check that every computed column's formula doesn't contain '/id/col/',
@@ -658,12 +664,16 @@ function migratePaper(paper, columns) {
   while (computedIndex >= 0) {
     const computed = paper.columns[computedIndex];
     if (computed.formula) {
-      if (computed.formula.indexOf('/id/col/') !== -1) paper.columns.splice(computedIndex, 1);
-      if (!computed.title) {
-        computed.title = computed.customName;
+      if (computed.formula.indexOf('/id/col/') !== -1) {
+        paper.columns.splice(computedIndex, 1);
+        paper.migrated = true;
       }
-      delete computed.customName;
-      computed.type = 'result';
+      if (computed.customName || !computed.type) {
+        computed.title = computed.customName;
+        delete computed.customName;
+        computed.type = 'result';
+        paper.migrated = true;
+      }
     }
     computedIndex -= 1;
   }
@@ -671,7 +681,10 @@ function migratePaper(paper, columns) {
   if (paper.hiddenCols) {
     let hiddenIndex = paper.hiddenCols.length - 1;
     while (hiddenIndex >= 0) {
-      if (paper.hiddenCols[hiddenIndex].startsWith('/id/col/')) paper.hiddenCols.splice(hiddenIndex, 1);
+      if (paper.hiddenCols[hiddenIndex].startsWith('/id/col/')) {
+        paper.hiddenCols.splice(hiddenIndex, 1);
+        paper.migrated = true;
+      }
       hiddenIndex -= 1;
     }
   }
@@ -927,6 +940,11 @@ function getAllMetaanalyses() {
 
 function sendMetaanalysisStats(metaanalyses) {
   stats.gauge('metaanalyses', metaanalyses.length);
+  stats.gauge('metaanalyses_migrated', countMigrated(metaanalyses));
+}
+
+function countMigrated(arr) {
+  return arr.filter((obj) => obj.migrated).length;
 }
 
 /*
@@ -938,6 +956,7 @@ function migrateMetaanalysis(metaanalysis, papers, columns) {
   if (metaanalysis.columnOrder) {
     metaanalysis.columns = metaanalysis.columnOrder;
     delete metaanalysis.columnOrder;
+    metaanalysis.migrated = true;
   }
 
   // migrate aggregate graphs to graphs
@@ -955,6 +974,7 @@ function migrateMetaanalysis(metaanalysis, papers, columns) {
           metaanalysis.graphs = [];
         }
         metaanalysis.graphs.unshift(graph);
+        metaanalysis.migrated = true;
       }
     }
   }
@@ -1013,6 +1033,7 @@ function migrateMetaanalysis(metaanalysis, papers, columns) {
           });
         }
       }
+      metaanalysis.migrated = true;
     }
   });
   // check that every computed thing's formula doesn't contain '/id/col/',
@@ -1024,12 +1045,19 @@ function migrateMetaanalysis(metaanalysis, papers, columns) {
       while (computedIndex >= 0) {
         const computed = metaanalysis[fieldName][computedIndex];
         if (computed.formula) {
-          if (computed.formula.indexOf('/id/col/') !== -1) metaanalysis[fieldName].splice(computedIndex, 1);
-          if (!computed.title) {
-            computed.title = computed.customName;
+          if (computed.formula.indexOf('/id/col/') !== -1) {
+            metaanalysis[fieldName].splice(computedIndex, 1);
+            metaanalysis.migrated = true;
           }
-          delete computed.customName;
-          if (fieldName === 'columns') computed.type = 'result';
+          if (computed.customName) {
+            computed.title = computed.customName;
+            delete computed.customName;
+            metaanalysis.migrated = true;
+          }
+          if (!computed.type && fieldName === 'columns') {
+            computed.type = 'result';
+            metaanalysis.migrated = true;
+          }
         }
         computedIndex -= 1;
       }
@@ -1039,7 +1067,10 @@ function migrateMetaanalysis(metaanalysis, papers, columns) {
   if (metaanalysis.hiddenCols) {
     let hiddenIndex = metaanalysis.hiddenCols.length - 1;
     while (hiddenIndex >= 0) {
-      if (metaanalysis.hiddenCols[hiddenIndex].startsWith('/id/col/')) metaanalysis.hiddenCols.splice(hiddenIndex, 1);
+      if (metaanalysis.hiddenCols[hiddenIndex].startsWith('/id/col/')) {
+        metaanalysis.hiddenCols.splice(hiddenIndex, 1);
+        metaanalysis.migrated = true;
+      }
       hiddenIndex -= 1;
     }
   }

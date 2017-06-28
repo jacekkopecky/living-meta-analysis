@@ -35,16 +35,16 @@ describe('server/storage.js', () => {
   describe('migration to private columns', () => {
     describe('migration of paper', () => {
       it('migrates correctly', function() {
-        const copyOfBefore = JSON.parse(JSON.stringify(paperBefore));
-        storage.migratePaper(copyOfBefore, columns);
-        const result = JSON.parse(JSON.stringify(copyOfBefore));
-        expect(result).toEqual(paperAfter);
+        const before = copyOf(paperBefore);
+        storage.migratePaper(before, columns);
+        const after = copyOf(paperAfter);
+        after.migrated = true;
+        expect(copyOf(before)).toEqual(after);
       });
       it('does not change paper without global columns', function() {
-        const copyOfAfter = JSON.parse(JSON.stringify(paperAfter));
-        storage.migratePaper(copyOfAfter, columns);
-        const result = JSON.parse(JSON.stringify(copyOfAfter));
-        expect(result).toEqual(paperAfter);
+        const after = copyOf(paperAfter);
+        storage.migratePaper(after, columns);
+        expect(after).toEqual(paperAfter);
       });
     });
 
@@ -55,19 +55,23 @@ describe('server/storage.js', () => {
         papers = [paper2Before, paperAfter];
       })
       it('migrates correctly', function() {
-        const copyOfBefore = JSON.parse(JSON.stringify(metaanalysisBefore));
-        storage.migrateMetaanalysis(copyOfBefore, papers, columns);
-        const result = JSON.parse(JSON.stringify(copyOfBefore));
-        expect(result).toEqual(metaanalysisAfter);
+        const before = copyOf(metaanalysisBefore);
+        storage.migrateMetaanalysis(before, papers, columns);
+        const after = copyOf(metaanalysisAfter);
+        after.migrated = true;
+        expect(copyOf(before)).toEqual(after);
       });
       it('does not change MA without global columns', function() {
-        const copyOfAfter = JSON.parse(JSON.stringify(metaanalysisAfter));
-        storage.migrateMetaanalysis(copyOfAfter, papers, columns);
-        const result = JSON.parse(JSON.stringify(copyOfAfter));
-        expect(result).toEqual(metaanalysisAfter);
+        const after = copyOf(metaanalysisAfter);
+        storage.migrateMetaanalysis(after, papers, columns);
+        expect(after).toEqual(metaanalysisAfter);
       });
     });
   });
 
   // todo more
 });
+
+function copyOf(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
