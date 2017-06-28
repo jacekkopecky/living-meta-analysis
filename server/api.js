@@ -73,9 +73,6 @@ function setUpRoutes() {
 
   // todo above, a user that isn't SAME_USER should be able to submit new comments
 
-  api.get('/columns', listColumns);
-  api.post('/columns', GOOGLE_USER, KNOWN_USER, jsonBodyParser, saveColumn);
-
   api.get(`/metaanalyses/:user(${config.USER_RE})`,
           listMetaanalysesForUser);
   api.get(`/metaanalyses/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
@@ -141,18 +138,6 @@ function listTitles(req, res, next) {
  *
  *
  */
-function KNOWN_USER(req, res, next) {
-  const email = req.user.emails[0].value;
-  storage.getUser(email)
-  .then(() => {
-    // User is known to LiMA
-    next();
-  })
-  .catch(() => {
-    // User is not known, return 401 to be caught by caller
-    next(new UnauthorizedError('Please register with LiMA at /register'));
-  });
-}
 
 // check that the user in the URL is the same as the one logged in, and that they are registered
 function SAME_USER(req, res, next) {
@@ -508,7 +493,7 @@ function extractReceivedMetaanalysis(receivedMetaanalysis) {
     published:           tools.string(receivedMetaanalysis.published),
     description:         tools.string(receivedMetaanalysis.description),
     tags:                tools.array(receivedMetaanalysis.tags, tools.string),
-    columns:             tools.array(receivedMetaanalysis.columns, extractReceivedColumnEntry),
+    columns:             tools.array(receivedMetaanalysis.columns, extractReceivedMetaanalysisColumnEntry),
     paperOrder:          tools.array(receivedMetaanalysis.paperOrder, tools.string),
     hiddenCols:          tools.array(receivedMetaanalysis.hiddenCols, tools.string),
     hiddenExperiments:   tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
@@ -523,17 +508,29 @@ function extractReceivedMetaanalysis(receivedMetaanalysis) {
 }
 
 function extractReceivedColumnEntry(recCol) {
-  if (typeof recCol === 'string') {
-    return tools.string(recCol);
-  } else if (typeof recCol === 'object') {
+  if (typeof recCol === 'object') {
     return {
+      id: tools.string(recCol.id),
+      title: tools.string(recCol.title),
+      description: tools.string(recCol.description),
+      type: tools.string(recCol.type),
       formula: tools.string(recCol.formula),
       comments: tools.array(recCol.comments, extractReceivedComment),
-      customName: tools.string(recCol.customName),
+      obsoleteIDForMigration: tools.string(recCol.obsoleteIDForMigration),
     };
   }
 
   return undefined;
+}
+
+function extractReceivedMetaanalysisColumnEntry(recCol) {
+  const col = extractReceivedColumnEntry(recCol);
+  if (col) {
+    col.sourceColumnMap = tools.assoc(recCol.sourceColumnMap, tools.string);
+    delete col.obsoleteIDForMigration;
+  }
+
+  return col;
 }
 
 function extractReceivedAggregate(recAggr) {
@@ -541,7 +538,7 @@ function extractReceivedAggregate(recAggr) {
   return {
     formula: tools.string(recAggr.formula),
     comments: tools.array(recAggr.comments, extractReceivedComment),
-    customName: tools.string(recAggr.customName),
+    title: tools.string(recAggr.title),
   };
 }
 
@@ -550,7 +547,7 @@ function extractReceivedGraph(recGraph) {
   return {
     formula: tools.string(recGraph.formula),
     comments: tools.array(recGraph.comments, extractReceivedComment),
-    customName: tools.string(recGraph.customName),
+    title: tools.string(recGraph.title),
   };
 }
 
@@ -568,71 +565,4 @@ function listTopMetaanalyses(req, res, next) {
     res.json(retval);
   })
   .catch(() => next(new InternalError()));
-}
-
-
-/* columns
- *
- *
- *         ####   ####  #      #    # #    # #    #  ####
- *        #    # #    # #      #    # ##  ## ##   # #
- *        #      #    # #      #    # # ## # # #  #  ####
- *        #      #    # #      #    # #    # #  # #      #
- *        #    # #    # #      #    # #    # #   ## #    #
- *         ####   ####  ######  ####  #    # #    #  ####
- *
- *
- */
-function listColumns(req, res, next) {
-  storage.listColumns()
-  .then((columns) => {
-    const retval = {};
-    for (const key of Object.keys(columns)) {
-      retval[key] = extractColumnForSending(columns[key]);
-    }
-    res.json(retval);
-  })
-  .catch((err) => next(err));
-}
-
-function extractColumnForSending(storageColumn) {
-  return {
-    id: storageColumn.id,
-    title: storageColumn.title,
-    type: storageColumn.type,
-    description: storageColumn.description,
-    definedBy: storageColumn.definedBy,
-    ctime: storageColumn.ctime,
-    mtime: storageColumn.mtime,
-    // unit: 'person', // optional
-    // todo comments
-  };
-}
-
-function saveColumn(req, res, next) {
-  // extract from incoming data stuff that is allowed
-  storage.saveColumn(extractReceivedColumn(req.body), req.user.emails[0].value)
-  .then((column) => {
-    res.json(extractColumnForSending(column));
-  })
-  .catch((e) => {
-    if (e instanceof ValidationError || e instanceof NotImplementedError) {
-      next(e);
-    } else {
-      next(new InternalError(e));
-    }
-  });
-}
-
-function extractReceivedColumn(recCol) {
-  // expecting receivedColumn to come from JSON.parse()
-  return {
-    id: tools.string(recCol.id),
-    title: tools.string(recCol.title),
-    type: tools.string(recCol.type),
-    description: tools.string(recCol.description),
-    CHECKdefinedBy: tools.string(recCol.definedBy), // can't be changed but should be checked
-    CHECKctime: tools.number(recCol.ctime),         // can't be changed but should be checked
-    // mtime: tools.number(recCol.mtime),           // will be updated
-  };
 }
