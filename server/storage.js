@@ -299,6 +299,8 @@ function migrateUser(user) {
   return user;
 }
 
+module.exports.migrateUser = migrateUser;
+
 function getUser(user) {
   if (!user) {
     throw new Error('user parameter required');
@@ -658,7 +660,7 @@ function migratePaper(paper, columns) {
   return paper;
 }
 
-tools.exportTestAPI(module.exports, migratePaper);
+module.exports.migratePaper = migratePaper;
 
 
 module.exports.getPapersEnteredBy = (user) => {
@@ -1030,7 +1032,7 @@ function migrateMetaanalysis(metaanalysis, papers, columns) {
   return metaanalysis;
 }
 
-tools.exportTestAPI(module.exports, migrateMetaanalysis);
+module.exports.migrateMetaanalysis = migrateMetaanalysis;
 
 module.exports.getMetaanalysesEnteredBy = (user) => {
   // todo also return metaanalyses contributed to by `email`
@@ -1452,6 +1454,8 @@ function createStubDatastore() {
 
 
 module.exports.init = () => {
+  if (module.exports.ready) return module.exports.ready; // already initialized
+
   // the order here matters:
   getForbiddenUsernames();
   getAllUsers();
@@ -1483,4 +1487,6 @@ module.exports.init = () => {
       }
     })
     .then(() => console.log('storage: all is now loaded'));
+
+  return module.exports.ready;
 };
