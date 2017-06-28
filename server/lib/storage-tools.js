@@ -7,7 +7,7 @@ function log(e) {
 const storage = require('./../storage');
 
 module.exports.add = (data) => {
-  return Promise.resolve()
+  return storage.init()
   .then(() => {
     let promises = [];
 
@@ -69,7 +69,8 @@ module.exports.add = (data) => {
 module.exports.dump = () => {
   const data = {};
 
-  return storage.listUsers()
+  return storage.init()
+  .then(storage.listUsers)
   .then((d) => { data.users = d; })
   .then(storage.listPapers)
   .then((d) => { data.papers = d; })
@@ -80,4 +81,22 @@ module.exports.dump = () => {
   .then(() => data);
 };
 
-module.exports.ready = storage.ready;
+module.exports.migrate = (data) => {
+  if (data.users) {
+    Object.keys(data.users).forEach((email) => {
+      storage.migrateUser(data.users[email]);
+    });
+  }
+  if (data.papers) {
+    data.papers.forEach((paper) => {
+      storage.migratePaper(paper, data.columns);
+    });
+  }
+  if (data.metaanalyses) {
+    data.metaanalyses.forEach((metaanalysis) => {
+      storage.migrateMetaanalysis(metaanalysis, data.papers, data.columns);
+    });
+  }
+  delete data.columns;
+  return data;
+};

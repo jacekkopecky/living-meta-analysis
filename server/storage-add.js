@@ -24,8 +24,7 @@ inputData
 .catch(() => process.exit(1))
 .then((data) => {
   const storageTools = require('./lib/storage-tools'); // eslint-disable-line global-require
-  return storageTools.ready
-  .then(() => storageTools.add(data));
+  return storageTools.add(data);
 })
 .then(() => {
   console.log('all done');

@@ -2,6 +2,9 @@
 
 We use [Jasmine](https://jasmine.github.io/) and [Gemini](https://github.com/gemini-testing/gemini) for testing.
 
+The tests use a special _testing_ environment of LiMA that disables invites, stats, and the datastore; it imports data from `test/data.json`.
+If storage changes and the testing data need migrating, use the npm script `npm run db-migrate` described in the deployment README.
+
 ## Unit Testing (Jasmine)
 
 ### Running tests

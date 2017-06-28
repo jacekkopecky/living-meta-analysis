@@ -8,10 +8,10 @@ const storageTools = require('./lib/storage-tools');
 
 // normal logging goes to stderr
 
-storageTools.ready
-.then(() => storageTools.dump())
+storageTools.dump()
 .then((data) => {
   console.error('storage-dump done');
   log(JSON.stringify(data, null, 2));
   process.exit();
-});
+})
+.catch((e) => console.error('error dumping: ', e && e.stack || e));

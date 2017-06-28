@@ -42,6 +42,36 @@ forever restart server   # if server has changed
 logout                   # so we don't have a hanging terminal to the server
 ```
 
+### Invite Codes
+
+For now with `./invites.txt` to generate an invite, append a line like this:
+
+```
+random-code-12345 # 2017-02-28 generated for Cochrane workshop attendees
+```
+
+use the script `geninvite` to generate invites, e.g.
+
+```
+for pom in `seq 1 100`; do geninvite "for Cochrane workshop attendees and other invitees"; done >> invites.txt
+```
+
+Then print them with [LiMA's print page](https://lima.soc.port.ac.uk/admin/print-invites).
+
+Source of `geninvite`:
+
+```
+#!/bin/bash
+
+code=''
+while grep -q "$code" invites.txt
+do
+  code=`uuidgen`
+  code=${code##*-}
+done
+
+echo $code '#' `date +"%Y-%m-%d %H:%M"` $1
+```
 
 
 ------------------
@@ -148,3 +178,36 @@ Stats server:
   - update the `DAEMON` line with the correct absolute path
   - and register it with your OS
   - this example puts PID and logs into `/var/{run,log}/lima`
+
+------------------
+## Database
+
+We use [Google Datastore](https://cloud.google.com/datastore/).
+
+We have server-side datastore dump, restore and migrate scripts. They communicate directly with the datastore as configured in `config.js`; the LiMA server should be down while the restore script is running.
+
+### Dump
+
+To dump the currently configured data store:
+
+`npm run db-dump`
+
+... this will create a dump file and write out its name.
+
+
+### Restore
+
+To restore from a dumpfile, first stop LiMA server, then run the following:
+
+`npm run db-add < dumpfile`
+
+After restoring data, start LiMA server again and it should see the new data.
+
+Note that `db-add` will not overwrite any existing data.
+
+
+### Migrate
+
+To migrate a dumpfile, run the following:
+
+`npm run db-migrate < dumpfile > dumpfile.migrated`
