@@ -5,7 +5,6 @@
  "ctime": 1489072434411,
  "mtime": 1489411761954,
  "tags": [],
- "apiurl": "\/api\/papers\/jacek.kopecky@port.ac.uk\/Echterhoff2005",
  "experiments": [
   {
    "enteredBy": "jacek.kopecky@port.ac.uk",
@@ -148,7 +147,7 @@
   },
   {
     "type": "result",
-    "formula": "logOddsRatioPercent(3,4,5,6)",
+    "formula": "logOddsRatioPercent(3,3,5,6)",
     "title": "Log Odds Ratio"
   },
   {

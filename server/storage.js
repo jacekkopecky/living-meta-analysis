@@ -597,6 +597,7 @@ function migratePaper(paper, columns) {
   paper.columns.forEach((col, colIndex) => {
     if (typeof col === 'string') {
       // migrate the string into an object
+      if (!columns[col]) throw new Error(`paper ${paper.title} uses nonexistent column ${col}`);
       const colObject = {
         id: '' + (maxId += 1),
         title: columns[col].title,
@@ -623,7 +624,8 @@ function migratePaper(paper, columns) {
       // migrate every parameter in computed anything into the right ID
       paper.columns.forEach((computed) => {
         if (!computed.formula) return; // not computed
-        computed.formula = computed.formula.replace(col, colObject.id);
+        // replace all occurrences of col in the formula with colObject.id
+        computed.formula = computed.formula.split(col).join(colObject.id);
       });
     }
   });
