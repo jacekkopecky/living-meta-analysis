@@ -5,7 +5,6 @@
  "ctime": 1489072434411,
  "mtime": 1489411761954,
  "tags": [],
- "apiurl": "\/api\/papers\/jacek.kopecky@port.ac.uk\/Echterhoff2005",
  "experiments": [
   {
    "enteredBy": "jacek.kopecky@port.ac.uk",
@@ -126,7 +125,7 @@
   "\/id\/col\/1489060716372",
   "\/id\/col\/1489062685563",
   {
-    "formula": "logOddsRatioPercent(/id/col/1489062688680,/id/col/1489060716372,/id/col/1489062685563,/id/col/1489060716759)",
+    "formula": "logOddsRatioPercent(/id/col/1489062688680,/id/col/1489062688680,/id/col/1489062685563,/id/col/1489060716759)",
     "customName": "Log Odds Ratio"
   },
   {
