@@ -2913,7 +2913,7 @@
     var inputDataType;
 
     if (oneClick.inputDataType == 'percentages') {
-      inputDataType = 'Percentages';
+      inputDataType = 'Percent';
     } else if (oneClick.inputDataType == 'fractions') {
       // special case, suffix nothing
       inputDataType = '';
