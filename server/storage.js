@@ -308,6 +308,7 @@ function sendUserStats(users) {
  */
 function migrateUser(user) {
   // 2017-06-08: Only store limited user information
+  //     when all is migrated: just remove this code
   if (user.emails) {
     user.email = user.emails[0].value;
     delete user.emails;
@@ -597,6 +598,7 @@ function sendPaperStats(papers) {
  */
 function migratePaper(paper, columns) {
   // 2017-02-23: move columnOrder to columns
+  //     when all is migrated: just remove this code
   if (paper.columnOrder) {
     paper.columns = paper.columnOrder;
     delete paper.columnOrder;
@@ -604,6 +606,13 @@ function migratePaper(paper, columns) {
   }
 
   // 2017-06-27: migrate global columns to private columns
+  //     when all is migrated:
+  //       remove this code,
+  //       remove obsoleteIDForMigration from api.js
+  //       update tests to check migration no longer does this
+  //       remove all remaining mentions of global columns
+  //       remove columns from datastore
+
   // if we have a datum whose column ID isn't in paper.columns then add it there
   if (!paper.columns) paper.columns = [];
   if (paper.experiments) {
@@ -952,13 +961,15 @@ function countMigrated(arr) {
  */
 function migrateMetaanalysis(metaanalysis, papers, columns) {
   // 2017-02-23: move columnOrder to columns
-  // 2017-05-02: move graph aggregates to graphs
+  //     when all is migrated: just remove this code
   if (metaanalysis.columnOrder) {
     metaanalysis.columns = metaanalysis.columnOrder;
     delete metaanalysis.columnOrder;
     metaanalysis.migrated = true;
   }
 
+  // 2017-05-02: move graph aggregates to graphs
+  //     when all is migrated: just remove this code
   // migrate aggregate graphs to graphs
   if (metaanalysis.aggregates) {
     const oldGraphs = ['forestPlotNumberAggr', 'forestPlotPercentAggr',
@@ -980,6 +991,11 @@ function migrateMetaanalysis(metaanalysis, papers, columns) {
   }
 
   // 2017-06-28: migrate global columns to private columns
+  //     when all is migrated:
+  //       remove this code,
+  //       update tests to check migration no longer does this
+  //       remove all remaining mentions of global columns
+  //       remove columns from datastore
   // prepare the papers this metaanalysis depends on
   const maPapers = metaanalysis.paperOrder.map((paperId) => {
     // find the paper with the matching ID
