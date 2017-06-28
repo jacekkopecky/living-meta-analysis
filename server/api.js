@@ -154,24 +154,22 @@ function KNOWN_USER(req, res, next) {
   });
 }
 
+// check that the user in the URL is the same as the one logged in, and that they are registered
 function SAME_USER(req, res, next) {
-  try {
-    if (req.user.emails[0].value === req.params.user) {
+  const email = req.user.emails[0].value;
+  storage.getUser(email) // check the user is registered
+  .then((user) => {
+    if (user.email === req.params.user ||
+        user.username === req.params.user) {
       next();
     } else {
-      storage.getEmailAddressOfUser(req.params.user)
-      .then((email) => {
-        if (req.user.emails[0].value === email) {
-          next();
-        } else {
-          throw new UnauthorizedError();
-        }
-      });
+      throw new Error(); // will be turned to UnauthorizedError below
     }
-  } catch (e) {
-    // any error means it isn't the right user
-    throw new UnauthorizedError();
-  }
+  })
+  .catch(() => {
+    // User is not known, return 401 to be caught by caller
+    next(new UnauthorizedError('Please register with LiMA at /register'));
+  });
 }
 
 module.exports.EXISTS_USER = function (req, res, next) {
