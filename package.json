@@ -8,12 +8,13 @@
     "forever": "node_modules/.bin/nodemon -w server/ server",
     "db-dump": "fn=\"storage-dump-`date '+%Y-%m-%d--%H-%M-%S'`.json\"; echo saving into \"$fn\"; node server/storage-dump > \"$fn\"; echo saved into \"$fn\"",
     "db-add": "node server/storage-add",
-    "jasmine": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/jasmine || true # ignore jasmine exit status",
-    "gemini": "cd test; ../node_modules/.bin/gemini test || true",
-    "gemini-update": "cd test; ../node_modules/.bin/gemini update || true",
-    "gemini-gui": "cd test; ../node_modules/.bin/gemini-gui || true",
-    "coverage": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/istanbul cover ./node_modules/.bin/jasmine || true",
-    "test": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/jasmine && (cd test; ../node_modules/.bin/gemini test) || true"
+    "jasmine": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/jasmine ; true # ignore jasmine exit status",
+    "gemini": "cd test; ../node_modules/.bin/gemini test ; true",
+    "gemini-update": "cd test; ../node_modules/.bin/gemini update ; true",
+    "gemini-gui": "cd test; ../node_modules/.bin/gemini-gui ; true",
+    "coverage": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/istanbul cover ./node_modules/.bin/jasmine ; true",
+    "coverage-open": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/istanbul cover ./node_modules/.bin/jasmine ; open ./coverage/lcov-report/index.html ; true",
+    "test": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/jasmine && (cd test; ../node_modules/.bin/gemini test) ; true"
   },
   "repository": {
     "type": "git",
