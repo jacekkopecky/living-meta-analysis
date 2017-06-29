@@ -156,7 +156,7 @@ command | comment
 
 LiMA server:
 
-- On LiMA server, create `/home/lime/living-meta-analysis/statsd-server-conf.sh` that specifies the location of the StatsD VM as `STATSD_HOST` and `STATSD_PORT`, see example below
+- On LiMA server, create `/home/lima/living-meta-analysis/statsd-server-conf.sh` that specifies the location of the StatsD VM as `STATSD_HOST` and `STATSD_PORT`, see example below
 - In this file, also include `STATSD_PREFIX=lima.` (with the trailing `.`, as shown below) so it ties to the prepared Graphite dashboard
 - Make sure that `living-meta-analysis/deployment/shared/monitoring-os-scripts/monitor.sh` gets run at boot
   - for example, copy `living-meta-analysis/deployment/shared/monitoring-os-scripts/init/lima-os-monitoring` to `/etc/init.d` and register it with your OS
@@ -176,8 +176,8 @@ Stats server:
 - Make sure that `monitoring-os-scripts/monitor.sh` gets run at boot
   - for example, copy `monitoring-os-scripts/init/lima-os-monitoring` to `/etc/init.d`
   - update the `DAEMON` line with the correct absolute path
+  - create `/var/{run,log}/lima` for PID and logs
   - and register it with your OS
-  - this example puts PID and logs into `/var/{run,log}/lima`
 
 ------------------
 ## Database
