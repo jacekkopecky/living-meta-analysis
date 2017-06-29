@@ -15,7 +15,8 @@
     "gemini-gui": "cd test; ../node_modules/.bin/gemini-gui ; true",
     "coverage": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/istanbul cover ./node_modules/.bin/jasmine ; true",
     "coverage-open": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/istanbul cover ./node_modules/.bin/jasmine ; open ./coverage/lcov-report/index.html ; true",
-    "test": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/jasmine && (cd test; ../node_modules/.bin/gemini test) ; true"
+    "test": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/jasmine && (cd test; ../node_modules/.bin/gemini test) ; true",
+    "testing-server": "TESTING=1 PORT=8081 node_modules/.bin/nodemon -w server/ -w test/data.json server"
   },
   "repository": {
     "type": "git",
