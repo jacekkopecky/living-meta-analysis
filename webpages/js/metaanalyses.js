@@ -1924,9 +1924,8 @@
 
             setupPopupBoxPinning(td, '.datum.popupbox', papIndex + ',' + expIndex + ',' + col.formula);
 
-            td.classList.add('result');
+            td.classList.add(col.type);
           }
-
         });
       });
     });
@@ -2539,7 +2538,8 @@
     });
   }
 
-  var COLUMN_TYPES = ['characteristic', 'result'];
+  var COLUMN_TYPE_CHAR = 'characteristic';
+  var COLUMN_TYPE_COMP = 'result';
 
   function fillColInfo(ev) {
     var col = currentMetaanalysis.columnsHash[ev.target.dataset.colid];
@@ -2594,7 +2594,7 @@
 
   function addNewExperimentColumn() {
     dismissAddExperimentColumn();
-    var col = {title: null, type: COLUMN_TYPES[0], sourceColumnMap: {}, id: getNextID(currentMetaanalysis.columns)};
+    var col = {title: null, type: COLUMN_TYPE_CHAR, sourceColumnMap: {}, id: getNextID(currentMetaanalysis.columns)};
     currentMetaanalysis.columns.push(col);
     currentMetaanalysis.columnsHash = _.generateIDHash(currentMetaanalysis);
     moveResultsAfterCharacteristics(currentMetaanalysis);
@@ -2618,6 +2618,7 @@
       formula: 'undefined()', // todo why is this here and not in addNewAggregateToMetaanalysis
       formulaName: null,
       formulaParams: [],
+      type: COLUMN_TYPE_COMP,
     };
     currentMetaanalysis.columns.push(col);
     renumberComputedObjects(currentMetaanalysis.columns);
@@ -2865,7 +2866,7 @@
     }
 
     // here we keep track of where in the arrays we should add the next object
-    var columnOptions = { array: currentMetaanalysis.columns, position: currentMetaanalysis.columns.length };
+    var columnOptions = { array: currentMetaanalysis.columns, position: currentMetaanalysis.columns.length, type: COLUMN_TYPE_COMP };
     var aggregateOptions = { array: currentMetaanalysis.aggregates, position: currentMetaanalysis.aggregates.length };
     var graphOptions = { array: currentMetaanalysis.graphs, position: currentMetaanalysis.graphs.length };
     var groupingAggregateOptions = { array: currentMetaanalysis.groupingAggregates, position: currentMetaanalysis.groupingAggregates.length };
@@ -3006,6 +3007,7 @@
     var obj = { formula: formulaString };
     populateParsedFormula(obj);
     obj.title = title;
+    obj.type = target.type;
     target.array.splice(target.position, 0, obj);
     target.position += 1;
   }
@@ -4101,7 +4103,7 @@
     // make sure result columns come after characteristics columns
     var firstResult = 0;
     for (var i = 0; i < metaanalysis.columns.length; i++) {
-      if (metaanalysis.columns[i].type === COLUMN_TYPES[0]) {
+      if (metaanalysis.columns[i].type === COLUMN_TYPE_CHAR) {
         _.moveArrayElement(metaanalysis.columns, i, firstResult);
         firstResult++;
       }
