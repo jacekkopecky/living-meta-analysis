@@ -305,7 +305,7 @@ process.on('unhandledRejection', (err) => {
 const port = process.env.PORT || config.port;
 let httpsPort = process.env.HTTPSPORT || config.httpsPort;
 
-storage.ready.then(() => {
+module.exports.ready = storage.ready.then(() => new Promise((resolve, reject) => {
   if (process.env.TESTING) {
     console.info('**************************************************');
     console.info('');
@@ -328,7 +328,10 @@ storage.ready.then(() => {
   if (!httpsPort) {
     // only HTTP
     http.createServer(app)
-    .listen(port, () => console.log(`LiMA server listening on insecure port ${port}`));
+    .listen(port, () => {
+      console.log(`LiMA server listening on insecure port ${port}`);
+      resolve();
+    });
   } else {
     // HTTPS; with HTTP redirecting to that
     try {
@@ -338,21 +341,23 @@ storage.ready.then(() => {
 
       https.createServer(credentials, app).listen(httpsPort, () => {
         console.log(`LiMA server listening on HTTPS port ${httpsPort}`);
-      });
 
-      // HTTP app will just redirect to HTTPS
-      const redirectApp = express();
-      if (loggingMiddleware) redirectApp.use(loggingMiddleware);
-      redirectApp.get('*', (req, res) => res.redirect('https://' + req.hostname + req.url));
+        // HTTP app will just redirect to HTTPS
+        const redirectApp = express();
+        if (loggingMiddleware) redirectApp.use(loggingMiddleware);
+        redirectApp.get('*', (req, res) => res.redirect('https://' + req.hostname + req.url));
 
-      http.createServer(redirectApp).listen(port, () => {
-        console.log(`LiMA redirect server listening on port ${port}`);
+        http.createServer(redirectApp).listen(port, () => {
+          console.log(`LiMA redirect server listening on port ${port}`);
+          resolve();
+        });
       });
     } catch (e) {
       console.error('error starting HTTPS', e.message || e);
+      reject(e);
     }
   }
-})
+}))
 .catch((err) => {
   console.error('startup failed', err && err.stack);
   process.exit(-1);
