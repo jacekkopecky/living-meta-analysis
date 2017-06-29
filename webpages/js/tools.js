@@ -941,7 +941,7 @@
     if (pendingSaveFunctions.indexOf(saveFunction) === -1) pendingSaveFunctions.push(saveFunction);
 
     _.deferScheduledSave();
-    if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(doSave, SAVE_PENDING_TIMEOUT);
+    if (!pendingSaveTimeout) pendingSaveTimeout = setTimeout(doSaveIgnoreReject, SAVE_PENDING_TIMEOUT);
   };
 
   // setTimeout for save in 3s
@@ -950,7 +950,7 @@
   _.deferScheduledSave = function deferScheduledSave() {
     if (pendingSaveTimeout) {
       clearTimeout(pendingSaveTimeout);
-      pendingSaveTimeout = setTimeout(doSave, SAVE_PENDING_TIMEOUT);
+      pendingSaveTimeout = setTimeout(doSaveIgnoreReject, SAVE_PENDING_TIMEOUT);
     }
   };
 
@@ -972,6 +972,10 @@
     if (includePending && pendingSaveFunctions.length !== 0) return true;
     return !!currentSavingFunction;
   };
+
+  function doSaveIgnoreReject() {
+    doSave().catch(function(){console.log('ignoring rejected save promise, failure assumed handled');});
+  }
 
   function doSave() {
     if (currentSavingFunction) return Promise.resolve(currentSavingFunction);
