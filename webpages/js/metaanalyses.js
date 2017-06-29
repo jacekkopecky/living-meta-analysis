@@ -2008,7 +2008,6 @@
         formulasDropdown.classList.remove('validationerror');
       } else {
         formulasDropdown.classList.add('validationerror');
-        fillObjectInformation(th, col);
       }
       // we'll call _.setValidationErrorClass() in fillDropdownSelection
 
@@ -2018,6 +2017,7 @@
 
       // fill the columns selection
       fillDropdownSelection(metaanalysis, col, th, formula);
+      fillObjectInformation(th, col);
 
       _.scheduleSave(metaanalysis);
       recalculateComputedData();
@@ -2025,6 +2025,7 @@
 
     var formula = col.formulaObj;
     fillDropdownSelection(metaanalysis, col, th, formula);
+    fillObjectInformation(th, col);
 
     setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.formula);
 
@@ -2120,7 +2121,6 @@
         };
       })(i, select);
     }
-    fillObjectInformation(objEl, obj);
   }
 
   function fillObjectInformation(th, obj) {
@@ -3216,7 +3216,6 @@
           aggregateFormulasDropdown.classList.remove('validationerror');
         } else {
           aggregateFormulasDropdown.classList.add('validationerror');
-          fillObjectInformation(aggregateEl, aggregate);
         }
         // we'll call _.setValidationErrorClass() in fillDropdownSelection
 
@@ -3229,6 +3228,7 @@
 
         // fill the columns selection
         fillDropdownSelection(metaanalysis, aggregate, aggregateEl, formula);
+        fillObjectInformation(aggregateEl, aggregate);
 
         _.scheduleSave(metaanalysis);
         recalculateComputedData();
@@ -3364,7 +3364,6 @@
           groupingAggregateFormulasDropdown.classList.remove('validationerror');
         } else {
           groupingAggregateFormulasDropdown.classList.add('validationerror');
-          fillObjectInformation(tr, groupingAggregate);
         }
         // we'll call _.setValidationErrorClass() in fillDropdownSelection
 
@@ -3377,6 +3376,7 @@
 
         // fill the columns selection
         fillDropdownSelection(metaanalysis, groupingAggregate, tr, formula);
+        fillObjectInformation(tr, groupingAggregate);
 
         _.scheduleSave(metaanalysis);
         recalculateComputedData();
@@ -3552,7 +3552,6 @@
           graphFormulasDropdown.classList.remove('validationerror');
         } else {
           graphFormulasDropdown.classList.add('validationerror');
-          fillObjectInformation(graphEl, graph);
         }
         // we'll call _.setValidationErrorClass() in fillDropdownSelection
 
@@ -3565,6 +3564,7 @@
 
         // fill the columns selection
         fillDropdownSelection(metaanalysis, graph, graphEl, formula, true);
+        fillObjectInformation(graphEl, graph);
 
         _.scheduleSave(metaanalysis);
         recalculateComputedData();
