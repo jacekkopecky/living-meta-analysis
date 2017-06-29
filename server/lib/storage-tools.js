@@ -6,8 +6,11 @@ function log(e) {
 
 const storage = require('./../storage');
 
-module.exports.add = (data) => {
-  return storage.init()
+module.exports.add = (data, options) => {
+  if (!options) options = {};
+
+  // options.immediate means skip waiting for storage to initialize, use only inside storage.init()
+  return (options.immediate ? Promise.resolve() : storage.init())
   .then(() => {
     let promises = [];
 

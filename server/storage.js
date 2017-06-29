@@ -147,10 +147,10 @@ function checkForDisallowedChanges(current, original) {
       if (!colObject.formula && !colObject.id) throw new ValidationError('column without ID must have formula');
 
       if (colObject.id) {
-        if (knownColumnIDs[colObject]) {
+        if (knownColumnIDs[colObject.id]) {
           throw new ValidationError('two columns cannot have the same ID');
         }
-        knownColumnIDs[colObject] = true;
+        knownColumnIDs[colObject.id] = true;
       }
     });
   }
@@ -1456,7 +1456,7 @@ module.exports.init = () => {
         const storageTools = require('./lib/storage-tools'); // eslint-disable-line global-require
         const data = fs.readFileSync(__dirname + '/../test/data.json', 'utf8');
 
-        return tools.waitForPromise(storageTools.add(JSON.parse(data))) // eslint-disable-line consistent-return
+        return tools.waitForPromise(storageTools.add(JSON.parse(data), { immediate: true })) // eslint-disable-line consistent-return
         .then(() => {
           console.log('storage: Testing data imported');
         });
