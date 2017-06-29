@@ -5,20 +5,22 @@
     "title": "Users and Usernames",
     "_salt": "1498139126.944",
     "lineWidth": "3",
+    "colorList": "green,blue,red",
     "target": [
-      "stats.gauges.lima.usernames",
-      "stats.gauges.lima.users",
-      "stats.gauges.lima.users_migrated"
+      "alias(stats.gauges.lima.users,\"users\")",
+      "alias(stats.gauges.lima.usernames,\"user names\")",
+      "alias(stats.gauges.lima.users_migrated,\"users migrated\")"
     ]
   },
   {
     "lineMode": "connected",
     "target": [
-      "stats.gauges.lima.metaanalyses",
-      "stats.gauges.lima.papers",
-      "stats.gauges.lima.metaanalyses_migrated",
-      "stats.gauges.lima.papers_migrated"
+      "alias(stats.gauges.lima.metaanalyses,\"metaanalyses\")",
+      "alias(stats.gauges.lima.papers,\"papers\")",
+      "alias(stats.gauges.lima.metaanalyses_migrated,\"metaanalyses migrated\")",
+      "alias(stats.gauges.lima.papers_migrated,\"papers migrated\")"
     ],
+    "colorList": "blue,green,#0000ff,#00aa00",
     "title": "Papers and Metaanalyses",
     "_salt": "1498140176.945",
     "lineWidth": "3",
@@ -26,8 +28,9 @@
   },
   {
     "target": [
-      "summarize(stats_counts.lima.access.total,\"1min\")"
+      "alias(summarize(stats_counts.lima.access.total,\"1min\"),\"Access count per 1min\")"
     ],
+    "title": "Accesses per minute",
     "yStep": "10",
     "yUnitSystem": "si",
     "_salt": "1498081397.434",
@@ -130,7 +133,7 @@
     "lineWidth": "2",
     "colorList": "#ff0000",
     "target": [
-      "alias(transformNull(removeBelowValue(offset(scale(movingAverage(stats.lima.statsSent,3),-9),1),0.2),0),\"Not submitting stats\")"
+      "alias(transformNull(removeBelowValue(offset(scale(movingAverage(transformNull(stats.lima.statsSent,0),3),-9),1),0.2),0),\"Not submitting stats\")"
     ]
   },
   {
@@ -148,7 +151,7 @@
     "lineWidth": "2",
     "colorList": "#800000",
     "target": [
-      "alias(transformNull(removeBelowValue(offset(scale(movingAverage(stats.statsvr.statsSent,3),-9),1),0.2),0),\"Not submitting stats\")"
+      "alias(transformNull(removeBelowValue(offset(scale(movingAverage(transformNull(stats.statsvr.statsSent,0),3),-9),1),0.2),0),\"Not submitting stats\")"
     ]
   }
 ]
