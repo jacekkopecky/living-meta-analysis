@@ -36,8 +36,7 @@
       <ul>
         <li class="when-signed-on"><a href="/profile">Your profile</a>
         <li><a href="/local/new-metaanalysis">Try a new meta-analysis</a>
-        <!-- <li class="when-signed-out"><a href="/local/new-paper">try a new paper</a> -->
-        <li><a href="/local/">See the meta-analyses and papers you've edited locally</a>
+        <li><a href="/local/">See the meta-analyses you've edited locally</a>
       </ul>
     </section>
 
@@ -1520,30 +1519,6 @@ window.lima.initPage = function () {
   var lima = window.lima;
   var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
 
-  // lima.getGapiIDToken()
-  // .then(function (idToken) {
-  //   return fetch('/api/topusers', _.idTokenToFetchOptions(idToken));
-  // })
-  // .then(_.fetchJson)
-  // .then(showTopUsers)
-  // .catch(function (err) {
-  //   console.error('can\'t load top users');
-  //   console.error(err);
-  //   _.apiFail();
-  // });
-  //
-  // lima.getGapiIDToken()
-  // .then(function (idToken) {
-  //   return fetch('/api/toppapers', _.idTokenToFetchOptions(idToken));
-  // })
-  // .then(_.fetchJson)
-  // .then(showTopPapers)
-  // .catch(function (err) {
-  //   console.error('can\'t load top papers');
-  //   console.error(err);
-  //   _.apiFail();
-  // });
-  //
   lima.getGapiIDToken()
   .then(function (idToken) {
     return fetch('/api/topmetaanalyses', _.idTokenToFetchOptions(idToken));
@@ -1595,20 +1570,6 @@ window.lima.initPage = function () {
         list.appendChild(li);
       });
     })
-  }
-
-  function showTopPapers(papers) {
-    var list = _.findEl('.toppapers');
-    list.innerHTML = '';
-
-    papers.forEach(function (paper) {
-      var li = document.createElement('li');
-      var paperlink = document.createElement('a');
-      paperlink.href = '/' + paper.enteredBy + '/' + paper.title + '/';
-      paperlink.textContent = paper.title;
-      li.appendChild(paperlink);
-      list.appendChild(li);
-    });
   }
 
   function updateScrollHint() {
