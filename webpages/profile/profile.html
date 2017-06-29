@@ -75,41 +75,6 @@
   </footer>
 </section>
 
-<section class="paper list">
-  <header>
-    <h2>Papers</h2>
-    <!-- <div class="filter">Sort/filter
-      <ul class="options">
-        <li><label><input type="radio" name="paper-sort" value="modified" checked> recently modified</label></li>
-        <li><label><input type="radio" name="paper-sort" value="created"> recently created</label></li>
-        <li><label><input type="radio" name="paper-sort" value="name"> by name</label></li>
-      </ul>
-      <!- - <ul class="options">
-        <li><label><input type="checkbox" name="paper-filter" value="created" checked> papers <span class="fnOryou">User</span> entered into LiMA</label></li>
-        <li><label><input type="checkbox" name="paper-filter" value="contributed" checked> papers <span class="fnOryou">User</span> contributed to in LiMA</label></li>
-      </ul> - ->
-    </div> -->
-  </header>
-  <template id="paper-list-item-template">
-    <li>
-      <header>
-        <a href="" class="name mainlink">error</a>
-        <span class="reference">error</span>
-      </header>
-      <span class="description">error</span>
-      <ul class="tags">
-      </ul>
-    </li>
-  </template>
-  <ul>
-    <li class="loading">loading&hellip;
-  </ul>
-  <footer>
-    <!-- todo paging -->
-    <a class="add when-signed-on only-if-page-about-you" name="paper-add" href="new-paper/" title="Input a new paper">+</a>
-  </footer>
-</section>
-
 <footer>
   <p>LiMA (Living Meta-Analysis) at <a href="http://port.ac.uk/">University of Portsmouth</a>, &copy; 2016–2017</p>
   <p>Feedback and questions are welcome at <a href="mailto:lima@port.ac.uk">lima@port.ac.uk</a>.</p>
@@ -125,10 +90,7 @@
 <script src="/js/version.js"></script>
 <script>
 window.lima.initPage = function () {
-  // todo get papers and meta-analyses
-
   window.lima.requestAndFillUserProfile();
-  window.lima.requestAndFillPaperList();
   window.lima.requestAndFillMetaanalysisList();
 }
 </script>
