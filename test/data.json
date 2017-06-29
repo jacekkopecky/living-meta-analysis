@@ -10182,6 +10182,7 @@
         {
           "id": "2",
           "title": "Group",
+          "description": "testing description that is likely to span several lines so we can see if some crazy CSS breaks",
           "type": "characteristic",
           "obsoleteIDForMigration": "/id/col/1489071615796"
         },
@@ -15164,6 +15165,7 @@
           "id": "2",
           "title": "Group",
           "type": "characteristic",
+          "description": "testing description that is likely to span several lines so we can see if some crazy CSS breaks",
           "sourceColumnMap": {
             "/id/p/1489074943690": "3",
             "/id/p/1489071496167": "2",
