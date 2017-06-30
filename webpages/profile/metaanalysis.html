@@ -140,29 +140,10 @@
             <button class="when-unsaved" disabled title="can't add meta-analysis when some changes are unsaved">meta-analysis</button>
           </span></div>
           <div class="newcolumn popupboxtrigger">
-            <div class="addcolumnbox loading">
-              <header>
-                <h1>Click column to add</h1>
-                <!-- todo search -->
-                <!-- <span class="search"><input type="search" placeholder="search" class="search"></span> -->
-              </header>
-              <div class="loadingspinner">loading&hellip;</div>
-              <ul></ul><!-- this will contain the columns to add -->
-              <footer>
-                <button class="addnew">+ new data column</button>
-                <button class="addcomp">+ new computed column</button>
-                <button class="cancel">cancel</button>
-              </footer>
-            </div>
-            <div class="colinfo popupbox unpopulated" data-boxid='colinfo'>
-              <header>
-                <p class="coltitle">error</p>
-                <p class="alreadythere">(included in the meta-analysis)<p>
-                <p class="unpopulated">Select a column to add</p>
-              </header>
-              <p class="coldescription">error</p>
-              <p class="unpopulated">To see details of a column, move over it with your mouse.</p>
-              <!-- todo comments -->
+            <div class="addcolumnbox">
+              <button class="addnew">new data column</button>
+              <button class="addcomp">new computed column</button>
+              <button class="cancel">cancel</button>
             </div>
           </div>
           <div class="oneclick popupboxtrigger">
@@ -193,9 +174,6 @@
       </tr>
     </tbody>
   </table>
-</template>
-<template id="column-list-item-template">
-  <li><span class="coltitle">error</span>
 </template>
 <template id="col-heading-template">
   <th class="popupboxtrigger">
