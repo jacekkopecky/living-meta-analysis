@@ -2,7 +2,7 @@
 describe("basics", () => {
   it("sets TESTING", () => {
     expect(process.env.TESTING).toBeTruthy();
-    expect(process.env.PORT).toBe('8081');
+    expect(+process.env.PORT).toBe(8082);
   })
 
   describe("server", () => {
