@@ -1,69 +1,70 @@
 [
   {
-    "drawNullAsZero": "false",
-    "title": "Users and Usernames",
-    "_salt": "1498139126.944",
-    "lineWidth": "3",
-    "colorList": "green,blue,red",
+    "lineMode": "connected",
     "target": [
       "legendValue(alias(stats.gauges.lima.users,\"users\"),\"last\")",
       "legendValue(alias(stats.gauges.lima.usernames,\"user names\"),\"last\")",
       "legendValue(alias(stats.gauges.lima.users_migrated,\"users migrated\"),\"last\")"
     ],
-    "lineMode": "connected"
+    "title": "Users and Usernames",
+    "_salt": "1498139126.944",
+    "lineWidth": "3",
+    "colorList": "green,blue,red",
+    "drawNullAsZero": "false"
   },
   {
     "lineMode": "connected",
     "target": [
       "legendValue(alias(stats.gauges.lima.metaanalyses,\"metaanalyses\"),\"last\")",
-      "legendValue(alias(stats.gauges.lima.papers,\"papers\"),\"last\")",
       "legendValue(alias(stats.gauges.lima.metaanalyses_migrated,\"metaanalyses migrated\"),\"last\")",
+      "legendValue(alias(stats.gauges.lima.papers,\"papers\"),\"last\")",
       "legendValue(alias(stats.gauges.lima.papers_migrated,\"papers migrated\"),\"last\")"
     ],
-    "colorList": "blue,green,#0000ff,#00aa00",
+    "lineWidth": "3",
     "title": "Papers and Metaanalyses",
     "_salt": "1498140176.945",
-    "lineWidth": "3",
-    "drawNullAsZero": "false",
-    "yMin": "0"
+    "yMin": "0",
+    "colorList": "blue,#0000ff,green,#00aa00",
+    "drawNullAsZero": "false"
   },
   {
     "target": [
       "alias(summarize(stats_counts.lima.access.total,\"1min\"),\"Access count per 1min\")"
     ],
-    "title": "Accesses per minute",
     "yStep": "10",
+    "title": "Accesses per minute",
     "yUnitSystem": "si",
     "_salt": "1498081397.434",
     "lineWidth": "3",
     "drawNullAsZero": "true"
   },
   {
+    "yStepRight": "1",
+    "lineWidth": "3",
+    "areaAlpha": ".5",
     "target": [
       "alias(color(stacked(summarize(stats_counts.lima.started,\"10min\")),\"red\"),\"boot (per 10min)\")",
       "alias(secondYAxis(color(stacked(scale(movingAverage(stats_counts.lima.alive,18),6)),\"green\")),\"alive ping\")"
     ],
-    "areaAlpha": ".5",
-    "yStepRight": "1",
-    "_salt": "1498145802.782",
-    "lineWidth": "3"
+    "_salt": "1498145802.782"
   },
   {
+    "lineMode": "connected",
     "drawNullAsZero": "false",
+    "title": "LiMA CPU, HDD, MEM",
+    "minorY": "0",
+    "_salt": "1497974833.397",
     "target": [
       "cactiStyle(alias(movingAverage(stats.gauges.lima.os.cpu,20),\"CPU\"))",
       "cactiStyle(alias(movingAverage(stats.gauges.lima.os.mem,20),\"MEM\"))",
       "cactiStyle(alias(movingAverage(stats.gauges.lima.os.hdd,20),\"HDD\"))"
     ],
-    "title": "LiMA CPU, HDD, MEM",
-    "minorY": "0",
-    "_salt": "1497974833.397",
     "lineWidth": "2",
     "colorList": "red,blue,green",
-    "yMax": "100",
-    "lineMode": "connected"
+    "yMax": "100"
   },
   {
+    "lineMode": "connected",
     "drawNullAsZero": "false",
     "title": "Statsvr CPU, HDD, MEM",
     "minorGridLineColor": "#602020",
@@ -77,8 +78,7 @@
     ],
     "lineWidth": "2",
     "colorList": "#800000,#008000,#404080",
-    "yMax": "100",
-    "lineMode": "connected"
+    "yMax": "100"
   },
   {
     "lineWidth": "2",

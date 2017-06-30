@@ -33,10 +33,11 @@ ssh lima
 sudo login -f lima
 cd living-meta-analysis
 # do not forever stop server
+git diff -U2             # review currently existing local changes
 git stash
 git pull
 git stash apply
-git diff -U2             # review everything
+git diff -U2             # verify the local changes haven't been broken
 npm install --production # if package.json has changed
 forever restart server   # if server has changed
 logout                   # so we don't have a hanging terminal to the server
