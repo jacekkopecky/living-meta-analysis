@@ -2611,7 +2611,7 @@
     dismissAddExperimentColumn();
     var col = {title: null, type: COLUMN_TYPE_CHAR, sourceColumnMap: {}, id: _.getNextID(currentMetaanalysis.columns)};
     currentMetaanalysis.columns.push(col);
-    currentMetaanalysis.columnsHash = _.generateIDHash(currentMetaanalysis);
+    currentMetaanalysis.columnsHash = _.generateIDHash(currentMetaanalysis.columns);
     moveResultsAfterCharacteristics(currentMetaanalysis);
     updateMetaanalysisView();
     setTimeout(focusFirstValidationError, 0);
@@ -4145,11 +4145,11 @@
 
   function hideColumn(e) {
     var colIndex = parseInt(_.findPrecedingEl(e.target, 'div.popupbox').dataset.index);
-    if (isNaN(colIndex)) return; // we don't know what to move
+    if (isNaN(colIndex)) return; // we don't know what to hide
 
-    if (!currentMetaanalysis.columns[colIndex].id) return console.error('cannot hide computed columns');
+    if (!currentMetaanalysis.columns[colIndex].id) return console.error('cannot hide computed columns yet');
 
-    currentMetaanalysis.hiddenCols.push(currentMetaanalysis.columns[colIndex]);
+    currentMetaanalysis.hiddenCols.push(currentMetaanalysis.columns[colIndex].id);
     unpinPopupBox();
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
@@ -4167,7 +4167,7 @@
 
     if (!currentMetaanalysis.columns[columnIndex]) return console.error('column[' + columnIndex + '] not found in columns!');
     currentMetaanalysis.columns.splice(columnIndex, 1);
-    currentMetaanalysis.columnsHash = _.generateIDHash(currentMetaanalysis);
+    currentMetaanalysis.columnsHash = _.generateIDHash(currentMetaanalysis.columns);
     unpinPopupBox();
     updateMetaanalysisView();
     _.scheduleSave(currentMetaanalysis);
@@ -4196,7 +4196,7 @@
 
     for (var i = index; i >= 0; i--) {
       if (isHiddenCol(currentMetaanalysis.columns[i])) {
-        _.removeFromArray(currentMetaanalysis.hiddenCols, currentMetaanalysis.columns[i]);
+        _.removeFromArray(currentMetaanalysis.hiddenCols, currentMetaanalysis.columns[i].id);
       } else {
         break;
       }
