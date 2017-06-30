@@ -265,9 +265,10 @@
     if (document.activeElement === editEl) ev.preventDefault();
   };
 
-  _.addOnInputUpdater = function addOnInputUpdater(root, selector, property, validatorSanitizer, target, targetProp, doAfterChange) {
+  _.addOnInputUpdater = function addOnInputUpdater(root, selector, property, validatorSanitizer, target, targetProp, doBeforeChange, doAfterChange) {
     if (!(root instanceof Node)) {
-      doAfterChange = targetProp;
+      doAfterChange = doBeforeChange;
+      doBeforeChange = targetProp;
       targetProp = target;
       target = validatorSanitizer;
       validatorSanitizer = property;
@@ -293,6 +294,7 @@
           }
           el.classList.remove('validationerror');
           _.setValidationErrorClass();
+          if (doBeforeChange) doBeforeChange(el);
           if (target) {
             _.assignDeepValue(target, targetProp, value);
             _.scheduleSave(target);
@@ -418,6 +420,15 @@
       if (obj.id) retval[obj.id] = obj;
     });
     return retval;
+  };
+
+  // determine the biggest id in an array of objects with numeric IDs in string values, return that + 1
+  _.getNextID = function getNextID(arr) {
+    var max = 0; // we want to start at 1
+    arr.forEach(function (obj) {
+      if (obj.id && !isNaN(+obj.id) && max < +obj.id) max = +obj.id;
+    });
+    return '' + (max + 1);
   };
 
 

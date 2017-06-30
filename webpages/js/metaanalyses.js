@@ -69,7 +69,7 @@
     .then(function (papers) {
       return papers.concat(loadAllLocalMetaanalyses());
     })
-    .then(fillMetaanalysissList)
+    .then(fillMetaanalysisList)
     .catch(function (err) {
       console.error("problem getting metaanalyses");
       console.error(err);
@@ -77,7 +77,7 @@
     });
   }
 
-  function fillMetaanalysissList(metaanalyses) {
+  function fillMetaanalysisList(metaanalyses) {
     var list = _.findEl('.metaanalysis.list > ul');
     list.innerHTML = '';
 
@@ -1883,7 +1883,22 @@
               _.fillEls(td, '.value', val.value);
             }
 
-            _.addOnInputUpdater(td, '.value', 'textContent', trimmingSanitizer, paper, ['experiments', expIndex, 'data', mappedColId, 'value'], recalculateComputedData);
+            // we may not have a column mapping for this column and this paper just yet
+            // so if we need it (in on-input updater, or in comments), we must create the mapping
+            // and then the on-input updater, or the comments logic, needs to use the new mapping
+            var dataKey = ['experiments', expIndex, 'data', mappedColId, 'value'];
+            var commentKey = ['experiments', expIndex, 'data', mappedColId, 'comments'];
+
+            function addNewColumnMapping() {
+              if (mappedColId) return;
+              var newCol = paper.addExperimentColumn(col.title, col.description, col.type);
+              mappedColId = col.sourceColumnMap[paper.id] = newCol.id;
+              // we have just made a new mapping, update the generated keys so they don't contain 'undefined'
+              dataKey[3] = mappedColId;
+              commentKey[3] = mappedColId;
+            }
+
+            _.addOnInputUpdater(td, '.value', 'textContent', trimmingSanitizer, paper, dataKey, addNewColumnMapping, recalculateComputedData);
 
             var user = lima.getAuthenticatedUserEmail();
             _.fillEls (td, '.valenteredby', val && val.enteredBy || user);
@@ -1893,7 +1908,7 @@
             setupPopupBoxPinning(td, '.datum.popupbox', papIndex + ',' + expIndex + ',' + col.id);
 
             // populate comments
-            fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', paper, ['experiments', expIndex, 'data', mappedColId, 'comments']);
+            fillComments('comment-template', td, '.commentcount', '.datum.popupbox main', paper, commentKey, addNewColumnMapping);
 
             td.classList.add(col.type);
           } else {
@@ -1960,7 +1975,7 @@
 
     th.classList.add(col.type);
 
-    _.addOnInputUpdater(th, '.coldescription', 'textContent', identity, col, ['description']);
+    _.addOnInputUpdater(th, '.coldescription', 'textContent', identity, metaanalysis, ['columns', columnIndex, 'description']);
 
     addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', null, 'textContent', checkColTitle, metaanalysis, ['columns', columnIndex, 'title'], doDeleteColumn);
 
@@ -2594,7 +2609,7 @@
 
   function addNewExperimentColumn() {
     dismissAddExperimentColumn();
-    var col = {title: null, type: COLUMN_TYPE_CHAR, sourceColumnMap: {}, id: getNextID(currentMetaanalysis.columns)};
+    var col = {title: null, type: COLUMN_TYPE_CHAR, sourceColumnMap: {}, id: _.getNextID(currentMetaanalysis.columns)};
     currentMetaanalysis.columns.push(col);
     currentMetaanalysis.columnsHash = _.generateIDHash(currentMetaanalysis);
     moveResultsAfterCharacteristics(currentMetaanalysis);
@@ -2602,14 +2617,6 @@
     setTimeout(focusFirstValidationError, 0);
   }
 
-  // determine the biggest id in an array of objects with numeric IDs in string values, return that + 1
-  function getNextID(arr) {
-    var max = 0; // we want to start at 1
-    arr.forEach(function (obj) {
-      if (obj.id && !isNaN(+obj.id) && max < +obj.id) max = +obj.id;
-    });
-    return '' + (max + 1);
-  }
 
   function addNewComputedColumn() {
     dismissAddExperimentColumn();
@@ -3615,8 +3622,8 @@
    *
    */
 
-  function fillComments(templateId, root, countSelector, textSelector, metaanalyses, commentsPropPath) {
-    var comments = _.getDeepValue(metaanalyses, commentsPropPath) || [];
+  function fillComments(templateId, root, countSelector, textSelector, metaanalysis, commentsPropPath, doBeforeChange) {
+    var comments = _.getDeepValue(metaanalysis, commentsPropPath) || [];
 
     if (comments.length > 0) {
       root.classList.add('hascomments');
@@ -3645,7 +3652,7 @@
       _.fillEls(el, '.ctime', _.formatDateTime(comment.ctime || Date.now()));
       _.fillEls(el, '.text', comment.text);
 
-      _.addOnInputUpdater(el, '.text', 'textContent', identity, metaanalyses, commentsPropPath.concat(i, 'text'));
+      _.addOnInputUpdater(el, '.text', 'textContent', identity, metaanalysis, [commentsPropPath, i, 'text'], doBeforeChange);
       textTargetEl.appendChild(el);
     }
 
@@ -3663,11 +3670,12 @@
       var text = newComment.textContent;
       newComment.textContent = '';
       if (text.trim()) {
-        var comments = _.getDeepValue(metaanalyses, commentsPropPath, []);
+        if (doBeforeChange) doBeforeChange();
+        var comments = _.getDeepValue(metaanalysis, commentsPropPath, []);
         comments.push({ text: text });
-        fillComments(templateId, root, countSelector, textSelector, metaanalyses, commentsPropPath);
+        fillComments(templateId, root, countSelector, textSelector, metaanalysis, commentsPropPath);
         _.setYouOrName(); // the new comment needs to be marked as "yours" so you can edit it
-        _.scheduleSave(metaanalyses);
+        _.scheduleSave(metaanalysis);
       }
     });
 

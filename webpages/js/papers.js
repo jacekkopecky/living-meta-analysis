@@ -66,6 +66,7 @@
   Paper.prototype.save = savePaper;
   Paper.prototype.init = initPaper;
   Paper.prototype.saveOrder = 2; // between columns and metaanalyses
+  Paper.prototype.addExperimentColumn = addExperimentColumn;
 
   function initPaper(newPaper) {
     var self = this;
@@ -100,6 +101,17 @@
     });
 
     return self;
+  }
+
+  function addExperimentColumn(title, description, type) {
+    var col = {
+      title: title,
+      description: description,
+      type: type,
+      id: _.getNextID(this.columns)
+    };
+    this.columns.push(col);
+    return col;
   }
 
   /* save
