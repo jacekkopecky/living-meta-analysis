@@ -16,6 +16,8 @@
   // this could break if they are renamed to better titles and then we'd need to update the homepage
 
   _.addTest(function testHomepageLinks(assert) {
+    if (window.limaTestingMode) return; // in testing mode we use a tweaked subset of data, no need to check it here
+
     test200(assert, "/api/metaanalyses/tomas.rubin@port.ac.uk/MisinformationEffect/");
     test200(assert, "/api/metaanalyses/tomas.rubin@port.ac.uk/MyMeta-analysis/");
   });

@@ -8,6 +8,7 @@
     margin: .5em 0;
     line-height: 1.3em;
     white-space: pre-wrap;
+    min-height: 10em;
   }
 
   pre:empty:before {
@@ -49,7 +50,9 @@ window.lima.initPage = function () {
 
   window.testoutput.textContent = 'testing\n';
   try {
-    _.runTests();
+    var testing = window.location.search == '?testing';
+    window.limaTestingMode = testing;
+    _.runTests(testing);
   } catch(e) {
     console.error(e);
     window.testoutput.textContent += 'error, see console output\n';

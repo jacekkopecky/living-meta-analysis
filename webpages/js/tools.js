@@ -639,7 +639,10 @@
   var tests = [];
   var globalErrors = [];
 
-  _.runTests = function runTests() {
+  // run the registered tests
+  // log all output in window.testouput if we have that, otherwise in console log
+  // quiet mode means test output always looks the same if all tests passed (no matter how many we ran)
+  _.runTests = function runTests(quiet) {
     // as the last test, add reporting of global errors
     _.addTest(reportGlobalErrors);
 
@@ -676,28 +679,36 @@
       };
     }
 
-    log('running ' + tests.length + ' tests');
+    if (quiet) {
+      log('running tests');
+    } else {
+      log('running ' + tests.length + ' tests');
+    }
     var testsCopy = tests.slice();
     var index = 0;
 
     // run tests asynchronously so browser updates view after every test
     setTimeout(function runNextTest() {
       if (testsCopy.length == 0) {
-        log('finished ' + tests.length + ' tests: ' + (tests.length - failedTests) + ' passed, ' + failedTests + ' failed');
+        if (quiet) {
+          log('finished tests: ' + failedTests + ' failed');
+        } else {
+          log('finished ' + tests.length + ' tests: ' + (tests.length - failedTests) + ' passed, ' + failedTests + ' failed');
+        }
         return;
       }
 
       var test = testsCopy.shift();
       successfulAssertions = 0;
       currentAssertion = -1;
-      log('running test ' + (test.name || index));
+      if (!quiet) log('running test ' + (test.name || index));
       try {
         test(assert);
       } catch (e) {
         log('  assertion #' + currentAssertion + ' error: ', e);
         failedTests += 1;
       }
-      log('   done test ' + (test.name || index) + ' (' + successfulAssertions + ' assertion(s) passed)');
+      if (!quiet) log('   done test ' + (test.name || index) + ' (' + successfulAssertions + ' assertion(s) passed)');
       index += 1;
 
       setTimeout(runNextTest, 0);

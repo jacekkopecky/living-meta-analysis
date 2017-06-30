@@ -427,7 +427,7 @@ function getMetaanalysisVersion(req, res, next) {
     });
   })
   .catch((e) => {
-    next(e.status ? e : new NotFoundError());
+    next(e && e.status ? e : new NotFoundError());
   });
 }
 
