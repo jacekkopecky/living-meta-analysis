@@ -11,6 +11,12 @@ gemini.suite('basics', (suite) => {
     //   actions.sendKeys(gemini.RETURN);
     // })
 
+  gemini.suite('tests', (suite) => {
+    suite.setUrl('/tests/?testing')
+      .setCaptureElements('body')
+      .capture('plain')
+  });
+
   gemini.suite('401', (suite) => {
     suite.setUrl('/401')
       .setCaptureElements('body')
