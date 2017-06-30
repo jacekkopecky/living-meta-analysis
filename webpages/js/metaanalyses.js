@@ -2471,8 +2471,6 @@
     // show the add column box
     _.addClass('#metaanalysis table.experiments tr:first-child th.add div.newcolumn', 'adding');
     _.addClass('body', 'addnewcolumn');
-
-    populateAddColumnsList();
   }
 
   function dismissAddExperimentColumn() {
@@ -2480,132 +2478,8 @@
     _.removeClass('body', 'addnewcolumn');
   }
 
-  function populateAddColumnsList() {
-    var columns = {};
-    var list = _.findEl('#metaanalysis table.experiments tr:first-child th.add div.newcolumn .addcolumnbox > ul');
-    list.innerHTML='';
-    var ordered = {yours: { result: [], characteristic: []},
-                   other: { result: [], characteristic: []},
-                   already: { result: [], characteristic: []}
-                  };
-    Object.keys(columns).forEach(function(colId) {
-      var col = columns[colId];
-      var bucket = 'yours';
-      if (currentMetaanalysis.columns.indexOf(colId) > -1) bucket = 'already';
-      ordered[bucket][col.type].push(col);
-    });
-    ordered.yours.result.sort(compareColumnsByAuthorAndTitle);
-    ordered.yours.characteristic.sort(compareColumnsByAuthorAndTitle);
-    ordered.other.result.sort(compareColumnsByAuthorAndTitle);
-    ordered.other.characteristic.sort(compareColumnsByAuthorAndTitle);
-    ordered.already.result.sort(compareColumnsByAuthorAndTitle);
-    ordered.already.characteristic.sort(compareColumnsByAuthorAndTitle);
-
-    // todo add collapsing of these blocks on clicking the header
-    var usedInTheMetaanalysis = [].concat(
-      ordered.already.characteristic,
-      ordered.already.result);
-    addColumnsBlock(list, 'your characteristic/moderator columns:', ordered.yours.characteristic);
-    addColumnsBlock(list, 'your result columns:', ordered.yours.result);
-    addColumnsBlock(list, 'characteristic/moderator columns:', ordered.other.characteristic);
-    addColumnsBlock(list, 'result columns:', ordered.other.result);
-    addColumnsBlock(list, 'columns used in the meta-analysis:', usedInTheMetaanalysis);
-
-    _.removeClass('#metaanalysis table.experiments tr:first-child th.add div.newcolumn .addcolumnbox.loading', 'loading');
-    _.setYouOrName();
-
-    emptyColInfo();
-    pinPopupBox('colinfo');
-  }
-
-  function compareColumnsByAuthorAndTitle(a, b) {
-    if (a.definedBy < b.definedBy) return -1;
-    if (a.definedBy > b.definedBy) return 1;
-    if (a.title < b.title) return -1;
-    if (a.title > b.title) return 1;
-    return 0;
-  }
-
-  function addColumnsBlock(list, headingText, columns) {
-    var user = lima.getAuthenticatedUserEmail();
-    if (!columns.length) return; // do nothing if we have no columns in the block
-    var heading = document.createElement('li');
-    heading.classList.add('heading');
-    heading.textContent = headingText;
-    list.appendChild(heading);
-    columns.forEach(function (col) {
-      var li = _.cloneTemplate('column-list-item-template').children[0];
-      _.fillEls(li, '.coltitle', col.title);
-      _.fillEls(li, '.definedby .value', col.definedBy || user);
-      _.setProps(li, '.definedby .value', 'href', '/' + (col.definedBy || user) + '/');
-      _.setDataProps(li, '.needs-owner', 'owner', col.definedBy || user);
-      li.dataset.colid = col.id;
-
-      if (currentMetaanalysis.columns.indexOf(col.id) > -1) {
-        li.classList.add('alreadythere');
-      }
-
-      li.addEventListener('mouseenter', fillColInfo);
-      _.addEventListener(li, '.coltitle', 'click', selectNewColumn);
-      list.addEventListener('mouseleave', emptyColInfo);
-
-      list.appendChild(li);
-    });
-  }
-
   var COLUMN_TYPE_CHAR = 'characteristic';
   var COLUMN_TYPE_COMP = 'result';
-
-  function fillColInfo(ev) {
-    var col = currentMetaanalysis.columnsHash[ev.target.dataset.colid];
-    if (!col) {
-      console.warn('fillColInfo on element that doesn\'t have a valid column ID: ' + ev.target.dataset.colid);
-      return;
-    }
-    _.fillEls('#metaanalysis th.add .colinfo .coltitle', col.title);
-    _.fillEls('#metaanalysis th.add .colinfo .coldescription', col.description);
-    _.fillEls('#metaanalysis th.add .colinfo .colctime .value', _.formatDateTime(col.ctime));
-    _.fillEls('#metaanalysis th.add .colinfo .colmtime .value', _.formatDateTime(col.mtime));
-    _.fillEls('#metaanalysis th.add .colinfo .definedby .value', col.definedBy);
-    _.setProps('#metaanalysis th.add .colinfo .definedby .value', 'href', '/' + col.definedBy + '/');
-    _.setDataProps('#metaanalysis th.add .colinfo .needs-owner', 'owner', col.definedBy);
-
-    _.removeClass('#metaanalysis th.add .colinfo', 'unpopulated');
-
-    if (currentMetaanalysis.columns.indexOf(col.id) > -1) {
-      _.addClass('#metaanalysis th.add .colinfo', 'alreadythere');
-    } else {
-      _.removeClass('#metaanalysis th.add .colinfo', 'alreadythere');
-    }
-
-    _.setYouOrName();
-  }
-
-  function emptyColInfo() {
-    _.addClass('#metaanalysis th.add .colinfo', 'unpopulated');
-  }
-
-  function selectNewColumn(ev) {
-    var el = ev.target;
-    while (el && !el.dataset.colid) el = el.parentElement;
-    var col = currentMetaanalysis.columnsHash[el.dataset.colid];
-    if (!col) {
-      console.warn('selectNewColumn on element that doesn\'t have a valid column ID: ' + ev.target.dataset.colid);
-      return;
-    }
-    if (currentMetaanalysis.columns.indexOf(col.id) > -1) return; // do nothing on columns that are already there
-    // todo this will change when un-hiding a column
-
-    currentMetaanalysis.columns.push(col.id);
-    currentMetaanalysis.columnsHash = _.generateIDHash(currentMetaanalysis);
-    moveResultsAfterCharacteristics(currentMetaanalysis);
-    dismissAddExperimentColumn();
-    updateMetaanalysisView();
-    _.scheduleSave(currentMetaanalysis);
-
-    // the click will popup the wrong box, so delay popping up the right one until after the click is fully handled
-    setTimeout(pinPopupBox, 0, 'fullcolinfo@' + el.dataset.colid);
-  }
 
   function addNewExperimentColumn() {
     dismissAddExperimentColumn();
