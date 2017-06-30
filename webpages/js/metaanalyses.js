@@ -3616,7 +3616,7 @@
    */
 
   function fillComments(templateId, root, countSelector, textSelector, metaanalyses, commentsPropPath) {
-    var comments = getDeepValue(metaanalyses, commentsPropPath) || [];
+    var comments = _.getDeepValue(metaanalyses, commentsPropPath) || [];
 
     if (comments.length > 0) {
       root.classList.add('hascomments');
@@ -3663,7 +3663,7 @@
       var text = newComment.textContent;
       newComment.textContent = '';
       if (text.trim()) {
-        var comments = getDeepValue(metaanalyses, commentsPropPath, []);
+        var comments = _.getDeepValue(metaanalyses, commentsPropPath, []);
         comments.push({ text: text });
         fillComments(templateId, root, countSelector, textSelector, metaanalyses, commentsPropPath);
         _.setYouOrName(); // the new comment needs to be marked as "yours" so you can edit it
@@ -4459,7 +4459,7 @@
         _.cancelScheduledSave(target);
         return;
       }
-      var origValue = getDeepValue(target, targetProp) || '';
+      var origValue = _.getDeepValue(target, targetProp) || '';
       if (value !== origValue) {
         confirmEl.disabled = false;
         editingEl.classList.add('unsaved');
@@ -4480,7 +4480,7 @@
     editingEl.oninput();
 
     function cancel() {
-      editingEl[property] = getDeepValue(target, targetProp);
+      editingEl[property] = _.getDeepValue(target, targetProp);
       editingEl.oninput(true);
     }
 
@@ -4526,30 +4526,6 @@
     cancelEls.forEach(function (cancelEl) {
       cancelEl.onclick = cancel;
     });
-  }
-
-  function getDeepValue(target, targetProp, addDefaultValue) {
-    if (Array.isArray(targetProp)) {
-      targetProp = [].concat(targetProp); // duplicate the array so we don't affect the passed value
-    } else {
-      targetProp = [targetProp];
-    }
-
-    while (targetProp.length > 0) {
-      var prop = targetProp.shift();
-      if (!(prop in target) || target[prop] == null) {
-        if (addDefaultValue != null) {
-          if (targetProp.length == 0) target[prop] = addDefaultValue;
-          else if (Number.isInteger(targetProp[0])) target[prop] = [];
-          else target[prop] = {};
-        } else {
-          return undefined;
-        }
-      }
-      target = target[prop];
-    }
-
-    return target;
   }
 
 
@@ -4856,7 +4832,6 @@
     // for testing
     lima.pinPopupBox = pinPopupBox;
     lima.unpinPopupBox = unpinPopupBox;
-    lima.getDeepValue = getDeepValue;
     lima.getAllTitles = function(){return allTitles;};
     lima.getCurrentMetaanalysis = function(){return currentMetaanalysis;};
     lima.savePendingMax = 0;
