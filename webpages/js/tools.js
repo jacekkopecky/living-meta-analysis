@@ -306,11 +306,14 @@
   };
 
   _.assignDeepValue = function assignDeepValue(target, targetProp, value) {
-    if (Array.isArray(targetProp)) {
-      // copy targetProp so we can manipulate it
-      targetProp = targetProp.slice();
+    if (targetProp == null || Array.isArray(targetProp) && targetProp.length == 0) return undefined; // do nothing
+
+    if (Array.isArray(targetProp) && targetProp.length > 0) {
+      // flatten (and thus copy) targetProp so we can manipulate it
+      targetProp = flattenNestedArray(targetProp);
       while (targetProp.length > 1) {
         var prop = targetProp.shift();
+        if (prop == null) return undefined;
         if (!(prop in target) || target[prop] == null) {
           if (Number.isInteger(targetProp[0])) target[prop] = [];
           else target[prop] = {};
@@ -323,6 +326,37 @@
     target[targetProp] = value;
     return value;
   };
+
+  _.getDeepValue = function getDeepValue(target, targetProp, addDefaultValue) {
+    // flatten (and duplicate) the array so we don't affect the passed value
+    targetProp = flattenNestedArray(targetProp);
+
+    while (targetProp.length > 0) {
+      var prop = targetProp.shift();
+      if (prop == null) return undefined;
+      if (!(prop in target) || target[prop] == null) {
+        if (addDefaultValue != null) {
+          if (targetProp.length == 0) target[prop] = addDefaultValue;
+          else if (Number.isInteger(targetProp[0])) target[prop] = [];
+          else target[prop] = {};
+        } else {
+          return undefined;
+        }
+      }
+      target = target[prop];
+    }
+
+    return target;
+  };
+
+  function flattenNestedArray(arr) {
+    if (!Array.isArray(arr)) return [arr];
+    var retval = [];
+    arr.forEach(function (x) {
+      retval.push.apply(retval, flattenNestedArray(x));
+    });
+    return retval;
+  }
 
   _.setValidationErrorClass = function setValidationErrorClass() {
     var el = _.findEl('.validationroot');
@@ -1250,5 +1284,134 @@
     check (a, a);
   });
 
+  _.addTest(function testFlattenArray(assert) {
+    function check(arr1,arr2) {
+      assert(JSON.stringify(flattenNestedArray(arr1)) === JSON.stringify(arr2), 'expected array ' + JSON.stringify(arr1) + ' to equal ' + JSON.stringify(arr2) + ' but got ' + JSON.stringify(flattenNestedArray(arr1)));
+    }
+
+    check([],               []);
+    check({},               [{}]);
+    check({foo:'bar'},      [{foo:'bar'}]);
+    check(1,                [1]);
+    check(NaN,              [NaN]);
+    check(undefined,        [undefined]);
+    check([undefined],      [undefined]);
+    check([1],              [1]);
+    check([1,[]],           [1]);
+    check([1,[],2],         [1,2]);
+    check([[1]],            [1]);
+    check([[1,2]],          [1,2]);
+    check([[1,2],3],        [1,2,3]);
+    check([[1,[2]],3],      [1,2,3]);
+    check([[1,[[[2]]]],3],  [1,2,3]);
+    check([[1,[[[]]]],3],   [1,3]);
+
+    var a = [3,4,5];
+    check([a,[1,a]],        [3,4,5,1,3,4,5]);
+    a.push(6);
+    check([a,[1,a]],        [3,4,5,6,1,3,4,5,6]);
+  });
+
+  _.addTest(function testDeepValueManipulators(assert) {
+    var target;
+
+    function checkGet(selector, value) {
+      assert(JSON.stringify(_.getDeepValue(target, selector)) === JSON.stringify(value), 'expected ' + JSON.stringify(selector) + ' to get us ' + JSON.stringify(value) + ' but got ' + JSON.stringify(_.getDeepValue(target, selector)));
+    }
+
+    function checkGetWithDefault(selector, defaultValue, value) {
+      assert(JSON.stringify(_.getDeepValue(target, selector, defaultValue)) === JSON.stringify(value), 'expected ' + JSON.stringify(selector) + ' to get us ' + JSON.stringify(value) + ' but got ' + JSON.stringify(_.getDeepValue(target, selector)));
+    }
+
+    function checkAssign(selector, value, expectedObject) {
+      _.assignDeepValue(target, selector, value);
+      assert(JSON.stringify(target) === JSON.stringify(expectedObject), 'expected ' + JSON.stringify(target) + ' to equal ' + JSON.stringify(expectedObject) + ' after setting ' + JSON.stringify(selector) + ' to ' + JSON.stringify(value));
+    }
+
+    target = {
+      a: {
+        'undefined': 4,
+      },
+    };
+
+    checkGet( ['a'],               { 'undefined': 4});
+    checkGet( ['a', undefined],    undefined);
+    checkGet( ['a', 'undefined'],  4);
+
+    target = {
+      a: 3,
+      b: {
+        c: 4,
+        d: [
+          5,
+          6,
+          {
+            e: 7,
+          },
+        ],
+      },
+    };
+
+    checkGet( 'a',                      3);
+    checkGet( 'b',                      { c: 4, d: [ 5, 6, { e: 7 } ] });
+    checkGet( undefined,                undefined);
+    checkGet( null,                     undefined);
+    checkGet( '',                       undefined);
+    checkGet( NaN,                      undefined);
+    checkGet( ['b', 'c'],               4);
+    checkGet( ['b', 'd'],               [ 5, 6, { e: 7 } ]);
+    checkGet( ['b', 'd', 0],            5);
+    checkGet( [['b', 'd'], 0],          5);
+    checkGet( ['b', 'd', 1],            6);
+    checkGet( ['b', 'd', 2],            { e: 7 });
+    checkGet( ['b', 'd', 2, 'e'],       7);
+    checkGet( ['b', 'd', 2, 'f'],       undefined);
+    checkGet( ['b', 'd', 3],            undefined);
+    checkGet( ['b', 'd', 3, 'e'],       undefined);
+    checkGet( ['b', ['d', 3], 'e'],     undefined);
+    checkGet( ['b', 'd', 'a'],          undefined);
+    checkGet( ['', 'a'],                undefined);
+
+    // the ordering of these tests is important
+    checkGetWithDefault( 'a',                  42,            3);
+    checkGetWithDefault( 'b',                  42,            { c: 4, d: [ 5, 6, { e: 7 } ] });
+    checkGetWithDefault( ['b', 'c'],           42,            4);
+    checkGetWithDefault( ['b', 'd'],           42,            [ 5, 6, { e: 7 } ]);
+    checkGetWithDefault( ['b', 'd', 0],        42,            5);
+    checkGetWithDefault( [['b', 'd'], 0],      42,            5);
+    checkGetWithDefault( ['b', 'd', 1],        42,            6);
+    checkGetWithDefault( ['b', 'd', 2],        42,            { e: 7 });
+    checkGetWithDefault( ['b', 'd', 2, 'e'],   42,            7);
+
+    checkGet           ( ['b', 'd', 2, 'f'],                  undefined);
+    checkGetWithDefault( ['b', 'd', 2, 'f'],   42,            42);
+    checkGet           ( ['b', 'd', 2, 'f'],                  42);
+
+    checkGetWithDefault( ['b', 'd', 3],        42,            42);
+    checkGet           ( ['b', 'd'],                          [ 5, 6, { e: 7, f: 42 }, 42 ]);
+
+    checkGetWithDefault( ['b', 'd', 2, 'g'],   undefined,     undefined);
+    checkGet           ( ['b', 'd'],                          [ 5, 6, { e: 7, f: 42 }, 42 ]);
+
+    checkGetWithDefault( ['b', 'd', 4, 'e'],   42,            42);
+    checkGet           ( ['b', 'd'],                          [ 5, 6, { e: 7, f: 42 }, 42, { e: 42 } ]);
+
+    target = {};
+    checkAssign( 'a',                      42,            {a:42});
+    checkAssign( 'b',                       2,            {a:42, b:2});
+    checkAssign( undefined,                12,            {a:42, b:2});
+
+    var exception = null;
+    try {
+      checkAssign( ['b', 'c'],              3,            {a:42, b:2});
+    } catch (e) { exception = e; }
+    assert(exception != null, "assignDeepValue( ['b', 'c'], 3) should fail because b is 2 and we can't assing 'c' of that");
+
+    checkAssign( '',                        4,            {a:42, b:2, '':4});
+    checkAssign( ['c', 2, 'd'],             5,            {a:42, b:2, '':4, c:[undefined,undefined,{d:5}]});
+    checkAssign( ['c', undefined, 'd'],     5,            {a:42, b:2, '':4, c:[undefined,undefined,{d:5}]});
+    checkAssign( ['c', [2, 'e']],           6,            {a:42, b:2, '':4, c:[undefined,undefined,{d:5,e:6}]});
+    checkAssign( [],                        7,            {a:42, b:2, '':4, c:[undefined,undefined,{d:5,e:6}]});
+  });
 
 })(document, window);
