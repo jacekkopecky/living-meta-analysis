@@ -1977,6 +1977,7 @@
 
     _.addOnInputUpdater(th, '.coldescription', 'textContent', identity, metaanalysis, ['columns', columnIndex, 'description']);
 
+    _.setDataProps(th, '.coltitle.editing', 'origTitle', col.title);
     addConfirmedUpdater(th, '.coltitle.editing', '.coltitle ~ .coltitlerename', null, 'textContent', checkColTitle, metaanalysis, ['columns', columnIndex, 'title'], doDeleteColumn);
 
     setupPopupBoxPinning(th, '.fullcolinfo.popupbox', col.id);
@@ -3615,8 +3616,13 @@
     return title;
   }
 
-  function checkColTitle(title) {
+  function checkColTitle(title, el) {
+    title = title.trim();
     if (title === '') throw null; // no message necessary
+    if (title === el.dataset.origTitle) return title;
+    currentMetaanalysis.columns.forEach(function (col) {
+      if (col.id && col.title == title) throw 'two columns cannot be named the same';
+    });
     return title;
   }
 
