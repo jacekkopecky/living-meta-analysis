@@ -54,7 +54,7 @@ random-code-12345 # 2017-02-28 generated for Cochrane workshop attendees
 use the script `geninvite` to generate invites, e.g.
 
 ```
-for pom in `seq 1 100`; do geninvite "for Cochrane workshop attendees and other invitees"; done >> invites.txt
+for pom in `seq 1 100`; do geninvite "for Cochrane workshop attendees and other invitees"; done
 ```
 
 Then print them with [LiMA's print page](https://lima.soc.port.ac.uk/admin/print-invites).
@@ -72,6 +72,19 @@ do
 done
 
 echo $code '#' `date +"%Y-%m-%d %H:%M"` $1
+echo $code '#' `date +"%Y-%m-%d %H:%M"` $1 >> ~/living-meta-analysis/invites.txt
+```
+
+To view used invites:
+
+```
+zcat -f /var/log/lima/*access.log  | awk '/^[^    ]+[     ][^-]/ {print $2}' | sort -u | (while read a; do grep -- "$a" ~/living-meta-analysis/invites.txt; done) | sort -k +3
+```
+
+To view failed invites:
+
+```
+zcat -f /var/log/lima/*access.log  | awk '/^[^    ]+[     ]-/ {print $2}' | sort -u 
 ```
 
 
