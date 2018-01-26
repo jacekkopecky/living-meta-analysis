@@ -918,7 +918,7 @@ section.list > ul > li > ul.tags > li {
 
 /* make space for the boxes on the right-hand side of the page */
 #metaanalysis > :not(header) {
-  margin: .5em 16em 0 0;
+  margin: 1em 16em 0 0;
 }
 
 #metaanalysis > header > .title.notediting {
@@ -955,7 +955,8 @@ body:not(.page-about-you) #metaanalysis > header .edityourcopy {
   white-space: pre-line;
   display: inline-block;
   vertical-align: top;
-  max-width: 30em;
+  max-width: 50em;
+  margin-left: 1em;
 }
 
 #metaanalysis > header {
@@ -1481,7 +1482,7 @@ body.page-about-you.editing .fullcolinfo header {
 #metaanalysis table.experiments {
   text-align: center;
   margin-right: 0em;
-  margin-top: 10em;
+  margin-top: 12em;
   border-spacing: 0;
   padding-right: 23em; /* 15em for width of popupbox and 8em for width of overhanging column labels and new column box */
 }
@@ -2128,6 +2129,7 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
 
 #metaanalysis table.aggregates {
   margin-top: 2em;
+  margin-bottom: 2em;
   border-collapse: collapse;
 }
 

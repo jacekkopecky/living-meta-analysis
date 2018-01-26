@@ -34,7 +34,7 @@
 <template id="metaanalysis-template">
   <section id="metaanalysis" class="validationroot">
     <header>
-    <div class="popupbox default editing">
+    <!-- <div class="popupbox default editing">
       <header><h1>LiMA Meta-Analysis</h1></header>
       <p>A Meta-Analysis in LiMA is a collection of Papers, usually corresponding to multiple journals
         or conference publications, maybe supported by data from online appendices, accompanying reports or so.
@@ -43,7 +43,7 @@
         Paper in turn. Information for each Paper can be stored/accessed on the page for that Paper.
       <p>For example, a Meta-Analysis may include on four Papers; Each Paper could contain two experiments.
         In LiMA this would translate to eight rows (1 for each experiment) and the collective set of columns.
-    </div>
+    </div> -->
       <h1>Meta-analysis: </h1>
       <h1 class="title notediting"></h1>
       <h1 class="title editing oneline" contenteditable placeholder="enter a short name"></h1>
@@ -66,20 +66,19 @@
       <span class="unsavedmessage notunpin editing" title="click here to go to the first unconfirmed value">some value(s) need confirmation to be saved</span>
       <a class="edityourcopy" href="#">Edit your copy</a>
     </header>
-    <p>Entered <span class="enteredby if-not-yours-or-page-not-about-you needs-owner"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
     <!-- <p class="authors">Authors:
       <span class="value notediting">error</span>
       <span class="value editing oneline" contenteditable placeholder="enter the authors">error</span>
     </p> -->
     <div class="published popupboxtrigger">
       <div class="edithighlight">
-        <span class="popupboxhighlight" data-focuses=".value.editing">Published:</span>
+        <span class="popupboxhighlight" data-focuses=".value.editing">Reference:</span>
         <span class="value notediting">error</span>
         <span class="value editing oneline" contenteditable placeholder="authors, year, title, journal etc.">error</span>
       </div>
       <div class="popupbox editing" data-boxid='reference'>
         <div class="pin"></div>
-        <header><p>Published</p></header>
+        <header><p>Reference</p></header>
         <p class="description">Details of where this Meta-analysis has been published (if anywhere). Should include authors, year, title, and all the usual bibliographic information.</p>
         <!-- todo comments -->
       </div>
@@ -89,7 +88,6 @@
       <span class="value notediting">error</span>
       <span class="value editing" contenteditable placeholder="add description">error</span>
     </p>
-    <p class="mtime">Last modified: <span class="value date">error</span></p>
     <!-- todo show "other contributors" or "forks" or "clones" ... -->
     <!-- todo show meta-analyses that use this paper -->
     <!-- todo show history -->
@@ -101,6 +99,8 @@
     <div class="aggregates"></div>
     <p class='no-table'>No data has been entered for this meta-analysis yet.
       <span class="only-if-page-about-you">Turn editing on to add data.</span><!-- todo instruction to clone the paper? --></p>
+    <p>Entered <span class="enteredby if-not-yours-or-page-not-about-you needs-owner"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
+    <p class="mtime">Last modified: <span class="value date">error</span></p>
   </section>
 </template>
 <template id="tag-template"><li><span class="tag">error</span><span class="removetag editing">&times;</span></li></template>
