@@ -637,9 +637,9 @@
 
         _.fillEls(expEl, '.expname', line.title);
         if (line.or != null) {
-          _.fillEls(expEl, '.or', Math.exp(line.or).toPrecision(3));
-          _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toPrecision(3) + ",");
-          _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toPrecision(3));
+          _.fillEls(expEl, '.or', Math.exp(line.or).toFixed(1));
+          _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toFixed(1) + ",");
+          _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toFixed(1));
           _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
 
           _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
@@ -666,9 +666,9 @@
 
         sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
 
-        _.fillEls(sumEl, '.or', Math.exp(aggregates.or).toPrecision(3));
-        _.fillEls(sumEl, '.lcl', "" + Math.exp(aggregates.lcl).toPrecision(3) + ",");
-        _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toPrecision(3));
+        _.fillEls(sumEl, '.or', Math.exp(aggregates.or).toFixed(1));
+        _.fillEls(sumEl, '.lcl', "" + Math.exp(aggregates.lcl).toFixed(1) + ",");
+        _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toFixed(1));
 
         var lclX = getX(aggregates.lcl);
         var uclX = getX(aggregates.ucl);
@@ -1013,7 +1013,7 @@
             _.fillEls(expEl, '.expname', line.title);
             if (line.or != null) {
               groupMembers += 1;
-              _.fillEls(expEl, '.or.lcl.ucl', Math.exp(line.or).toPrecision(3) + ' [' + Math.exp(line.lcl).toPrecision(3) + ", " + Math.exp(line.ucl).toPrecision(3) + ']');
+              _.fillEls(expEl, '.or.lcl.ucl', Math.exp(line.or).toFixed(1) + ' [' + Math.exp(line.lcl).toFixed(1) + ", " + Math.exp(line.ucl).toFixed(1) + ']');
               _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
               _.fillEls(expEl, '.wtg', (Math.round(line.wtg)/10) + '%');
               _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
@@ -1058,7 +1058,7 @@
           _.fillEls(sumEl, '.sumname', "Total for " + group);
           sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.groupLineOffset + ',' + currGY + ')');
 
-          _.fillEls(sumEl, '.or.lcl.ucl', Math.exp(groupAggregates.or).toPrecision(3) + ' [' + Math.exp(groupAggregates.lcl).toPrecision(3) + ", " + Math.exp(groupAggregates.ucl).toPrecision(3) + ']');
+          _.fillEls(sumEl, '.or.lcl.ucl', Math.exp(groupAggregates.or).toFixed(1) + ' [' + Math.exp(groupAggregates.lcl).toFixed(1) + ", " + Math.exp(groupAggregates.ucl).toFixed(1) + ']');
           _.fillEls(sumEl, '.wt', groupAggregates.wt + '%');
 
           var lclX = getX(groupAggregates.lcl);
@@ -1117,7 +1117,7 @@
 
         sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
 
-        _.fillEls(sumEl, '.or.lcl.ucl', Math.exp(aggregates.or).toPrecision(3) + ' [' + Math.exp(aggregates.lcl).toPrecision(3) + ", " + Math.exp(aggregates.ucl).toPrecision(3) + ']');
+        _.fillEls(sumEl, '.or.lcl.ucl', Math.exp(aggregates.or).toFixed(1) + ' [' + Math.exp(aggregates.lcl).toFixed(1) + ", " + Math.exp(aggregates.ucl).toFixed(1) + ']');
 
         var lclX = getX(aggregates.lcl);
         var uclX = getX(aggregates.ucl);
@@ -1441,9 +1441,9 @@
           _.fillEls(tooltipEl, 'text.paper', exp.paper);
           _.fillEls(tooltipEl, 'text.exp', exp.exp);
           if (exp.or != null) {
-            _.fillEls(tooltipEl, 'text.or', Math.exp(exp.or).toPrecision(3));
-            _.fillEls(tooltipEl, 'text.wt', '' + (exp.wt*100/perGroup[group].wt).toPrecision(3) + '%');
-            _.fillEls(tooltipEl, 'text.ci', "" + exp.lcl.toPrecision(3) + ", " + exp.ucl.toPrecision(3));
+            _.fillEls(tooltipEl, 'text.or', Math.exp(exp.or).toFixed(2));
+            _.fillEls(tooltipEl, 'text.wt', '' + (exp.wt*100/perGroup[group].wt).toFixed(2) + '%');
+            _.fillEls(tooltipEl, 'text.ci', "" + Math.exp(exp.lcl).toFixed(2) + ", " + Math.exp(exp.ucl).toFixed(2));
           } else {
             grapeEl.classList.add('invalid');
             tooltipEl.classList.add('invalid');
