@@ -400,9 +400,9 @@
     addComputedDatumSetter(dropPlots);
     // then redraw the graphs
     // todo draw the graphs in order of currentMetaanalysis.graphs, not forests first and grapes second
+    addComputedDatumSetter(drawGrapeChart);
     addComputedDatumSetter(drawForestPlot);
     addComputedDatumSetter(drawForestPlotGroup);
-    addComputedDatumSetter(drawGrapeChart);
 
     recalculateComputedData();
   }
@@ -637,15 +637,14 @@
 
         _.fillEls(expEl, '.expname', line.title);
         if (line.or != null) {
-          _.fillEls(expEl, '.or', Math.exp(line.or).toFixed(1));
-          _.fillEls(expEl, '.lcl', "" + Math.exp(line.lcl).toFixed(1) + ",");
-          _.fillEls(expEl, '.ucl', Math.exp(line.ucl).toFixed(1));
-          _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10) + '%');
+          _.fillEls(expEl, '.or.lcl.ucl', Math.exp(line.or).toFixed(1) + ' [' + Math.exp(line.lcl).toFixed(1) + ", " + Math.exp(line.ucl).toFixed(1) + ']');
+          _.fillEls(expEl, '.wt', '' + (Math.round(line.wt / sumOfWt * 1000)/10).toFixed(1) + '%');
 
           _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
           _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
 
-          _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
+          _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or)-getBoxSize(line.wt)/2);
+          _.setAttrs(expEl, 'rect.weightbox', 'y', -getBoxSize(line.wt)/2);
           _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
           _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
         } else {
@@ -666,9 +665,7 @@
 
         sumEl.setAttribute('transform', 'translate(' + plotEl.dataset.padding + ',' + currY + ')');
 
-        _.fillEls(sumEl, '.or', Math.exp(aggregates.or).toFixed(1));
-        _.fillEls(sumEl, '.lcl', "" + Math.exp(aggregates.lcl).toFixed(1) + ",");
-        _.fillEls(sumEl, '.ucl', Math.exp(aggregates.ucl).toFixed(1));
+        _.fillEls(sumEl, '.or.lcl.ucl', Math.exp(aggregates.or).toFixed(1) + ' [' + Math.exp(aggregates.lcl).toFixed(1) + ", " + Math.exp(aggregates.ucl).toFixed(1) + ']');
 
         var lclX = getX(aggregates.lcl);
         var uclX = getX(aggregates.ucl);
@@ -1019,7 +1016,8 @@
               _.setAttrs(expEl, 'line.confidenceinterval', 'x1', getX(line.lcl));
               _.setAttrs(expEl, 'line.confidenceinterval', 'x2', getX(line.ucl));
 
-              _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or));
+              _.setAttrs(expEl, 'rect.weightbox', 'x', getX(line.or)-getBoxSize(line.wt)/2);
+              _.setAttrs(expEl, 'rect.weightbox', 'y', -getBoxSize(line.wt)/2);
               _.setAttrs(expEl, 'rect.weightbox', 'width', getBoxSize(line.wt));
               _.setAttrs(expEl, 'rect.weightbox', 'height', getBoxSize(line.wt));
 

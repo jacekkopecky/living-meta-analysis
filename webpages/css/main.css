@@ -2216,10 +2216,11 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
  *
  */
 #metaanalysis .plots {
-  margin-top: 2em;
+  margin-top: 4em;
 }
 
 #metaanalysis .plots > svg:not(.maximized) {
+  margin-bottom: 4rem;
   margin-right: 17rem; /* 15em for width of popupbox and 2em for extra gap */
 }
 

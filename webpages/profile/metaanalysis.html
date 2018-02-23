@@ -636,11 +636,11 @@
     data-line-height="30"
     data-padding="10"
     data-graph-width="300"
-    data-start-height="50"
+    data-start-height="70"
     data-end-height="65"
     data-min-wt-size="4"
     data-max-wt-size="14"
-    data-extra-line-len="-10"
+    data-extra-line-len="-30"
     data-min-diamond-width="14"
     >
     <style>
@@ -660,27 +660,25 @@
         text-anchor: middle;
       }
 
-      svg.forestplot .headings text.or,
-      svg.forestplot .experiment text.or,
-      svg.forestplot .summary text.or {
-        transform: translate(610px,20px);
-      }
-      svg.forestplot .headings text.lcl,
-      svg.forestplot .experiment text.lcl,
-      svg.forestplot .summary text.lcl {
-        text-anchor: end;
-        transform: translate(690px,20px);
-      }
-      svg.forestplot .headings text.ucl,
-      svg.forestplot .experiment text.ucl,
-      svg.forestplot .summary text.ucl {
+      svg.forestplot .title {
+        font-size: 20px;
         text-anchor: start;
-        transform: translate(695px,20px);
       }
+
+      svg.forestplot .headings {
+        transform: translate(10px, 30px)
+      }
+
+      svg.forestplot .headings text.or.lcl.ucl,
+      svg.forestplot .experiment text.or.lcl.ucl,
+      svg.forestplot .summary text.or.lcl.ucl {
+        transform: translate(610px, 20px);
+      }
+
       svg.forestplot .headings text.wt,
       svg.forestplot .experiment text.wt,
       svg.forestplot .summary text.wt {
-        transform: translate(780px,20px);
+        transform: translate(790px,20px);
         text-anchor: end;
       }
 
@@ -708,7 +706,7 @@
       }
 
       svg.forestplot .experiment .rowgraph .weightbox {
-        transform: translate(-50%,-50%) translate(0,15px);
+        transform: translate(0,15px);
         fill: black;
       }
 
@@ -768,19 +766,16 @@
       }
     </style>
 
-    <g transform="translate(10,0)" class="headings">
-      <text class="or">OR</text>
-      <text class="lcl">LCL,</text>
-      <text class="ucl">UCL</text>
-      <text class="wt">WT</text>
+    <g class="headings">
+      <text class="or lcl ucl">OR [LCL, UCL]</text>
+      <text class="wt">Weight</text>
+      <text class="title">Forest Plot</text>
     </g>
 
     <template class="experiment">
       <g class="experiment"><!-- should get transform="translate(padding,currY++)" -->
         <text class="expname">error</text>
-        <text class="or">invalid</text>
-        <text class="lcl">n/a,</text>
-        <text class="ucl">n/a</text>
+        <text class="or lcl ucl">invalid [n/a, n/a]</text>
         <text class="wt">n/a</text>
         <g class="rowgraph">
           <line class="confidenceinterval"/><!-- should get x1="lcl" x2="ucl" -->
@@ -817,9 +812,7 @@
       <g class="summary"><!-- should get transform="translate(padding,currY)" -->
         <g>
           <text class="sumname">Total</text>
-          <text class="or">err</text>
-          <text class="lcl">err,</text>
-          <text class="ucl">err</text>
+          <text class="or lcl ucl">invalid [n/a, n/a]</text>
           <line class="guideline"/><!-- should get x1="or" x2="or" y2="currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen)" -->
           <g class="sumgraph">
             <polygon class="confidenceinterval"/><!-- should get points="lcl,0 or,-10 ucl,0 or,10" -->
@@ -844,13 +837,13 @@
     data-line-height="30"
     data-padding="10"
     data-graph-width="200"
-    data-start-height="50"
+    data-start-height="80"
     data-group-start-height="10"
     data-height-between-groups="50"
     data-end-height="65"
     data-min-wt-size="4"
     data-max-wt-size="14"
-    data-extra-line-len="-10"
+    data-extra-line-len="-40"
     data-min-diamond-width="14"
     >
     <style>
@@ -914,7 +907,7 @@
       }
 
       svg.forestplotgroup .experiment .rowgraph .weightbox {
-        transform: translate(-50%,-50%) translate(0,15px);
+        transform: translate(0,15px);
         fill: black;
       }
 
@@ -955,6 +948,12 @@
         transform: translate(0px, 5px) scale(1, -1);
       }
 
+      svg.forestplotgroup .title {
+        font-size: 20px;
+        text-anchor: start;
+        transform: translate(0, -20px);
+      }
+
       svg.forestplotgroup .summary > g.positioningbutton {
         transform: translate(800px, 55px);
         opacity: .2;
@@ -986,17 +985,18 @@
       }
     </style>
 
-    <g transform="translate(10,0)" class="headings">
+    <g transform="translate(10,50)" class="headings">
       <text class="or lcl ucl">OR [LCL, UCL]</text>
-      <text class="wt">WT</text>
-      <text class="wtg">WTG</text>
+      <!-- <text class="wt">Weight</text> -->
+      <text class="wtg">Weight</text>
+      <text class="title">Forest Plot by moderator level</text>
     </g>
 
     <template class="experiment">
       <g class="experiment"><!-- should get transform="translate(padding,currY++)" -->
         <text class="expname">error</text>
         <text class="or lcl ucl">invalid [n/a, n/a]</text>
-        <text class="wt">n/a</text>
+        <!-- <text class="wt">n/a</text> -->
         <text class="wtg">n/a</text>
         <g class="rowgraph">
           <line class="confidenceinterval"/><!-- should get x1="lcl" x2="ucl" -->
@@ -1060,7 +1060,7 @@
         <g>
           <text class="sumname"></text>
           <text class="or lcl ucl">err [err, err]</text>
-          <text class="wt">err</text>
+          <!-- <text class="wt">err</text> -->
           <g class="sumgraph">
             <polygon class="confidenceinterval"/><!-- should get points="lcl,0 or,-10 ucl,0 or,10" -->
           </g>
@@ -1078,7 +1078,7 @@
     class="grapechart"
     viewBox="0 0 800 550"
     width="800"
-    height="550"
+    height="600"
     version="1.1"
     data-zero-groups-width="70"
     data-graph-height="500"
@@ -1114,6 +1114,10 @@
         stroke-linecap: butt;
       }
 
+      svg.grapechart .axes {
+        transform: translate(60px, 560px);
+      }
+
       svg.grapechart .axes .tick line {
         font-size: 12px;
         transform: translate(-5px, 0);
@@ -1125,8 +1129,13 @@
         text-anchor: end;
       }
 
+      svg.grapechart .axes .title {
+        font-size: 20px;
+        text-anchor: start;
+      }
+
       svg.grapechart .group > g {
-        transform: translate(0, 510px);
+        transform: translate(0, 560px);
       }
 
       svg.grapechart .axes .yaxis,
@@ -1267,7 +1276,7 @@
       }
     </style>
 
-    <g class="axes" transform="translate(60,510)">
+    <g class="axes">
       <line class="yaxis" x1="0" x2="0" y2="500"/>
       <!-- should get a number of ticks -->
       <template class="tick">
@@ -1282,6 +1291,7 @@
         <line class="guideline" x1="540" x2="575" y1="-490" y2="-490"/>
         <text x="580" y="-490">weighted mean</text>
       </g> -->
+      <text class="title" transform="translate(-40,-530)">Grape Chart</text>
     </g>
 
     <template class="group-grapes">
@@ -1328,7 +1338,7 @@
                 <text class="wt   ">n/a</text><!-- should be filled -->
                 <text class="ci   ">n/a</text><!-- should be filled -->
                 <text class="_or  ">OR:</text>
-                <text class="_wt  ">Wt:</text>
+                <text class="_wt  ">Weight:</text>
                 <text class="_ci  ">95% CI:</text>
               </g>
             </g>
