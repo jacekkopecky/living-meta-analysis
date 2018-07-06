@@ -38,16 +38,17 @@
     "gemini-gui": "^5.0.0-alpha.2",
     "istanbul": "^0.4.5",
     "jasmine": "^2.6.0",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "selenium-standalone": "^6.15.1"
   },
   "dependencies": {
+    "@google-cloud/datastore": "^1.4.1",
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
-    "google-cloud": "^0.47.0",
     "morgan": "^1.8.1",
     "on-headers": "^1.0.1",
     "rotating-file-stream": "^1.1.9",
-    "simple-google-openid": "0.0.6"
+    "simple-google-openid": "^0.2.2"
   }
 }

@@ -14,11 +14,15 @@ const config = require('./config');
 const stats = require('./lib/stats');
 const tools = require('./lib/tools');
 
-const gcloud = require('google-cloud')(config.gcloudProject);
+const Datastore = require('@google-cloud/datastore');
 const fs = require('fs');
 
 const datastore = process.env.TESTING ? createStubDatastore() :
-                    gcloud.datastore({ namespace: config.gcloudDatastoreNamespace });
+                    new Datastore({
+                      projectId: config.gcloudProject.projectId,
+                      keyFilename: config.gcloudProject.keyFilename,
+                      namespace: config.gcloudDatastoreNamespace,
+                    });
 
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
 const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
