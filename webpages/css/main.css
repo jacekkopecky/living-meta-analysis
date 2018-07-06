@@ -982,6 +982,12 @@ body:not(.page-about-you) #metaanalysis > header .edityourcopy {
   display: inline-block;
 }
 
+#metaanalysis .ma-table-heading {
+  font-weight: bold;
+  margin-top: 2em;
+  font-size: 125%;
+}
+
 #metaanalysis table.experiments th.papertitle .exclude,
 #metaanalysis table.experiments th.experimenttitle .exclude {
   display: none;
