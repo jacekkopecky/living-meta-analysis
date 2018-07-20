@@ -279,8 +279,8 @@ main.index > section.columns {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-around;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
   padding-top: 6rem; /* to accommodate the h1 below */
   position: relative;
 }
@@ -299,6 +299,24 @@ main.index > section.columns > section {
   padding: 1rem;
   flex: 0 1 25%;
   margin-top: 0;
+  position: relative;
+}
+
+main.index > section.columns > section.image {
+  flex:   2 1 40%;
+  position: relative;
+  margin: 0;
+}
+
+main.index > section.columns > section.image + section {
+  margin: 0;
+  flex: 0 1 50%;
+}
+
+main.index > section.columns > section.image img {
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
 }
 
 main.index > section.columns > section > h2 {
