@@ -52,8 +52,8 @@ _ {
 .loading .loadingspinner { display: block !important; }
 
 /* from https://codepen.io/flesler/pen/AEIFc */
-[contenteditable]:empty:before,
-.withplaceholder:empty:before {
+[contenteditable]:empty::before,
+.withplaceholder:empty::before {
   content: attr(placeholder);
   color: #aaa;
   font-style: italic;
@@ -66,10 +66,10 @@ _ {
   min-height: 1em;
 }
 
+[contenteditable]:hover:not(.validationerror),
 .edithighlight:hover [contenteditable]:not(.validationerror),
-.edithighlight:hover ~ [contenteditable]:not(.validationerror),
-[contenteditable]:hover:not(.validationerror) {
-  box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
+.edithighlight:hover ~ [contenteditable]:not(.validationerror) {
+  box-shadow: 0 0 3px 3px rgba(66, 133, 244, 0.3);
 }
 
 [contenteditable]:focus.validationerror {
@@ -227,7 +227,7 @@ main.index > section {
   display: block;
   padding: 4rem 2rem;
   font-weight: normal;
-  font-family: "Raleway";
+  font-family: "Raleway", sans-serif;
 }
 
 main.index > section > * {
@@ -237,19 +237,19 @@ main.index > section > * {
 }
 
 main.index > section:nth-of-type(4n+2) {
-  background-color: #D7EEFF;
-  background-image: linear-gradient(to bottom, #D7EEFF, #F2F9FF);
+  background-color: #d7eeff;
+  background-image: linear-gradient(to bottom, #d7eeff, #f2f9ff);
   color: black;
 }
 
 main.index > section:nth-of-type(4n+3) {
-  background-color: #0484E6;
+  background-color: #0484e6;
   color: white;
 }
 
 main.index > section:nth-of-type(4n+4) {
-  background-color: #D7EEFF;
-  background-image: linear-gradient(to top, #D7EEFF, #F2F9FF);
+  background-color: #d7eeff;
+  background-image: linear-gradient(to top, #d7eeff, #f2f9ff);
   color: black;
 }
 
@@ -267,8 +267,8 @@ main.index a:active {
   color: inherit;
 }
 
-main.index > section > form > p,
-main.index > section > p {
+main.index > section > p,
+main.index > section > form > p {
   font-size: 120%;
   line-height: 1.4em;
   padding-top: 1rem;
@@ -302,6 +302,24 @@ main.index > section.columns > section {
   position: relative;
 }
 
+main.index > section.columns.long > section > ul > li{
+  font-size: 1rem;
+}
+
+main.index > section.columns > section.span {
+  max-width: none;
+  min-width: 80%;
+  padding: 1rem;
+  flex: 0 0 80%;
+  margin-top: 0;
+  position: relative;
+}
+
+main.index > section.columns > section.span > p {
+  max-width: 40rem;
+  margin: auto;
+}
+
 main.index > section.columns > section.image {
   flex:   2 1 40%;
   position: relative;
@@ -317,6 +335,7 @@ main.index > section.columns > section.image img {
   max-width: 100%;
   padding: 0;
   margin: 0;
+  border: 1px solid #888;
 }
 
 main.index > section.columns > section > h2 {
