@@ -7,10 +7,6 @@ describe("basics", () => {
 
   describe("server", () => {
     let originalTimeout;
-    let oldLog;
-    let oldInfo;
-    let oldError;
-    let oldWarn;
 
     beforeEach(() => {
       originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;

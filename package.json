@@ -16,7 +16,8 @@
     "coverage": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/istanbul cover ./node_modules/.bin/jasmine ; true",
     "coverage-open": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/istanbul cover ./node_modules/.bin/jasmine ; open ./coverage/lcov-report/index.html ; true",
     "test": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/jasmine && (cd test; ../node_modules/.bin/gemini test) ; true",
-    "testing-server": "TESTING=1 PORT=8081 node_modules/.bin/nodemon -w server/ -w test/data.json server"
+    "testing-server": "TESTING=1 PORT=8081 node_modules/.bin/nodemon -w server/ -w test/data.json server",
+    "lint": "echo eslint && eslint . --ext .js,.json && echo stylelint && stylelint webpages"
   },
   "repository": {
     "type": "git",
@@ -31,7 +32,10 @@
   "devDependencies": {
     "eslint": "^2.13.1",
     "eslint-config-airbnb": "^9.0.1",
+    "eslint-config-gemini-testing": "^2.8.0",
     "eslint-plugin-import": "^1.7.0",
+    "eslint-plugin-jasmine": "^2.10.1",
+    "eslint-plugin-json": "^1.2.0",
     "eslint-plugin-jsx-a11y": "^1.2.0",
     "eslint-plugin-react": "^5.0.1",
     "gemini": "^5.0.0-alpha.3",

@@ -1,3 +1,5 @@
+/* globals gemini */
+
 gemini.suite('basics', (suite) => {
 
   suite.setUrl('/')

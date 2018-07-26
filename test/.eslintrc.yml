@@ -1,0 +1,11 @@
+plugins:
+  - json
+  - jasmine
+
+env:
+  node: true
+  jasmine: true
+  browser: false
+
+parserOptions:
+  ecmaVersion: 8

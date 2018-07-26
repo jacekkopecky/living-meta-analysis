@@ -1,9 +1,11 @@
+/* globals gemini */
+
 gemini.suite('metaanalysis', (suite) => {
 
   // go to the showcase metaanalysis, not logged in so not editing
   suite.setUrl('/jacek.kopecky@port.ac.uk/MisinformationEffect')
     .setCaptureElements('body')
-    .before((actions, find) => {
+    .before((actions) => {
       actions.setWindowSize(1680,1024);
       actions.executeJS(function (window) {
         window.localStorage.geminiTesting='1';
@@ -47,12 +49,12 @@ gemini.suite('metaanalysis', (suite) => {
         })
 
         // change the name
-        .capture('changing-col-name', (actions, find) => {
+        .capture('changing-col-name', (actions) => {
           actions.sendKeys('a');
         })
 
         // confirm the change
-        .capture('changed-col-name', (actions, find) => {
+        .capture('changed-col-name', (actions) => {
           actions.sendKeys(gemini.ENTER);
         })
 
@@ -90,7 +92,7 @@ gemini.suite('metaanalysis', (suite) => {
         })
 
         // save the changes
-        .capture('saved-changes', (actions, find) => {
+        .capture('saved-changes', (actions) => {
           // for now because of a bug where the savepending message goes away, we need to wait for the save
           actions.wait(11000);
           // actions.click(find('span.savepending'));

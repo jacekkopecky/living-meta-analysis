@@ -35,7 +35,7 @@ describe("server/lib/tools.js", () => {
       expect(tools.number("3i")).not.toBeDefined();
       expect(tools.number("")).not.toBeDefined();
 
-      expect(console.error).toHaveBeenCalled();
+      expect(console.error).toHaveBeenCalled(); // eslint-disable-line no-console
     });
   });
 

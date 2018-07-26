@@ -18,8 +18,8 @@
   _.addTest(function testHomepageLinks(assert) {
     if (window.limaTestingMode) return; // in testing mode we use a tweaked subset of data, no need to check it here
 
-    test200(assert, "/api/metaanalyses/tomas.rubin@port.ac.uk/MisinformationEffect/");
-    test200(assert, "/api/metaanalyses/tomas.rubin@port.ac.uk/MyMeta-analysis/");
+    test200(assert, "/api/metaanalyses/HartmutBlank/MisinformationEffect/");
+    test200(assert, "/api/metaanalyses/HartmutBlank/MyMeta-analysis/");
   });
 
 })(window, document);
