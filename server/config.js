@@ -37,6 +37,7 @@ module.exports = {
     keyFilename: 'jacek-soc-port-ac-uk-google-key.json',
   },
   gcloudDatastoreNamespace: 'living-meta-analysis-v2',
+  googleClientID: '358237292980-kbme56c9ih4rpmob16sq8bjig5dms6pl.apps.googleusercontent.com',
   port: 8080,
   // comment out, or delete, the following lines, to have LiMA running on HTTP only
   // or start lima with the environment variable DISABLE_HTTPS=1

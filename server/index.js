@@ -35,7 +35,7 @@ const app = express({ caseSensitive: true });
 app.set('case sensitive routing', true);
 app.set('strict routing', true);
 
-app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID));
+app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID || config.googleClientID));
 app.use(cookieParser());
 
 /* logging
