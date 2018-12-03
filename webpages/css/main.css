@@ -189,6 +189,7 @@ main.index {
   align-items: stretch;
   box-sizing: border-box;
   margin: 0;
+  font-size: 1.2rem;
 }
 
 main.index > img.scrollhint {
@@ -210,17 +211,6 @@ main.index > img.scrollhint:hover {
 
 main.index > img.scrollhint.hide {
   opacity: 0;
-}
-
-main.index > section.columns > section > h1 {
-  font-size: 1.5rem;
-  line-height: 125%;
-}
-
-main.index > section.columns > section > ul > li {
-  font-size: 1.2rem;
-  line-height: 125%;
-  padding-top: 0.8rem;
 }
 
 main.index > section {
@@ -269,13 +259,27 @@ main.index a:active {
 
 main.index > section > p,
 main.index > section > form > p {
-  font-size: 120%;
+  font-size: 1.2rem;
   line-height: 1.4em;
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
 
-main.index > section.columns {
+main.index > section.columns > section > h1,
+main.index > section.columns > details > section > h1 {
+  font-size: 1.6rem;
+  line-height: 100%;
+}
+
+main.index > section.columns > section > ul > li,
+main.index > section.columns > details > section > ul > li {
+  font-size: 1.2rem;
+  line-height: 125%;
+  padding-top: 0.8rem;
+}
+
+main.index > section.columns,
+main.index > section.columns > details {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -285,16 +289,27 @@ main.index > section.columns {
   position: relative;
 }
 
-main.index > section.columns > h1 {
+main.index > section.columns > details {
+  padding-top: 0; /* got it from the section above */
+}
+
+main.index > section.columns > h1,
+main.index > section.columns > details > summary,
+main.index > section.columns > details > h1 {
   flex: 1 1 100%;
   max-width: none;
   text-align: center;
   margin-bottom: 2rem;
-  font-size: 2.5rem;
-  line-height: 125%;
+  font-size: 1.6rem;
+  line-height: 100%;
 }
 
-main.index > section.columns > section {
+main.index > section.columns > details > h1 {
+  margin-top: 0;
+}
+
+main.index > section.columns > section,
+main.index > section.columns > details > section {
   min-width: 20rem;
   padding: 1rem;
   flex: 0 1 25%;
@@ -302,11 +317,13 @@ main.index > section.columns > section {
   position: relative;
 }
 
-main.index > section.columns.long > section > ul > li{
-  font-size: 1rem;
+main.index > section.columns.long > section > ul > l,
+main.index > section.columns.long > details > section > ul > li{
+  font-size: 1.2rem;
 }
 
-main.index > section.columns > section.span {
+main.index > section.columns > section.span,
+main.index > section.columns > details > section.span {
   max-width: none;
   min-width: 80%;
   padding: 1rem;
@@ -315,39 +332,61 @@ main.index > section.columns > section.span {
   position: relative;
 }
 
-main.index > section.columns > section.span > p {
+main.index > section.columns > section.span > p,
+main.index > section.columns > details > section.span > p {
   max-width: 40rem;
   margin: auto;
+  font-size: 1.2rem;
+  line-height: 125%;
 }
 
-main.index > section.columns > section.image {
+main.index > section.columns > section.image,
+main.index > section.columns > details > section.image {
   flex:   2 1 40%;
   position: relative;
   margin: 0;
 }
 
-main.index > section.columns > section.image + section {
+main.index > section.columns > section.image + section,
+main.index > section.columns > details > section.image + section {
   margin: 0;
   flex: 0 1 50%;
 }
 
-main.index > section.columns > section.image img {
+main.index > section.columns > section.image img,
+main.index > section.columns > details > section.image img {
   max-width: 100%;
   padding: 0;
   margin: 0;
   border: 1px solid #888;
 }
 
-main.index > section.columns > section > h2 {
-  font-size: 1.3rem;
+main.index > section.columns > section > h2,
+main.index > section.columns > details > section > h2 {
+  font-size: 1.4rem;
   line-height: 125%;
   font-weight: normal;
 }
 
 
-main.index > section.columns > section > ul {
+main.index > section.columns > section > ul,
+main.index > section.columns > details > section > ul {
   line-height: 150%;
 }
+
+main.index > section.bullets > h1 {
+  margin-bottom: 2rem;
+  font-size: 1.6rem;
+  line-height: 125%;
+}
+
+main.index > section.bullets > h2 {
+  margin-bottom: 2rem;
+  font-size: 1.2rem;
+  line-height: 125%;
+  padding-left: 2em;
+}
+
 
 main.index > section.grapechart {
   padding-top: 6rem; /* to accommodate the h1 below */
@@ -383,6 +422,10 @@ main.index > section > ul {
 }
 
 main.index #philosophy details[open] > summary { display: none; }
+
+main.index .topmetaanalyses li {
+  line-height: 200%;
+}
 
 /* popupbox
  *
