@@ -382,6 +382,7 @@ main.index > section > ul {
   line-height: 150%;
 }
 
+main.index #philosophy details[open] > summary { display: none; }
 
 /* popupbox
  *
