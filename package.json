@@ -30,30 +30,13 @@
   },
   "homepage": "https://github.com/jacekkopecky/living-meta-analysis#readme",
   "devDependencies": {
-    "eslint": "^2.13.1",
-    "eslint-config-airbnb": "^9.0.1",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
     "eslint-config-gemini-testing": "^2.8.0",
-    "eslint-plugin-import": "^1.7.0",
-    "eslint-plugin-jasmine": "^2.10.1",
-    "eslint-plugin-json": "^1.2.0",
-    "eslint-plugin-jsx-a11y": "^1.2.0",
-    "eslint-plugin-react": "^5.0.1",
-    "gemini": "^5.0.0-alpha.3",
-    "gemini-gui": "^5.0.0-alpha.2",
-    "istanbul": "^0.4.5",
-    "jasmine": "^2.6.0",
-    "nodemon": "^1.11.0",
-    "selenium-standalone": "^6.15.1"
-  },
-  "dependencies": {
-    "@google-cloud/datastore": "^1.4.1",
-    "body-parser": "^1.15.2",
-    "cookie-parser": "^1.4.3",
-    "cors": "^2.8.5",
-    "express": "^4.14.0",
-    "morgan": "^1.8.1",
-    "on-headers": "^1.0.1",
-    "rotating-file-stream": "^1.1.9",
-    "simple-google-openid": "^0.2.2"
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jasmine": "^4.1.0",
+    "eslint-plugin-json": "^2.1.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.19.0"
   }
 }

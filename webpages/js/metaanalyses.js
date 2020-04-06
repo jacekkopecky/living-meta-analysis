@@ -205,7 +205,7 @@
     var oldId = self.id;
 
     // clean all properties of this paper
-    for (var prop in self) { if (self.hasOwnProperty(prop)) { delete self[prop]; } }
+    for (var prop in self) { if (Object.prototype.hasOwnProperty.call(self, prop)) { delete self[prop]; } }
 
     // get data from the new paper
     Object.assign(self, newMetaanalysis);
