@@ -10,6 +10,7 @@ console.log('LiMA server starting at ' + new Date());
 
 const express = require('express');
 const googleOpenID = require('simple-google-openid');
+const cors = require('cors');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
@@ -164,6 +165,9 @@ if (config.demoApiDelay) {
   // this is a delay for demonstration purposes so the server seems slow
   app.use((req, res, next) => setTimeout(next, config.demoApiDelay));
 }
+
+// allow local testing of pages
+app.use(cors({ origin: 'http://localhost:8080' }));
 
 app.use('/api', api);
 
