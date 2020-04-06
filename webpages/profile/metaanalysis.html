@@ -1381,6 +1381,12 @@ window.lima.initPage = function () {
   window.lima.requestAndFillUserProfile();
   window.lima.requestAndFillMetaanalysis();
 };
+
+window.addEventListener('load', () => {
+  const baseEl = document.createElement('base');
+  baseEl.href = 'https://lima.soc.port.ac.uk/';
+  document.head.append(baseEl);
+});
 </script>
 
 </body>
