@@ -1,43 +1,43 @@
 /* Style the tab */
-.navbar {
+#tabbar {
   z-index: 10;
-  overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
-  position:sticky;
-  top:0;
-  display: inline-block;
+  border: solid #ccc;
+  border-width: 0 0 1px 0;
+  background-color: white;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: .5em;
 }
 
 /* Style the buttons that are used to open the tab content */
-.navbar button {
+#tabbar button {
   background-color: inherit;
-  float: left;
-  border: none;
+  border: solid #ccc;
+  border-width: 1px 1px 1px 1px;
+  border-radius: .5em .5em 0 0;
+  margin-right: -1px; /* collapse border with next button */
+  margin-bottom: -1px; /* collapse border with button below or with bottom border */
   outline: none;
   cursor: pointer;
-  padding: 14px 16px;
+  padding: 1em;
   transition: 0.3s;
+  font-size: 1em;
 }
 
 /* Change background color of buttons on hover */
-.navbar button:hover {
+#tabbar button:hover {
   background-color: #ddd;
 }
 
 
 /* Create an active/current tablink class */
-.navbar button.active {
+#tabbar button.active {
   background-color: #ccc;
 }
 
 /* Style the tab content */
 .tabcontent {
-  display: none;
-  padding: 6px 12px;
-  border-top: none;
-}
-
-#infoTab{
-  display: block;
+  padding: .5em 1em;
 }

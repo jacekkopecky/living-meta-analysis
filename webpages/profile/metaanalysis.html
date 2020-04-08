@@ -3,7 +3,6 @@
 <script src="/lib/promise.js"></script>
 <script src="/lib/fetch.js"></script>
 <script src="/lib/math.min.js"></script>
-<script src="/js/tabs.js"></script>
 <script src="https://apis.google.com/js/platform.js"></script>
 <link rel="stylesheet" href="/css/main.css">
 <link rel="stylesheet" href="/css/tabs.css">
@@ -75,15 +74,12 @@
       <span class="value editing oneline" contenteditable placeholder="enter the authors">error</span>
     </p> -->
 
-    <div class="navbar">
-      <button class="tablinks active" onclick="openData(event, 'infoTab')">Info</button>
-      <button class="tablinks" onclick="openData(event, 'matTab')">Meta-analysis Table</button>
-      <button class="tablinks" onclick="openData(event, 'plotsTab')">Meta-analysis Plots</button>
-      <button class="tablinks" onclick="openData(event, 'aggTab')">Meta-analysis Aggregates</button>
+    <div id="tabbar">
+      <button class="tablinks" data-tab="infoTab" >Info</button>
+      <button class="tablinks" data-tab="matTab"  >Meta-analysis Table</button>
+      <button class="tablinks" data-tab="plotsTab">Meta-analysis Plots</button>
+      <button class="tablinks" data-tab="aggTab"  >Meta-analysis Aggregates</button>
     </div>
-   
-
-    <!-- TODO ##### BASIC INFO #########-->
 
     <div id="infoTab" class="tabcontent">
       <div class="published popupboxtrigger">
@@ -105,21 +101,18 @@
         <span class="value editing" contenteditable placeholder="add description">error</span>
       </p>
   </div>
-    <!-- TODO ############# END ################-->
-
 
     <!-- todo show "other contributors" or "forks" or "clones" ... -->
     <!-- todo show meta-analyses that use this paper -->
     <!-- todo show history -->
     <!-- when not editing, show something for empty doi and link (or nothing at all?) -->
     <!-- todo comments -->
-    
+
     <div id="matTab" class="tabcontent">
-      <p class="ma-table-heading">Meta-analysis table:</p>
       <div class="experiments"></div>
     </div>
-    <div id="plotsTab" class="plots tabcontent">
-      <p class="ma-table-heading">Meta-analysis table:</p>
+    <div id="plotsTab" class="tabcontent">
+      <div id="plotsTab" class="plots"></div>
     </div>
     <div id="graphsTab" class="tabcontent">
       <div class="graphs"></div>
@@ -127,7 +120,7 @@
     <div id="aggTab" class="tabcontent">
       <div class="aggregates"></div>
     </div>
-    
+
     <p class='no-table'>No data has been entered for this meta-analysis yet.
       <span class="only-if-page-about-you">Turn editing on to add data.</span><!-- todo instruction to clone the paper? --></p>
     <p>Entered <span class="enteredby if-not-yours-or-page-not-about-you needs-owner"> by <a class="value" href="error">error</a></span><span class="ctime"> on <span class="value date">error</span></span></p>
@@ -1391,6 +1384,7 @@
 
 
 <script src="/js/tools.js"></script>
+<script src="/js/tabs.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/userprofile.js"></script>
 <script src="/js/formulas.js"></script>

@@ -1065,7 +1065,6 @@ body:not(.page-about-you) #metaanalysis > header .edityourcopy {
 
 #metaanalysis .ma-table-heading {
   font-weight: bold;
-  margin-top: 2em;
   font-size: 125%;
 }
 
@@ -1569,7 +1568,7 @@ body.page-about-you.editing .fullcolinfo header {
 #metaanalysis table.experiments {
   text-align: center;
   margin-right: 0em;
-  margin-top: 12em;
+  margin-top: 10em;
   border-spacing: 0;
   padding-right: 23em; /* 15em for width of popupbox and 8em for width of overhanging column labels and new column box */
 }
@@ -2215,8 +2214,6 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
  */
 
 #metaanalysis table.aggregates {
-  margin-top: 2em;
-  margin-bottom: 2em;
   border-collapse: collapse;
 }
 
@@ -2302,10 +2299,6 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
  *
  *
  */
-#metaanalysis .plots {
-  margin-top: 4em;
-}
-
 #metaanalysis .plots > svg:not(.maximized) {
   margin-bottom: 4rem;
   margin-right: 17rem; /* 15em for width of popupbox and 2em for extra gap */
@@ -2341,7 +2334,6 @@ body.editing.page-about-you #metaanalysis table.experiments tr.row th.experiment
  *
  */
 #metaanalysis table.graphs {
-  margin-top: 2em;
   border-collapse: collapse;
 }
 
