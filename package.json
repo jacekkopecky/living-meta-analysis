@@ -38,8 +38,6 @@
     "eslint-plugin-json": "^2.1.1",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.19.0",
-    "gemini": "^7.5.2",
-    "gemini-gui": "^6.0.1",
     "istanbul": "^0.4.5",
     "jasmine": "^3.5.0",
     "nodemon": "^2.0.3",
