@@ -258,43 +258,39 @@ const LOCAL_STORAGE_SPECIAL_USERNAME = 'local';
 
 let userCache = tools.notInitialized();
 
-function getAllUsers() {
-  userCache = new Promise((resolve, reject) => {
-    console.log('getAllUsers: making a datastore request');
-    const retval = {};
-    datastore.createQuery('User').runStream()
-      .on('error', (err) => {
-        console.error('error retrieving users');
+async function getAllUsers() {
+  console.log('getAllUsers: making a datastore request');
+  try {
+    const [retval] = await datastore.createQuery('User').run();
+    retval.forEach(user => {
+      // SUGGESTION: is this needed anymore?
+      user = migrateUser(user);
+      if (user.username) {
+        allUsernames.push(user.username.toLowerCase());
+      }
+      try {
+        retval[user.email] = user;
+      } catch (err) {
+        console.error('error in a user entity (ignoring)');
         console.error(err);
-        setTimeout(getAllUsers, 60 * 1000); // try loading again in a minute
-        reject(err);
-      })
-      .on('data', (entity) => {
-        entity = migrateUser(entity);
-        if (entity.username) allUsernames.push(entity.username.toLowerCase());
-        try {
-          retval[entity.email] = entity;
-        } catch (err) {
-          console.error('error in a user entity (ignoring)');
-          console.error(err);
-        }
-      })
-      .on('end', () => {
-        console.log(`getAllUsers: ${Object.keys(retval).length} done`);
-        resolve(retval);
-      });
-  })
-    .then((users) => {
+      }
+    });
+    console.log(`getAllUsers: ${retval.length} done`);
     // add a special user for local storage
     // - after all other users are loaded so datastore never overrides this one
     // - we expect our auth providers never go issue this email address so no user can use it
-      users[LOCAL_STORAGE_SPECIAL_USER] = {
-        email: LOCAL_STORAGE_SPECIAL_USER,
-        username: LOCAL_STORAGE_SPECIAL_USERNAME,
-      };
-
-      return users;
-    });
+    retval[LOCAL_STORAGE_SPECIAL_USER] = {
+      email: LOCAL_STORAGE_SPECIAL_USER,
+      username: LOCAL_STORAGE_SPECIAL_USERNAME,
+    };
+    // TODO: rework cache
+    userCache = retval;
+    return retval;
+  } catch (error) {
+    console.error('error retrieving users', error);
+    setTimeout(getAllUsers, 60 * 1000); // try loading again in a minute
+    throw error;
+  }
 }
 
 /*
