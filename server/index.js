@@ -63,7 +63,7 @@ if (config.logDirectory && !process.env.TESTING) {
   if (!fs.existsSync(config.logDirectory)) fs.mkdirSync(config.logDirectory);
 
   // create a rotating write stream
-  const accessLogStream = rfs('access.log', {
+  const accessLogStream = rfs.createStream('access.log', {
     interval: '1d', // rotate daily
     compress: true,
     path: config.logDirectory,
