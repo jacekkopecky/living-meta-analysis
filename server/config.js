@@ -33,17 +33,17 @@ module.exports = {
 
   // google-specific settings
   gcloudProject: {
-    projectId: 'jacek-soc-port-ac-uk',
-    keyFilename: 'jacek-soc-port-ac-uk-google-key.json',
+    projectId: 'lima-cloud-functions-2020',
+    keyFilename: 'lima-google-key.json',
   },
   gcloudDatastoreNamespace: 'living-meta-analysis-v2',
   googleClientID: '358237292980-kbme56c9ih4rpmob16sq8bjig5dms6pl.apps.googleusercontent.com',
   port: 8080,
   // comment out, or delete, the following lines, to have LiMA running on HTTP only
   // or start lima with the environment variable DISABLE_HTTPS=1
-  httpsPort: 8443,
-  httpsCert: '/etc/letsencrypt/live/lima.soc.port.ac.uk/fullchain.pem',
-  httpsKey: '/etc/letsencrypt/live/lima.soc.port.ac.uk/privkey.pem',
+  // httpsPort: 8443,
+  // httpsCert: '/etc/letsencrypt/live/lima.soc.port.ac.uk/fullchain.pem',
+  // httpsKey: '/etc/letsencrypt/live/lima.soc.port.ac.uk/privkey.pem',
 
   // we hit the default of 100kb with one-click metaanalysis.
   // recursive formulaParams are the largest offender (75% of total) but for now
