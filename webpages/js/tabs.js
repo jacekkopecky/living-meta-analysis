@@ -41,7 +41,7 @@
     const bodyTab = document.body.dataset.activeTab;
     if (bodyTab) {
       for (const btn of document.querySelectorAll("#tabbar .tablinks")) {
-        if (btn.dataset.tab === bodyTab) return btn;
+        if (btn.dataset.tab === bodyTab) return bodyTab;
       }
     }
 
