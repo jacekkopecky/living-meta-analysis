@@ -8,6 +8,7 @@
 'use strict';
 
 const { Datastore } = require('@google-cloud/datastore');
+const fs = require('fs');
 const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const ForbiddenError = require('./errors/ForbiddenError');
@@ -15,14 +16,13 @@ const config = require('./config');
 const stats = require('./lib/stats');
 const tools = require('./lib/tools');
 
-const fs = require('fs');
 
-const datastore = process.env.TESTING ? createStubDatastore() :
-                    new Datastore({
-                      projectId: config.gcloudProject.projectId,
-                      keyFilename: config.gcloudProject.keyFilename,
-                      namespace: config.gcloudDatastoreNamespace,
-                    });
+const datastore = process.env.TESTING ? createStubDatastore()
+  : new Datastore({
+    projectId: config.gcloudProject.projectId,
+    keyFilename: config.gcloudProject.keyFilename,
+    namespace: config.gcloudDatastoreNamespace,
+  });
 
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
 const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
@@ -180,7 +180,7 @@ function checkForDisallowedChanges(current, original) {
             throw new ValidationError('cannot remove experiment data');
           }
 
-          const comments = exp.data[origDataKey].comments;
+          const { comments } = exp.data[origDataKey];
           const origComments = origExp.data[origDataKey].comments;
 
           if (origComments) {
@@ -218,8 +218,7 @@ function checkForDisallowedChanges(current, original) {
 
 const allTitles = [];
 
-module.exports.listTitles = () =>
-  metaanalysisCache.then(() => paperCache)
+module.exports.listTitles = () => metaanalysisCache.then(() => paperCache)
   .then(() => allTitles);
 
 
@@ -265,39 +264,39 @@ function getAllUsers() {
     console.log('getAllUsers: making a datastore request');
     const retval = {};
     datastore.createQuery('User').runStream()
-    .on('error', (err) => {
-      console.error('error retrieving users');
-      console.error(err);
-      setTimeout(getAllUsers, 60 * 1000); // try loading again in a minute
-      reject(err);
-    })
-    .on('data', (entity) => {
-      entity = migrateUser(entity);
-      if (entity.username) allUsernames.push(entity.username.toLowerCase());
-      try {
-        retval[entity.email] = entity;
-      } catch (err) {
-        console.error('error in a user entity (ignoring)');
+      .on('error', (err) => {
+        console.error('error retrieving users');
         console.error(err);
-      }
-    })
-    .on('end', () => {
-      console.log(`getAllUsers: ${Object.keys(retval).length} done`);
-      resolve(retval);
-    });
+        setTimeout(getAllUsers, 60 * 1000); // try loading again in a minute
+        reject(err);
+      })
+      .on('data', (entity) => {
+        entity = migrateUser(entity);
+        if (entity.username) allUsernames.push(entity.username.toLowerCase());
+        try {
+          retval[entity.email] = entity;
+        } catch (err) {
+          console.error('error in a user entity (ignoring)');
+          console.error(err);
+        }
+      })
+      .on('end', () => {
+        console.log(`getAllUsers: ${Object.keys(retval).length} done`);
+        resolve(retval);
+      });
   })
-  .then((users) => {
+    .then((users) => {
     // add a special user for local storage
     // - after all other users are loaded so datastore never overrides this one
     // - we expect our auth providers never go issue this email address so no user can use it
-    users[LOCAL_STORAGE_SPECIAL_USER] = {
-      email: LOCAL_STORAGE_SPECIAL_USER,
-      username: LOCAL_STORAGE_SPECIAL_USERNAME,
-    };
+      users[LOCAL_STORAGE_SPECIAL_USER] = {
+        email: LOCAL_STORAGE_SPECIAL_USER,
+        username: LOCAL_STORAGE_SPECIAL_USERNAME,
+      };
 
-    sendUserStats(users);
-    return users;
-  });
+      sendUserStats(users);
+      return users;
+    });
 }
 
 function sendUserStats(users) {
@@ -337,13 +336,13 @@ function getUser(user) {
   }
 
   return Promise.all([getEmailAddressOfUser(user), userCache])
-  .then(
-    (vals) => {
-      const email = vals[0];
-      const users = vals[1];
-      return users[email] || Promise.reject(`user ${email} not found`);
-    }
-  );
+    .then(
+      (vals) => {
+        const email = vals[0];
+        const users = vals[1];
+        return users[email] || Promise.reject(`user ${email} not found`);
+      },
+    );
 }
 
 module.exports.getUser = getUser;
@@ -403,7 +402,7 @@ module.exports.saveUser = (email, user, options) => {
           resolve(user);
         }
       });
-    })
+    }),
   );
 };
 
@@ -573,21 +572,21 @@ function getAllPapers() {
       console.log('getAllPapers: making a datastore request');
       const retval = [];
       datastore.createQuery('Paper').runStream()
-      .on('error', (err) => {
-        console.error('error retrieving papers');
-        console.error(err);
-        setTimeout(getAllPapers, 60 * 1000); // try loading again in a minute
-        reject(err);
-      })
-      .on('data', (entity) => {
-        retval.push(migratePaper(entity, columns));
-        allTitles.push(entity.title);
-      })
-      .on('end', () => {
-        console.log(`getAllPapers: ${retval.length} done`);
-        sendPaperStats(retval);
-        resolve(retval);
-      });
+        .on('error', (err) => {
+          console.error('error retrieving papers');
+          console.error(err);
+          setTimeout(getAllPapers, 60 * 1000); // try loading again in a minute
+          reject(err);
+        })
+        .on('data', (entity) => {
+          retval.push(migratePaper(entity, columns));
+          allTitles.push(entity.title);
+        })
+        .on('end', () => {
+          console.log(`getAllPapers: ${retval.length} done`);
+          sendPaperStats(retval);
+          resolve(retval);
+        });
     });
   });
 }
@@ -713,13 +712,13 @@ module.exports.getPapersEnteredBy = (user) => {
     throw new Error('user parameter required');
   }
   return Promise.all([getEmailAddressOfUser(user), paperCache])
-  .then(
-    (vals) => {
-      const email = vals[0];
-      const papers = vals[1];
-      return papers.filter((p) => p.enteredBy === email);
-    }
-  );
+    .then(
+      (vals) => {
+        const email = vals[0];
+        const papers = vals[1];
+        return papers.filter((p) => p.enteredBy === email);
+      },
+    );
 };
 
 module.exports.getPaperByTitle = (user, title, time) => {
@@ -737,15 +736,15 @@ module.exports.getPaperByTitle = (user, title, time) => {
   }
 
   return getUser(user) // check that the user exists (we ignore the return value)
-  .then(() => paperCache)
-  .then((papers) => {
-    for (const p of papers) {
-      if (p.title === title) {
-        return p;
+    .then(() => paperCache)
+    .then((papers) => {
+      for (const p of papers) {
+        if (p.title === title) {
+          return p;
+        }
       }
-    }
-    return Promise.reject();
-  });
+      return Promise.reject();
+    });
 };
 
 function newPaper(email) {
@@ -779,113 +778,122 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
   // this way we can't have two concurrent saves create papers with the same title
 
   currentPaperSave = tools.waitForPromise(currentPaperSave)
-  .then(() => paperCache)
-  .then((papers) => {
+    .then(() => paperCache)
+    .then((papers) => {
     // prepare the paper for saving
-    const ctime = tools.uniqueNow();
-    let original = null;
-    if (!paper.id) {
-      paper.id = '/id/p/' + ctime;
-      paper.enteredBy = email;
-      paper.ctime = paper.mtime = ctime;
-      doAddPaperToCache = () => {
-        papers.push(paper);
-        allTitles.push(paper.title);
-        sendPaperStats(papers);
-      };
-    } else {
-      let i = 0;
-      for (; i < papers.length; i++) {
-        if (papers[i].id === paper.id) { // todo change paperCache to be indexed by id?
-          original = papers[i];
-          break;
+      const ctime = tools.uniqueNow();
+      let original = null;
+      if (!paper.id) {
+        paper.id = '/id/p/' + ctime;
+        paper.enteredBy = email;
+        paper.ctime = paper.mtime = ctime;
+        doAddPaperToCache = () => {
+          papers.push(paper);
+          allTitles.push(paper.title);
+          sendPaperStats(papers);
+        };
+      } else {
+        let i = 0;
+        for (; i < papers.length; i++) {
+          if (papers[i].id === paper.id) { // todo change paperCache to be indexed by id?
+            original = papers[i];
+            break;
+          }
         }
-      }
 
-      if (options.restoring) {
+        if (options.restoring) {
         // paper is a paper we're restoring from some other datastore
         // reject the save if we already have it
-        if (original) return Promise.reject(new Error(`paper ${paper.id} already exists`));
+          if (original) return Promise.reject(new Error(`paper ${paper.id} already exists`));
         // otherwise save unchanged
-      } else {
+        } else {
         // paper overwrites an existing paper
-        if (!original || origTitle !== original.title) {
-          throw new ValidationError(
-            `failed savePaper: did not find id ${paper.id} with title ${origTitle}`);
-        }
-        if (email !== original.enteredBy) {
-          throw new NotImplementedError('not implemented saving someone else\'s paper');
+          if (!original || origTitle !== original.title) {
+            throw new ValidationError(
+              `failed savePaper: did not find id ${paper.id} with title ${origTitle}`,
+            );
+          }
+          if (email !== original.enteredBy) {
+            throw new NotImplementedError('not implemented saving someone else\'s paper');
+          }
+
+          paper.enteredBy = original.enteredBy;
+          paper.ctime = original.ctime;
+          paper.mtime = tools.uniqueNow();
         }
 
-        paper.enteredBy = original.enteredBy;
-        paper.ctime = original.ctime;
-        paper.mtime = tools.uniqueNow();
-      }
-
-      doAddPaperToCache = () => {
+        doAddPaperToCache = () => {
         // put the paper in the cache where the original paper was
         // todo this can be broken by deletion - the `i` would then change
-        papers[i] = paper;
-        // replace in allTitles the old title of the paper with the new title
-        if (original && original.title !== paper.title) {
-          let titleIndex = allTitles.indexOf(original.title);
-          if (titleIndex === -1) {
-            titleIndex = allTitles.length;
-            console.warn(`for some reason, title ${original.title} was missing in allTitles`);
+          papers[i] = paper;
+          // replace in allTitles the old title of the paper with the new title
+          if (original && original.title !== paper.title) {
+            let titleIndex = allTitles.indexOf(original.title);
+            if (titleIndex === -1) {
+              titleIndex = allTitles.length;
+              console.warn(`for some reason, title ${original.title} was missing in allTitles`);
+            }
+            allTitles[titleIndex] = paper.title;
           }
-          allTitles[titleIndex] = paper.title;
-        }
-      };
-    }
+        };
+      }
 
-    // validate incoming data
-    checkForDisallowedChanges(paper, original);
+      // validate incoming data
+      checkForDisallowedChanges(paper, original);
 
-    // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
-    fillByAndCtimes(paper, original, email);
+      // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
+      fillByAndCtimes(paper, original, email);
 
-    // for now, we choose to ignore if the incoming paper specifies the wrong immutable values here
-    // do not save any of the validation values
-    tools.deleteCHECKvalues(paper);
+      // for now, we choose to ignore if the incoming paper specifies the wrong immutable values here
+      // do not save any of the validation values
+      tools.deleteCHECKvalues(paper);
 
-    // save the paper in the data store
-    const key = datastore.key(['Paper', paper.id]);
-    // this is here until we add versioning on the papers themselves
-    const logKey = datastore.key(['Paper', paper.id,
-                                  'PaperLog', paper.id + '/' + paper.mtime]);
-    if (!options.restoring) console.log('savePaper saving (into Paper and PaperLog)');
-    return new Promise((resolve, reject) => {
-      datastore.save(
-        [
-          { key, data: paper },
-          { key: logKey,
-            data:
+      // save the paper in the data store
+      const key = datastore.key(['Paper', paper.id]);
+      // this is here until we add versioning on the papers themselves
+      const logKey = datastore.key(['Paper', paper.id,
+        'PaperLog', paper.id + '/' + paper.mtime]);
+      if (!options.restoring) console.log('savePaper saving (into Paper and PaperLog)');
+      return new Promise((resolve, reject) => {
+        datastore.save(
+          [
+            { key, data: paper },
+            {
+              key: logKey,
+              data:
             [
-              { name: 'mtime',
-                value: paper.mtime },
-              { name: 'enteredBy',
-                value: email },
-              { name: 'paper',
+              {
+                name: 'mtime',
+                value: paper.mtime, 
+              },
+              {
+                name: 'enteredBy',
+                value: email, 
+              },
+              {
+                name: 'paper',
                 value: paper,
-                excludeFromIndexes: true },
-            ] },
-        ],
-        (err) => {
-          if (err) {
-            console.error('error saving paper');
-            console.error(err);
-            reject(err);
-          } else {
-            resolve();
-          }
-        }
-      );
+                excludeFromIndexes: true, 
+              },
+            ], 
+            },
+          ],
+          (err) => {
+            if (err) {
+              console.error('error saving paper');
+              console.error(err);
+              reject(err);
+            } else {
+              resolve();
+            }
+          },
+        );
+      });
+    })
+    .then(() => {
+      doAddPaperToCache();
+      return paper;
     });
-  })
-  .then(() => {
-    doAddPaperToCache();
-    return paper;
-  });
 
   return currentPaperSave;
 };
@@ -931,21 +939,21 @@ function getAllMetaanalyses() {
         console.log('getAllMetaanalyses: making a datastore request');
         const retval = [];
         datastore.createQuery('Metaanalysis').runStream()
-        .on('error', (err) => {
-          console.error('error retrieving metaanalyses');
-          console.error(err);
-          setTimeout(getAllMetaanalyses, 60 * 1000); // try loading again in a minute
-          reject(err);
-        })
-        .on('data', (entity) => {
-          retval.push(migrateMetaanalysis(entity, papers, columns));
-          allTitles.push(entity.title);
-        })
-        .on('end', () => {
-          console.log(`getAllMetaanalyses: ${retval.length} done`);
-          sendMetaanalysisStats(retval);
-          resolve(retval);
-        });
+          .on('error', (err) => {
+            console.error('error retrieving metaanalyses');
+            console.error(err);
+            setTimeout(getAllMetaanalyses, 60 * 1000); // try loading again in a minute
+            reject(err);
+          })
+          .on('data', (entity) => {
+            retval.push(migrateMetaanalysis(entity, papers, columns));
+            allTitles.push(entity.title);
+          })
+          .on('end', () => {
+            console.log(`getAllMetaanalyses: ${retval.length} done`);
+            sendMetaanalysisStats(retval);
+            resolve(retval);
+          });
       });
     });
   });
@@ -977,7 +985,7 @@ function migrateMetaanalysis(metaanalysis, papers, columns) {
   // migrate aggregate graphs to graphs
   if (metaanalysis.aggregates) {
     const oldGraphs = ['forestPlotNumberAggr', 'forestPlotPercentAggr',
-                       'grapeChartNumberAggr', 'grapeChartPercentAggr'];
+      'grapeChartNumberAggr', 'grapeChartPercentAggr'];
     // going backwards so we can safely delete array elements
     for (let i = metaanalysis.aggregates.length - 1; i >= 0; i -= 1) {
       const formulaName = metaanalysis.aggregates[i].formula.split('(')[0];
@@ -1106,13 +1114,13 @@ module.exports.getMetaanalysesEnteredBy = (user) => {
     throw new Error('user parameter required');
   }
   return Promise.all([getEmailAddressOfUser(user), metaanalysisCache])
-  .then(
-    (vals) => {
-      const email = vals[0];
-      const metaanalyses = vals[1];
-      return metaanalyses.filter((ma) => ma.enteredBy === email);
-    }
-  );
+    .then(
+      (vals) => {
+        const email = vals[0];
+        const metaanalyses = vals[1];
+        return metaanalyses.filter((ma) => ma.enteredBy === email);
+      },
+    );
 };
 
 module.exports.getMetaanalysisByTitle = (user, title, time, includePapers) => {
@@ -1128,18 +1136,18 @@ module.exports.getMetaanalysisByTitle = (user, title, time, includePapers) => {
   }
 
   return metaanalysisCache
-  .then((metaanalyses) => {
-    for (let ma of metaanalyses) {
-      if (ma.title === title) {
-        if (includePapers) {
+    .then((metaanalyses) => {
+      for (let ma of metaanalyses) {
+        if (ma.title === title) {
+          if (includePapers) {
           // use a shallow copy of ma
-          ma = getMetaanalysisWithPapers(ma, time);
+            ma = getMetaanalysisWithPapers(ma, time);
+          }
+          return ma;
         }
-        return ma;
       }
-    }
-    return Promise.reject();
-  });
+      return Promise.reject();
+    });
 };
 
 function getMetaanalysisWithPapers(ma, time) {
@@ -1149,7 +1157,7 @@ function getMetaanalysisWithPapers(ma, time) {
 
   return paperCache.then((papers) => {
     // use a shallow copy of ma
-    ma = Object.assign({}, ma);
+    ma = { ...ma };
 
     ma.papers = [];
     // populate the papers array in the order of ma.paperOrder
@@ -1193,113 +1201,122 @@ module.exports.saveMetaanalysis = (metaanalysis, email, origTitle, options) => {
   // this way we can't have two concurrent saves create metaanalyses with the same title
 
   currentMetaanalysisSave = tools.waitForPromise(currentMetaanalysisSave)
-  .then(() => metaanalysisCache)
-  .then((metaanalyses) => {
+    .then(() => metaanalysisCache)
+    .then((metaanalyses) => {
     // prepare the metaanalysis for saving
-    const ctime = tools.uniqueNow();
-    let original = null;
-    if (!metaanalysis.id) {
-      metaanalysis.id = '/id/ma/' + ctime;
-      metaanalysis.enteredBy = email;
-      metaanalysis.ctime = metaanalysis.mtime = ctime;
-      doAddMetaanalysisToCache = () => {
-        metaanalyses.push(metaanalysis);
-        allTitles.push(metaanalysis.title);
-        sendMetaanalysisStats(metaanalyses);
-      };
-    } else {
-      let i = 0;
-      for (; i < metaanalyses.length; i++) {
-        if (metaanalyses[i].id === metaanalysis.id) { // todo change metaanalysisCache to be indexed by id?
-          original = metaanalyses[i];
-          break;
+      const ctime = tools.uniqueNow();
+      let original = null;
+      if (!metaanalysis.id) {
+        metaanalysis.id = '/id/ma/' + ctime;
+        metaanalysis.enteredBy = email;
+        metaanalysis.ctime = metaanalysis.mtime = ctime;
+        doAddMetaanalysisToCache = () => {
+          metaanalyses.push(metaanalysis);
+          allTitles.push(metaanalysis.title);
+          sendMetaanalysisStats(metaanalyses);
+        };
+      } else {
+        let i = 0;
+        for (; i < metaanalyses.length; i++) {
+          if (metaanalyses[i].id === metaanalysis.id) { // todo change metaanalysisCache to be indexed by id?
+            original = metaanalyses[i];
+            break;
+          }
         }
-      }
 
-      if (options.restoring) {
+        if (options.restoring) {
         // metaanalysis is a metaanalysis we're restoring from some other datastore
         // reject the save if we already have it
-        if (original) return Promise.reject(new Error(`metaanalysis ${metaanalysis.id} already exists`));
+          if (original) return Promise.reject(new Error(`metaanalysis ${metaanalysis.id} already exists`));
         // otherwise save unchanged
-      } else {
+        } else {
         // metaanalysis overwrites an existing metaanalysis
-        if (!original || origTitle !== original.title) {
-          throw new ValidationError(
-            `failed saveMetaanalysis: did not find id ${metaanalysis.id} with title ${origTitle}`);
-        }
-        if (email !== original.enteredBy) {
-          throw new NotImplementedError('not implemented saving someone else\'s metaanalysis');
+          if (!original || origTitle !== original.title) {
+            throw new ValidationError(
+              `failed saveMetaanalysis: did not find id ${metaanalysis.id} with title ${origTitle}`,
+            );
+          }
+          if (email !== original.enteredBy) {
+            throw new NotImplementedError('not implemented saving someone else\'s metaanalysis');
+          }
+
+          metaanalysis.enteredBy = original.enteredBy;
+          metaanalysis.ctime = original.ctime;
+          metaanalysis.mtime = tools.uniqueNow();
         }
 
-        metaanalysis.enteredBy = original.enteredBy;
-        metaanalysis.ctime = original.ctime;
-        metaanalysis.mtime = tools.uniqueNow();
-      }
-
-      doAddMetaanalysisToCache = () => {
+        doAddMetaanalysisToCache = () => {
         // put the metaanalysis in the cache where the original metaanalysis was
         // todo this can be broken by deletion - the `i` would then change
-        metaanalyses[i] = metaanalysis;
-        // replace in allTitles the old title of the metaanalysis with the new title
-        if (original && original.title !== metaanalysis.title) {
-          let titleIndex = allTitles.indexOf(original.title);
-          if (titleIndex === -1) {
-            titleIndex = allTitles.length;
-            console.warn(`for some reason, title ${original.title} was missing in allTitles`);
+          metaanalyses[i] = metaanalysis;
+          // replace in allTitles the old title of the metaanalysis with the new title
+          if (original && original.title !== metaanalysis.title) {
+            let titleIndex = allTitles.indexOf(original.title);
+            if (titleIndex === -1) {
+              titleIndex = allTitles.length;
+              console.warn(`for some reason, title ${original.title} was missing in allTitles`);
+            }
+            allTitles[titleIndex] = metaanalysis.title;
           }
-          allTitles[titleIndex] = metaanalysis.title;
-        }
-      };
-    }
+        };
+      }
 
-    // validate incoming data
-    checkForDisallowedChanges(metaanalysis, original);
+      // validate incoming data
+      checkForDisallowedChanges(metaanalysis, original);
 
-    // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
-    fillByAndCtimes(metaanalysis, original, email);
+      // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
+      fillByAndCtimes(metaanalysis, original, email);
 
-    // for now, we choose to ignore if the incoming metaanalysis specifies
-    // the wrong immutable values here do not save any of the validation values
-    tools.deleteCHECKvalues(metaanalysis);
+      // for now, we choose to ignore if the incoming metaanalysis specifies
+      // the wrong immutable values here do not save any of the validation values
+      tools.deleteCHECKvalues(metaanalysis);
 
-    // save the metaanalysis in the data store
-    const key = datastore.key(['Metaanalysis', metaanalysis.id]);
-    // this is here until we add versioning on the metaanalyses themselves
-    const logKey = datastore.key(['Metaanalysis', metaanalysis.id,
-                                  'MetaanalysisLog', metaanalysis.id + '/' + metaanalysis.mtime]);
-    if (!options.restoring) console.log('saveMetaanalysis saving (into Metaanalysis and MetaanalysisLog)');
-    return new Promise((resolve, reject) => {
-      datastore.save(
-        [
-          { key, data: metaanalysis },
-          { key: logKey,
-            data:
+      // save the metaanalysis in the data store
+      const key = datastore.key(['Metaanalysis', metaanalysis.id]);
+      // this is here until we add versioning on the metaanalyses themselves
+      const logKey = datastore.key(['Metaanalysis', metaanalysis.id,
+        'MetaanalysisLog', metaanalysis.id + '/' + metaanalysis.mtime]);
+      if (!options.restoring) console.log('saveMetaanalysis saving (into Metaanalysis and MetaanalysisLog)');
+      return new Promise((resolve, reject) => {
+        datastore.save(
+          [
+            { key, data: metaanalysis },
+            {
+              key: logKey,
+              data:
             [
-              { name: 'mtime',
-                value: metaanalysis.mtime },
-              { name: 'enteredBy',
-                value: email },
-              { name: 'metaanalysis',
+              {
+                name: 'mtime',
+                value: metaanalysis.mtime, 
+              },
+              {
+                name: 'enteredBy',
+                value: email, 
+              },
+              {
+                name: 'metaanalysis',
                 value: metaanalysis,
-                excludeFromIndexes: true },
-            ] },
-        ],
-        (err) => {
-          if (err) {
-            console.error('error saving metaanalysis');
-            console.error(err);
-            reject(err);
-          } else {
-            resolve();
-          }
-        }
-      );
+                excludeFromIndexes: true, 
+              },
+            ], 
+            },
+          ],
+          (err) => {
+            if (err) {
+              console.error('error saving metaanalysis');
+              console.error(err);
+              reject(err);
+            } else {
+              resolve();
+            }
+          },
+        );
+      });
+    })
+    .then(() => {
+      doAddMetaanalysisToCache();
+      return metaanalysis;
     });
-  })
-  .then(() => {
-    doAddMetaanalysisToCache();
-    return metaanalysis;
-  });
 
   return currentMetaanalysisSave;
 };
@@ -1326,24 +1343,24 @@ function getAllColumns() {
     console.log('getAllColumns: making a datastore request');
     const retval = {};
     datastore.createQuery('Column').runStream()
-    .on('error', (err) => {
-      console.error('error retrieving columns');
-      console.error(err);
-      setTimeout(getAllColumns, 60 * 1000); // try loading again in a minute
-      reject(err);
-    })
-    .on('data', (entity) => {
-      try {
-        retval[entity.id] = entity;
-      } catch (err) {
-        console.error('error in a column entity (ignoring)');
+      .on('error', (err) => {
+        console.error('error retrieving columns');
         console.error(err);
-      }
-    })
-    .on('end', () => {
-      console.log(`getAllColumns: ${Object.keys(retval).length} done`);
-      resolve(retval);
-    });
+        setTimeout(getAllColumns, 60 * 1000); // try loading again in a minute
+        reject(err);
+      })
+      .on('data', (entity) => {
+        try {
+          retval[entity.id] = entity;
+        } catch (err) {
+          console.error('error in a column entity (ignoring)');
+          console.error(err);
+        }
+      })
+      .on('end', () => {
+        console.log(`getAllColumns: ${Object.keys(retval).length} done`);
+        resolve(retval);
+      });
   });
 }
 
@@ -1447,8 +1464,7 @@ module.exports.init = () => {
   getAllMetaanalyses();
   if (!process.env.TESTING) setupClosedBeta();
 
-  module.exports.ready =
-    Promise.resolve()
+  module.exports.ready = Promise.resolve()
     .then(() => metaanalysisCache)
     .then(() => paperCache)
     .then(() => userCache)
@@ -1461,9 +1477,9 @@ module.exports.init = () => {
         const data = fs.readFileSync(__dirname + '/../test/data.json', 'utf8');
 
         return tools.waitForPromise(storageTools.add(JSON.parse(data), { immediate: true })) // eslint-disable-line consistent-return
-        .then(() => {
-          console.log('storage: Testing data imported');
-        });
+          .then(() => {
+            console.log('storage: Testing data imported');
+          });
       } catch (e) {
         console.error(e && e.stack);
       }
