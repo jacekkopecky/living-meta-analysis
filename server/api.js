@@ -156,17 +156,23 @@ module.exports.EXISTS_USER = function (req, res, next) {
     );
 };
 
-function saveUser(req, res, next) {
+async function saveUser(req, res, next) {
   const user = extractReceivedUser(req.user);
   user.mtime = Date.now(); // update modification time - this is the last time the user agreed to T&C&PP
   user.username = tools.string(req.body.username);
-  storage.saveUser(user.email, user)
-    .then((storageUser) => {
-      res.json(extractUserForSending(storageUser));
-    })
-    .catch((err) => {
-      next(err instanceof Error ? err : new InternalError(err));
-    });
+  // storage.saveUser(user.email, user)
+  //   .then((storageUser) => {
+  //     res.json(extractUserForSending(storageUser));
+  //   })
+  //   .catch((err) => {
+  //     next(err instanceof Error ? err : new InternalError(err));
+  //   });
+  try {
+    const storageUser = await storage.saveUser(user.email, user);
+    res.json(extractUserForSending(storageUser));
+  } catch(err) {
+    next(err instanceof Error ? err : new InternalError(err));
+  }
 }
 
 // Check that the user is known to LiMA and that LiMA has up-to-date values from the identity provider.
