@@ -9,6 +9,7 @@
 
 const { Datastore } = require('@google-cloud/datastore');
 const fs = require('fs');
+const path = require('path');
 const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const ForbiddenError = require('./errors/ForbiddenError');
@@ -399,7 +400,7 @@ function getForbiddenUsernames() {
   const retval = [].concat(config.FORBIDDEN_USERNAMES);
 
   // then populate the rest by taking a look at /webpages
-  const files = fs.readdirSync(__dirname + '/../webpages');
+  const files = fs.readdirSync(path.join(__dirname, '../webpages'));
 
   files.forEach((name) => {
     addUsernameIfNotThere(retval, name);
