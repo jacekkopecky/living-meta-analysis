@@ -846,18 +846,18 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
             [
               {
                 name: 'mtime',
-                value: paper.mtime, 
+                value: paper.mtime,
               },
               {
                 name: 'enteredBy',
-                value: email, 
+                value: email,
               },
               {
                 name: 'paper',
                 value: paper,
-                excludeFromIndexes: true, 
+                excludeFromIndexes: true,
               },
-            ], 
+            ],
             },
           ],
           (err) => {
@@ -1258,18 +1258,18 @@ module.exports.saveMetaanalysis = (metaanalysis, email, origTitle, options) => {
             [
               {
                 name: 'mtime',
-                value: metaanalysis.mtime, 
+                value: metaanalysis.mtime,
               },
               {
                 name: 'enteredBy',
-                value: email, 
+                value: email,
               },
               {
                 name: 'metaanalysis',
                 value: metaanalysis,
-                excludeFromIndexes: true, 
+                excludeFromIndexes: true,
               },
-            ], 
+            ],
             },
           ],
           (err) => {

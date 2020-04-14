@@ -25,17 +25,17 @@ const inputData = new Promise((resolve, reject) => {
 });
 
 inputData
-.catch(() => process.exit(1))
-.then((data) => {
-  const storageTools = require('./lib/storage-tools'); // eslint-disable-line global-require
-  return storageTools.migrate(data);
-})
-.then((data) => {
-  console.error('storage-migrate done');
-  log(JSON.stringify(data, null, 2));
-  process.exit();
-})
-.catch((e) => console.error('error migrating: ', e && e.stack || e));
+  .catch(() => process.exit(1))
+  .then((data) => {
+    const storageTools = require('./lib/storage-tools'); // eslint-disable-line global-require
+    return storageTools.migrate(data);
+  })
+  .then((data) => {
+    console.error('storage-migrate done');
+    log(JSON.stringify(data, null, 2));
+    process.exit();
+  })
+  .catch((e) => console.error('error migrating: ', e && e.stack || e));
 
 // for more robust migration of old data,
 // we'd need to keep the migration code around longer (possibly indefinitely)

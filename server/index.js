@@ -137,10 +137,10 @@ app.use('/api', api);
 
 app.get('/version', oneLineVersion);
 app.get('/version/log',
-        (req, res) => res.redirect('https://github.com/jacekkopecky/living-meta-analysis/commits/master'));
+  (req, res) => res.redirect('https://github.com/jacekkopecky/living-meta-analysis/commits/master'));
 
 app.get(['/profile', '/profile/*'],
-        (req, res) => res.sendFile('profileRedirect.html', { root: './webpages/' }));
+  (req, res) => res.sendFile('profileRedirect.html', { root: './webpages/' }));
 
 app.use('/', express.static('webpages', { extensions: ['html'] }));
 
@@ -148,30 +148,30 @@ app.use('/', express.static('webpages', { extensions: ['html'] }));
 
 app.use(`/:user(${config.USER_RE})/`, SLASH_URL);
 app.get(`/:user(${config.USER_RE})/`,
-        api.EXISTS_USER,
-        (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
+  api.EXISTS_USER,
+  (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
 
 app.use(`/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`, SLASH_URL);
 app.get(`/:user(${config.USER_RE})/${config.NEW_PAPER_TITLE}/`,
-        api.EXISTS_USER,
-        (req, res) => res.sendFile('profile/paper.html', { root: './webpages/' }));
+  api.EXISTS_USER,
+  (req, res) => res.sendFile('profile/paper.html', { root: './webpages/' }));
 app.get(`/:user(${config.USER_RE})/${config.NEW_META_TITLE}/`,
-        api.EXISTS_USER,
-        (req, res) => res.sendFile('profile/metaanalysis.html', { root: './webpages/' }));
+  api.EXISTS_USER,
+  (req, res) => res.sendFile('profile/metaanalysis.html', { root: './webpages/' }));
 app.get(`/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
-        api.EXISTS_USER,
-        (req, res, next) => {
-          Promise.resolve(req.query.type || api.getKindForTitle(req.params.user, req.params.title))
-          .then((kind) => {
-            if (kind === 'paper' || kind === 'metaanalysis') {
-              const file = `profile/${kind}.html`;
-              res.sendFile(file, { root: './webpages/' });
-            } else {
-              next(new NotFoundError());
-            }
-          })
-          .catch(() => next(new NotFoundError()));
-        });
+  api.EXISTS_USER,
+  (req, res, next) => {
+    Promise.resolve(req.query.type || api.getKindForTitle(req.params.user, req.params.title))
+      .then((kind) => {
+        if (kind === 'paper' || kind === 'metaanalysis') {
+          const file = `profile/${kind}.html`;
+          res.sendFile(file, { root: './webpages/' });
+        } else {
+          next(new NotFoundError());
+        }
+      })
+      .catch(() => next(new NotFoundError()));
+  });
 
 function SLASH_URL(req, res, next) {
   let end = req.originalUrl.indexOf('?');
@@ -214,7 +214,7 @@ if (!process.env.TESTING) {
     (error, stdout, stderr) => {
       if (error) oneLineVersionString = 'error getting version: ' + error + '\n' + stderr;
       else oneLineVersionString = stdout;
-    }
+    },
   );
 }
 
@@ -295,10 +295,10 @@ module.exports.ready = storage.ready.then(() => new Promise((resolve, reject) =>
   if (!httpsPort) {
     // only HTTP
     http.createServer(app)
-    .listen(port, () => {
-      console.log(`LiMA server listening on insecure port ${port}`);
-      resolve();
-    });
+      .listen(port, () => {
+        console.log(`LiMA server listening on insecure port ${port}`);
+        resolve();
+      });
   } else {
     // HTTPS; with HTTP redirecting to that
     try {
@@ -325,7 +325,7 @@ module.exports.ready = storage.ready.then(() => new Promise((resolve, reject) =>
     }
   }
 }))
-.catch((err) => {
-  console.error('startup failed', err && err.stack);
-  process.exit(-1);
-});
+  .catch((err) => {
+    console.error('startup failed', err && err.stack);
+    process.exit(-1);
+  });
