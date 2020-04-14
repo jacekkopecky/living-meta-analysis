@@ -24,11 +24,9 @@ const config = require('./config');
 const api = require('./api');
 const storage = require('./storage');
 const NotFoundError = require('./errors/NotFoundError');
-const stats = require('./lib/stats');
 
 const exec = require('child_process').exec;
 
-stats.init();
 storage.init();
 api.init();
 
@@ -78,40 +76,6 @@ if (config.logDirectory && !process.env.TESTING) {
 } else {
   console.log('not logging HTTP accesses');
 }
-
-/* stats
- *
- *
- *    ####  #####   ##   #####  ####
- *   #        #    #  #    #   #
- *    ####    #   #    #   #    ####
- *        #   #   ######   #        #
- *   #    #   #   #    #   #   #    #
- *    ####    #   #    #   #    ####
- *
- *
- */
-
-// send server-is-alive statistics
-stats.count('started');
-setInterval(() => {
-  stats.count('alive');
-}, 60000);
-
-// send path access statistics
-app.use('/', (req, res, next) => {
-  res.limaStatsStartTime = Date.now();
-  stats.count('access.total');
-  onHeaders(res, sendRequestTimeStats);
-  next();
-});
-
-function sendRequestTimeStats() {
-  const time = Date.now() - this.limaStatsStartTime;
-  const metricName = this.limaStatsIsAPI ? 'access.apiTime' : 'access.totalTime';
-  stats.timing(metricName, time);
-}
-
 
 /* closed beta
  *
@@ -283,7 +247,6 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
     if (err && err.stack) console.error(err.stack);
     res.status(500).send('internal server error');
   }
-  stats.count('http.code' + res.statusCode);
 });
 
 process.on('unhandledRejection', (err) => {

@@ -12,7 +12,6 @@ const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const config = require('./config');
 const storage = require('./storage');
-const stats = require('./lib/stats');
 const tools = require('./lib/tools');
 
 const jsonBodyParser = require('body-parser').json(config.jsonParserOptions);
@@ -22,14 +21,6 @@ const api = module.exports = express.Router({
 });
 
 module.exports.init = () => {
-  // log stats
-  api.use('/', (req, res, next) => {
-    stats.count('access.api');
-    // this will make index.js log the request time specially
-    res.limaStatsIsAPI = true;
-    next();
-  });
-
   setUpRoutes();
   return module.exports;
 };
