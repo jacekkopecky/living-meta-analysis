@@ -7,6 +7,7 @@
 
 'use strict';
 
+const { Datastore } = require('@google-cloud/datastore');
 const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const ForbiddenError = require('./errors/ForbiddenError');
@@ -14,7 +15,6 @@ const config = require('./config');
 const stats = require('./lib/stats');
 const tools = require('./lib/tools');
 
-const Datastore = require('@google-cloud/datastore');
 const fs = require('fs');
 
 const datastore = process.env.TESTING ? createStubDatastore() :
