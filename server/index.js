@@ -50,32 +50,32 @@ app.use(cookieParser());
  *
  */
 
-let loggingMiddleware;
+// let loggingMiddleware;
 
-if (config.logDirectory && !process.env.TESTING) {
-  morgan.token('invite', (req) => {
-    if (!req.cookies) return '-';
-    let retval = req.cookies['lima-beta-code'] || '';
-    if (!storage.betaCodes.hasOwnProperty(req.cookies['lima-beta-code'])) retval = '-' + retval;
-    return retval;
-  });
-  // ensure log directory exists
-  if (!fs.existsSync(config.logDirectory)) fs.mkdirSync(config.logDirectory);
+// if (config.logDirectory && !process.env.TESTING) {
+//   morgan.token('invite', (req) => {
+//     if (!req.cookies) return '-';
+//     let retval = req.cookies['lima-beta-code'] || '';
+//     if (!storage.betaCodes.hasOwnProperty(req.cookies['lima-beta-code'])) retval = '-' + retval;
+//     return retval;
+//   });
+//   // ensure log directory exists
+//   if (!fs.existsSync(config.logDirectory)) fs.mkdirSync(config.logDirectory);
 
-  // create a rotating write stream
-  const accessLogStream = rfs.createStream('access.log', {
-    interval: '1d', // rotate daily
-    compress: true,
-    path: config.logDirectory,
-  });
+//   // create a rotating write stream
+//   const accessLogStream = rfs.createStream('access.log', {
+//     interval: '1d', // rotate daily
+//     compress: true,
+//     path: config.logDirectory,
+//   });
 
-  // setup the logger
-  loggingMiddleware = morgan(config.logFormat || 'combined', { stream: accessLogStream });
-  app.use(loggingMiddleware);
-  console.log(`logging HTTP accesses into ${config.logDirectory}`);
-} else {
-  console.log('not logging HTTP accesses');
-}
+//   // setup the logger
+//   loggingMiddleware = morgan(config.logFormat || 'combined', { stream: accessLogStream });
+//   app.use(loggingMiddleware);
+//   console.log(`logging HTTP accesses into ${config.logDirectory}`);
+// } else {
+//   console.log('not logging HTTP accesses');
+// }
 
 /* closed beta
  *
