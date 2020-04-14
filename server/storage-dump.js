@@ -7,7 +7,7 @@ console.log = console.error;
 const storageTools = require('./lib/storage-tools');
 
 // normal logging goes to stderr
-const storageDump = () => {
+async function storageDump() {
   try {
     const thing = await storageTools.dump();
     console.log('storage-dump done');
