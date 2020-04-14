@@ -1,0 +1,43 @@
+/* Style the tab */
+#tabbar {
+  z-index: 10;
+  border: solid #ccc;
+  border-width: 0 0 1px 0;
+  background-color: white;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: .5em;
+}
+
+/* Style the buttons that are used to open the tab content */
+#tabbar button {
+  background-color: inherit;
+  border: solid #ccc;
+  border-width: 1px 1px 1px 1px;
+  border-radius: .5em .5em 0 0;
+  margin-right: -1px; /* collapse border with next button */
+  margin-bottom: -1px; /* collapse border with button below or with bottom border */
+  outline: none;
+  cursor: pointer;
+  padding: 1em;
+  transition: 0.3s;
+  font-size: 1em;
+}
+
+/* Change background color of buttons on hover */
+#tabbar button:hover {
+  background-color: #ddd;
+}
+
+
+/* Create an active/current tablink class */
+#tabbar button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  padding: .5em 1em;
+}

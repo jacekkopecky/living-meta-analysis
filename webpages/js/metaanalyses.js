@@ -404,6 +404,8 @@
     addComputedDatumSetter(drawForestPlot);
     addComputedDatumSetter(drawForestPlotGroup);
 
+    lima.initTabs();
+
     recalculateComputedData();
   }
 
@@ -436,7 +438,7 @@
     //     lcl
     //     ucl
 
-    var plotsContainer = _.findEl('#metaanalysis > .plots');
+    var plotsContainer = _.findEl('#metaanalysis .plots');
 
     currentMetaanalysis.graphs.forEach(function (graph, graphIndex) {
       var orFunc, wtFunc, lclFunc, uclFunc, params;
@@ -739,7 +741,7 @@
     //     lcl
     //     ucl
 
-    var plotsContainer = _.findEl('#metaanalysis > .plots');
+    var plotsContainer = _.findEl('#metaanalysis .plots');
 
     currentMetaanalysis.graphs.forEach(function (graph, graphIndex) {
       var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params;
@@ -1181,7 +1183,7 @@
     //     lcl
     //     ucl
 
-    var plotsContainer = _.findEl('#metaanalysis > .plots');
+    var plotsContainer = _.findEl('#metaanalysis .plots');
 
     currentMetaanalysis.graphs.forEach(function (graph, graphIndex) {
       var orFunc, wtFunc, lclFunc, uclFunc, moderatorParam, params, dataParams;
