@@ -1,12 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
 
-console.log("salut");
-
-function HelloWorld(){
-    return(
-        <h1>Hello Guys</h1>
-    );
-}
-
-ReactDOM.render(<HelloWorld />, document.querySelector("#root"));
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById("root")
+);
