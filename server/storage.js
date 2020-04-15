@@ -1411,15 +1411,15 @@ function createStubDatastore() {
  */
 
 
-module.exports.init = () => {
+module.exports.init = async () => {
   if (module.exports.ready) return module.exports.ready; // already initialized
 
   // the order here matters:
   getForbiddenUsernames();
-  getAllUsers();
-  getAllColumns();
-  getAllPapers();
-  getAllMetaanalyses();
+  await getAllUsers();
+  await getAllColumns();
+  await getAllPapers();
+  await getAllMetaanalyses();
   if (!process.env.TESTING) setupClosedBeta();
 
   module.exports.ready = Promise.resolve()
