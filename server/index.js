@@ -272,7 +272,9 @@ process.on('unhandledRejection', (err) => {
 const port = process.env.PORT || config.port;
 let httpsPort = process.env.HTTPSPORT || config.httpsPort;
 
-module.exports.ready = storage.ready.then(() => new Promise((resolve, reject) => {
+module.exports.ready = storage.ready = startServer();
+
+function startServer() {
   if (process.env.TESTING) {
     console.info('**************************************************');
     console.info('');
@@ -297,7 +299,6 @@ module.exports.ready = storage.ready.then(() => new Promise((resolve, reject) =>
     http.createServer(app)
       .listen(port, () => {
         console.log(`LiMA server listening on insecure port ${port}`);
-        resolve();
       });
   } else {
     // HTTPS; with HTTP redirecting to that
@@ -311,21 +312,15 @@ module.exports.ready = storage.ready.then(() => new Promise((resolve, reject) =>
 
         // HTTP app will just redirect to HTTPS
         const redirectApp = express();
-        if (loggingMiddleware) redirectApp.use(loggingMiddleware);
+        // if (loggingMiddleware) redirectApp.use(loggingMiddleware);
         redirectApp.get('*', (req, res) => res.redirect('https://' + req.hostname + req.url));
 
         http.createServer(redirectApp).listen(port, () => {
           console.log(`LiMA redirect server listening on port ${port}`);
-          resolve();
         });
       });
     } catch (e) {
       console.error('error starting HTTPS', e.message || e);
-      reject(e);
     }
   }
-}))
-  .catch((err) => {
-    console.error('startup failed', err && err.stack);
-    process.exit(-1);
-  });
+}
