@@ -552,28 +552,22 @@ a column record looks like this: (see /api/columns)
 
 let paperCache = tools.notInitialized();
 
-function getAllPapers() {
-  paperCache = columnCache.then((columns) => {
-    return new Promise((resolve, reject) => {
-      console.log('getAllPapers: making a datastore request');
-      const retval = [];
-      datastore.createQuery('Paper').runStream()
-        .on('error', (err) => {
-          console.error('error retrieving papers');
-          console.error(err);
-          setTimeout(getAllPapers, 60 * 1000); // try loading again in a minute
-          reject(err);
-        })
-        .on('data', (entity) => {
-          retval.push(migratePaper(entity, columns));
-          allTitles.push(entity.title);
-        })
-        .on('end', () => {
-          console.log(`getAllPapers: ${retval.length} done`);
-          resolve(retval);
-        });
+async function getAllPapers() {
+  const columns = await columnCache;
+  try {
+    const [retval] = await datastore.createQuery('Paper').run();
+    retval.forEach(val => {
+      val = migratePaper(val, columns);
+      allTitles.push(val.title);
     });
-  });
+    console.log(`getAllPapers: ${retval.length} done`);
+    paperCache = retval;
+    return retval;
+  } catch (error) {
+    console.error('error retrieving papers', error);
+    setTimeout(getAllPapers, 60 * 1000); // try loading again in a minute
+    throw error;
+  }
 }
 
 /*
