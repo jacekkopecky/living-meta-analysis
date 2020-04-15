@@ -427,26 +427,27 @@ function getForbiddenUsernames() {
 const allUsernames = [LOCAL_STORAGE_SPECIAL_USERNAME];
 
 // Take either the email address, or username and return the email address
-function getEmailAddressOfUser(user) {
-  if (user.indexOf('@') !== -1) return Promise.resolve(user);
+async function getEmailAddressOfUser(user) {
+  if (user.indexOf('@') !== -1) return user;
 
-  return userCache.then((users) => {
-    for (const email of Object.keys(users)) {
-      if (users[email].username === user) {
-        return email;
-      }
+  const users = await userCache;
+
+  for (const email of Object.keys(users)) {
+    if (users[email].username === user) {
+      return email;
     }
-    return null;
-  });
+  }
+
+  return null;
 }
 
 module.exports.getEmailAddressOfUser = getEmailAddressOfUser;
 
 // Take either the email address, or username and return the username (or null if there is none)
-function getUsernameOfUser(user) {
-  if (user.indexOf('@') === -1) return Promise.resolve(user);
-
-  return userCache.then((users) => users[user].username);
+async function getUsernameOfUser(user) {
+  if (user.indexOf('@') === -1) return user;
+  const users = await userCache;
+  return users[user].username;
 }
 
 module.exports.getUsernameOfUser = getUsernameOfUser;
