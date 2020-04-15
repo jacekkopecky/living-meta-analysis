@@ -1157,9 +1157,9 @@ function newMetaanalysis(email) {
 
 module.exports.listMetaanalyses = () => metaanalysisCache;
 
-let currentMetaanalysisSave = Promise.resolve();
+const currentMetaanalysisSave = Promise.resolve();
 
-module.exports.saveMetaanalysis = (metaanalysis, email, origTitle, options) => {
+module.exports.saveMetaanalysis = async (metaanalysis, email, origTitle, options) => {
   options = options || {};
   // todo multiple users' views on one metaanalysis
   // compute this user's version of this metaanalysis, as it is in the database
@@ -1176,124 +1176,110 @@ module.exports.saveMetaanalysis = (metaanalysis, email, origTitle, options) => {
   // the following serializes this save after the previous one, whether it fails or succeeds
   // this way we can't have two concurrent saves create metaanalyses with the same title
 
-  currentMetaanalysisSave = tools.waitForPromise(currentMetaanalysisSave)
-    .then(() => metaanalysisCache)
-    .then((metaanalyses) => {
-    // prepare the metaanalysis for saving
-      const ctime = tools.uniqueNow();
-      let original = null;
-      if (!metaanalysis.id) {
-        metaanalysis.id = '/id/ma/' + ctime;
-        metaanalysis.enteredBy = email;
-        metaanalysis.ctime = metaanalysis.mtime = ctime;
-        doAddMetaanalysisToCache = () => {
-          metaanalyses.push(metaanalysis);
-          allTitles.push(metaanalysis.title);
-        };
-      } else {
-        let i = 0;
-        for (; i < metaanalyses.length; i++) {
-          if (metaanalyses[i].id === metaanalysis.id) { // todo change metaanalysisCache to be indexed by id?
-            original = metaanalyses[i];
-            break;
-          }
-        }
+  const metaanalyses = await currentMetaanalysisSave;
 
-        if (options.restoring) {
-        // metaanalysis is a metaanalysis we're restoring from some other datastore
-        // reject the save if we already have it
-          if (original) return Promise.reject(new Error(`metaanalysis ${metaanalysis.id} already exists`));
-        // otherwise save unchanged
-        } else {
-        // metaanalysis overwrites an existing metaanalysis
-          if (!original || origTitle !== original.title) {
-            throw new ValidationError(
-              `failed saveMetaanalysis: did not find id ${metaanalysis.id} with title ${origTitle}`,
-            );
-          }
-          if (email !== original.enteredBy) {
-            throw new NotImplementedError('not implemented saving someone else\'s metaanalysis');
-          }
+  // prepare the metaanalysis for saving
+  const ctime = tools.uniqueNow();
+  let original = null;
+  if (!metaanalysis.id) {
+    metaanalysis.id = '/id/ma/' + ctime;
+    metaanalysis.enteredBy = email;
+    metaanalysis.ctime = metaanalysis.mtime = ctime;
+    doAddMetaanalysisToCache = () => {
+      metaanalyses.push(metaanalysis);
+      allTitles.push(metaanalysis.title);
+    };
+  } else {
+    let i = 0;
+    for (; i < metaanalyses.length; i++) {
+      if (metaanalyses[i].id === metaanalysis.id) { // todo change metaanalysisCache to be indexed by id?
+        original = metaanalyses[i];
+        break;
+      }
+    }
 
-          metaanalysis.enteredBy = original.enteredBy;
-          metaanalysis.ctime = original.ctime;
-          metaanalysis.mtime = tools.uniqueNow();
-        }
-
-        doAddMetaanalysisToCache = () => {
-        // put the metaanalysis in the cache where the original metaanalysis was
-        // todo this can be broken by deletion - the `i` would then change
-          metaanalyses[i] = metaanalysis;
-          // replace in allTitles the old title of the metaanalysis with the new title
-          if (original && original.title !== metaanalysis.title) {
-            let titleIndex = allTitles.indexOf(original.title);
-            if (titleIndex === -1) {
-              titleIndex = allTitles.length;
-              console.warn(`for some reason, title ${original.title} was missing in allTitles`);
-            }
-            allTitles[titleIndex] = metaanalysis.title;
-          }
-        };
+    if (options.restoring) {
+    // metaanalysis is a metaanalysis we're restoring from some other datastore
+    // reject the save if we already have it
+      if (original) throw new Error(`metaanalysis ${metaanalysis.id} already exists`);
+    // otherwise save unchanged
+    } else {
+    // metaanalysis overwrites an existing metaanalysis
+      if (!original || origTitle !== original.title) {
+        throw new ValidationError(
+          `failed saveMetaanalysis: did not find id ${metaanalysis.id} with title ${origTitle}`,
+        );
+      }
+      if (email !== original.enteredBy) {
+        throw new NotImplementedError('not implemented saving someone else\'s metaanalysis');
       }
 
-      // validate incoming data
-      checkForDisallowedChanges(metaanalysis, original);
+      metaanalysis.enteredBy = original.enteredBy;
+      metaanalysis.ctime = original.ctime;
+      metaanalysis.mtime = tools.uniqueNow();
+    }
 
-      // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
-      fillByAndCtimes(metaanalysis, original, email);
+    doAddMetaanalysisToCache = () => {
+    // put the metaanalysis in the cache where the original metaanalysis was
+    // todo this can be broken by deletion - the `i` would then change
+      metaanalyses[i] = metaanalysis;
+      // replace in allTitles the old title of the metaanalysis with the new title
+      if (original && original.title !== metaanalysis.title) {
+        let titleIndex = allTitles.indexOf(original.title);
+        if (titleIndex === -1) {
+          titleIndex = allTitles.length;
+          console.warn(`for some reason, title ${original.title} was missing in allTitles`);
+        }
+        allTitles[titleIndex] = metaanalysis.title;
+      }
+    };
+  }
 
-      // for now, we choose to ignore if the incoming metaanalysis specifies
-      // the wrong immutable values here do not save any of the validation values
-      tools.deleteCHECKvalues(metaanalysis);
+  // validate incoming data
+  checkForDisallowedChanges(metaanalysis, original);
 
-      // save the metaanalysis in the data store
-      const key = datastore.key(['Metaanalysis', metaanalysis.id]);
-      // this is here until we add versioning on the metaanalyses themselves
-      const logKey = datastore.key(['Metaanalysis', metaanalysis.id,
-        'MetaanalysisLog', metaanalysis.id + '/' + metaanalysis.mtime]);
-      if (!options.restoring) console.log('saveMetaanalysis saving (into Metaanalysis and MetaanalysisLog)');
-      return new Promise((resolve, reject) => {
-        datastore.save(
-          [
-            { key, data: metaanalysis },
-            {
-              key: logKey,
-              data:
-            [
-              {
-                name: 'mtime',
-                value: metaanalysis.mtime,
-              },
-              {
-                name: 'enteredBy',
-                value: email,
-              },
-              {
-                name: 'metaanalysis',
-                value: metaanalysis,
-                excludeFromIndexes: true,
-              },
-            ],
-            },
-          ],
-          (err) => {
-            if (err) {
-              console.error('error saving metaanalysis');
-              console.error(err);
-              reject(err);
-            } else {
-              resolve();
-            }
+  // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
+  fillByAndCtimes(metaanalysis, original, email);
+
+  // for now, we choose to ignore if the incoming metaanalysis specifies
+  // the wrong immutable values here do not save any of the validation values
+  tools.deleteCHECKvalues(metaanalysis);
+
+  // save the metaanalysis in the data store
+  const key = datastore.key(['Metaanalysis', metaanalysis.id]);
+  // this is here until we add versioning on the metaanalyses themselves
+  const logKey = datastore.key(['Metaanalysis', metaanalysis.id,
+    'MetaanalysisLog', metaanalysis.id + '/' + metaanalysis.mtime]);
+  if (!options.restoring) console.log('saveMetaanalysis saving (into Metaanalysis and MetaanalysisLog)');
+
+  try {
+    await datastore.save([
+      { key, data: metaanalysis },
+      {
+        key: logKey,
+        data: [
+          {
+            name: 'mtime',
+            value: metaanalysis.mtime,
           },
-        );
-      });
-    })
-    .then(() => {
-      doAddMetaanalysisToCache();
-      return metaanalysis;
-    });
-
-  return currentMetaanalysisSave;
+          {
+            name: 'enteredBy',
+            value: email,
+          },
+          {
+            name: 'metaanalysis',
+            value: metaanalysis,
+            excludeFromIndexes: true,
+          },
+        ],
+      },
+    ]);
+    doAddMetaanalysisToCache();
+    return metaanalysis;
+  } catch (error) {
+    console.error('error saving metaanalysis', error);
+    throw error;
+  }
 };
 
 /* columns
