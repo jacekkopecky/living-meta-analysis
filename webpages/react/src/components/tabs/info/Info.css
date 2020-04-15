@@ -1,0 +1,14 @@
+.reference{
+    background-color: aqua;
+}
+
+.description{
+    background-color: blueviolet;
+}
+
+.referenceHeader,
+.descriptionHeader
+{
+    font-size: 20px;
+    font-weight: bold;
+}
