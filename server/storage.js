@@ -1433,7 +1433,7 @@ module.exports.init = async () => {
       // load testing data
       try {
         const storageTools = require('./lib/storage-tools'); // eslint-disable-line global-require
-        const data = fs.readFileSync(__dirname + '/../test/data.json', 'utf8');
+        const data = fs.readFileSync(path.join(__dirname, '../test/data.json'), 'utf8');
 
         return tools.waitForPromise(storageTools.add(JSON.parse(data), { immediate: true })) // eslint-disable-line consistent-return
           .then(() => {
