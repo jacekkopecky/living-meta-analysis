@@ -170,7 +170,7 @@ async function saveUser(req, res, next) {
   try {
     const storageUser = await storage.saveUser(user.email, user);
     res.json(extractUserForSending(storageUser));
-  } catch(err) {
+  } catch (err) {
     next(err instanceof Error ? err : new InternalError(err));
   }
 }
