@@ -287,22 +287,21 @@ function getPaperVersion(req, res, next) {
     });
 }
 
-function savePaper(req, res, next) {
+async function savePaper(req, res, next) {
   // extract from incoming data stuff that is allowed
-  storage.savePaper(
-    extractReceivedPaper(req.body),
-    req.user.emails[0].value,
-    req.params.title)
-    .then((p) => {
-      res.json(extractPaperForSending(p, true, req.params.user));
-    })
-    .catch((e) => {
-      if (e instanceof ValidationError || e instanceof NotImplementedError) {
-        next(e);
-      } else {
-        next(new InternalError(e));
-      }
-    });
+  try {
+    const p = await storage.savePaper(
+      extractReceivedPaper(req.body),
+      req.user.emails[0].value,
+      req.params.title);
+    res.json(extractPaperForSending(p, true, req.params.user));    
+  } catch (e) {
+    if (e instanceof ValidationError || e instanceof NotImplementedError) {
+      next(e);
+    } else {
+      next(new InternalError(e));
+    }
+  }
 }
 
 function extractPaperForSending(storagePaper, includeDataValues, user, username) {
@@ -435,6 +434,7 @@ function saveMetaanalysis(req, res, next) {
       res.json(extractMetaanalysisForSending(ma, false, req.params.user));
     })
     .catch((e) => {
+      console.log(e)
       if (e instanceof ValidationError || e instanceof NotImplementedError) {
         next(e);
       } else {

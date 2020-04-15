@@ -735,7 +735,7 @@ module.exports.listPapers = () => paperCache;
 
 let currentPaperSave = Promise.resolve();
 
-module.exports.savePaper = (paper, email, origTitle, options) => {
+module.exports.savePaper = async (paper, email, origTitle, options) => {
   options = options || {};
   // todo multiple users' views on one paper
   // compute this user's version of this paper, as it is in the database
@@ -752,126 +752,111 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
   // the following serializes this save after the previous one, whether it fails or succeeds
   // this way we can't have two concurrent saves create papers with the same title
 
-  
+  const papers = await paperCache;
+  // prepare the paper for saving
+  const ctime = tools.uniqueNow();
+  let original = null;
+  if (!paper.id) {
+    paper.id = '/id/p/' + ctime;
+    paper.enteredBy = email;
+    paper.ctime = paper.mtime = ctime;
+    doAddPaperToCache = () => {
+      papers.push(paper);
+      allTitles.push(paper.title);
+    };
+  } else {
+    let i = 0;
+    for (; i < papers.length; i++) {
+      if (papers[i].id === paper.id) { // todo change paperCache to be indexed by id?
+        original = papers[i];
+        break;
+      }
+    }
 
-  currentPaperSave = tools.waitForPromise(currentPaperSave)
-    .then(() => paperCache)
-    .then((papers) => {
-    // prepare the paper for saving
-      const ctime = tools.uniqueNow();
-      let original = null;
-      if (!paper.id) {
-        paper.id = '/id/p/' + ctime;
-        paper.enteredBy = email;
-        paper.ctime = paper.mtime = ctime;
-        doAddPaperToCache = () => {
-          papers.push(paper);
-          allTitles.push(paper.title);
-        };
-      } else {
-        let i = 0;
-        for (; i < papers.length; i++) {
-          if (papers[i].id === paper.id) { // todo change paperCache to be indexed by id?
-            original = papers[i];
-            break;
-          }
-        }
-
-        if (options.restoring) {
-        // paper is a paper we're restoring from some other datastore
-        // reject the save if we already have it
-          if (original) return Promise.reject(new Error(`paper ${paper.id} already exists`));
-        // otherwise save unchanged
-        } else {
-        // paper overwrites an existing paper
-          if (!original || origTitle !== original.title) {
-            throw new ValidationError(
-              `failed savePaper: did not find id ${paper.id} with title ${origTitle}`,
-            );
-          }
-          if (email !== original.enteredBy) {
-            throw new NotImplementedError('not implemented saving someone else\'s paper');
-          }
-
-          paper.enteredBy = original.enteredBy;
-          paper.ctime = original.ctime;
-          paper.mtime = tools.uniqueNow();
-        }
-
-        doAddPaperToCache = () => {
-        // put the paper in the cache where the original paper was
-        // todo this can be broken by deletion - the `i` would then change
-          papers[i] = paper;
-          // replace in allTitles the old title of the paper with the new title
-          if (original && original.title !== paper.title) {
-            let titleIndex = allTitles.indexOf(original.title);
-            if (titleIndex === -1) {
-              titleIndex = allTitles.length;
-              console.warn(`for some reason, title ${original.title} was missing in allTitles`);
-            }
-            allTitles[titleIndex] = paper.title;
-          }
-        };
+    if (options.restoring) {
+    // paper is a paper we're restoring from some other datastore
+    // reject the save if we already have it
+      if (original) throw new Error(`paper ${paper.id} already exists`);
+    // otherwise save unchanged
+    } else {
+    // paper overwrites an existing paper
+      if (!original || origTitle !== original.title) {
+        throw new ValidationError(
+          `failed savePaper: did not find id ${paper.id} with title ${origTitle}`,
+        );
+      }
+      if (email !== original.enteredBy) {
+        throw new NotImplementedError('not implemented saving someone else\'s paper');
       }
 
-      // validate incoming data
-      checkForDisallowedChanges(paper, original);
+      paper.enteredBy = original.enteredBy;
+      paper.ctime = original.ctime;
+      paper.mtime = tools.uniqueNow();
+    }
 
-      // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
-      fillByAndCtimes(paper, original, email);
+    doAddPaperToCache = () => {
+    // put the paper in the cache where the original paper was
+    // todo this can be broken by deletion - the `i` would then change
+      papers[i] = paper;
+      // replace in allTitles the old title of the paper with the new title
+      if (original && original.title !== paper.title) {
+        let titleIndex = allTitles.indexOf(original.title);
+        if (titleIndex === -1) {
+          titleIndex = allTitles.length;
+          console.warn(`for some reason, title ${original.title} was missing in allTitles`);
+        }
+        allTitles[titleIndex] = paper.title;
+      }
+    };
+  }
 
-      // for now, we choose to ignore if the incoming paper specifies the wrong immutable values here
-      // do not save any of the validation values
-      tools.deleteCHECKvalues(paper);
+  // validate incoming data
+  checkForDisallowedChanges(paper, original);
 
-      // save the paper in the data store
-      const key = datastore.key(['Paper', paper.id]);
-      // this is here until we add versioning on the papers themselves
-      const logKey = datastore.key(['Paper', paper.id,
-        'PaperLog', paper.id + '/' + paper.mtime]);
-      if (!options.restoring) console.log('savePaper saving (into Paper and PaperLog)');
-      return new Promise((resolve, reject) => {
-        datastore.save(
-          [
-            { key, data: paper },
-            {
-              key: logKey,
-              data:
-            [
-              {
-                name: 'mtime',
-                value: paper.mtime,
-              },
-              {
-                name: 'enteredBy',
-                value: email,
-              },
-              {
-                name: 'paper',
-                value: paper,
-                excludeFromIndexes: true,
-              },
-            ],
-            },
-          ],
-          (err) => {
-            if (err) {
-              console.error('error saving paper');
-              console.error(err);
-              reject(err);
-            } else {
-              resolve();
-            }
+  // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
+  fillByAndCtimes(paper, original, email);
+
+  // for now, we choose to ignore if the incoming paper specifies the wrong immutable values here
+  // do not save any of the validation values
+  tools.deleteCHECKvalues(paper);
+
+  // save the paper in the data store
+  const key = datastore.key(['Paper', paper.id]);
+  // this is here until we add versioning on the papers themselves
+  const logKey = datastore.key(['Paper', paper.id,
+    'PaperLog', paper.id + '/' + paper.mtime]);
+  if (!options.restoring) console.log('savePaper saving (into Paper and PaperLog)');
+  try {
+    await datastore.save(
+      [
+        { key, data: paper },
+        {
+          key: logKey,
+          data:
+        [
+          {
+            name: 'mtime',
+            value: paper.mtime,
           },
-        );
-      });
-    })
-    .then(() => {
-      doAddPaperToCache();
-      return paper;
-    });
-
-  return currentPaperSave;
+          {
+            name: 'enteredBy',
+            value: email,
+          },
+          {
+            name: 'paper',
+            value: paper,
+            excludeFromIndexes: true,
+          },
+        ],
+        },
+      ]
+    )
+    doAddPaperToCache();
+    return paper;
+  } catch (error) {
+    console.error('error saving paper');
+    console.error(error);
+  }
 };
 
 
