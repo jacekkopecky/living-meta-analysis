@@ -218,8 +218,11 @@ function checkForDisallowedChanges(current, original) {
 
 const allTitles = [];
 
-module.exports.listTitles = () => metaanalysisCache.then(() => paperCache)
-  .then(() => allTitles);
+module.exports.listTitles = async () => {
+  await metaanalysisCache;
+  await paperCache;
+  return allTitles;
+};
 
 
 /* users
