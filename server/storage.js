@@ -317,23 +317,23 @@ function migrateUser(user) {
 
 module.exports.migrateUser = migrateUser;
 
-function getUser(user) {
+async function getUser(user) {
   if (!user) {
     throw new Error('user parameter required');
   }
 
   if (forbiddenUsernames.indexOf(user) !== -1) {
-    return Promise.reject(new ForbiddenError('provided username is a reserved word'));
+    throw new ForbiddenError('provided username is a reserved word');
   }
 
-  return Promise.all([getEmailAddressOfUser(user), userCache])
-    .then(
-      (vals) => {
-        const email = vals[0];
-        const users = vals[1];
-        return users[email] || Promise.reject(`user ${email} not found`);
-      },
-    );
+  const users = await userCache;
+  const email = await getEmailAddressOfUser(user);
+
+  try {
+    return users[email];
+  } catch (error) {
+    throw new Error(`user ${email} not found`);
+  }
 }
 
 module.exports.getUser = getUser;
