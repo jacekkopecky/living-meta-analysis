@@ -383,6 +383,8 @@ module.exports.saveUser = async (email, user, options) => {
       }
     }
     if (user.username) allUsernames.push(user.username.toLowerCase());
+    // then return the user
+    return user;
   } catch (err) {
     console.error('error saving user');
     console.error(err);
@@ -694,7 +696,7 @@ module.exports.getPapersEnteredBy = (user) => {
     );
 };
 
-module.exports.getPaperByTitle = (user, title, time) => {
+module.exports.getPaperByTitle = async (user, title, time) => {
   // todo if time is specified, compute a version as of that time
   if (time) return Promise.reject(new NotImplementedError('getPaperByTitle with time not implemented'));
 
@@ -705,7 +707,8 @@ module.exports.getPaperByTitle = (user, title, time) => {
   // todo different users can use different titles for the same thing
 
   if (title === config.NEW_PAPER_TITLE) {
-    return getEmailAddressOfUser(user).then((email) => newPaper(email));
+    // return getEmailAddressOfUser(user).then((email) => newPaper(email));
+    return newPaper(await getEmailAddressOfUser(user));
   }
 
   return getUser(user) // check that the user exists (we ignore the return value)
@@ -749,6 +752,8 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
 
   // the following serializes this save after the previous one, whether it fails or succeeds
   // this way we can't have two concurrent saves create papers with the same title
+
+  
 
   currentPaperSave = tools.waitForPromise(currentPaperSave)
     .then(() => paperCache)
