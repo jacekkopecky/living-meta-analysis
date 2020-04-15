@@ -415,17 +415,14 @@ function listMetaanalysesForUser(req, res, next) {
     .catch(() => next(new NotFoundError()));
 }
 
-function getMetaanalysisVersion(req, res, next) {
-  storage.getMetaanalysisByTitle(req.params.user, req.params.title, req.params.time, true)
-    .then((ma) => {
-      return storage.getUsernameOfUser(ma.enteredBy)
-        .then((username) => {
-          res.json(extractMetaanalysisForSending(ma, true, req.params.user, username));
-        });
-    })
-    .catch((e) => {
-      next(e && e.status ? e : new NotFoundError());
-    });
+async function getMetaanalysisVersion(req, res, next) {
+  try {
+    const ma = await storage.getMetaanalysisByTitle(req.params.user, req.params.title, req.params.time, true);
+    const username = await storage.getUsernameOfUser(ma.enteredBy);
+    res.json(extractMetaanalysisForSending(ma, true, req.params.user, username));
+  } catch (e) {
+    next(e && e.status ? e : new NotFoundError());
+  }
 }
 
 function saveMetaanalysis(req, res, next) {
