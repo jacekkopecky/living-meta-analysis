@@ -101,7 +101,7 @@ if (!process.env.TESTING) {
   app.use('/', (req, res, next) => {
     if (req.url.match(closedBetaAllowedURLs)) {
       next();
-    } else if (req.cookies && storage.betaCodes.hasOwnProperty(req.cookies['lima-beta-code'])) {
+    } else if (req.cookies && storage.betaCodes[req.cookies['lima-beta-code']]) {
       storage.touchBetaCode(req.cookies['lima-beta-code'], req.user ? req.user.emails[0].value : undefined);
       next();
     } else if (req.url === '/') {
