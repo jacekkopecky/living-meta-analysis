@@ -546,17 +546,18 @@ function extractReceivedGraph(recGraph) {
 }
 
 // todo filter by tag 'showcase' here rather than in index.html
-function listTopMetaanalyses(req, res, next) {
-  storage.listMetaanalyses()
-    .then((mas) => {
-      const retval = [];
-      for (const ma of mas) {
-        retval.push({
-          title: ma.title,
-          enteredBy: ma.enteredBy,
-        });
-      }
-      res.json(retval);
-    })
-    .catch(() => next(new InternalError()));
+async function listTopMetaanalyses(req, res, next) {
+  try {
+    const mas = await storage.listMetaanalyses();
+    const retval = [];
+    for (const ma of mas) {
+      retval.push({
+        title: ma.title,
+        enteredBy: ma.enteredBy,
+      });
+    }
+    res.json(retval);
+  } catch (error) {
+    next(new InternalError());
+  }
 }
