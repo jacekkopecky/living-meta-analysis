@@ -1073,66 +1073,77 @@ function migrateMetaanalysis(metaanalysis, papers, columns) {
 
 module.exports.migrateMetaanalysis = migrateMetaanalysis;
 
-module.exports.getMetaanalysesEnteredBy = (user) => {
+module.exports.getMetaanalysesEnteredBy = async (user) => {
   // todo also return metaanalyses contributed to by `email`
   if (!user) {
     throw new Error('user parameter required');
   }
-  return Promise.all([getEmailAddressOfUser(user), metaanalysisCache])
-    .then(
-      (vals) => {
-        const email = vals[0];
-        const metaanalyses = vals[1];
-        return metaanalyses.filter((ma) => ma.enteredBy === email);
-      },
-    );
+
+  const metaanalysis = await metaanalysisCache;
+  const email = await getEmailAddressOfUser(user);
+
+  return metaanalysis.filter(ma => ma.enteredBy === email);
 };
 
-module.exports.getMetaanalysisByTitle = (user, title, time, includePapers) => {
+module.exports.getMetaanalysisByTitle = async (user, title, time, includePapers) => {
   // todo if time is specified, compute a version as of that time
   if (time) {
-    return Promise.reject(new NotImplementedError('getMetaanalysisByTitle with time not implemented'));
+    throw new NotImplementedError('getMetaanalysisByTitle with time not implemented');
   }
 
   // todo different users can use different titles for the same thing
 
   if (title === config.NEW_META_TITLE) {
-    return getEmailAddressOfUser(user).then((email) => newMetaanalysis(email));
+    const email = await getEmailAddressOfUser(user);
+    return newMetaanalysis(email);
   }
 
-  return metaanalysisCache
-    .then((metaanalyses) => {
-      for (let ma of metaanalyses) {
-        if (ma.title === title) {
-          if (includePapers) {
-          // use a shallow copy of ma
-            ma = getMetaanalysisWithPapers(ma, time);
-          }
-          return ma;
-        }
+  const metaanalyses = await metaanalysisCache;
+  for (let ma of metaanalyses) {
+    if (ma.title === title) {
+      if (includePapers) {
+        // use a shallow copy of ma
+        ma = getMetaanalysisWithPapers(ma, time);
       }
-      return Promise.reject();
-    });
+      return ma;
+    }
+  }
+  throw new Error('No metaanalysis found');
+
+  // return metaanalysisCache
+  //   .then((metaanalyses) => {
+  //     console.log(metaanalyses);
+
+  //     for (let ma of metaanalyses) {
+  //       if (ma.title === title) {
+  //         if (includePapers) {
+  //         // use a shallow copy of ma
+  //           ma = getMetaanalysisWithPapers(ma, time);
+  //         }
+  //         return ma;
+  //       }
+  //     }
+  //     return Promise.reject();
+  //   });
 };
 
-function getMetaanalysisWithPapers(ma, time) {
+async function getMetaanalysisWithPapers(ma, time) {
   if (time) {
-    return Promise.reject(new NotImplementedError('getMetaanalysisWithPapers with time not implemented'));
+    throw new NotImplementedError('getMetaanalysisWithPapers with time not implemented');
   }
 
-  return paperCache.then((papers) => {
-    // use a shallow copy of ma
-    ma = { ...ma };
+  const papers = await paperCache;
+  // use a shallow copy of ma
+  ma = { ...ma };
 
-    ma.papers = [];
-    // populate the papers array in the order of ma.paperOrder
-    papers.forEach((p) => {
-      const index = ma.paperOrder.indexOf(p.id);
-      if (index !== -1) ma.papers[index] = p;
-    });
-
-    return ma;
+  ma.papers = [];
+  // populate the papers array in the order of ma.paperOrder
+  papers.forEach((p) => {
+    const index = ma.paperOrder.indexOf(p.id);
+    if (index !== -1) ma.papers[index] = p;
   });
+
+  return ma;
 }
 
 function newMetaanalysis(email) {
