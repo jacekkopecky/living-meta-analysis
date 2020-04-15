@@ -342,7 +342,8 @@ module.exports.listUsers = () => {
   return userCache;
 };
 
-module.exports.saveUser = (email, user, options) => {
+module.exports.saveUser = async (email, user, options) => {
+
   options = options || {};
   // todo do we want to keep a Log of users?
   if (!email || !user) {
@@ -357,42 +358,36 @@ module.exports.saveUser = (email, user, options) => {
     user.ctime = tools.uniqueNow();
   }
 
-  return userCache.then(
-    (users) => new Promise((resolve, reject) => {
-      const original = users[email];
-      // reject the save if we're restoring from another datastore and we already have this user
-      if (options.restoring && original) {
-        reject(new Error(`user ${user.email} already exists`));
-        return;
-      }
-      checkForDisallowedChanges(user, original);
-      const key = datastore.key(['User', email]);
-      console.log('saveUser making a datastore request');
-      datastore.save({
-        key,
-        data: user,
-      }, (err) => {
-        if (err) {
-          console.error('error saving user');
-          console.error(err);
-          reject(err);
-        } else {
-          // update the local cache of users
-          users[email] = user;
-          if (original && original.username) {
-            const index = allUsernames.indexOf(original.username.toLowerCase());
-            if (index !== -1) {
-              allUsernames.splice(index, 1);
-            }
-          }
-          if (user.username) allUsernames.push(user.username.toLowerCase());
+  const users = await userCache;
 
-          // return the user
-          resolve(user);
-        }
-      });
-    }),
-  );
+  const original = users[email];
+  // reject the save if we're restoring from another datastore and we already have this user
+  if (options.restoring && original) {
+    reject(new Error(`user ${user.email} already exists`));
+    return;
+  }
+  checkForDisallowedChanges(user, original);
+  const key = datastore.key(['User', email]);
+  console.log('saveUser making a datastore request');
+  try {
+    await datastore.save({
+      key,
+      data: user,
+    });
+    // update the local cache of users
+    users[email] = user;
+    if (original && original.username) {
+      const index = allUsernames.indexOf(original.username.toLowerCase());
+      if (index !== -1) {
+        allUsernames.splice(index, 1);
+      }
+    }
+    if (user.username) allUsernames.push(user.username.toLowerCase());
+  } catch (err) {
+    console.error('error saving user');
+    console.error(err);
+    throw new Error;
+  }
 };
 
 // on start of web server put all file names in /webpages into this list, with and without filename extensions
