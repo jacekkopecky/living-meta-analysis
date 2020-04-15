@@ -343,7 +343,6 @@ module.exports.listUsers = () => {
 };
 
 module.exports.saveUser = async (email, user, options) => {
-
   options = options || {};
   // todo do we want to keep a Log of users?
   if (!email || !user) {
@@ -388,7 +387,7 @@ module.exports.saveUser = async (email, user, options) => {
   } catch (err) {
     console.error('error saving user');
     console.error(err);
-    throw new Error;
+    throw new Error();
   }
 };
 
