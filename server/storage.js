@@ -905,30 +905,28 @@ module.exports.savePaper = (paper, email, origTitle, options) => {
 
 let metaanalysisCache = tools.notInitialized();
 
-function getAllMetaanalyses() {
-  metaanalysisCache = columnCache.then((columns) => {
-    return paperCache.then((papers) => {
-      return new Promise((resolve, reject) => {
-        console.log('getAllMetaanalyses: making a datastore request');
-        const retval = [];
-        datastore.createQuery('Metaanalysis').runStream()
-          .on('error', (err) => {
-            console.error('error retrieving metaanalyses');
-            console.error(err);
-            setTimeout(getAllMetaanalyses, 60 * 1000); // try loading again in a minute
-            reject(err);
-          })
-          .on('data', (entity) => {
-            retval.push(migrateMetaanalysis(entity, papers, columns));
-            allTitles.push(entity.title);
-          })
-          .on('end', () => {
-            console.log(`getAllMetaanalyses: ${retval.length} done`);
-            resolve(retval);
-          });
-      });
+async function getAllMetaanalyses() {
+  const columns = columnCache;
+  const papers = paperCache;
+
+  if (!columns) throw new Error('No columns in cache');
+  if (!papers) throw new Error('No papers in cache');
+
+  try {
+    console.log('getAllMetaanalyses: making a datastore request');
+    const [retval] = await datastore.createQuery('Metaanalysis').run();
+    retval.forEach(val => {
+      migrateMetaanalysis(val, papers, columns);
+      allTitles.push(val.title);
     });
-  });
+    console.log(`getAllMetaanalyses: ${retval.length} done`);
+    metaanalysisCache = retval;
+    return retval;
+  } catch (error) {
+    console.error('error retrieving metaanalyses', error);
+    setTimeout(getAllMetaanalyses, 60 * 1000); // try loading again in a minute
+    throw error;
+  }
 }
 
 /*
