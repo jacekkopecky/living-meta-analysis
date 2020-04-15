@@ -1298,30 +1298,28 @@ module.exports.saveMetaanalysis = (metaanalysis, email, origTitle, options) => {
 
 let columnCache = tools.notInitialized();
 
-function getAllColumns() {
-  columnCache = new Promise((resolve, reject) => {
+async function getAllColumns() {
+  try {
     console.log('getAllColumns: making a datastore request');
     const retval = {};
-    datastore.createQuery('Column').runStream()
-      .on('error', (err) => {
-        console.error('error retrieving columns');
-        console.error(err);
-        setTimeout(getAllColumns, 60 * 1000); // try loading again in a minute
-        reject(err);
-      })
-      .on('data', (entity) => {
-        try {
-          retval[entity.id] = entity;
-        } catch (err) {
-          console.error('error in a column entity (ignoring)');
-          console.error(err);
-        }
-      })
-      .on('end', () => {
-        console.log(`getAllColumns: ${Object.keys(retval).length} done`);
-        resolve(retval);
-      });
-  });
+    const [results] = await datastore.createQuery('Column').run();
+
+    results.forEach(result => {
+      try {
+        retval[result.id] = result;
+      } catch (error) {
+        console.error('error in a column entity (ignoring)', error);
+      }
+    });
+
+    console.log(`getAllColumns: ${Object.keys(retval).length} done`);
+    columnCache = retval;
+    return retval;
+  } catch (error) {
+    console.error('error retrieving columns', error);
+    setTimeout(getAllColumns, 60 * 1000); // try loading again in a minute
+    throw error;
+  }
 }
 
 
