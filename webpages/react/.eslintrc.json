@@ -11,6 +11,7 @@
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
+    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -22,6 +23,10 @@
         "react"
     ],
     "rules": {
-        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+        "indent": ["error", 2],
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "react/destructuring-assignment": [1, "always", { "ignoreClassFields": true }],
+        "react/prop-types": [0],
+        "react/static-property-placement": [1]
     }
 }

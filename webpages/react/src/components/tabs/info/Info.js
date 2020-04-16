@@ -2,18 +2,20 @@ import React from 'react';
 import './Info.css';
 
 function Description(props) {
+  const { value } = props;
   return (
     <div className="description">
       <p className="descriptionHeader">Description : </p>
-      <div className="descriptionText">{props.value}</div>
+      <div className="descriptionText">{ value }</div>
     </div>
   );
 }
 function Reference(props) {
+  const { value } = props;
   return (
     <div className="reference">
       <p className="referenceHeader">Reference : </p>
-      <div className="referenceText">{props.value}</div>
+      <div className="referenceText">{ value }</div>
     </div>
   );
 }
