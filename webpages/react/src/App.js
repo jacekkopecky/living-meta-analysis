@@ -1,10 +1,7 @@
-/* eslint-disable react/jsx-filename-extension */
 import React from 'react';
-import Info from './components/metaanalysis/info/Info';
-import Table from './components/metaanalysis/table/Table';
-import Tabs from './components/layout/Tabs';
 import Header from './components/layout/header/Header';
 import './App.css';
+import Metaanalysis from './components/metaanalysis/Metaanalysis';
 
 class App extends React.Component {
   constructor(props) {
@@ -34,8 +31,7 @@ class App extends React.Component {
     }
   }
 
-
-  handleInfo() {
+  handleFetch() {
     const { error, isLoaded, items } = this.state;
     if (error) {
       return (
@@ -48,7 +44,7 @@ class App extends React.Component {
     if (!isLoaded) return <div>Loading...</div>;
 
     return (
-      <Info reference={items.published} description={items.description} />
+      <Metaanalysis items={items} />
     );
   }
 
@@ -56,13 +52,7 @@ class App extends React.Component {
     return (
       <div>
         <Header />
-        <h1>{this.state.items.title}</h1>
-        <Tabs>
-          <div label="Info">{this.handleInfo()}</div>
-          <div label="Table"><Table /></div>
-          <div label="Plots">This is plots tab !</div>
-          <div label="Aggregates">This is aggs tab !</div>
-        </Tabs>
+        {this.handleFetch()}
       </div>
     );
   }
