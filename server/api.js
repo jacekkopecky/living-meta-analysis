@@ -153,12 +153,13 @@ async function SAME_USER(req, res, next) {
   }
 }
 
-module.exports.EXISTS_USER = function (req, res, next) {
-  storage.getUser(req.params.user)
-    .then(
-      () => next(),
-      () => next(new NotFoundError()),
-    );
+module.exports.EXISTS_USER = async function (req, res, next) {
+  try {
+    await storage.getUser(req.params.user);
+    next();
+  } catch (error) {
+    next(new NotFoundError());
+  }
 };
 
 async function saveUser(req, res, next) {
