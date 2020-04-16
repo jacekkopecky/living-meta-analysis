@@ -681,18 +681,13 @@ function migratePaper(paper, columns) {
 module.exports.migratePaper = migratePaper;
 
 
-module.exports.getPapersEnteredBy = (user) => {
+module.exports.getPapersEnteredBy = async (user) => {
   if (!user) {
     throw new Error('user parameter required');
   }
-  return Promise.all([getEmailAddressOfUser(user), paperCache])
-    .then(
-      (vals) => {
-        const email = vals[0];
-        const papers = vals[1];
-        return papers.filter((p) => p.enteredBy === email);
-      },
-    );
+  const email = await getEmailAddressOfUser(user);
+  const papers = await paperCache;
+  return papers.filter(p => p.enteredBy === email);
 };
 
 module.exports.getPaperByTitle = async (user, title, time) => {
