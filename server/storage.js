@@ -733,7 +733,7 @@ function newPaper(email) {
 
 module.exports.listPapers = () => paperCache;
 
-let currentPaperSave = Promise.resolve();
+const currentPaperSave = Promise.resolve();
 
 module.exports.savePaper = async (paper, email, origTitle, options) => {
   options = options || {};
@@ -751,7 +751,7 @@ module.exports.savePaper = async (paper, email, origTitle, options) => {
 
   // the following serializes this save after the previous one, whether it fails or succeeds
   // this way we can't have two concurrent saves create papers with the same title
-
+  await currentPaperSave;
   const papers = await paperCache;
   // prepare the paper for saving
   const ctime = tools.uniqueNow();
@@ -849,8 +849,8 @@ module.exports.savePaper = async (paper, email, origTitle, options) => {
           },
         ],
         },
-      ]
-    )
+      ],
+    );
     doAddPaperToCache();
     return paper;
   } catch (error) {
