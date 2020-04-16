@@ -112,16 +112,17 @@ module.exports.getKindForTitle = async (user, title) => {
   // });
 };
 
-function listTitles(req, res, next) {
-  storage.listTitles()
-    .then((titles) => {
-      const retval = [];
-      titles.forEach((t) => {
-        if (typeof t === 'string') retval.push(t);
-      });
-      res.json(retval);
-    })
-    .catch((err) => next(err));
+async function listTitles(req, res, next) {
+  try {
+    const titles = await storage.listTitles();
+    const retval = [];
+    titles.forEach(t => {
+      if (typeof t === 'string') retval.push(t);
+    });
+    res.json(retval);
+  } catch (error) {
+    next(error);
+  }
 }
 
 /* users
