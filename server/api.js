@@ -95,14 +95,21 @@ function apiMetaanalysisURL(user, title) {
   return `/api/metaanalyses/${user}/${title || config.NEW_META_TITLE}`;
 }
 
-module.exports.getKindForTitle = function getKindForTitle(user, title) {
-  return new Promise((resolve, reject) => {
-    storage.getMetaanalysisByTitle(user, title)
-      .then(() => resolve('metaanalysis'))
-      .catch(() => storage.getPaperByTitle(user, title))
-      .then(() => resolve('paper'))
-      .catch((err) => reject(err));
-  });
+// TODO: Test/Review function
+module.exports.getKindForTitle = async (user, title) => {
+  const metaanalyses = await storage.getMetaanalysisByTitle(user, title);
+  if (metaanalyses) return 'metaanalysis';
+  const paper = await storage.getPaperByTitle(user, title);
+  if (paper) return 'paper';
+  throw new Error('Nothing found');
+
+  // return new Promise((resolve, reject) => {
+  //   storage.getMetaanalysisByTitle(user, title)
+  //     .then(() => resolve('metaanalysis'))
+  //     .catch(() => storage.getPaperByTitle(user, title))
+  //     .then(() => resolve('paper'))
+  //     .catch((err) => reject(err));
+  // });
 };
 
 function listTitles(req, res, next) {
