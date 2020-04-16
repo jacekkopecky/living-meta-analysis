@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-filename-extension */
 import React from 'react';
-import Info from './components/tabs/info/Info';
-import Table from './components/tabs/table/Table';
+import Info from './components/metaanalysis/info/Info';
+import Table from './components/metaanalysis/table/Table';
 import Tabs from './components/layout/Tabs';
-import Header from './components/layout/Header';
+import Header from './components/layout/header/Header';
 import './App.css';
 
 class App extends React.Component {
