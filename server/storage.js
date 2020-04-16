@@ -1387,27 +1387,25 @@ module.exports.init = async () => {
   await getAllMetaanalyses();
   if (!process.env.TESTING) setupClosedBeta();
 
-  module.exports.ready = Promise.resolve()
-    .then(() => metaanalysisCache)
-    .then(() => paperCache)
-    .then(() => userCache)
-    .then(() => {
-      if (!process.env.TESTING) return;
-
+  async function storageReady() {
+    await metaanalysisCache;
+    await paperCache;
+    await userCache;
+    if (process.env.TESTING) {
       // load testing data
       try {
-        const storageTools = require('./lib/storage-tools'); // eslint-disable-line global-require
+        const storageTools = require('./lib/storage-tools');
         const data = fs.readFileSync(path.join(__dirname, '../test/data.json'), 'utf8');
-
-        return tools.waitForPromise(storageTools.add(JSON.parse(data), { immediate: true })) // eslint-disable-line consistent-return
-          .then(() => {
-            console.log('storage: Testing data imported');
-          });
+        await storageTools.add(JSON.parse(data), { immediate: true });
+        return console.log('storage: Testing data imported');
       } catch (e) {
         console.error(e && e.stack);
       }
-    })
-    .then(() => console.log('storage: all is now loaded'));
+    }
+    console.log('storage: all is now loaded');
+  }
+
+  module.exports.ready = storageReady;
 
   return module.exports.ready;
 };
