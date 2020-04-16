@@ -426,23 +426,19 @@ async function getMetaanalysisVersion(req, res, next) {
   }
 }
 
-function saveMetaanalysis(req, res, next) {
+async function saveMetaanalysis(req, res, next) {
   // extract from incoming data stuff that is allowed
-  storage.saveMetaanalysis(
-    extractReceivedMetaanalysis(req.body),
-    req.user.emails[0].value,
-    req.params.title)
-    .then((ma) => {
-      res.json(extractMetaanalysisForSending(ma, false, req.params.user));
-    })
-    .catch((e) => {
-      console.log(e);
-      if (e instanceof ValidationError || e instanceof NotImplementedError) {
-        next(e);
-      } else {
-        next(new InternalError(e));
-      }
-    });
+  try {
+    const ma = await storage.saveMetaanalysis(extractReceivedMetaanalysis(req.body), req.user.emails[0].value, req.params.title);
+    res.json(extractMetaanalysisForSending(ma, false, req.params.user));
+  } catch (e) {
+    console.log(e);
+    if (e instanceof ValidationError || e instanceof NotImplementedError) {
+      next(e);
+    } else {
+      next(new InternalError(e));
+    }
+  }
 }
 
 function extractMetaanalysisForSending(storageMetaanalysis, includePapers, user, username) {
