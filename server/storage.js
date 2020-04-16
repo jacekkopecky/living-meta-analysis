@@ -350,7 +350,7 @@ module.exports.saveUser = async (email, user, options) => {
   }
 
   if (email === LOCAL_STORAGE_SPECIAL_USER) {
-    return Promise.reject(new Error('must not add the user ' + LOCAL_STORAGE_SPECIAL_USER));
+    throw new Error('must not add the user ' + LOCAL_STORAGE_SPECIAL_USER);
   }
 
   if (!user.ctime) { // new user
@@ -362,8 +362,7 @@ module.exports.saveUser = async (email, user, options) => {
   const original = users[email];
   // reject the save if we're restoring from another datastore and we already have this user
   if (options.restoring && original) {
-    reject(new Error(`user ${user.email} already exists`));
-    return;
+    throw new Error(`user ${user.email} already exists`);
   }
   checkForDisallowedChanges(user, original);
   const key = datastore.key(['User', email]);
@@ -385,9 +384,8 @@ module.exports.saveUser = async (email, user, options) => {
     // then return the user
     return user;
   } catch (err) {
-    console.error('error saving user');
-    console.error(err);
-    throw new Error();
+    console.error('error saving user', err);
+    throw err;
   }
 };
 
