@@ -279,17 +279,14 @@ async function listPapersForUser(req, res, next) {
   }
 }
 
-function getPaperVersion(req, res, next) {
-  storage.getPaperByTitle(req.params.user, req.params.title, req.params.time)
-    .then((p) => {
-      return storage.getUsernameOfUser(p.enteredBy)
-        .then((username) => {
-          res.json(extractPaperForSending(p, true, req.params.user, username));
-        });
-    })
-    .catch((e) => {
-      next(e.status ? e : new NotFoundError());
-    });
+async function getPaperVersion(req, res, next) {
+  try {
+    const paper = await storage.getPaperByTitle(req.params.user, req.params.title);
+    const username = await storage.getUsernameOfUser(paper.enteredBy);
+    res.json(extractPaperForSending(paper, true, req.params.user, username));
+  } catch (e) {
+    next(e.status ? e : new NotFoundError());
+  }
 }
 
 async function savePaper(req, res, next) {
