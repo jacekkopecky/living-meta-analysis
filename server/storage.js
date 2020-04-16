@@ -1088,22 +1088,6 @@ module.exports.getMetaanalysisByTitle = async (user, title, time, includePapers)
     }
   }
   throw new Error('No metaanalysis found');
-
-  // return metaanalysisCache
-  //   .then((metaanalyses) => {
-  //     console.log(metaanalyses);
-
-  //     for (let ma of metaanalyses) {
-  //       if (ma.title === title) {
-  //         if (includePapers) {
-  //         // use a shallow copy of ma
-  //           ma = getMetaanalysisWithPapers(ma, time);
-  //         }
-  //         return ma;
-  //       }
-  //     }
-  //     return Promise.reject();
-  //   });
 };
 
 async function getMetaanalysisWithPapers(ma, time) {
