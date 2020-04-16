@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import './Tabs.css'
+import './Tabs.css';
 import Tab from './Tab';
 
 class Tabs extends Component {
   static propTypes = {
     children: PropTypes.instanceOf(Array).isRequired,
   }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -26,7 +27,7 @@ class Tabs extends Component {
       },
       state: {
         activeTab,
-      }
+      },
     } = this;
 
     return (
