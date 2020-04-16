@@ -225,18 +225,17 @@ function extractReceivedPhoto(recPhoto) {
   return retval;
 }
 
-function returnUserProfile(req, res, next) {
-  storage.getUser(req.params.user)
-    .then((user) => {
-      res.json(extractUserForSending(user));
-    })
-    .catch((err) => {
-      if (err && err.status) {
-        next(err);
-      } else {
-        next(new NotFoundError());
-      }
-    });
+async function returnUserProfile(req, res, next) {
+  try {
+    const user = await storage.getUser(req.params.user);
+    res.json(extractUserForSending(user));
+  } catch (err) {
+    if (err && err.status) {
+      next(err);
+    } else {
+      next(new NotFoundError());
+    }
+  }
 }
 
 function extractUserForSending(user) {
