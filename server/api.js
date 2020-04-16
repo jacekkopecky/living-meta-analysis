@@ -264,18 +264,19 @@ function extractUserForSending(user) {
  *
  *
  */
-function listPapersForUser(req, res, next) {
-  storage.getPapersEnteredBy(req.params.user)
-    .then((papers) => {
-      if (papers.length === 0) throw new Error('no papers found');
+async function listPapersForUser(req, res, next) {
+  try {
+    const papers = await storage.getPapersEnteredBy(req.params.user);
+    if (papers.length === 0) throw new Error('no papers found');
 
-      const retval = [];
-      papers.forEach((p) => {
-        retval.push(extractPaperForSending(p, false, req.params.user));
-      });
-      res.json(retval);
-    })
-    .catch(() => next(new NotFoundError()));
+    const retval = [];
+    papers.forEach(p => {
+      retval.push(extractPaperForSending(p, false, req.params.user));
+    });
+    res.json(retval);
+  } catch (error) {
+    next(new NotFoundError());
+  }
 }
 
 function getPaperVersion(req, res, next) {
