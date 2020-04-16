@@ -301,7 +301,7 @@ async function savePaper(req, res, next) {
       extractReceivedPaper(req.body),
       req.user.emails[0].value,
       req.params.title);
-    res.json(extractPaperForSending(p, true, req.params.user));    
+    res.json(extractPaperForSending(p, true, req.params.user));
   } catch (e) {
     if (e instanceof ValidationError || e instanceof NotImplementedError) {
       next(e);
@@ -441,7 +441,7 @@ function saveMetaanalysis(req, res, next) {
       res.json(extractMetaanalysisForSending(ma, false, req.params.user));
     })
     .catch((e) => {
-      console.log(e)
+      console.log(e);
       if (e instanceof ValidationError || e instanceof NotImplementedError) {
         next(e);
       } else {
