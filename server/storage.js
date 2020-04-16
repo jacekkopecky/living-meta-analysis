@@ -692,7 +692,7 @@ module.exports.getPapersEnteredBy = async (user) => {
 
 module.exports.getPaperByTitle = async (user, title, time) => {
   // todo if time is specified, compute a version as of that time
-  if (time) return Promise.reject(new NotImplementedError('getPaperByTitle with time not implemented'));
+  if (time) throw new NotImplementedError('getPaperByTitle with time not implemented');
 
   if (!user || !title) {
     throw new Error('user and title parameters required');
@@ -701,20 +701,20 @@ module.exports.getPaperByTitle = async (user, title, time) => {
   // todo different users can use different titles for the same thing
 
   if (title === config.NEW_PAPER_TITLE) {
-    // return getEmailAddressOfUser(user).then((email) => newPaper(email));
-    return newPaper(await getEmailAddressOfUser(user));
+    const email = await getEmailAddressOfUser(user);
+    return newPaper(email);
+  }
+  const validUser = await getUser(user);
+  if (!validUser) return;
+
+  const papers = await paperCache;
+  for (const p of papers) {
+    if (p.title === title) {
+      return title;
+    }
   }
 
-  return getUser(user) // check that the user exists (we ignore the return value)
-    .then(() => paperCache)
-    .then((papers) => {
-      for (const p of papers) {
-        if (p.title === title) {
-          return p;
-        }
-      }
-      return Promise.reject();
-    });
+  throw new Error('No paper found');
 };
 
 function newPaper(email) {
