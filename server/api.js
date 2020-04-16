@@ -182,31 +182,29 @@ async function saveUser(req, res, next) {
 }
 
 // Check that the user is known to LiMA and that LiMA has up-to-date values from the identity provider.
-function checkUser(req, res, next) {
+async function checkUser(req, res, next) {
   const email = req.user.emails[0].value;
-  storage.getUser(email)
-    .then((storageUser) => {
+  try {
+    const storageUser = await storage.getUser(email);
     // Check whether there are any changes to the Google Object
-      const strippedGoogleUser = extractReceivedUser(req.user);
-      if (strippedGoogleUser.displayName !== storageUser.displayName ||
-        strippedGoogleUser.email !== storageUser.email ||
-        JSON.stringify(strippedGoogleUser.photos) !== JSON.stringify(storageUser.photos)) {
-        Object.assign(storageUser, strippedGoogleUser);
-        storage.saveUser(storageUser.email, storageUser)
-          .then((savedUser) => {
-            res.json(extractUserForSending(savedUser));
-          })
-          .catch((err) => {
-            next(new InternalError(err));
-          });
-      } else {
-        res.json(extractUserForSending(storageUser));
+    const strippedGoogleUser = extractReceivedUser(req.user);
+    if (strippedGoogleUser.displayName !== storageUser.displayName ||
+      strippedGoogleUser.email !== storageUser.email ||
+      JSON.stringify(strippedGoogleUser.photos) !== JSON.stringify(storageUser.photos)) {
+      Object.assign(storageUser, strippedGoogleUser);
+      try {
+        const savedUser = await storage.saveUser(storageUser.email, storageUser);
+        res.json(extractUserForSending(savedUser));
+      } catch (err) {
+        next(new InternalError(err));
       }
-    })
-    .catch(() => {
+    } else {
+      res.json(extractUserForSending(storageUser));
+    }
+  } catch (error) {
     // User is not known to LiMA, return 401 to be caught by caller
-      next(new UnauthorizedError('Please register with LiMA at /register'));
-    });
+    next(new UnauthorizedError('Please register with LiMA at /register'));
+  }
 }
 
 function extractReceivedUser(receivedUser) {
