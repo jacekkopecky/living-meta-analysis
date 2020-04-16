@@ -402,18 +402,19 @@ function extractReceivedComment(receivedComment) {
  *
  *
  */
-function listMetaanalysesForUser(req, res, next) {
-  storage.getMetaanalysesEnteredBy(req.params.user)
-    .then((mas) => {
-      if (mas.length === 0) throw new Error('no metaanalyses found');
+async function listMetaanalysesForUser(req, res, next) {
+  try {
+    const mas = await storage.getMetaanalysesEnteredBy(req.params.user);
+    if (mas.length === 0) throw new Error('no metaanalyses found');
 
-      const retval = [];
-      mas.forEach((m) => {
-        retval.push(extractMetaanalysisForSending(m, false, req.params.user));
-      });
-      res.json(retval);
-    })
-    .catch(() => next(new NotFoundError()));
+    const retval = [];
+    mas.forEach(m => {
+      retval.push(extractMetaanalysisForSending(m, false, req.params.user));
+    });
+    res.json(retval);
+  } catch (error) {
+    next(new NotFoundError());
+  }
 }
 
 async function getMetaanalysisVersion(req, res, next) {
