@@ -1,4 +1,5 @@
 import React from 'react';
+import Typography from '@material-ui/core/Typography';
 import './Info.css';
 
 function Description(props) {
@@ -6,7 +7,7 @@ function Description(props) {
   return (
     <div className="description">
       <p className="descriptionHeader">Description : </p>
-      <div className="descriptionText">{value}</div>
+      <Typography variant="body1" className="referenceText">{value}</Typography>
     </div>
   );
 }
@@ -15,7 +16,7 @@ function Reference(props) {
   return (
     <div className="reference">
       <p className="referenceHeader">Reference : </p>
-      <div className="referenceText">{value}</div>
+      <Typography variant="body1" className="referenceText">{value}</Typography>
     </div>
   );
 }
