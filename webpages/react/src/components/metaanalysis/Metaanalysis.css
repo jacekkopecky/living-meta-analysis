@@ -1,4 +1,9 @@
-.metaanalysis h1 {
+
+.titlebar {
+  display: flex;
+  justify-content: space-between;
   background-color: rgba(182, 234, 255, 0.931);
-  padding: 10px;
+  padding: 20px;
+  margin-bottom: 0;
+  margin-top: 10px;
 }
