@@ -57,17 +57,17 @@ app.use(cookieParser());
 //     if (!storage.betaCodes.hasOwnProperty(req.cookies['lima-beta-code'])) retval = '-' + retval;
 //     return retval;
 //   });
-  // // ensure log directory exists
-  // if (!fs.existsSync(config.logDirectory)) fs.mkdirSync(config.logDirectory);
+// // ensure log directory exists
+// if (!fs.existsSync(config.logDirectory)) fs.mkdirSync(config.logDirectory);
 
-  // // create a rotating write stream
-  // const accessLogStream = rfs.createStream('access.log', {
-  //   interval: '1d', // rotate daily
-  //   compress: true,
-  //   path: config.logDirectory,
-  // });
+// // create a rotating write stream
+// const accessLogStream = rfs.createStream('access.log', {
+//   interval: '1d', // rotate daily
+//   compress: true,
+//   path: config.logDirectory,
+// });
 
-  // setup the logger
+// setup the logger
 //   loggingMiddleware = morgan(config.logFormat || 'combined');
 //   app.use(loggingMiddleware);
 //   console.log(`logging HTTP accesses into ${config.logDirectory}`);
