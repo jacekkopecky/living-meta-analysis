@@ -413,8 +413,8 @@ function getForbiddenUsernames() {
   }
 
   // push all the found forbidden usernames into the global array
-  Array.prototype.push.apply(forbiddenUsernames, retval);
-  Array.prototype.push.apply(allUsernames, forbiddenUsernames);
+  forbiddenUsernames.push(...retval);
+  allUsernames.push(...forbiddenUsernames);
 }
 
 // all the forbidden usernames will be treated as taken
