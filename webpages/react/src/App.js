@@ -1,5 +1,6 @@
 import React from 'react';
 import Header from './components/layout/header/Header';
+import Footer from './components/layout/footer/Footer';
 import './App.css';
 import Metaanalysis from './components/metaanalysis/Metaanalysis';
 
@@ -13,12 +14,16 @@ class App extends React.Component {
     };
   }
 
+  // fetch request to the API
+  // then everything is spread in children components
   async componentDidMount() {
     // full url : https://lima.soc.port.ac.uk/api/metaanalyses/HartmutBlank/MisinformationEffect
     const url = `https://lima.soc.port.ac.uk/api/metaanalyses${window.location.pathname}`;
+    // const url = `https://lima.soc.port.ac.uk/api/metaanalyses/yan.imensar@gmail.com/Test/`;
     try {
       const response = await fetch(url);
       const data = await response.json();
+      console.log(data);
       this.setState({
         isLoaded: true,
         items: data,
@@ -31,6 +36,7 @@ class App extends React.Component {
     }
   }
 
+  // printing loading screen if fetch isn't finished
   handleFetch() {
     const { error, isLoaded, items } = this.state;
     if (error) {
@@ -53,6 +59,7 @@ class App extends React.Component {
       <div>
         <Header />
         {this.handleFetch()}
+        <Footer />
       </div>
     );
   }
