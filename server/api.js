@@ -102,14 +102,6 @@ module.exports.getKindForTitle = async (user, title) => {
   const paper = await storage.getPaperByTitle(user, title);
   if (paper) return 'paper';
   throw new Error('Nothing found');
-
-  // return new Promise((resolve, reject) => {
-  //   storage.getMetaanalysisByTitle(user, title)
-  //     .then(() => resolve('metaanalysis'))
-  //     .catch(() => storage.getPaperByTitle(user, title))
-  //     .then(() => resolve('paper'))
-  //     .catch((err) => reject(err));
-  // });
 };
 
 async function listTitles(req, res, next) {
@@ -166,13 +158,6 @@ async function saveUser(req, res, next) {
   const user = extractReceivedUser(req.user);
   user.mtime = Date.now(); // update modification time - this is the last time the user agreed to T&C&PP
   user.username = tools.string(req.body.username);
-  // storage.saveUser(user.email, user)
-  //   .then((storageUser) => {
-  //     res.json(extractUserForSending(storageUser));
-  //   })
-  //   .catch((err) => {
-  //     next(err instanceof Error ? err : new InternalError(err));
-  //   });
   try {
     const storageUser = await storage.saveUser(user.email, user);
     res.json(extractUserForSending(storageUser));
