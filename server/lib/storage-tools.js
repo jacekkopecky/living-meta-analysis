@@ -1,7 +1,7 @@
 'use strict';
 
 function log(e) {
-  console.error(e && e.stack || e);
+  console.error(e.stack || e);
 }
 
 const storage = require('./../storage');

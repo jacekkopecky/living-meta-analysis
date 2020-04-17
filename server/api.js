@@ -57,7 +57,7 @@ function setUpRoutes() {
     listPapersForUser);
   api.get(`/papers/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
     getPaperVersion);
-  api.get(`/papers/:user(${config.USER_RE})\/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+  api.get(`/papers/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
     getPaperVersion);
   api.post(`/papers/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
     GOOGLE_USER, SAME_USER, jsonBodyParser, savePaper);

@@ -14,10 +14,8 @@ const cors = require('cors');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
-const morgan = require('morgan');
-// const rfs = require('rotating-file-stream');
+// const morgan = require('morgan'); TODO: Implement
 const cookieParser = require('cookie-parser');
-const onHeaders = require('on-headers');
 
 const config = require('./config');
 
@@ -233,7 +231,9 @@ if (!process.env.TESTING) {
 
 app.use(() => { throw new NotFoundError(); });
 
-app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  // eslint-disable-line no-unused-vars
   if (err.status === 404) {
     res.status(404).sendFile('404.html', { root: './webpages/' });
   } else if (err.status === 401) {

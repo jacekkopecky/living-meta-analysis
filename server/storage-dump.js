@@ -14,7 +14,7 @@ async function storageDump() {
     log(JSON.stringify(thing, null, 2));
     process.exit();
   } catch (e) {
-    console.error('error dumping: ', e && e.stack || e);
+    console.error('error dumping: ', e.stack || e);
     throw e;
   }
 }

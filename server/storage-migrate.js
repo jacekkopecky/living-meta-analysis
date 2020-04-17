@@ -18,7 +18,7 @@ const inputData = new Promise((resolve, reject) => {
     try {
       resolve(JSON.parse(inputChunks.join('')));
     } catch (e) {
-      console.error(e && e.stack || e);
+      console.error(e.stack || e);
       reject(e);
     }
   });
@@ -35,7 +35,7 @@ inputData
     log(JSON.stringify(data, null, 2));
     process.exit();
   })
-  .catch((e) => console.error('error migrating: ', e && e.stack || e));
+  .catch((e) => console.error('error migrating: ', e.stack || e));
 
 // for more robust migration of old data,
 // we'd need to keep the migration code around longer (possibly indefinitely)
