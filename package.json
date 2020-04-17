@@ -14,6 +14,7 @@
     "coverage-open": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/istanbul cover ./node_modules/.bin/jasmine ; open ./coverage/lcov-report/index.html ; true",
     "test": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/jasmine && (cd test; ../node_modules/.bin/gemini test) ; true",
     "testing-server": "TESTING=1 PORT=8081 node_modules/.bin/nodemon -w server/ -w test/data.json server",
+    "lint-server": "echo eslint && eslint server/** --ext .js,.json",
     "lint": "echo eslint && eslint . --ext .js,.json && echo stylelint && stylelint webpages"
   },
   "repository": {
