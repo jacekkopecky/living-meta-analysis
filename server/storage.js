@@ -287,8 +287,6 @@ async function getAllUsers() {
       email: LOCAL_STORAGE_SPECIAL_USER,
       username: LOCAL_STORAGE_SPECIAL_USERNAME,
     };
-    // TODO: rework cache
-    userCache = retval;
     return retval;
   } catch (error) {
     console.error('error retrieving users', error);
@@ -559,7 +557,6 @@ async function getAllPapers() {
       allTitles.push(val.title);
     });
     console.log(`getAllPapers: ${retval.length} done`);
-    paperCache = retval;
     return retval;
   } catch (error) {
     console.error('error retrieving papers', error);
@@ -901,7 +898,6 @@ async function getAllMetaanalyses() {
       allTitles.push(val.title);
     });
     console.log(`getAllMetaanalyses: ${retval.length} done`);
-    metaanalysisCache = retval;
     return retval;
   } catch (error) {
     console.error('error retrieving metaanalyses', error);
@@ -1182,8 +1178,8 @@ module.exports.saveMetaanalysis = async (metaanalysis, email, origTitle, options
     }
 
     doAddMetaanalysisToCache = () => {
-    // put the metaanalysis in the cache where the original metaanalysis was
-    // todo this can be broken by deletion - the `i` would then change
+      // put the metaanalysis in the cache where the original metaanalysis was
+      // todo this can be broken by deletion - the `i` would then change
       metaanalyses[i] = metaanalysis;
       // replace in allTitles the old title of the metaanalysis with the new title
       if (original && original.title !== metaanalysis.title) {
@@ -1276,7 +1272,6 @@ async function getAllColumns() {
     });
 
     console.log(`getAllColumns: ${Object.keys(retval).length} done`);
-    columnCache = retval;
     return retval;
   } catch (error) {
     console.error('error retrieving columns', error);
