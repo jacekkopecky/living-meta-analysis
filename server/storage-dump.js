@@ -10,7 +10,7 @@ const storageTools = require('./lib/storage-tools');
 async function storageDump() {
   try {
     const data = await storageTools.dump();
-    console.log('storage-dump done');
+    console.error('storage-dump done');
     log(JSON.stringify(data, null, 2));
     process.exit();
   } catch (e) {
