@@ -260,7 +260,7 @@ module.exports.listTitles = async () => {
 const LOCAL_STORAGE_SPECIAL_USER = 'lima@local';
 const LOCAL_STORAGE_SPECIAL_USERNAME = 'local';
 
-let userCache = tools.notInitialized();
+let userCache = getAllUsers();
 
 async function getAllUsers() {
   console.log('getAllUsers: making a datastore request');
@@ -548,7 +548,7 @@ a column record looks like this: (see /api/columns)
   //   but we need to highlight where the orig. author made a change after our non-approved change
  */
 
-let paperCache = tools.notInitialized();
+let paperCache = getAllPapers()
 
 async function getAllPapers() {
   const columns = await columnCache;
@@ -884,7 +884,7 @@ module.exports.savePaper = async (paper, email, origTitle, options) => {
 }
  */
 
-let metaanalysisCache = tools.notInitialized();
+let metaanalysisCache = getAllMetaanalyses()
 
 async function getAllMetaanalyses() {
   const columns = columnCache;
@@ -1259,7 +1259,7 @@ module.exports.saveMetaanalysis = async (metaanalysis, email, origTitle, options
 
 // columns can go away when we no longer need them for migrating
 
-let columnCache = tools.notInitialized();
+let columnCache = getAllColumns()
 
 async function getAllColumns() {
   try {
