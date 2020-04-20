@@ -3,8 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
-import Head from './head/Head';
-import Body from './body/Body';
+import Head from './Head';
+import Body from './Body';
 
 const useStyles = makeStyles({
   table: {

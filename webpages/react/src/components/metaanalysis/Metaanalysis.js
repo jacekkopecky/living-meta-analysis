@@ -8,10 +8,10 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import Tags from './tags/Tags';
-import Info from './info/Info';
+import Tags from './Tags';
+import Info from './Info';
 import DataTable from './datatable/DataTable';
-import Metadata from './metadata/Metadata';
+import Metadata from './Metadata';
 
 // TabPanel is a container for the content of each tab
 function TabPanel(props) {
@@ -67,9 +67,9 @@ function Metaanalysis(props) {
   return (
     <div className="metaanalysis">
       <div className="titlebar">
-        <Typography className="title" variant="h4">
+        <p className="title" variant="h4">
           {title}
-        </Typography>
+        </p>
         <Tags tags={tags} />
       </div>
       <div className={classes.root}>

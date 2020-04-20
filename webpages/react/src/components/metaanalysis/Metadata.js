@@ -1,5 +1,4 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
 import './Metadata.css';
 
 function twoDigits(x) {
@@ -23,7 +22,7 @@ function Metadata(props) {
   const path = `/${username}/`;
   return (
     <div className="metadata">
-      <Typography variant="body2">
+      <p>
         Entered by
         {' '}
         <a href={path}>{username}</a>
@@ -31,12 +30,12 @@ function Metadata(props) {
         on
         {' '}
         {handleTime(ctime)}
-      </Typography>
-      <Typography variant="body2">
+      </p>
+      <p>
         Last modified :
         {' '}
         {handleTime(mtime)}
-      </Typography>
+      </p>
     </div>
   );
 }

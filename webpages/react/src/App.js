@@ -1,6 +1,6 @@
 import React from 'react';
-import Header from './components/layout/header/Header';
-import Footer from './components/layout/footer/Footer';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 import './App.css';
 import Metaanalysis from './components/metaanalysis/Metaanalysis';
 
@@ -31,7 +31,7 @@ class App extends React.Component {
     } catch (err) {
       this.setState = {
         isLoaded: true,
-        err,
+        err, // mistake
       };
     }
   }

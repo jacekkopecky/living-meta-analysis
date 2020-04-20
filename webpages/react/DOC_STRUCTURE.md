@@ -6,25 +6,14 @@
   - `App`
   - components
     - layout
-      - footer
-        - `Footer`
-      - header
-        - `Header`
+      - `Footer`
+      - `Header`
     - metaanalysis
-      - tags
-        - `Tags`
-      - info
-        - description
-          - `Description`
-        - reference
-          - `reference`
-        - `Info`
-      - datatable
-        - body
-          - `Body`
-        - head
-          - `Head`
-        - `DataTable`
-      - metadata
-        - `Metadata`
+      - `Tags`
+      - `Info`
+      - `Metadata`
       - `Metaanalysis`
+      - datatable
+        - `Body`
+        - `Head`
+        - `DataTable`
