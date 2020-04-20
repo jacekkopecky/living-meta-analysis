@@ -45,3 +45,19 @@ header h2 {
 body {
   margin: 0;
 }
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.userinfo {
+  transition: border 1s;
+  min-width: 50px;
+  min-height: 50px;
+  z-index: 100;
+  background-color: white;
+  margin: 0;
+}
