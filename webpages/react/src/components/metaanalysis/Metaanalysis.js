@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Tags from './tags/Tags';
 import Info from './info/Info';
+import DataTable from './datatable/DataTable';
 import Metadata from './metadata/Metadata';
 
 // TabPanel is a container for the content of each tab
@@ -59,7 +60,9 @@ function Metaanalysis(props) {
   const { tags } = items;
   // Info
   const { title, description, published } = items;
-  // UserInfo
+  // Table
+  const { columns, papers } = items;
+  // Metadata
   const { enteredByUsername, ctime, mtime } = items;
   return (
     <div className="metaanalysis">
@@ -87,7 +90,7 @@ function Metaanalysis(props) {
           <Info description={description} reference={published} />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          Table tab
+          <DataTable columns={columns} papers={papers} />
         </TabPanel>
         <TabPanel value={value} index={3}>
           Charts tab
