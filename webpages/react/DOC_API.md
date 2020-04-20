@@ -8,4 +8,4 @@
             - values
 
 
-## TODO: graphs, plots, aggregates
+## todo: graphs, plots, aggregates

@@ -19,7 +19,7 @@ function Header() {
           </div>
           <div className="g-signin2 signin when-signed-out" />
           <a href="/profile" className="profile when-signed-on">Profile</a>
-          <a id="toggle-editing" className="only-if-page-about-you">
+          <a href="/" id="toggle-editing" className="only-if-page-about-you">
             {/* Turn editing */}
             {/* <span className="ifon">off</span>
             <span className="ifoff">on</span> */}
