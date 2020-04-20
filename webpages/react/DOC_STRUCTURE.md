@@ -1,0 +1,30 @@
+> Excluding CSS files
+
+- `index.html`
+- src
+  - `Index`
+  - `App`
+  - components
+    - layout
+      - footer
+        - `Footer`
+      - header
+        - `Header`
+    - metaanalysis
+      - tags
+        - `Tags`
+      - info
+        - description
+          - `Description`
+        - reference
+          - `reference`
+        - `Info`
+      - datatable
+        - body
+          - `Body`
+        - head
+          - `Head`
+        - `DataTable`
+      - metadata
+        - `Metadata`
+      - `Metaanalysis`
