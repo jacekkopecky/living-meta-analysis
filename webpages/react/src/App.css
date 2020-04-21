@@ -5,3 +5,9 @@
   align-items: stretch;
   min-width: 40em;
 }
+
+body {
+  margin: 0;
+  line-height: 125%;
+  font-family: Arial, sans-serif;
+}

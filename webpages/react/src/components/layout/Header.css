@@ -42,10 +42,6 @@ header h2 {
   font-family: "Raleway", sans-serif;
 }
 
-body {
-  margin: 0;
-}
-
 header {
   display: flex;
   align-items: center;

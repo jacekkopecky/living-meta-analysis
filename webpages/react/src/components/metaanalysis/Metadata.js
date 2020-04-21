@@ -5,7 +5,7 @@ function twoDigits(x) {
   return x < 10 ? `0${x}` : `${x}`;
 }
 
-function handleTime(timestamp) {
+function formatDateTime(timestamp) {
   const d = new Date(timestamp);
 
   const date = `${d.getFullYear()}-${twoDigits((d.getMonth() + 1))}-${twoDigits(d.getDate())}`;
@@ -29,12 +29,12 @@ function Metadata(props) {
         {' '}
         on
         {' '}
-        {handleTime(ctime)}
+        {formatDateTime(ctime)}
       </p>
       <p>
         Last modified :
         {' '}
-        {handleTime(mtime)}
+        {formatDateTime(mtime)}
       </p>
     </div>
   );
