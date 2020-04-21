@@ -1,26 +1,98 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import Paper from '@material-ui/core/Paper';
-import TableContainer from '@material-ui/core/TableContainer';
-import Head from './Head';
-import Body from './Body';
+import './DataTable.css';
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-});
+function fillTableData(data) {
+  const lstId = [];
+  const lstMap = [];
+  const tab = [];
+  Object.values(data.papers).forEach((paper) => {
+    const { id } = paper;
+    lstId.push(id);
+  });
+  data.columns.forEach((col) => {
+    const { map } = col;
+    if (map !== undefined) {
+      lstMap.push(map);
+    }
+  });
 
-export default function DataTable(props) {
-  const classes = useStyles();
-  const { columns, papers } = props;
+  let row;
+  lstId.forEach((id) => {
+    row = [];
+    lstMap.forEach((map) => {
+      let found = false;
+      Object.entries(map).forEach((m) => {
+        if (id === m[0]) {
+          row.push(m[1]);
+          found = true;
+        }
+      });
+      if (!found) row.push(undefined);
+    });
+    tab.push(row);
+  });
+
   return (
-    <TableContainer component={Paper}>
-      <Table className={classes.table} size="small" aria-label="Data Table">
-        <Head columns={columns} />
-        <Body papers={papers} />
-      </Table>
-    </TableContainer>
+    Object.entries(tab).map((row) => (
+      <tr>
+        <td>
+          {data.papers[row[0]].title}
+        </td>
+        <td>
+          {/* TODO : add study title and merge paper td accordingly */}
+        </td>
+
+        {row[1].map((cell) => {
+          const paperData = data.papers[row[0]].experiments[0];
+          return <td>{paperData.values[paperData.index.indexOf(cell)]}</td>;
+        })}
+      </tr>
+    ))
   );
 }
+
+function DataTable(props) {
+  const { columns, papers } = props;
+  const data = {
+    width: columns.length,
+    height: papers.length,
+    columns: columns.map((col) => ({
+      id: col.id,
+      title: col.title,
+      map: col.sourceColumnMap,
+    })),
+    papers: papers.map((paper) => ({
+      id: paper.id,
+      title: paper.title,
+      experiments: paper.experiments.map((exp) => ({
+        values: Object.values(exp.data).map((value) => value.value),
+        index: Object.keys(exp.data).map((value) => value),
+      })),
+    })),
+  };
+
+
+  const header = columns.map((column) => (
+    <th>
+      {column.title}
+    </th>
+  ));
+
+  return (
+    <table className="datatable">
+      <thead>
+        <tr>
+          <th>paper</th>
+          <th>study/Experiment</th>
+          {header}
+        </tr>
+      </thead>
+      <tbody>
+        {fillTableData(data)}
+      </tbody>
+    </table>
+  );
+}
+
+
+export default DataTable;
