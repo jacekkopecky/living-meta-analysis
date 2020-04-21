@@ -31,34 +31,33 @@ class App extends React.Component {
     } catch (err) {
       this.setState = {
         isLoaded: true,
-        err, // mistake
+        error: err,
       };
     }
   }
 
-  // printing loading screen if fetch isn't finished
-  handleFetch() {
+  render() {
     const { error, isLoaded, items } = this.state;
+    let content;
     if (error) {
-      return (
+      content = (
         <div>
           Error:
           {error.message}
         </div>
       );
+    } else if (isLoaded) {
+      content = (
+        <Metaanalysis items={items} />
+      );
+    } else {
+      content = <div>Loading...</div>;
     }
-    if (!isLoaded) return <div>Loading...</div>;
 
-    return (
-      <Metaanalysis items={items} />
-    );
-  }
-
-  render() {
     return (
       <div className="app">
         <Header />
-        {this.handleFetch()}
+        {content}
         <Footer />
       </div>
     );
