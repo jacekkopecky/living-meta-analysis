@@ -1,4 +1,19 @@
-.tableTitle {
-  color: blue;
-  font-size: 40px;
+.datatable {
+  margin: 0.5rem;
+}
+
+.datatable table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.datatable td,
+.datatable th {
+  border: 1px solid rgb(66, 66, 66);
+}
+
+.datatable th {
+  text-align: left;
+  background-color: #47a8c5;
+  color: white;
 }
