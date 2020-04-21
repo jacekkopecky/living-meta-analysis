@@ -1,5 +1,9 @@
-.referenceHeader,
-.descriptionHeader {
-  font-size: 20px;
-  font-weight: bold;
+.info .header,
+.info .text {
+  text-transform: capitalize;
+  white-space: pre-line;
+  display: inline-block;
+  vertical-align: top;
+  max-width: 50em;
+  margin-left: 1em;
 }
