@@ -4,6 +4,7 @@ import Tags from './Tags';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Metadata from './Metadata';
+import { computeColumns, computePapers } from './Datatools';
 
 import './Metaanalysis.css';
 
@@ -18,17 +19,21 @@ function Metaanalysis(props) {
   const { columns, papers } = items;
   // Metadata
   const { enteredByUsername, ctime, mtime } = items;
+  //  Recomputed data
+  const computedColumns = computeColumns(columns);
+  const computedPapers = computePapers(papers, columns);
+
   return (
     <div className="metaanalysis">
       <div className="titlebar">
-        <p className="title" variant="h4">
+        <p className="title">
           {title}
         </p>
         <Tags tags={tags} />
       </div>
       <div className="content">
         <Info description={description} reference={published} />
-        <DataTable columns={columns} papers={papers} />
+        <DataTable columns={computedColumns} papers={computedPapers} />
       </div>
       <Metadata username={enteredByUsername} ctime={ctime} mtime={mtime} />
     </div>
