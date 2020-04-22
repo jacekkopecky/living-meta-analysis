@@ -27,6 +27,7 @@
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
         "react/destructuring-assignment": [1, "always", { "ignoreClassFields": true }],
         "react/prop-types": [0],
-        "react/static-property-placement": [1]
+        "react/static-property-placement": [1],
+        "no-param-reassign": [0]
     }
 }
