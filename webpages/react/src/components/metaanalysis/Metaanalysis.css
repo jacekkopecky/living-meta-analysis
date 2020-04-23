@@ -2,8 +2,13 @@
 .titlebar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   background-color: rgba(182, 234, 255, 0.931);
-  padding: 20px;
+  padding: 0 20px;
   margin-bottom: 0;
   margin-top: 10px;
+}
+
+.titlebar .title {
+  font-size: 1.5em;
 }

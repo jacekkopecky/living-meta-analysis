@@ -1,6 +1,24 @@
+.tags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .tags li {
   display: inline-block;
-  margin: 20px;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 20px;
+  background-color: #eee;
+}
+
+.tags input {
+  width: 50px;
+}
+
+.tags button {
+  border-width: 2px 5px;
+  border-radius: 5px;
 }
 
 /* TODO: css of tags and form tag */
