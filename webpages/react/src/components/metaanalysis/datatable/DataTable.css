@@ -5,15 +5,20 @@
 .datatable table {
   border-collapse: collapse;
   width: 100%;
+  border-spacing: 0;
 }
 
 .datatable td,
 .datatable th {
-  border: 1px solid rgb(66, 66, 66);
+  border: 0.5px solid rgb(66, 66, 66);
 }
 
 .datatable th {
   text-align: left;
   background-color: #47a8c5;
   color: white;
+}
+
+.datatable .paperstart td {
+  border-top: 2px solid black;
 }

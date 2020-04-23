@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import Tags from './Tags';
+import Tags from './tags/Tags';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Metadata from './Metadata';
@@ -19,9 +19,9 @@ function Metaanalysis(props) {
   const { columns, papers } = items;
   // Metadata
   const { enteredByUsername, ctime, mtime } = items;
-  //  Recomputed data
+  //  Recomputed data => easier to use
   const computedColumns = computeColumns(columns);
-  const computedPapers = computePapers(papers, columns);
+  const computedPapers = computePapers(papers, computedColumns);
 
   return (
     <div className="metaanalysis">

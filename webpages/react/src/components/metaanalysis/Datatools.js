@@ -1,43 +1,51 @@
 export function computeColumns(columns) {
-  const computedColumns = [];
-  columns.forEach((col) => {
-    computedColumns.push({
-      id: col.id,
-      title: col.title,
-      map: col.sourceColumnMap,
-    });
-  });
+  const dataColumns = [];
+  const formulasColumns = [];
+  for (const col of columns) {
+    if (col.sourceColumnMap === undefined) {
+      formulasColumns.push({
+        title: col.title,
+        formula: col.formula,
+        map: col.sourceColumnMap,
+      });
+    } else {
+      dataColumns.push({
+        id: col.id,
+        title: col.title,
+        map: col.sourceColumnMap,
+        formula: col.formula,
+      });
+    }
+  }
+
+  const computedColumns = {
+    dataColumns,
+    formulasColumns,
+  };
   return computedColumns;
 }
 
-function computeColumnOrder(papers, columns) {
-  const lstMap = [];
-  columns.forEach((col) => {
-    const { sourceColumnMap } = col;
-    if (sourceColumnMap !== undefined) {
-      lstMap.push(sourceColumnMap);
-    }
-  });
-  papers.forEach((paper) => {
+function findColumnOrder(papers, columns) {
+  for (const paper of papers) {
     const { id } = paper;
     const columnOrder = [];
-    lstMap.forEach((map) => {
+    for (const col of columns.dataColumns) {
       let found = false;
-      Object.entries(map).forEach((row) => {
+      Object.entries(col.map).forEach((row) => {
         if (id === row[0]) {
           columnOrder.push(row[1]);
           found = true;
         }
       });
       if (!found) columnOrder.push(undefined);
-    });
+    }
     paper.columnOrder = columnOrder;
-  });
+  }
 }
 
-export function computePapers(papers, columns) {
+export function computePapers(papers, computedColumns) {
   const computedPapers = [];
-  papers.forEach((paper) => {
+  for (const paper of papers) {
     computedPapers.push({
       id: paper.id,
       title: paper.title,
@@ -49,7 +57,7 @@ export function computePapers(papers, columns) {
         index: Object.keys(exp.data).map((value) => value),
       })),
     });
-  });
-  computeColumnOrder(computedPapers, columns);
+  }
+  findColumnOrder(computedPapers, computedColumns);
   return computedPapers;
 }
