@@ -1,5 +1,5 @@
 
-.titlebar {
+.metaanalysis .titlebar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -9,6 +9,6 @@
   margin-top: 10px;
 }
 
-.titlebar .title {
+.metaanalysis .titlebar .title {
   font-size: 1.5em;
 }
