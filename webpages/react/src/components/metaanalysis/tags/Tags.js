@@ -36,7 +36,7 @@ export default class Tags extends Component {
   render() {
     const { tags } = this.state;
     return (
-      <div>
+      <div className="tags">
         <ul className="tags">
           {tags.map((tag) => <Tag key={tag} text={tag} onDelete={this.handleDelete} />)}
         </ul>

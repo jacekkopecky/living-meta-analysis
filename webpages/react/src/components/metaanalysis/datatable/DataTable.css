@@ -1,10 +1,6 @@
 .datatable {
   margin: 0.5rem;
-}
-
-.datatable table {
   border-collapse: collapse;
-  width: 100%;
   border-spacing: 0;
 }
 
