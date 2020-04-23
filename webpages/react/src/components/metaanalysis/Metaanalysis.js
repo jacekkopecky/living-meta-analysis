@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
+import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 import Tabs from '../layout/Tabs';
 import Tags from './tags/Tags';
 import Info from './Info';
@@ -23,7 +24,7 @@ function Metaanalysis(props) {
   //  Recomputed data => easier to use
   const computedColumns = computeColumns(columns);
   const computedPapers = computePapers(papers, computedColumns);
-
+  console.log(`${window.location.pathname}#info`);
   return (
     <div className="metaanalysis">
       <div className="titlebar">
@@ -32,24 +33,22 @@ function Metaanalysis(props) {
         </p>
         <Tags tags={tags} />
       </div>
-      <Tabs>
-        MA-Info
-        <span>
-          <Info description={description} reference={published} />
-        </span>
-        MA-Table
-        <span>
-          <DataTable columns={computedColumns} papers={computedPapers} />
-        </span>
-        MA-Plots
-        <span>Nice plots !</span>
-        MA-Aggregates
-        <span>Nice aggregates !</span>
-        Plots-definitions
-        <span>Nice definitions !</span>
-      </Tabs>
-      <Metadata username={enteredByUsername} ctime={ctime} mtime={mtime} />
+      <Router hashType="slash">
+        <Tabs />
+        <Switch>
+          <Route
+            path={`/info`}
+            render={(props) => <Info {...props} description={description} reference={published} />}
+          />
+          <Route
+            path={`/table`}
+            render={(props) => <DataTable {...props} columns={computedColumns} papers={computedPapers} />}
+          />
+        </Switch>
+        <Metadata username={enteredByUsername} ctime={ctime} mtime={mtime} />
+      </Router>
     </div>
+
   );
 }
 
