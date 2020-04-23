@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
+import Tabs from '../layout/Tabs';
 import Tags from './tags/Tags';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
@@ -31,10 +32,22 @@ function Metaanalysis(props) {
         </p>
         <Tags tags={tags} />
       </div>
-      <div className="content">
-        <Info description={description} reference={published} />
-        <DataTable columns={computedColumns} papers={computedPapers} />
-      </div>
+      <Tabs>
+        MA-Info
+        <span>
+          <Info description={description} reference={published} />
+        </span>
+        MA-Table
+        <span>
+          <DataTable columns={computedColumns} papers={computedPapers} />
+        </span>
+        MA-Plots
+        <span>Nice plots !</span>
+        MA-Aggregates
+        <span>Nice aggregates !</span>
+        Plots-definitions
+        <span>Nice definitions !</span>
+      </Tabs>
       <Metadata username={enteredByUsername} ctime={ctime} mtime={mtime} />
     </div>
   );

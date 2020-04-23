@@ -1,0 +1,15 @@
+.tabs .activetab {
+  background-color: rgba(182, 234, 255);
+}
+
+.tabs .tab,
+.tabs .activetab {
+  cursor: pointer;
+  padding: 10px;
+  display: inline-block;
+  font-weight: 700;
+}
+
+.tabbar {
+  background-color: lightgrey;
+}
