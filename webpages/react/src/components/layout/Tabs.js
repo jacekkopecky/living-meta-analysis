@@ -24,9 +24,9 @@ class Tabs extends Component {
       if (i % 2 === 0) {
         const activated = active === i ? 'active' : '';
         return (
-          <a onClick={this.handleSelect(i)} className={`${activated}tab`}>
+          <button type="button" onClick={this.handleSelect(i)} className={`${activated}tab`}>
             {item}
-          </a>
+          </button>
         );
       }
     });
