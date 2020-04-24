@@ -3,7 +3,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgba(182, 234, 255, 0.931);
+  background-color: rgba(182, 234, 255);
   padding: 0 20px;
   margin-bottom: 0;
   margin-top: 10px;
@@ -11,4 +11,12 @@
 
 .metaanalysis .titlebar .title {
   font-size: 1.5em;
+}
+
+.metaanalysis .btn-start {
+  background-color: green;
+}
+
+.metaanalysis .btn-stop {
+  background-color: red;
 }

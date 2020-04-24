@@ -17,6 +17,21 @@ function Tabs() {
             Table
           </li>
         </NavLink>
+        <NavLink activeClassName="active" to="/plots">
+          <li>
+            Plots
+          </li>
+        </NavLink>
+        <NavLink activeClassName="active" to="/definitions">
+          <li>
+            Plots-definition
+          </li>
+        </NavLink>
+        <NavLink activeClassName="active" to="/aggregates">
+          <li>
+            Aggregates
+          </li>
+        </NavLink>
       </ul>
     </nav>
   );

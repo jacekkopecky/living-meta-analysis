@@ -34,13 +34,18 @@ export default class Tags extends Component {
   }
 
   render() {
+    let button;
+    const { edit } = this.props;
+    if (edit) {
+      button = <TagForm onClientAdd={this.handleAdd} />;
+    }
     const { tags } = this.state;
     return (
       <div className="tags">
         <ul className="tags">
-          {tags.map((tag) => <Tag key={tag} text={tag} onDelete={this.handleDelete} />)}
+          {tags.map((tag) => <Tag key={tag} edit={edit} text={tag} onDelete={this.handleDelete} />)}
         </ul>
-        <TagForm onClientAdd={this.handleAdd} />
+        {button}
       </div>
     );
   }
