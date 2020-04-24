@@ -4,6 +4,7 @@ export function computeColumns(columns) {
   for (const col of columns) {
     if (col.sourceColumnMap === undefined) {
       formulasColumns.push({
+        // no id for formulas columns
         title: col.title,
         formula: col.formula,
         map: col.sourceColumnMap,
@@ -13,7 +14,6 @@ export function computeColumns(columns) {
         id: col.id,
         title: col.title,
         map: col.sourceColumnMap,
-        formula: col.formula,
       });
     }
   }
