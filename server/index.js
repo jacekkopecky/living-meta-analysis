@@ -131,8 +131,8 @@ function sendRequestTimeStats() {
 // we will redirect to a coming-soon page
 
 if (!process.env.TESTING) {
-  // regex for quickly checking for selected paths to be allowed: /css, /js, /img, /api
-  const closedBetaAllowedURLs = /^\/(css|js|img|api|\.well-known)\//;
+  // regex for quickly checking for selected paths to be allowed: /css, /js, /img, /api, /version
+  const closedBetaAllowedURLs = /^\/(css|js|img|api|version|\.well-known)\//;
 
   app.use('/', (req, res, next) => {
     if (req.url.match(closedBetaAllowedURLs)) {
@@ -172,6 +172,7 @@ app.use(cors({ origin: 'http://localhost:8080' }));
 app.use('/api', api);
 
 app.get('/version', oneLineVersion);
+app.get('/version/', oneLineVersion);
 app.get('/version/log',
         (req, res) => res.redirect('https://github.com/jacekkopecky/living-meta-analysis/commits/master'));
 
