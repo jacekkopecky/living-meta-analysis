@@ -25,7 +25,6 @@ Once everything is installed, run the following command in the react project dir
 $ npm install
 ```
 You are now ready to start 
-___
 ## Available Scripts
 
 **In the `/webpages/react` directory, you can use the following commands :**
@@ -34,49 +33,46 @@ ___
 $ npm start
 ```
 
-Runs the application in development mode server and opens [http://localhost:8080](http://localhost:8080) in the browser to view the application
-
->   The page will reload if you make edits. 
-___
+-   Runs the application in development mode server and opens [http://localhost:8080](http://localhost:8080) in the browser to view the application
+-   The page will reload if you make edits. 
 
 ```shell
 $ npm run build
 ```
-Builds the application for production to the `./dist` folder. It correctly bundles React in production mode and optimizes the build for the best performance.
+-   Builds the application for production to the `./dist` folder. It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.
-Your application is ready to be deployed!
+-   The build is minified and the filenames include the hashes.
+    Your application is ready to be deployed!
 
-The files are correctly bundled to their relative paths. You need to serve the files in the `./dist` folder the same way you'll serve the index.html file when a meta-analysis is served.
+-   The files are correctly bundled to their relative paths. You need to serve the files in the `./dist` folder the same way you'll serve the index.html file when a meta-analysis is served.
 
-___
 ## Running the production ready app 
 ```shell
 $ npm run server
 ```
 
-This script simply builds and serves the frontend app using http-server which you can install using :
+-   This script simply builds and serves the frontend app using http-server which you can install using :
+
 ```shell
 $ npm install -g http-server
 ```
-The rest of the pages are also available. The meta-analysis app is served when the symlink inside the webpages directory is reached.
-___
+-   The rest of the pages are also available. The meta-analysis app is served when the symlink inside the webpages directory is reached.
 
 ## Note for maintainers
 
 ### About the directory structure
-The code is organized in a way to avoid confusions and interactions between the legacy LiMA code and the new React-rewritten code.
+-   The code is organized in a way to avoid confusions and interactions between the legacy LiMA code and the new React-rewritten code.
 
-The `/webpages` directory is the one served on production. It contains all the legacy pages as well as the legacy JavaSript code.
+-   The `/webpages` directory is the one served on production. It contains all the legacy pages as well as the legacy JavaSript code.
 
-All the React code is under the `/webpages/react` subdirectory, and the built files are in `/webpages/react/dist`.
+-   All the React code is under the `/webpages/react` subdirectory, and the built files are in `/webpages/react/dist`.
 
-The only current difference is the symlink for an example of meta-analysis which now points to `/webpages/react/dist` instead of `/webpages/profile/metaanalysis.html`
+-   The only current difference is the symlink for an example of meta-analysis which now points to `/webpages/react/dist` instead of `/webpages/profile/metaanalysis.html`
 
 In conclusion : the directory structure stays the same, and you can serve the `/webpages/` the same as before introducing React.
 
 ### Inside the `/webpages/react` directory
 
-
+-   none of the code should have the lima.soc.port.ac.uk URL built in (this can cause trouble with parcel)
 
 >**Note : the application must be accessed on http://localhost:8080 to comply with the CORS policy from the API**

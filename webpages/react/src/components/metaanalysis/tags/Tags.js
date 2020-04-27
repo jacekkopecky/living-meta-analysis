@@ -3,6 +3,7 @@ import Tag from './Tag';
 import TagForm from './TagForm';
 import './Tags.css';
 
+// TODO: Using hooks
 export default class Tags extends Component {
   constructor(props) {
     super(props);

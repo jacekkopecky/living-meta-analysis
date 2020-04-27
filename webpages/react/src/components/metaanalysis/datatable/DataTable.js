@@ -2,28 +2,30 @@ import React from 'react';
 import Paper from './Paper';
 import './DataTable.css';
 
-function fillTableHead(columns) {
-  return (
-    <tr>
-      <th>Paper</th>
-      <th>Study/Experiment</th>
-      {Object.values(columns).map((type) => (
-        type.map((col) => <th>{col.title}</th>)
-      ))}
-    </tr>
-  );
-}
-
-
 function DataTable(props) {
-  const { columns, papers } = props;
+  /* TODO: columnOders probably wants to be a state because
+  it's useless for the parent component */
+  const { columns, papers, columnOrders } = props;
   return (
     <table className="datatable">
       <thead>
-        {fillTableHead(columns)}
+        <tr>
+          <th>Paper</th>
+          <th>Study/Experiment</th>
+          { columns.map((col) => <th key={col.title}>{col.title}</th>) }
+        </tr>
       </thead>
       <tbody>
-        {papers.map((paper) => <Paper data={paper} columns={columns} />)}
+        {
+          Object.values(papers).map((paper, index) => (
+            <Paper
+              key={paper.id + paper.title}
+              paper={paper}
+              columns={columns}
+              columnOrder={columnOrders[index]}
+            />
+          ))
+        }
       </tbody>
     </table>
   );

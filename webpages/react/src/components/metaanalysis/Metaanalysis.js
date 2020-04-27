@@ -1,67 +1,61 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
-import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 import Tabs from '../layout/Tabs';
 import Tags from './tags/Tags';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Metadata from './Metadata';
-import { computeColumns, computePapers } from './Datatools';
+import columnOrders from './Datatools';
 
 import './Metaanalysis.css';
 
+
 // returns the view with all the metaanalysis components
 function Metaanalysis(props) {
-  const [edit, setEdit] = useState(0);
   const { items } = props;
-  // Tags
-  const { tags } = items;
-  // Info
-  const { title, description, published } = items;
-  // Table
-  const { columns, papers } = items;
-  // Metadata
-  const { enteredByUsername, ctime, mtime } = items;
-  //  Recomputed data => easier to use
-  const computedColumns = computeColumns(columns);
-  const computedPapers = computePapers(papers, computedColumns);
+  const [edit, setEdit] = useState(0);
+  const [title, setTitle] = useState(items.title);
+  const [tags, setTags] = useState(items.tags);
+  const [info, setInfo] = useState({ description: items.description, published: items.published });
+  const [table, setTable] = useState({
+    columns: items.columns,
+    papers: items.papers,
+  });
+  const [metadata, setMetadata] = useState({
+    enteredByUsername: items.enteredByUsername,
+    ctime: items.ctime,
+    mtime: items.mtime,
+  });
+
   const editButtonMessage = edit ? 'STOP' : 'EDIT';
 
   return (
     <div className="metaanalysis">
       <div className="titlebar">
-        <p className="title">
-          {title}
-        </p>
+        <p className="title" onChange={(value) => setTitle(value)}>{title}</p>
         <Tags edit={edit} tags={tags} />
         <button className={edit === 0 ? 'btn-start' : 'btn-stop'} type="button" onClick={() => setEdit(edit === 0 ? 1 : 0)}>{editButtonMessage}</button>
       </div>
-      <Router hashType="noslash">
-        <Tabs />
-        <Switch>
-          <Route
-            path="/info"
-            render={(prop) => (
-              <Info
-                {...prop}
-                description={description}
-                reference={published}
-              />
-            )}
-          />
-          <Route
-            path="/table"
-            render={(prop) => (
-              <DataTable
-                {...prop}
-                columns={computedColumns}
-                papers={computedPapers}
-              />
-            )}
-          />
-        </Switch>
-        <Metadata username={enteredByUsername} ctime={ctime} mtime={mtime} />
-      </Router>
+      <Tabs>
+        <Info
+          path="/info"
+          tabName="Info"
+          description={info.description}
+          reference={info.published}
+        />
+        <DataTable
+          path="/table"
+          tabName="Table"
+          columns={table.columns}
+          papers={table.papers}
+          columnOrders={columnOrders(table.papers, table.columns)}
+        />
+      </Tabs>
+      <Metadata
+        username={metadata.enteredByUsername}
+        ctime={metadata.ctime}
+        mtime={metadata.mtime}
+      />
     </div>
 
   );

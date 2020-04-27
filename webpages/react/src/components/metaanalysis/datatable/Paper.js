@@ -1,37 +1,37 @@
 import React from 'react';
 
 function Paper(props) {
-  const { data } = props;
-  const { columnOrder } = data;
-
-  // TODO: cleanup a little
+  const { paper, columnOrder } = props;
+  const { title } = paper;
+  const nExp = Object.keys(paper.experiments).length;
 
   return (
-    data.experiments.map((exp, key) => {
-      // we'll create a paper title td element only when the row is a new paper
+    Object.values(paper.experiments).map((exp, key) => {
       let newPaper;
       let firstTr;
-      const values = [];
       if (key === 0) {
         newPaper = (
-          <td rowSpan={data.nExp}>
-            {data.title}
+          <td key={title} rowSpan={nExp}>
+            {title}
           </td>
         );
         firstTr = 'paperstart';
       }
       return (
-        <tr key={exp.ctime + data.id} className={firstTr}>
+        <tr key={exp.ctime + paper.id} className={firstTr}>
           {newPaper}
           <td>
             {exp.title}
           </td>
           {columnOrder.map((value) => {
-            const index = exp.index.indexOf(value);
-            const cell = exp.values[index];
-            values.push(cell);
+            const cell = exp.data[value];
+            if (cell !== undefined) {
+              return (
+                <td key={value}>{cell.value}</td>
+              );
+            }
             return (
-              <td key={value}>{cell}</td>
+              <td key={value} />
             );
           })}
         </tr>

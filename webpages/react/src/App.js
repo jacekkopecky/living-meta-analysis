@@ -1,67 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import './App.css';
 import Metaanalysis from './components/metaanalysis/Metaanalysis';
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: null,
-      isLoaded: false,
-      items: [],
-    };
-  }
+function App() {
+  const [items, updateItems] = useState([]);
+  const [isLoaded, setLoaded] = useState(false);
+  const [error, setError] = useState(null);
 
   // fetch request to the API
   // then everything is spread in children components
-  async componentDidMount() {
-    // full url : https://lima.soc.port.ac.uk/api/metaanalyses/HartmutBlank/MisinformationEffect
-    const url = `https://lima.soc.port.ac.uk/api/metaanalyses${window.location.pathname}`;
-    // const url = `https://lima.soc.port.ac.uk/api/metaanalyses/yan.imensar@gmail.com/Test/`;
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-      console.log(data);
-      this.setState({
-        isLoaded: true,
-        items: data,
-      });
-    } catch (err) {
-      this.setState = {
-        isLoaded: true,
-        error: err,
-      };
+  useEffect(() => {
+    async function fetchItems() {
+      const url = `https://lima.soc.port.ac.uk/api/metaanalyses${window.location.pathname}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        updateItems(data);
+        setLoaded(true);
+      } catch (err) {
+        setLoaded(true);
+        setError(err);
+      }
     }
-  }
+    fetchItems();
+  }, []);
 
-  render() {
-    const { error, isLoaded, items } = this.state;
-    let content;
-    if (error) {
-      content = (
-        <div>
-          Error:
-          {error.message}
-        </div>
-      );
-    } else if (isLoaded) {
-      content = (
-        <Metaanalysis items={items} />
-      );
-    } else {
-      content = <div>Loading...</div>;
-    }
-
-    return (
-      <div className="app">
-        <Header />
-        {content}
-        <Footer />
+  let content;
+  if (error) {
+    content = (
+      <div>
+        Error:
+        {error.message}
       </div>
     );
-  }
+  } else if (isLoaded === true) content = (<Metaanalysis items={items} />);
+  else content = <div>Loading...</div>;
+
+  return (
+    <div className="app">
+      <Header />
+      {content}
+      <Footer />
+    </div>
+  );
 }
 
 export default App;
