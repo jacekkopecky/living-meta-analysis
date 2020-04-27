@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+// TODO: Using hooks
 export default class TagForm extends Component {
   constructor(props) {
     super(props);
