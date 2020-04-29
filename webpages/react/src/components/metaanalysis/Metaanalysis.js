@@ -5,7 +5,7 @@ import Tags from './tags/Tags';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Metadata from './Metadata';
-import columnOrders from './Datatools';
+import { columnOrders } from './Datatools';
 
 import './Metaanalysis.css';
 
@@ -20,6 +20,7 @@ function Metaanalysis(props) {
   const [table, setTable] = useState({
     columns: items.columns,
     papers: items.papers,
+    excluded: items.excludedExperiments,
   });
   const [metadata, setMetadata] = useState({
     enteredByUsername: items.enteredByUsername,
@@ -32,7 +33,9 @@ function Metaanalysis(props) {
   return (
     <div className="metaanalysis">
       <div className="titlebar">
-        <p className="title" onChange={(value) => setTitle(value)}>{title}</p>
+        <div className="title">
+          <p type="input">{title}</p>
+        </div>
         <Tags edit={edit} tags={tags} />
         <button className={edit === 0 ? 'btn-start' : 'btn-stop'} type="button" onClick={() => setEdit(edit === 0 ? 1 : 0)}>{editButtonMessage}</button>
       </div>
@@ -48,6 +51,7 @@ function Metaanalysis(props) {
           tabName="Table"
           columns={table.columns}
           papers={table.papers}
+          excluded={table.excluded}
           columnOrders={columnOrders(table.papers, table.columns)}
         />
       </Tabs>
