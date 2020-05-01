@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  NavLink, Route, Switch, HashRouter as Router,
+  NavLink, Route, Switch, HashRouter as Router, Redirect,
 } from 'react-router-dom';
 import './Tabs.css';
 
@@ -27,6 +27,7 @@ function Tabs(props) {
           <Route path={element.props.path}>{element}</Route>
         ))}
         ;
+        <Redirect exact from="/" to="info" />
       </Switch>
     </Router>
   );

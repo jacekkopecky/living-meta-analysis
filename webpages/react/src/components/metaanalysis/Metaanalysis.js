@@ -8,25 +8,30 @@ import Metadata from './Metadata';
 import { columnOrders } from './Datatools';
 
 import './Metaanalysis.css';
+import Aggregates from './aggregates/Aggregates';
 
 
 // returns the view with all the metaanalysis components
 function Metaanalysis(props) {
-  const { items } = props;
+  const { metaanalysis } = props;
+  
   const [edit, setEdit] = useState(0);
-  const [title, setTitle] = useState(items.title);
-  const [tags, setTags] = useState(items.tags);
-  const [info, setInfo] = useState({ description: items.description, published: items.published });
+  const [title, setTitle] = useState(metaanalysis.title);
+  const [tags, setTags] = useState(metaanalysis.tags);
+  const [info, setInfo] = useState({ description: metaanalysis.description, published: metaanalysis.published });
   const [table, setTable] = useState({
-    columns: items.columns,
-    papers: items.papers,
-    excluded: items.excludedExperiments,
+    columns: metaanalysis.columns,
+    papers: metaanalysis.papers,
+    excluded: metaanalysis.excludedExperiments,
   });
+  const [aggregates, setAggregates] = useState(metaanalysis.aggregates);
   const [metadata, setMetadata] = useState({
-    enteredByUsername: items.enteredByUsername,
-    ctime: items.ctime,
-    mtime: items.mtime,
+    enteredByUsername: metaanalysis.enteredByUsername,
+    ctime: metaanalysis.ctime,
+    mtime: metaanalysis.mtime,
   });
+
+  console.log(metaanalysis);
 
   const editButtonMessage = edit ? 'STOP' : 'EDIT';
 
@@ -53,6 +58,14 @@ function Metaanalysis(props) {
           papers={table.papers}
           excluded={table.excluded}
           columnOrders={columnOrders(table.papers, table.columns)}
+        />
+        <Aggregates
+          path="/aggregates"
+          tabName="Aggregates"
+          columns={table.columns}
+          aggregates={aggregates}
+          papers={table.papers}
+          excluded={table.excluded}
         />
       </Tabs>
       <Metadata

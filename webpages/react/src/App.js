@@ -35,7 +35,7 @@ function App() {
         {error.message}
       </div>
     );
-  } else if (isLoaded === true) content = (<Metaanalysis items={items} />);
+  } else if (isLoaded === true) content = (<Metaanalysis metaanalysis={items} />);
   else content = <div>Loading...</div>;
 
   return (

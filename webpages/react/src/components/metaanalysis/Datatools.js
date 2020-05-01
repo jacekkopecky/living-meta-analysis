@@ -35,8 +35,9 @@ function populateParsedFormula(col, hashcols) {
   return formula;
 }
 
-export function populateAllParsedFormulas(columns) {
-  const hashcols = generateIDHash(columns);
+export function populateAllParsedFormulas(columns, cols) {
+  const colsToHash = cols || columns;
+  const hashcols = generateIDHash(colsToHash);
   const formulas = [];
   for (const col of columns) {
     if (!col.id) {
@@ -119,6 +120,7 @@ export function getDatumValue(col, paper, experiment, papers, excluded) {
     return getExperimentsTableDatumValue(col, paper, experiment, papers, excluded);
   } if (isAggregate(col)) {
     if (col.grouping) {
+      console.log('we have a grouping');
       const group = getGroup(paper, experiment);
       if (group == null) {
         // no need to run the grouping aggregate if we don't have a group
@@ -160,20 +162,20 @@ function getAggregateDatumValue(aggregate, papers, excluded, group) {
             // ignore values with the wrong groups
             if (group != null && getGroup(paper, exp) !== group) continue;
 
-            currentInput.push(getDatumValue(param, paper, exp));
+            currentInput.push(getDatumValue(param, paper, exp, papers, excluded));
           }
         }
-      } else if (isAggregate(currentParam)) {
-        if (!currentParam.grouping) {
-          currentInput = getAggregateDatumValue(currentParam, papers, excluded);
-        } else if (currentParam.grouping && group != null) {
-          currentInput = getAggregateDatumValue(currentParam, papers, excluded, group);
-        } else if (currentParam.grouping && group == null) {
+      } else if (isAggregate(param)) {
+        if (!param.grouping) {
+          currentInput = getAggregateDatumValue(param, papers, excluded);
+        } else if (param.grouping && group != null) {
+          currentInput = getAggregateDatumValue(param, papers, excluded, group);
+        } else if (param.grouping && group == null) {
           // currentParam is grouping but we don't have a group so currentInput should be an array per group
-          const groups = getGroups();
+          const groups = []//getGroups();
           currentInput = [];
           for (const g of groups) {
-            currentInput.push(getAggregateDatumValue(currentParam, g));
+            currentInput.push(getAggregateDatumValue(param, g));
           }
         }
       }
@@ -183,4 +185,28 @@ function getAggregateDatumValue(aggregate, papers, excluded, group) {
   }
 
   return val;
+}
+
+function getGroups(groupingColumn = '2', columns, papers) {
+  const hashcols = generateIDHash(columns);
+  const groupingColumnObj = window.lima.parseFormulaString(groupingColumn, hashcols);
+  if (!groupingColumnObj) return [];
+
+  for (let i = 0; i < papers.length; i += 1) {
+    for (let j = 0; j < papers[i].experiments.length; j += 1) {
+      if (isExcludedExp(papers[i].id, j)) continue;
+      const group = getGroup(j, i);
+
+      if (group != null && group != '' && groups.indexOf(group) === -1) groups.push(group);
+    }
+  }
+
+  groups.sort(); // alphabetically
+  return groups;
+}
+
+function getGroup(expIndex, paperIndex) {
+  if (groupingColumnObj) {
+    return getDatumValue(groupingColumnObj, expIndex, paperIndex);
+  }
 }
