@@ -1,24 +1,36 @@
-// find the corresponding order of values to match sourceColumnMap
-export function columnOrders(papers, columns) {
-  const orders = [];
-  for (const paper of papers) {
-    const { id } = paper;
-    const columnOrder = [];
-    for (const col of columns) {
-      if (col.id) {
-        let found = false;
-        Object.entries(col.sourceColumnMap).forEach((row) => {
-          if (id === row[0]) {
-            columnOrder.push(row[1]);
-            found = true;
-          }
-        });
-        if (!found) columnOrder.push(undefined);
-      }
+export function populateCircularMa(ma) {
+  // circular ref of ma in each paper
+  for (const paper of ma.papers) {
+    paper.metaanalysis = ma;
+    let i = 0;
+    // circular ref of parent paper in each experiment
+    for (const exp of paper.experiments) {
+      exp.index = i;
+      exp.paper = paper;
+      i += 1;
     }
-    orders.push(columnOrder);
   }
-  return orders;
+
+  for (const col of ma.columns) {
+    col.metaanalysis = ma;
+  }
+
+  // excluded = true in each excluded experiment
+  const hashPapers = generateIDHash(ma.papers);
+  for (const excludedExp of ma.excludedExperiments) {
+    const [paperId, expIndex] = excludedExp.split(',');
+    if (hashPapers[paperId].experiments[expIndex] !== undefined) {
+      hashPapers[paperId].experiments[expIndex].excluded = true;
+    }
+  }
+  ma.hashcols = generateIDHash(ma.columns);
+
+  for (let col of ma.columns) {
+    if (!col.id) {
+      const colWithParsedFormula = populateParsedFormula(col, ma.hashcols);
+      col = Object.assign(col, colWithParsedFormula);
+    }
+  }
 }
 
 // DATATABLE FUNCTIONS
@@ -35,9 +47,7 @@ function populateParsedFormula(col, hashcols) {
   return formula;
 }
 
-export function populateAllParsedFormulas(columns, cols) {
-  const colsToHash = cols || columns;
-  const hashcols = generateIDHash(colsToHash);
+export function populateAllParsedFormulas(columns, hashcols) {
   const formulas = [];
   for (const col of columns) {
     if (!col.id) {
@@ -63,6 +73,7 @@ function isColCompletelyDefined(col) {
   return true;
 }
 
+
 function isExperimentsTableColumn(col) {
   return col.id || (col.formulaObj && col.formulaObj.type === window.lima.FORMULA_TYPE);
 }
@@ -71,21 +82,15 @@ function isAggregate(col) {
   return col.formulaObj && col.formulaObj.type === window.lima.AGGREGATE_TYPE;
 }
 
-function isExcludedExp(paperId, expIndex, excluded) {
-  return excluded.indexOf(`${paperId},${expIndex}`) !== -1;
-}
-
-
 // TODO: Use similar function instead of columnOrder
 // it may be possible to use this function to fill the table completely
 
 // return the value of a (experiment,column) point
-function getExperimentsTableDatumValue(col, paper, experiment, papers, excluded) {
+function getExperimentsTableDatumValue(col, experiment) {
   let val = null;
   if (col.id) {
-    const mappedColumnId = col.sourceColumnMap[paper.id];
+    const mappedColumnId = col.sourceColumnMap[experiment.paper.id];
     // not a computed column
-
     if (experiment
         && experiment.data
         && experiment.data[mappedColumnId]
@@ -102,7 +107,7 @@ function getExperimentsTableDatumValue(col, paper, experiment, papers, excluded)
       // compute the value
       // if anything here throws an exception, value cannot be computed
       for (const param of col.formulaParams) {
-        inputs.push(getDatumValue(param, paper, experiment, papers, excluded));
+        inputs.push(getDatumValue(param, experiment));
       }
       val = formula.func.apply(null, inputs);
     }
@@ -115,25 +120,26 @@ function getExperimentsTableDatumValue(col, paper, experiment, papers, excluded)
   return val;
 }
 
-export function getDatumValue(col, paper, experiment, papers, excluded) {
+export function getDatumValue(col, experiment) {
+  const { papers } = experiment.paper.metaanalysis;
   if (isExperimentsTableColumn(col)) {
-    return getExperimentsTableDatumValue(col, paper, experiment, papers, excluded);
+    return getExperimentsTableDatumValue(col, experiment);
   } if (isAggregate(col)) {
     if (col.grouping) {
       console.log('we have a grouping');
-      const group = getGroup(paper, experiment);
+      const group = getGroup(experiment);
       if (group == null) {
         // no need to run the grouping aggregate if we don't have a group
         console.warn('trying to compute a grouping aggregate without a group');
         return NaN;
       }
-      return getAggregateDatumValue(col, papers, excluded, group);
+      return getAggregateDatumValue(col, papers, group);
     }
-    return getAggregateDatumValue(col, papers, excluded);
+    return getAggregateDatumValue(col, papers);
   }
 }
 
-function getAggregateDatumValue(aggregate, papers, excluded, group) {
+function getAggregateDatumValue(aggregate, papers, group) {
   // ignore group if the aggregate isn't grouping
   if (!aggregate.grouping) group = null;
 
@@ -158,24 +164,28 @@ function getAggregateDatumValue(aggregate, papers, excluded, group) {
         for (const paper of papers) {
           for (const exp of paper.experiments) {
             // ignore excluded values
-            if (isExcludedExp(paper.id, paper.experiments.indexOf(exp), excluded)) continue;
+            if (exp.excluded) {
+              console.log(exp);
+              continue;
+            }
+
             // ignore values with the wrong groups
             if (group != null && getGroup(paper, exp) !== group) continue;
 
-            currentInput.push(getDatumValue(param, paper, exp, papers, excluded));
+            currentInput.push(getDatumValue(param, exp));
           }
         }
       } else if (isAggregate(param)) {
         if (!param.grouping) {
-          currentInput = getAggregateDatumValue(param, papers, excluded);
+          currentInput = getAggregateDatumValue(param, papers);
         } else if (param.grouping && group != null) {
-          currentInput = getAggregateDatumValue(param, papers, excluded, group);
+          currentInput = getAggregateDatumValue(param, papers, group);
         } else if (param.grouping && group == null) {
           // currentParam is grouping but we don't have a group so currentInput should be an array per group
-          const groups = []//getGroups();
+          const groups = [];// getGroups();
           currentInput = [];
           for (const g of groups) {
-            currentInput.push(getAggregateDatumValue(param, g));
+            currentInput.push(getAggregateDatumValue(param, papers, g));
           }
         }
       }

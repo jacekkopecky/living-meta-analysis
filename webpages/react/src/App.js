@@ -5,7 +5,7 @@ import './App.css';
 import Metaanalysis from './components/metaanalysis/Metaanalysis';
 
 function App() {
-  const [items, updateItems] = useState([]);
+  const [metaanalysis, updateMetaanalysis] = useState([]);
   const [isLoaded, setLoaded] = useState(false);
   const [error, setError] = useState(null);
 
@@ -17,7 +17,7 @@ function App() {
       try {
         const response = await fetch(url);
         const data = await response.json();
-        updateItems(data);
+        updateMetaanalysis(data);
         setLoaded(true);
       } catch (err) {
         setLoaded(true);
@@ -35,8 +35,11 @@ function App() {
         {error.message}
       </div>
     );
-  } else if (isLoaded === true) content = (<Metaanalysis metaanalysis={items} />);
-  else content = <div>Loading...</div>;
+  } else if (isLoaded === true) {
+    content = (<Metaanalysis metaanalysis={metaanalysis} />);
+  } else {
+    content = <div>Loading...</div>;
+  }
 
   return (
     <div className="app">
