@@ -1,24 +1,25 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import Tabs from '../layout/Tabs';
 import Tags from './tags/Tags';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
+import Aggregates from './aggregates/Aggregates';
 import Metadata from './Metadata';
-import { columnOrders } from './Datatools';
+import { columnOrders, populateCircularMa } from './Datatools';
 
 import './Metaanalysis.css';
-import Aggregates from './aggregates/Aggregates';
-
 
 // returns the view with all the metaanalysis components
 function Metaanalysis(props) {
   const { metaanalysis } = props;
-  
+  populateCircularMa(metaanalysis);
   const [edit, setEdit] = useState(0);
   const [title, setTitle] = useState(metaanalysis.title);
   const [tags, setTags] = useState(metaanalysis.tags);
-  const [info, setInfo] = useState({ description: metaanalysis.description, published: metaanalysis.published });
+  const [info, setInfo] = useState({
+    description: metaanalysis.description,
+    published: metaanalysis.published,
+  });
   const [table, setTable] = useState({
     columns: metaanalysis.columns,
     papers: metaanalysis.papers,
@@ -56,8 +57,6 @@ function Metaanalysis(props) {
           tabName="Table"
           columns={table.columns}
           papers={table.papers}
-          excluded={table.excluded}
-          columnOrders={columnOrders(table.papers, table.columns)}
         />
         <Aggregates
           path="/aggregates"

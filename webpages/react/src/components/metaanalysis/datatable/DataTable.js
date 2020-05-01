@@ -1,12 +1,10 @@
 import React from 'react';
 import Paper from './Paper';
-import { populateAllParsedFormulas } from '../Datatools';
 import './DataTable.css';
 
 function DataTable(props) {
   /* TODO: delete columnOrders */
-  const { columns, papers, columnOrders, excluded } = props;
-  const formulas = populateAllParsedFormulas(columns);
+  const { columns, papers } = props;
   return (
     <table className="datatable">
       <thead>
@@ -23,10 +21,6 @@ function DataTable(props) {
               key={paper.id + paper.title}
               paper={paper}
               columns={columns}
-              formulas={formulas}
-              columnOrder={columnOrders[index]}
-              papers={papers}
-              excluded={excluded}
             />
           ))
         }
