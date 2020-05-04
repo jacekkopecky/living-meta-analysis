@@ -1,5 +1,5 @@
 import React from 'react';
-import { getDatumValue } from '../Datatools';
+import { getDatumValue } from '../../../tools/datatools';
 
 function Paper(props) {
   const { paper, columns } = props;

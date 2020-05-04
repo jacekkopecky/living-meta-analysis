@@ -1,5 +1,5 @@
 import React from 'react';
-import { populateAllParsedFormulas, getDatumValue } from '../Datatools';
+import { populateAllParsedFormulas, getDatumValue } from '../../../tools/datatools';
 
 function Aggregates(props) {
   const {

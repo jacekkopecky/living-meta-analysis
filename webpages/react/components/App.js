@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Header from './components/layout/Header';
-import Footer from './components/layout/Footer';
+import Header from './layout/Header';
+import Footer from './layout/Footer';
+import Metaanalysis from './metaanalysis/Metaanalysis';
 import './App.css';
-import Metaanalysis from './components/metaanalysis/Metaanalysis';
+
 
 function App() {
   const [metaanalysis, updateMetaanalysis] = useState([]);
