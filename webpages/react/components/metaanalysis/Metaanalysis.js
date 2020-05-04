@@ -26,6 +26,7 @@ function Metaanalysis(props) {
     excluded: metaanalysis.excludedExperiments,
   });
   const [aggregates, setAggregates] = useState(metaanalysis.aggregates);
+  const [groupingAggregates, setGroupingAggregates] = useState(metaanalysis.groupingAggregates);
   const [metadata, setMetadata] = useState({
     enteredByUsername: metaanalysis.enteredByUsername,
     ctime: metaanalysis.ctime,
@@ -63,8 +64,7 @@ function Metaanalysis(props) {
           tabName="Aggregates"
           columns={table.columns}
           aggregates={aggregates}
-          papers={table.papers}
-          excluded={table.excluded}
+          groupingAggregates={groupingAggregates}
         />
       </Tabs>
       <Metadata

@@ -32,6 +32,11 @@ export function populateCircularMa(ma) {
     const aggrWithParsedFormula = populateParsedFormula(aggr, ma, ma.hashcols);
     aggr = Object.assign(aggr, aggrWithParsedFormula);
   }
+
+  for (let aggr of ma.groupingAggregates) {
+    const aggrWithParsedFormula = populateParsedFormula(aggr, ma, ma.hashcols);
+    aggr = Object.assign(aggr, aggrWithParsedFormula);
+  }
 }
 
 
@@ -44,21 +49,21 @@ function generateIDHash(objects) {
   return retval;
 }
 
+export function formatNumber(x) {
+  if (typeof x !== 'number') return x;
+  var xabs = Math.abs(x);
+  // if (xabs >= 1000) return x.toFixed(0); // this would drop the decimal point from large values (needs tweaks in padNumber below)
+  if (xabs >= 100) return x.toFixed(1);
+  if (xabs >= 10) return x.toFixed(2);
+  // if (xabs >= 1) return x.toFixed(2);
+  return x.toFixed(3);
+}
+
 function populateParsedFormula(col, ma, hashcols) {
   const formula = window.lima.parseFormulaString(col.formula, hashcols);
   formula.metaanalysis = ma;
   return formula;
 }
-
-// export function populateAllParsedFormulas(columns, hashcols) {
-//   const formulas = [];
-//   for (const col of columns) {
-//     if (!col.id) {
-//       formulas.push(populateParsedFormula(col, hashcols));
-//     }
-//   }
-//   return formulas;
-// }
 
 function isColCompletelyDefined(col) {
   if (col == null) return false;
@@ -115,12 +120,11 @@ function getExperimentsTableDatumValue(col, experiment) {
 }
 
 export function getDatumValue(col, experiment, _papers) {
-  const papers = _papers || experiment.paper.metaanalysis.papers;
+  const papers = experiment.paper.metaanalysis.papers;
   if (isExperimentsTableColumn(col)) {
     return getExperimentsTableDatumValue(col, experiment);
   } if (isAggregate(col)) {
     if (col.grouping) {
-      console.log('we have a grouping');
       const group = getGroup(experiment);
       if (group == null) {
         // no need to run the grouping aggregate if we don't have a group
@@ -134,14 +138,15 @@ export function getDatumValue(col, experiment, _papers) {
 }
 
 export function getAggregateDatumValue(aggregate, papers, group) {
-  // ignore group if the aggregate isn't grouping
+  const ma = papers[0].metaanalysis;
+  // console.log(papers);
   if (!aggregate.grouping) group = null;
 
-  // // return NaN if we have a group but don't have a grouping column
-  // if (group != null && currentMetaanalysis.groupingColumnObj == null) {
-  //   console.warn('trying to compute a grouping aggregate without a grouping column');
-  //   return NaN;
-  // }
+  // return NaN if we have a group but don't have a grouping column
+  if (group != null && ma.groupingColumnObj == null) {
+    console.warn('trying to compute a grouping aggregate without a grouping column');
+    return NaN;
+  }
 
   const inputs = [];
   let val;
@@ -163,22 +168,22 @@ export function getAggregateDatumValue(aggregate, papers, group) {
             }
 
             // ignore values with the wrong groups
-            if (group != null && getGroup(paper, exp) !== group) continue;
+            if (group != null && getGroup(exp) !== group) continue;
 
             currentInput.push(getDatumValue(param, exp));
           }
         }
       } else if (isAggregate(param)) {
         if (!param.grouping) {
-          currentInput = getAggregateDatumValue(param, papers);
+          currentInput = getAggregateDatumValue(param, papers, undefined);
         } else if (param.grouping && group != null) {
-          currentInput = getAggregateDatumValue(param, group);
+          currentInput = getAggregateDatumValue(param, papers, group);
         } else if (param.grouping && group == null) {
           // currentParam is grouping but we don't have a group so currentInput should be an array per group
-          const groups = [];// getGroups();
+          const groups = getGroups(ma);
           currentInput = [];
           for (const g of groups) {
-            currentInput.push(getAggregateDatumValue(param, g));
+            currentInput.push(getAggregateDatumValue(param, papers, g));
           }
         }
       }
@@ -190,15 +195,16 @@ export function getAggregateDatumValue(aggregate, papers, group) {
   return val;
 }
 
-function getGroups(groupingColumn = '2', columns, papers) {
-  const hashcols = generateIDHash(columns);
-  const groupingColumnObj = window.lima.parseFormulaString(groupingColumn, hashcols);
+function getGroups(ma) {
+  const groupingColumnObj = window.lima.parseFormulaString(ma.groupingColumn, ma.hashcols);
+  ma.groupingColumnObj = groupingColumnObj;
   if (!groupingColumnObj) return [];
 
-  for (let i = 0; i < papers.length; i += 1) {
-    for (let j = 0; j < papers[i].experiments.length; j += 1) {
-      if (isExcludedExp(papers[i].id, j)) continue;
-      const group = getGroup(j, i);
+  const groups = [];
+  for (const paper of ma.papers) {
+    for (const exp of paper.experiments) {
+      if (exp.excluded) continue;
+      const group = getGroup(exp);
 
       if (group != null && group != '' && groups.indexOf(group) === -1) groups.push(group);
     }
@@ -209,6 +215,7 @@ function getGroups(groupingColumn = '2', columns, papers) {
 }
 
 function getGroup(experiment) {
+  const { groupingColumnObj } = experiment.paper.metaanalysis;
   if (groupingColumnObj) {
     return getDatumValue(groupingColumnObj, experiment);
   }
