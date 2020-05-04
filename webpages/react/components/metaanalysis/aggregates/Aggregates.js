@@ -1,14 +1,10 @@
 import React from 'react';
-import { populateAllParsedFormulas, getDatumValue } from '../../../tools/datatools';
+import { getAggregateDatumValue } from '../../../tools/datatools';
 
 function Aggregates(props) {
-  const {
-    aggregates, columns, papers, excluded,
-  } = props;
-  const formulas = populateAllParsedFormulas(aggregates, columns);
+  const { aggregates } = props;
   return (
-    <div>
-      <h1>aggregates</h1>
+    <>
       <table>
         <thead>
           <tr>
@@ -17,18 +13,18 @@ function Aggregates(props) {
           </tr>
         </thead>
         <tbody>
-          {formulas.map((formula, key) => {
-            const value = getDatumValue(formula, undefined, undefined, papers, excluded);
+          {aggregates.map((aggr) => {
+            const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers);
             return (
               <tr>
-                <td>{aggregates[key].title}</td>
+                <td>{aggr.title}</td>
                 <td>{value}</td>
               </tr>
             );
           })}
         </tbody>
       </table>
-    </div>
+    </>
   );
 }
 

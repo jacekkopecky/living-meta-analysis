@@ -11,10 +11,6 @@ export function populateCircularMa(ma) {
     }
   }
 
-  for (const col of ma.columns) {
-    col.metaanalysis = ma;
-  }
-
   // excluded = true in each excluded experiment
   const hashPapers = generateIDHash(ma.papers);
   for (const excludedExp of ma.excludedExperiments) {
@@ -27,11 +23,17 @@ export function populateCircularMa(ma) {
 
   for (let col of ma.columns) {
     if (!col.id) {
-      const colWithParsedFormula = populateParsedFormula(col, ma.hashcols);
+      const colWithParsedFormula = populateParsedFormula(col, ma, ma.hashcols);
       col = Object.assign(col, colWithParsedFormula);
     }
   }
+
+  for (let aggr of ma.aggregates) {
+    const aggrWithParsedFormula = populateParsedFormula(aggr, ma, ma.hashcols);
+    aggr = Object.assign(aggr, aggrWithParsedFormula);
+  }
 }
+
 
 // DATATABLE FUNCTIONS
 function generateIDHash(objects) {
@@ -42,37 +44,33 @@ function generateIDHash(objects) {
   return retval;
 }
 
-function populateParsedFormula(col, hashcols) {
+function populateParsedFormula(col, ma, hashcols) {
   const formula = window.lima.parseFormulaString(col.formula, hashcols);
+  formula.metaanalysis = ma;
   return formula;
 }
 
-export function populateAllParsedFormulas(columns, hashcols) {
-  const formulas = [];
-  for (const col of columns) {
-    if (!col.id) {
-      formulas.push(populateParsedFormula(col, hashcols));
-    }
-  }
-  return formulas;
-}
+// export function populateAllParsedFormulas(columns, hashcols) {
+//   const formulas = [];
+//   for (const col of columns) {
+//     if (!col.id) {
+//       formulas.push(populateParsedFormula(col, hashcols));
+//     }
+//   }
+//   return formulas;
+// }
 
 function isColCompletelyDefined(col) {
   if (col == null) return false;
-
   if (col.id) return true;
-
   if (!col.formulaObj) return false;
-
-  for (let i = 0; i < col.formulaParams.length; i++) {
+  for (let i = 0; i < col.formulaParams.length; i += 1) {
     if (!isColCompletelyDefined(col.formulaParams[i])) {
       return false;
     }
   }
-
   return true;
 }
-
 
 function isExperimentsTableColumn(col) {
   return col.id || (col.formulaObj && col.formulaObj.type === window.lima.FORMULA_TYPE);
@@ -82,10 +80,6 @@ function isAggregate(col) {
   return col.formulaObj && col.formulaObj.type === window.lima.AGGREGATE_TYPE;
 }
 
-// TODO: Use similar function instead of columnOrder
-// it may be possible to use this function to fill the table completely
-
-// return the value of a (experiment,column) point
 function getExperimentsTableDatumValue(col, experiment) {
   let val = null;
   if (col.id) {
@@ -120,8 +114,8 @@ function getExperimentsTableDatumValue(col, experiment) {
   return val;
 }
 
-export function getDatumValue(col, experiment) {
-  const { papers } = experiment.paper.metaanalysis;
+export function getDatumValue(col, experiment, _papers) {
+  const papers = _papers || experiment.paper.metaanalysis.papers;
   if (isExperimentsTableColumn(col)) {
     return getExperimentsTableDatumValue(col, experiment);
   } if (isAggregate(col)) {
@@ -139,7 +133,7 @@ export function getDatumValue(col, experiment) {
   }
 }
 
-function getAggregateDatumValue(aggregate, papers, group) {
+export function getAggregateDatumValue(aggregate, papers, group) {
   // ignore group if the aggregate isn't grouping
   if (!aggregate.grouping) group = null;
 
@@ -165,7 +159,6 @@ function getAggregateDatumValue(aggregate, papers, group) {
           for (const exp of paper.experiments) {
             // ignore excluded values
             if (exp.excluded) {
-              console.log(exp);
               continue;
             }
 
@@ -179,13 +172,13 @@ function getAggregateDatumValue(aggregate, papers, group) {
         if (!param.grouping) {
           currentInput = getAggregateDatumValue(param, papers);
         } else if (param.grouping && group != null) {
-          currentInput = getAggregateDatumValue(param, papers, group);
+          currentInput = getAggregateDatumValue(param, group);
         } else if (param.grouping && group == null) {
           // currentParam is grouping but we don't have a group so currentInput should be an array per group
           const groups = [];// getGroups();
           currentInput = [];
           for (const g of groups) {
-            currentInput.push(getAggregateDatumValue(param, papers, g));
+            currentInput.push(getAggregateDatumValue(param, g));
           }
         }
       }
@@ -215,8 +208,8 @@ function getGroups(groupingColumn = '2', columns, papers) {
   return groups;
 }
 
-function getGroup(expIndex, paperIndex) {
+function getGroup(experiment) {
   if (groupingColumnObj) {
-    return getDatumValue(groupingColumnObj, expIndex, paperIndex);
+    return getDatumValue(groupingColumnObj, experiment);
   }
 }
