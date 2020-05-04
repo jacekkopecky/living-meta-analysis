@@ -5,7 +5,7 @@ import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Aggregates from './aggregates/Aggregates';
 import Metadata from './Metadata';
-import { columnOrders, populateCircularMa } from './Datatools';
+import { populateCircularMa } from '../../tools/datatools';
 
 import './Metaanalysis.css';
 

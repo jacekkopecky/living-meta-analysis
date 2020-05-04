@@ -16,7 +16,7 @@ function DataTable(props) {
       </thead>
       <tbody>
         {
-          Object.values(papers).map((paper, index) => (
+          Object.values(papers).map((paper) => (
             <Paper
               key={paper.id + paper.title}
               paper={paper}
