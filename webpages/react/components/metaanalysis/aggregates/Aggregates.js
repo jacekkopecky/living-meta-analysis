@@ -3,11 +3,11 @@ import SimpleAggregates from './SimpleAggregates';
 import GroupingAggregates from './GroupingAggregates';
 
 function Aggregates(props) {
-  const { aggregates, groupingAggregates } = props;
+  const { aggregates, groupingAggregates, groups } = props;
   return (
     <>
       <SimpleAggregates aggregates={aggregates} />
-      <GroupingAggregates groupingAggregates={groupingAggregates} />
+      <GroupingAggregates groupingAggregates={groupingAggregates} groups={groups} />
     </>
   );
 }

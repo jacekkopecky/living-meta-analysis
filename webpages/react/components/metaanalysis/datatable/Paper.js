@@ -22,14 +22,14 @@ function Paper(props) {
       return (
         <tr key={exp.ctime + paper.id} className={firstTr}>
           {newPaper}
-          <td>
+          <td key={exp.title}>
             {exp.title}
           </td>
           {columns.map((col) => {
             const value = getDatumValue(col, exp, undefined);
             const fixed = col.id ? value : formatNumber(value);
             return (
-              <td>{fixed}</td>
+              <td key={col.id}>{fixed}</td>
             );
           })}
         </tr>

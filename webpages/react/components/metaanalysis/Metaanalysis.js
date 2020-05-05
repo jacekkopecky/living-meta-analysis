@@ -62,9 +62,9 @@ function Metaanalysis(props) {
         <Aggregates
           path="/aggregates"
           tabName="Aggregates"
-          columns={table.columns}
           aggregates={aggregates}
           groupingAggregates={groupingAggregates}
+          groups={metaanalysis.groups}
         />
       </Tabs>
       <Metadata
