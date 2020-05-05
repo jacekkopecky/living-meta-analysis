@@ -21,6 +21,7 @@ export function populateCircularMa(ma) {
   }
   ma.hashcols = generateIDHash(ma.columns);
 
+  ma.groups = getGroups(ma);
   for (let col of ma.columns) {
     if (!col.id) {
       const colWithParsedFormula = populateParsedFormula(col, ma, ma.hashcols);
@@ -51,7 +52,7 @@ function generateIDHash(objects) {
 
 export function formatNumber(x) {
   if (typeof x !== 'number') return x;
-  var xabs = Math.abs(x);
+  const xabs = Math.abs(x);
   // if (xabs >= 1000) return x.toFixed(0); // this would drop the decimal point from large values (needs tweaks in padNumber below)
   if (xabs >= 100) return x.toFixed(1);
   if (xabs >= 10) return x.toFixed(2);
@@ -120,7 +121,7 @@ function getExperimentsTableDatumValue(col, experiment) {
 }
 
 export function getDatumValue(col, experiment, _papers) {
-  const papers = experiment.paper.metaanalysis.papers;
+  const { papers } = experiment.paper.metaanalysis;
   if (isExperimentsTableColumn(col)) {
     return getExperimentsTableDatumValue(col, experiment);
   } if (isAggregate(col)) {
@@ -163,9 +164,7 @@ export function getAggregateDatumValue(aggregate, papers, group) {
         for (const paper of papers) {
           for (const exp of paper.experiments) {
             // ignore excluded values
-            if (exp.excluded) {
-              continue;
-            }
+            if (exp.excluded) continue;
 
             // ignore values with the wrong groups
             if (group != null && getGroup(exp) !== group) continue;
@@ -195,7 +194,7 @@ export function getAggregateDatumValue(aggregate, papers, group) {
   return val;
 }
 
-function getGroups(ma) {
+export function getGroups(ma) {
   const groupingColumnObj = window.lima.parseFormulaString(ma.groupingColumn, ma.hashcols);
   ma.groupingColumnObj = groupingColumnObj;
   if (!groupingColumnObj) return [];
