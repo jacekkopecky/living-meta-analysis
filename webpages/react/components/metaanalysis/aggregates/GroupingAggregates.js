@@ -1,5 +1,5 @@
 import React from 'react';
-import { getAggregateDatumValue, formatNumber, getGroups } from '../../../tools/datatools';
+import { getAggregateDatumValue, formatNumber } from '../../../tools/datatools';
 
 function GroupingAggregates(props) {
   const { groupingAggregates, groups } = props;

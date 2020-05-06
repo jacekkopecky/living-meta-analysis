@@ -4,7 +4,6 @@ import { getDatumValue, formatNumber } from '../../../tools/datatools';
 function Paper(props) {
   const { paper, columns } = props;
   const { title } = paper;
-  console.log(paper.experiments);
   const nExp = Object.keys(paper.experiments).length;
 
   return (

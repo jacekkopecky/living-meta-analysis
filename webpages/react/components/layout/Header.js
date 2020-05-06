@@ -1,7 +1,5 @@
-/* eslint-disable react/jsx-filename-extension */
 import React from 'react';
 import './Header.css';
-// import img from './images/user.png';
 
 function Header() {
   return (
@@ -11,7 +9,7 @@ function Header() {
         <h2>Living Meta-Analysis</h2>
       </a>
       <div className="userinfo signedoff">
-        <img src="./user.png" alt="user" className="userphoto" />
+        {/* <img src="./user.png" alt="user" className="userphoto" /> */}
         <div className="actions">
           <div className="name when-signed-on">
             {/* Signed in as: */}

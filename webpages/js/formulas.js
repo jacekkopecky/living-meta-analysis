@@ -1,3 +1,4 @@
+import math from '../lib/math.min.js';
 (function (window, document) { // eslint-disable-line no-unused-vars
   'use strict';
 
