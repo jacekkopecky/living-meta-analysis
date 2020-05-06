@@ -6,26 +6,28 @@ function DataTable(props) {
   /* TODO: delete columnOrders */
   const { columns, papers } = props;
   return (
-    <table className="datatable">
-      <thead>
-        <tr>
-          <th>Paper</th>
-          <th>Study/Experiment</th>
-          { columns.map((col) => <th key={col.title}>{col.title}</th>) }
-        </tr>
-      </thead>
-      <tbody>
-        {
-          Object.values(papers).map((paper) => (
-            <Paper
-              key={paper.id + paper.title}
-              paper={paper}
-              columns={columns}
-            />
-          ))
-        }
-      </tbody>
-    </table>
+    <section>
+      <table className="datatable table table-striped table-header-rotated">
+        <thead>
+          <tr>
+            <th className="rotate"><div><span>Paper</span></div></th>
+            <th className="rotate"><div><span>Study/Experiment</span></div></th>
+            { columns.map((col) => <th key={col.title} className="rotate"><div><span>{col.title}</span></div></th>) }
+          </tr>
+        </thead>
+        <tbody>
+          {
+            Object.values(papers).map((paper) => (
+              <Paper
+                key={paper.id + paper.title}
+                paper={paper}
+                columns={columns}
+              />
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
   );
 }
 
