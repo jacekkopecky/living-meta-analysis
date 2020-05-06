@@ -1,4 +1,4 @@
-.datatable {
+/* .datatable {
   margin: 0.5rem;
   border-collapse: collapse;
   border-spacing: 0;
@@ -13,8 +13,35 @@
   text-align: left;
   background-color: #47a8c5;
   color: white;
+} */
+
+.datatable {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  margin: 20px;
+}
+
+.datatable td,
+.datatable th {
+  border-left: 0.5px solid rgb(66, 66, 66);
+  border-right: 0.5px;
+  padding: 4px;
 }
 
 .datatable .paperstart td {
   border-top: 2px solid black;
+}
+
+.datatable tr:nth-child(even) { background-color: #ebebeb; }
+
+.datatable th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #2f7494;
+  color: white;
+}
+
+.datatable .computed {
+  background-color: rgba(182, 234, 255, 0.5);
 }

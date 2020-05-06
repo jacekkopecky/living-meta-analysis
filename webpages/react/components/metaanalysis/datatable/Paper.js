@@ -25,10 +25,18 @@ function Paper(props) {
             {exp.title}
           </td>
           {columns.map((col) => {
-            const value = getDatumValue(col, exp, undefined);
-            const fixed = col.id ? value : formatNumber(value);
+            const value = getDatumValue(col, exp);
+            let fixed;
+            let className;
+            if (col.id) {
+              fixed = value;
+              className = 'data';
+            } else {
+              fixed = formatNumber(value);
+              className = 'computed';
+            }
             return (
-              <td key={col.id}>{fixed}</td>
+              <td className={className} key={col.id}>{fixed}</td>
             );
           })}
         </tr>

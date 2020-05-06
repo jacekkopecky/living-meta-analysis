@@ -21,7 +21,7 @@ function Metadata(props) {
   } = props;
   const path = `/${username}/`;
   return (
-    <div className="metadata">
+    <aside className="metadata">
       <p>
         Entered by
         {' '}
@@ -36,7 +36,7 @@ function Metadata(props) {
         {' '}
         {formatDateTime(mtime)}
       </p>
-    </div>
+    </aside>
   );
 }
 

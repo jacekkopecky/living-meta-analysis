@@ -20,10 +20,10 @@ function InfoText(props) {
 function Info(props) {
   const { reference, description } = props;
   return (
-    <div className="info">
+    <section className="info">
       <InfoText name="reference" value={reference} />
       <InfoText name="description" value={description} />
-    </div>
+    </section>
   );
 }
 
