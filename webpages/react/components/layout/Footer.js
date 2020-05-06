@@ -30,26 +30,27 @@ function Footer() {
         {error.message}
       </span>
     );
-  } else if (isLoaded) content = <span>{version}</span>;
-  else content = <span>Loading...</span>;
+  } else if (isLoaded) {
+    content = <span>{version}</span>;
+  } else {
+    content = <span>Loading...</span>;
+  }
 
   return (
     <footer>
-      <p variant="body2">
-
+      <p>
         LiMA (Living Meta-Analysis) at
         {' '}
         <a href="http://port.ac.uk/">University of Portsmouth</a>
         , © 20162020
-
       </p>
-      <p variant="body2">
+      <p>
         Feedback and questions are welcome at
         {' '}
         <a href="mailto:lima@port.ac.uk">lima@port.ac.uk</a>
         .
       </p>
-      <p variant="body2">
+      <p>
         version
         {' '}
         <span className="value">{content}</span>

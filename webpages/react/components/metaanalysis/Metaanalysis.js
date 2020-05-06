@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Tabs from '../layout/Tabs';
-import Tags from './tags/Tags';
+import Tags from './tags/TagList';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Aggregates from './aggregates/Aggregates';
@@ -14,20 +14,20 @@ function Metaanalysis(props) {
   const { metaanalysis } = props;
   populateCircularMa(metaanalysis);
   const [edit, setEdit] = useState(0);
-  const [title, setTitle] = useState(metaanalysis.title);
-  const [tags, setTags] = useState(metaanalysis.tags);
-  const [info, setInfo] = useState({
+  const [title] = useState(metaanalysis.title);
+  const [tags] = useState(metaanalysis.tags);
+  const [info] = useState({
     description: metaanalysis.description,
     published: metaanalysis.published,
   });
-  const [table, setTable] = useState({
+  const [table] = useState({
     columns: metaanalysis.columns,
     papers: metaanalysis.papers,
     excluded: metaanalysis.excludedExperiments,
   });
-  const [aggregates, setAggregates] = useState(metaanalysis.aggregates);
-  const [groupingAggregates, setGroupingAggregates] = useState(metaanalysis.groupingAggregates);
-  const [metadata, setMetadata] = useState({
+  const [aggregates] = useState(metaanalysis.aggregates);
+  const [groupingAggregates] = useState(metaanalysis.groupingAggregates);
+  const [metadata] = useState({
     enteredByUsername: metaanalysis.enteredByUsername,
     ctime: metaanalysis.ctime,
     mtime: metaanalysis.mtime,
