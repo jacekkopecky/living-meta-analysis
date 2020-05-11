@@ -2,9 +2,13 @@ import React from 'react';
 import { getAggregateDatumValue, formatNumber } from '../../../tools/datatools';
 
 function GroupingAggregates(props) {
-  const { groupingAggregates, groups } = props;
+  const { groupingAggregates, groups, groupingColumn } = props;
   return (
     <>
+      <h3>
+        Grouping aggregates by
+        {groupingColumn}
+      </h3>
       <table>
         <thead>
           <tr>

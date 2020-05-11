@@ -4,8 +4,10 @@ import Tags from './tags/TagList';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Aggregates from './aggregates/Aggregates';
+import Plots from './plots/Plots';
 import Metadata from './Metadata';
 import { populateCircularMa } from '../../tools/datatools';
+import { populatePlots } from '../../tools/graphtools';
 
 import './Metaanalysis.css';
 
@@ -13,6 +15,7 @@ import './Metaanalysis.css';
 function Metaanalysis(props) {
   const { metaanalysis } = props;
   populateCircularMa(metaanalysis);
+  populatePlots(metaanalysis);
   const [edit, setEdit] = useState(0);
   const [title] = useState(metaanalysis.title);
   const [tags] = useState(metaanalysis.tags);
@@ -27,6 +30,7 @@ function Metaanalysis(props) {
   });
   const [aggregates] = useState(metaanalysis.aggregates);
   const [groupingAggregates] = useState(metaanalysis.groupingAggregates);
+  const [graphs] = useState(metaanalysis.graphs);
   const [metadata] = useState({
     enteredByUsername: metaanalysis.enteredByUsername,
     ctime: metaanalysis.ctime,
@@ -38,7 +42,7 @@ function Metaanalysis(props) {
   const editButtonMessage = edit ? 'STOP' : 'EDIT';
 
   return (
-    <div className="metaanalysis">
+    <main className="metaanalysis">
       <div className="titlebar">
         <div className="title">
           <p type="input">{title}</p>
@@ -64,7 +68,14 @@ function Metaanalysis(props) {
           tabName="Aggregates"
           aggregates={aggregates}
           groupingAggregates={groupingAggregates}
+          groupingColumn={metaanalysis.groupingColumnObj.title}
           groups={metaanalysis.groups}
+        />
+        {/* TODO : delete [2] */}
+        <Plots
+          path="/plots"
+          tabName="Plots"
+          graphs={[graphs[2]]}
         />
       </Tabs>
       <Metadata
@@ -72,7 +83,7 @@ function Metaanalysis(props) {
         ctime={metadata.ctime}
         mtime={metadata.mtime}
       />
-    </div>
+    </main>
 
   );
 }
