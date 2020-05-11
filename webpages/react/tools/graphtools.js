@@ -203,7 +203,7 @@ export function drawPlot(graph) {
       uclX = orX + (uclX - orX) / ratio;
     }
     const confidenceInterval = `${lclX},0 ${orX},-10 ${uclX},0 ${orX},10`;
-    currY += lineHeight;
+
     aggregates.minWtSize = minWtSize;
     aggregates.minWt = minWt;
     aggregates.wtRatio = wtRatio;
@@ -218,16 +218,17 @@ export function drawPlot(graph) {
     let tickVal;
 
     while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
-      tickVals.push(tickVal);
+      tickVals.push([tickVal, startingTickVal]);
       startingTickVal *= TICK_SPACING[window.lima._.mod(startingTick, TICK_SPACING.length)];
       startingTick += 1;
     }
+    currY += lineHeight;
 
-    graph.startingTickVal = startingTickVal;
     graph.tickVals = tickVals;
     graph.aggregates = aggregates;
     graph.height = endHeight + currY;
-    graph.extraLineLen = extraLineLen;
+    graph.lineHeight = lineHeight;
+
   }
 
   return lines;

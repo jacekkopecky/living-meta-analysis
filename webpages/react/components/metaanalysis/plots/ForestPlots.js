@@ -3,7 +3,13 @@ import './ForestPlots.css';
 
 function ForestPlots(props) {
   const { forestPlots } = props;
-  const { height, extraLineLen, aggregates, tickVals, startingTickVal } = forestPlots;
+  const {
+    height,
+    lineHeight,
+    extraLineLen,
+    aggregates,
+    tickVals,
+  } = forestPlots;
   const {
     minWtSize,
     minWt,
@@ -65,7 +71,7 @@ function ForestPlots(props) {
         <g>
           <text className="sumname">Total</text>
           <text className="or lcl ucl">{`${Math.exp(aggregates.or).toFixed(1)} [${Math.exp(aggregates.lcl).toFixed(1)}, ${Math.exp(aggregates.ucl).toFixed(1)}]` || 'invalid [n/a, n/a]'}</text>
-          <line className="guideline" x1={getX(aggregates.or)} x2={getX(aggregates.or)} y2={aggregates.currY + height} />
+          <line className="guideline" x1={getX(aggregates.or)} x2={getX(aggregates.or)} y2={aggregates.currY} />
           {/* <!-- should get x1="or" x2="or" y2="currY+parseInt(plotEl.dataset.lineHeight)+parseInt(plotEl.dataset.extraLineLen)" --> */}
           <g className="sumgraph">
             <polygon className="confidenceinterval" points={confidenceInterval} />
@@ -73,29 +79,28 @@ function ForestPlots(props) {
           </g>
         </g>
       </g>
-      <g className="axes">
+      <g className="axes" transform={`translate(${padding}, ${aggregates.currY + lineHeight})`}>
         {/* <!-- should get transform="translate(padding,currY)" --> */}
         <g>
-          <line className="yaxis" x1={getX(0)} x2={getX(0)} y2={aggregates.currY + extraLineLen} />
+          <line className="yaxis" x1={getX(0)} x2={getX(0)} y2={aggregates.currY} />
           {/* <!-- should get x1="getX(0)" x2="getX(0)" y2="currY+parseInt(plotEl.dataset.extraLineLen)" --> */}
           <line className="xaxis" x1="0" x2="300" />
           {/* <!-- should get a number of ticks --> */}
-          {/* MAP HERE */}
           {tickVals.map((tickVal) => (
-            <g className="tick" transform={`translate(${getX(tickVal)}, ${0})`}>
+            <g className="tick" transform={`translate(${getX(tickVal[0])}, ${0})`}>
               {/* <!-- should get transform="translate(x,0)" --> */}
               <line y2="5" />
-              <text>{tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal)}</text>
+              <text>{tickVal[0] < 0 ? tickVal[1].toPrecision(1) : Math.round(tickVal[1])}</text>
             </g>
           ))}
-          <g className="positioningbutton">
+          {/* <g className="positioningbutton">
             <circle r="8" />
             <line x1="-5" y1="-5" x2="5" y2="5" />
             <line x1="5" y1="5" x2="4" y2="0" />
             <line x1="5" y1="5" x2="0" y2="4" />
             <line x1="-5" y1="-5" x2="-4" y2="0" />
             <line x1="-5" y1="-5" x2="0" y2="-4" />
-          </g>
+          </g> */}
         </g>
       </g>
     </svg>
