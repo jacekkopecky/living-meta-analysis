@@ -3,7 +3,6 @@ import Paper from './Paper';
 import './DataTable.css';
 
 function DataTable(props) {
-  /* TODO: delete columnOrders */
   const { columns, papers } = props;
   return (
     <section>
@@ -30,6 +29,5 @@ function DataTable(props) {
     </section>
   );
 }
-
 
 export default DataTable;

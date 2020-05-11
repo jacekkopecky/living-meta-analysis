@@ -1,0 +1,120 @@
+svg.forestplot {
+  stroke-width: 2px;
+  fill: white;
+  stroke: black;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  font-size: 14px;
+  font-family: "Arial", sans-serif;
+}
+
+svg.forestplot text {
+  stroke-width: 0;
+  fill: black;
+  text-anchor: middle;
+}
+
+svg.forestplot .title {
+  font-size: 20px;
+  text-anchor: start;
+}
+
+svg.forestplot .headings {
+  transform: translate(10px, 30px);
+}
+
+svg.forestplot .headings text.or.lcl.ucl,
+svg.forestplot .experiment text.or.lcl.ucl,
+svg.forestplot .summary text.or.lcl.ucl {
+  transform: translate(610px, 20px);
+}
+
+svg.forestplot .headings text.wt,
+svg.forestplot .experiment text.wt,
+svg.forestplot .summary text.wt {
+  transform: translate(790px, 20px);
+  text-anchor: end;
+}
+
+svg.forestplot .experiment .expname {
+  text-anchor: start;
+  transform: translate(0, 20px);
+}
+
+svg.forestplot .experiment.invalid text {
+  fill: #a44;
+}
+
+svg.forestplot .experiment.invalid text.lcl,
+svg.forestplot .experiment.invalid text.ucl,
+svg.forestplot .experiment.invalid text.wt {
+  display: none;
+}
+
+svg.forestplot .experiment .rowgraph {
+  transform: translate(280px, 0);
+}
+
+svg.forestplot .experiment .rowgraph .confidenceinterval {
+  transform: translate(0, 15px);
+}
+
+svg.forestplot .experiment .rowgraph .weightbox {
+  transform: translate(0, 15px);
+  fill: black;
+}
+
+svg.forestplot .summary > g {
+  transform: translate(0, 20px);
+}
+
+svg.forestplot .summary .sumname {
+  text-anchor: start;
+  transform: translate(0, 20px);
+}
+
+svg.forestplot .summary .sumgraph {
+  transform: translate(280px, 0);
+}
+
+svg.forestplot .summary .sumgraph .confidenceinterval {
+  transform: translate(0, 15px);
+}
+
+svg.forestplot .summary .guideline {
+  stroke-width: 1px;
+  transform: translate(280px, 42.5px) scale(1, -1);
+  stroke-dasharray: 5px;
+  stroke-linecap: butt;
+}
+
+svg.forestplot .axes > g {
+  transform: translate(280px, 32.5px);
+}
+
+svg.forestplot .axes .tick text {
+  font-size: 11px;
+  transform: translate(0, 19px);
+}
+
+svg.forestplot .axes .yaxis {
+  transform: translate(0, 1px) scale(1, -1);
+}
+
+svg.forestplot .positioningbutton {
+  transform: translate(495px, 17px);
+  opacity: 0.2;
+}
+
+svg.forestplot .positioningbutton line {
+  stroke-width: 1.5px;
+}
+
+svg.forestplot .positioningbutton:not(:hover) line {
+  display: none;
+}
+
+svg.forestplot .positioningbutton:hover {
+  opacity: 1;
+  cursor: pointer;
+}

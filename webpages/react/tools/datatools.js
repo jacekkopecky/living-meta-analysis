@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-use-before-define */
 export function populateCircularMa(ma) {
   // circular ref of ma in each paper
   for (const paper of ma.papers) {
@@ -22,6 +24,11 @@ export function populateCircularMa(ma) {
   ma.hashcols = generateIDHash(ma.columns);
 
   ma.groups = getGroups(ma);
+  // if (ma.groupingColumns !== undefined) {
+  //   for (const groupingCol of ma.groupingColumns) {
+  //   }
+  // }
+
   for (let col of ma.columns) {
     if (!col.id) {
       const colWithParsedFormula = populateParsedFormula(col, ma, ma.hashcols);
@@ -38,6 +45,11 @@ export function populateCircularMa(ma) {
     const aggrWithParsedFormula = populateParsedFormula(aggr, ma, ma.hashcols);
     aggr = Object.assign(aggr, aggrWithParsedFormula);
   }
+
+  for (let graph of ma.graphs) {
+    const aggrWithParsedFormula = populateParsedFormula(graph, ma, ma.hashcols);
+    graph = Object.assign(graph, aggrWithParsedFormula);
+  }
 }
 
 
@@ -53,7 +65,8 @@ function generateIDHash(objects) {
 export function formatNumber(x) {
   if (typeof x !== 'number') return x;
   const xabs = Math.abs(x);
-  // if (xabs >= 1000) return x.toFixed(0); // this would drop the decimal point from large values (needs tweaks in padNumber below)
+  // if (xabs >= 1000) return x.toFixed(0);
+  // this would drop the decimal point from large values (needs tweaks in padNumber below)
   if (xabs >= 100) return x.toFixed(1);
   if (xabs >= 10) return x.toFixed(2);
   // if (xabs >= 1) return x.toFixed(2);
@@ -66,7 +79,7 @@ function populateParsedFormula(col, ma, hashcols) {
   return formula;
 }
 
-function isColCompletelyDefined(col) {
+export function isColCompletelyDefined(col) {
   if (col == null) return false;
   if (col.id) return true;
   if (!col.formulaObj) return false;
@@ -120,7 +133,7 @@ function getExperimentsTableDatumValue(col, experiment) {
   return val;
 }
 
-export function getDatumValue(col, experiment, _papers) {
+export function getDatumValue(col, experiment) {
   const { papers } = experiment.paper.metaanalysis;
   if (isExperimentsTableColumn(col)) {
     return getExperimentsTableDatumValue(col, experiment);
@@ -139,7 +152,7 @@ export function getDatumValue(col, experiment, _papers) {
 }
 
 export function getAggregateDatumValue(aggregate, papers, group) {
-  const ma = papers[0].metaanalysis;
+  const ma = papers[0].metaanalysis; // TODO: bug when
   // console.log(papers);
   if (!aggregate.grouping) group = null;
 
@@ -178,7 +191,8 @@ export function getAggregateDatumValue(aggregate, papers, group) {
         } else if (param.grouping && group != null) {
           currentInput = getAggregateDatumValue(param, papers, group);
         } else if (param.grouping && group == null) {
-          // currentParam is grouping but we don't have a group so currentInput should be an array per group
+          // currentParam is grouping but we don't have a group
+          // so currentInput should be an array per group
           const groups = getGroups(ma);
           currentInput = [];
           for (const g of groups) {
@@ -205,7 +219,7 @@ export function getGroups(ma) {
       if (exp.excluded) continue;
       const group = getGroup(exp);
 
-      if (group != null && group != '' && groups.indexOf(group) === -1) groups.push(group);
+      if (group != null && group !== '' && groups.indexOf(group) === -1) groups.push(group);
     }
   }
 
