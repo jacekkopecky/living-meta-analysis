@@ -149,8 +149,8 @@ export function drawPlot(graph) {
   }
   minLcl = Math.log(newBound) - 0.1;
 
-  const startingTickVal = newBound;
-  const startingTick = tickNo;
+  let startingTickVal = newBound;
+  let startingTick = tickNo;
 
   newBound = 1;
   tickNo = 0;
@@ -188,16 +188,48 @@ export function drawPlot(graph) {
   let currY = startHeight;
 
   for (const line of lines) {
-    line.minWtSize = minWtSize;
-    line.minWt = minWt;
-    line.wtRatio = wtRatio;
-    line.minLcl = minLcl;
-    line.xRatio = xRatio;
     line.currY = currY;
-    line.sumOfWt = sumOfWt;
     currY += lineHeight;
   }
-  graph.height = endHeight + currY;
+
+
+  if (!isNaN(aggregates.or * 0)) {
+    let lclX = getX(aggregates.lcl);
+    let uclX = getX(aggregates.ucl);
+    const orX = getX(aggregates.or);
+    if ((uclX - lclX) < minDiamondWidth) {
+      const ratio = (uclX - lclX) / minDiamondWidth;
+      lclX = orX + (lclX - orX) / ratio;
+      uclX = orX + (uclX - orX) / ratio;
+    }
+    const confidenceInterval = `${lclX},0 ${orX},-10 ${uclX},0 ${orX},10`;
+    currY += lineHeight;
+    aggregates.minWtSize = minWtSize;
+    aggregates.minWt = minWt;
+    aggregates.wtRatio = wtRatio;
+    aggregates.minLcl = minLcl;
+    aggregates.xRatio = xRatio;
+    aggregates.sumOfWt = sumOfWt;
+    aggregates.currY = currY;
+    aggregates.confidenceInterval = confidenceInterval;
+
+    // put axes into the plot
+    const tickVals = [];
+    let tickVal;
+
+    while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
+      tickVals.push(tickVal);
+      startingTickVal *= TICK_SPACING[window.lima._.mod(startingTick, TICK_SPACING.length)];
+      startingTick += 1;
+    }
+
+    graph.startingTickVal = startingTickVal;
+    graph.tickVals = tickVals;
+    graph.aggregates = aggregates;
+    graph.height = endHeight + currY;
+    graph.extraLineLen = extraLineLen;
+  }
+
   return lines;
 }
 
