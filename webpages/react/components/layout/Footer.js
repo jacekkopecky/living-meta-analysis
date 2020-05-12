@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Footer.css';
 
 function Footer() {
+  // Displays the footer and fetches LiMA version
   const [version, updateVersion] = useState('');
   const [isLoaded, setLoaded] = useState(false);
   const [error, setError] = useState(null);

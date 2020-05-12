@@ -2,6 +2,7 @@ import React from 'react';
 import './Header.css';
 
 function Header() {
+  // Displays header and handles google auth connexion
   return (
     <header>
       <a href="/" id="logo-box">
