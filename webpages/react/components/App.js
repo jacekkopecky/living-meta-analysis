@@ -13,7 +13,6 @@ function App() {
   const CLIENT_ID = '358237292980-kbme56c9ih4rpmob16sq8bjig5dms6pl.apps.googleusercontent.com';
   const { gapi } = window;
 
-
   // fetch request to the API
   // then everything is spread in children components
   useEffect(() => {
@@ -30,6 +29,12 @@ function App() {
       }
     }
     fetchItems();
+    async function googleInit() {
+      gapi.load('auth2', () => {
+        gapi.auth2.init({ client_id: CLIENT_ID });
+      });
+    }
+    googleInit();
   }, []);
 
   let content;
