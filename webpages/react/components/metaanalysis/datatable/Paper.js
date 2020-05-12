@@ -1,5 +1,6 @@
 import React from 'react';
 import { getDatumValue, formatNumber } from '../../../tools/datatools';
+// TODO: find a cleaner way to import datatools
 
 function Paper(props) {
   const { paper, columns } = props;
@@ -11,11 +12,7 @@ function Paper(props) {
       let newPaper;
       let firstTr;
       if (key === 0) {
-        newPaper = (
-          <td key={title} rowSpan={nExp}>
-            {title}
-          </td>
-        );
+        newPaper = <td key={title} rowSpan={nExp}>{title}</td>;
         firstTr = 'paperstart';
       }
       return (
@@ -24,21 +21,21 @@ function Paper(props) {
           <td key={exp.title}>
             {exp.title}
           </td>
+
           {columns.map((col) => {
-            const value = getDatumValue(col, exp);
-            let fixed;
+            let value = getDatumValue(col, exp);
             let className;
             if (col.id) {
-              fixed = value;
               className = 'data';
             } else {
-              fixed = formatNumber(value);
+              value = formatNumber(value);
               className = 'computed';
             }
             return (
-              <td className={className} key={col.id}>{fixed}</td>
+              <td className={className} key={col.id}>{value}</td>
             );
           })}
+
         </tr>
       );
     })

@@ -13,7 +13,7 @@ function SimpleAggregates(props) {
           </tr>
         </thead>
         <tbody>
-          { aggregates.map((aggr) => {
+          {aggregates.map((aggr) => {
             const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers);
             return (
               <tr key={aggr.formula}>

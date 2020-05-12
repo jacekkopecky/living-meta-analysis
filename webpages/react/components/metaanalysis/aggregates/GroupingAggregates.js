@@ -13,21 +13,23 @@ function GroupingAggregates(props) {
         <thead>
           <tr>
             <th>Aggregates</th>
-            { groups.map((group) => (
+            {groups.map((group) => (
               <th key={group}>{group}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          { groupingAggregates.map((aggr) => (
+          {groupingAggregates.map((aggr) => (
             <tr key={aggr.formula}>
               <td>{aggr.title}</td>
+
               {groups.map((group) => {
                 const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers, group);
                 return (
                   <td key={group}>{formatNumber(value)}</td>
                 );
               })}
+
             </tr>
           ))}
         </tbody>
