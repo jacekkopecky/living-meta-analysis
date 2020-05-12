@@ -1,7 +1,7 @@
 import React from 'react';
 import SimpleForestPlots from './SimpleForestPlots';
 import GroupingForestPlots from './GroupingForestPlots';
-import { getSimpleForestPlotData } from '../../../tools/graphtools';
+import { getSimpleForestPlotData, getGroupingForestPlotData } from '../../../tools/graphtools';
 import './Plots.css';
 
 
@@ -15,9 +15,10 @@ function Plots(props) {
           getSimpleForestPlotData(graph);
           return <SimpleForestPlots forestPlots={graph} />;
         }
-        // if (formulaName === 'forestPlotGroupPercentGraph') {
-        //   return <GroupingForestPlots forestPlots={graph} />;
-        // }
+        if (formulaName === 'forestPlotGroupPercentGraph') {
+          getGroupingForestPlotData(graph);
+          return <GroupingForestPlots forestPlots={graph} />;
+        }
       })}
 
     </>

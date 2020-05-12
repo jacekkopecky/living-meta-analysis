@@ -166,6 +166,7 @@ export function getSimpleForestPlotData(graph) {
   function getX(val) {
     return (val - minLcl) * xRatio;
   }
+
   // adjust weights so that in case of very similar weights they don't range from minimum to maximum
   const MIN_WT_SPREAD = 2.5;
   if (maxWt / minWt < MIN_WT_SPREAD) {
@@ -179,11 +180,6 @@ export function getSimpleForestPlotData(graph) {
   maxWt = Math.sqrt(maxWt);
   minWt = Math.sqrt(minWt);
   const wtRatio = 1 / (maxWt - minWt) * (maxWtSize - minWtSize);
-
-  // return the box size for a given weight
-  function getBoxSize(wt) {
-    return (Math.sqrt(wt) - minWt) * wtRatio + minWtSize;
-  }
 
   let currY = startHeight;
 
@@ -246,7 +242,6 @@ export function getGroupingForestPlotData(graph) {
   const groupLineOffset = 0;
   const zeroGroupsWidth = 70;
   const lineHeight = 30;
-  const padding = 10;
   const graphWidth = 200;
   const startHeight = 80;
   const groupStartHeight = 10;
@@ -313,7 +308,6 @@ export function getGroupingForestPlotData(graph) {
       line.lcl = getDatumValue(lclFunc, exp);
       line.ucl = getDatumValue(uclFunc, exp);
       line.group = getDatumValue(moderatorParam, exp);
-
       if (line.group != null && line.group !== '' && groups.indexOf(line.group) === -1) {
         groups.push(line.group);
       }
@@ -366,19 +360,26 @@ export function getGroupingForestPlotData(graph) {
     }
   }
 
-  const dataGroups = groups.map((group) => (
-    lines.filter((exp) => exp.group === group)
-  ));
+  // const dataGroups = groups.map((group) => (
+  //   lines.filter((exp) => exp.group === group)
+  // ));
+  const dataGroups = [];
+  for (const group of groups) {
+    const dataGroup = {};
+    dataGroup.lines = lines.filter((exp) => exp.group === group);
+    dataGroups.push(dataGroup);
+  }
+  console.log(dataGroups);
 
   const perGroup = {};
   for (const dataGroup of dataGroups) {
-    const { group } = dataGroup[0];
+    const { group } = dataGroup.lines[0];
     perGroup[group] = {};
-    perGroup[group].wt = dataGroup.reduce((acc, line) => (
+    perGroup[group].wt = dataGroup.lines.reduce((acc, line) => (
       line.wt !== null ? acc + line.wt : acc
     ), 0);
     if (perGroup[group].wt === 0) perGroup[group].wt = 1;
-    perGroup[group].or = dataGroup.reduce((acc, line) => (
+    perGroup[group].or = dataGroup.lines.reduce((acc, line) => (
       line.wt !== null ? acc + line.or * line.wt : acc
     ), 0) / perGroup[group].wt;
   }
@@ -403,9 +404,9 @@ export function getGroupingForestPlotData(graph) {
   uclAggrFunc.formulaObj = window.lima.getFormulaObject(uclAggrFunc.formulaName);
 
   const aggregates = {
-    or: getAggregateDatumValue(orAggrFunc),
-    lcl: getAggregateDatumValue(lclAggrFunc),
-    ucl: getAggregateDatumValue(uclAggrFunc),
+    or: getAggregateDatumValue(orAggrFunc, papers),
+    lcl: getAggregateDatumValue(lclAggrFunc, papers),
+    ucl: getAggregateDatumValue(uclAggrFunc, papers),
   };
 
   if (isNaN(aggregates.or * 0)
@@ -492,10 +493,8 @@ export function getGroupingForestPlotData(graph) {
   function getX(val) {
     return (val - minLcl) * xRatio;
   }
-  function getBoxSize(wt) {
-    return (Math.sqrt(wt) - minWt) * wtRatio + minWtSize;
-  }
 
+  let i = 0;
   for (const group of groups) {
     const groupAggregates = {
       or: 0,
@@ -520,8 +519,9 @@ export function getGroupingForestPlotData(graph) {
           hasInvalid = true;
           groupHasInvalid = true;
         }
+        line.currGY = currGY;
+        currGY += lineHeight;
       }
-      currGY += lineHeight;
     }
     // if stat != wt, then divide the groupAggregate sums by the number of valid lines in the group.
     for (const stat in groupAggregates) {
@@ -544,20 +544,27 @@ export function getGroupingForestPlotData(graph) {
         uclX = orX + (uclX - orX) / ratio;
       }
       const confidenceInterval = `${lclX},0 ${orX},-10 ${uclX},0 ${orX},10`;
+      dataGroups[i].confidenceInterval = confidenceInterval;
+      dataGroups[i].groupAggregates = groupAggregates;
+      dataGroups[i].currGY = currGY;
       currGY += lineHeight;
     }
+    dataGroups[i].currY = currY;
     currY += currGY + heightBetweenGroups;
+    i += 1;
   }
 
   // put axes into the plot
   const tickVals = [];
   let tickVal;
+
   while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
-    tickVals.push(tickVal < 0 ? startingTickVal.toPrecision(1) : Math.round(startingTickVal));
+    tickVals.push([tickVal, startingTickVal]);
     startingTickVal *= TICK_SPACING[window.lima._.mod(startingTick, TICK_SPACING.length)];
     startingTick += 1;
   }
 
+  let yAxis = currY;
   // put summary into the plot
   if (!isNaN(aggregates.or * 0) && !hasInvalid) {
     currY += 2 * lineHeight;
@@ -565,15 +572,36 @@ export function getGroupingForestPlotData(graph) {
     let uclX = getX(aggregates.ucl);
     const orX = getX(aggregates.or);
     if ((uclX - lclX) < minDiamondWidth) {
-      const ratio = (uclX - lclX) / plotEl.dataset.minDiamondWidth;
+      const ratio = (uclX - lclX) / minDiamondWidth;
       lclX = orX + (lclX - orX) / ratio;
       uclX = orX + (uclX - orX) / ratio;
     }
 
     const confidenceInterval = `${lclX},0 ${orX},-10 ${uclX},0 ${orX},10`;
+    graph.confidenceInterval = confidenceInterval;
   }
 
-  // finish up
   const height = endHeight + currY;
+  graph.height = height;
+  graph.yAxis = yAxis;
+  graph.groupLineOffset = groupLineOffset;
+  graph.headingOffset = headingOffset;
+  graph.tickVals = tickVals;
+  graph.groups = groups;
+  graph.lines = lines;
+  graph.dataGroups = dataGroups;
+  graph.aggregates = aggregates;
+  graph.minWtSize = minWtSize;
+  graph.minWt = minWt;
+  graph.wtRatio = wtRatio;
+  graph.xRatio = xRatio;
+  graph.minLcl = minLcl;
+  graph.currY = currY;
+  graph.extraLineLen = extraLineLen;
+  graph.lineHeight = lineHeight;
+
+
+  console.log(yAxis);
+  console.log(currY);
   // todo set plot widths based on maximum text sizes
 }
