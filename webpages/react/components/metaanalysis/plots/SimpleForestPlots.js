@@ -1,12 +1,12 @@
 import React from 'react';
-import './ForestPlots.css';
+import './SimpleForestPlots.css';
 
-function ForestPlots(props) {
+function SimpleForestPlots(props) {
   const { forestPlots } = props;
   const {
+    lines,
     height,
     lineHeight,
-    extraLineLen,
     aggregates,
     tickVals,
   } = forestPlots;
@@ -36,7 +36,7 @@ function ForestPlots(props) {
         <text className="title">Forest Plot</text>
       </g>
 
-      {forestPlots.lines.map((line) => {
+      {lines.map((line) => {
         const {
           currY, lcl, ucl, or, wt, title,
         } = line;
@@ -93,18 +93,10 @@ function ForestPlots(props) {
               <text>{tickVal[0] < 0 ? tickVal[1].toPrecision(1) : Math.round(tickVal[1])}</text>
             </g>
           ))}
-          {/* <g className="positioningbutton">
-            <circle r="8" />
-            <line x1="-5" y1="-5" x2="5" y2="5" />
-            <line x1="5" y1="5" x2="4" y2="0" />
-            <line x1="5" y1="5" x2="0" y2="4" />
-            <line x1="-5" y1="-5" x2="-4" y2="0" />
-            <line x1="-5" y1="-5" x2="0" y2="-4" />
-          </g> */}
         </g>
       </g>
     </svg>
   );
 }
 
-export default ForestPlots;
+export default SimpleForestPlots;

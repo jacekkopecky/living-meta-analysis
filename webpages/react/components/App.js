@@ -9,6 +9,10 @@ function App() {
   const [metaanalysis, updateMetaanalysis] = useState([]);
   const [isLoaded, setLoaded] = useState(false);
   const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const CLIENT_ID = '358237292980-kbme56c9ih4rpmob16sq8bjig5dms6pl.apps.googleusercontent.com';
+  const { gapi } = window;
+
 
   // fetch request to the API
   // then everything is spread in children components
@@ -37,14 +41,14 @@ function App() {
       </div>
     );
   } else if (isLoaded === true) {
-    content = (<Metaanalysis metaanalysis={metaanalysis} />);
+    content = (<Metaanalysis metaanalysis={metaanalysis} currentUser={currentUser} />);
   } else {
     content = <div>Loading...</div>;
   }
 
   return (
     <div className="app">
-      <Header />
+      <Header currentUser={currentUser} />
       {content}
       <Footer />
     </div>
