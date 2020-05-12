@@ -7,7 +7,6 @@ import Aggregates from './aggregates/Aggregates';
 import Plots from './plots/Plots';
 import Metadata from './Metadata';
 import { populateCircularMa } from '../../tools/datatools';
-import { populatePlots } from '../../tools/graphtools';
 
 import './Metaanalysis.css';
 
@@ -15,7 +14,6 @@ import './Metaanalysis.css';
 function Metaanalysis(props) {
   const { metaanalysis } = props;
   populateCircularMa(metaanalysis);
-  populatePlots(metaanalysis);
   const [edit, setEdit] = useState(0);
   const [title] = useState(metaanalysis.title);
   const [tags] = useState(metaanalysis.tags);
@@ -71,11 +69,10 @@ function Metaanalysis(props) {
           groupingColumn={metaanalysis.groupingColumnObj.title}
           groups={metaanalysis.groups}
         />
-        {/* TODO : delete [2] */}
         <Plots
           path="/plots"
           tabName="Plots"
-          graphs={[graphs[2]]}
+          graphs={graphs}
         />
       </Tabs>
       <Metadata
