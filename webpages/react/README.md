@@ -1,8 +1,8 @@
 ## needs to be reviewed
 
-ou'll find here some explanation on how the React components are build inside our build system.
+You'll find here some explanation on how the React components are build inside our build system.
 
-We use Parcel to bundle all the React files together so that the components can be displayed correctly in the browser. 
+We use Parcel to bundle all the React files together so that the components can be displayed correctly in the browser.
 
 A note for maintainers is available at the end of this document.
 ## Running and building the LiMA frontend
@@ -15,7 +15,7 @@ If you haven't already installed `Node` and `npm`, you should follow this
 Check your `Node` and `npm` versions :
 
 ```shell
-$ node -v 
+$ node -v
 ```
 
 ```shell
@@ -26,7 +26,7 @@ Once everything is installed, run the following command in the react project dir
 ```shell
 $ npm install
 ```
-You are now ready to start 
+You are now ready to start
 ## Available Scripts
 
 **In the `/webpages/react` directory, you can use the following commands :**
@@ -36,7 +36,7 @@ $ npm start
 ```
 
 -   Runs the application in development mode server and opens [http://localhost:8080](http://localhost:8080) in the browser to view the application
--   The page will reload if you make edits. 
+-   The page will reload if you make edits.
 
 ```shell
 $ npm run build
@@ -48,7 +48,7 @@ $ npm run build
 
 -   The files are correctly bundled to their relative paths. You need to serve the files in the `./dist` folder the same way you'll serve the index.html file when a meta-analysis is served.
 
-## Running the production ready app 
+## Running the production ready app
 ```shell
 $ npm run server
 ```
