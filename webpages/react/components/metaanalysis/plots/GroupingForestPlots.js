@@ -91,6 +91,7 @@ function GroupingForestPlots(props) {
                 <g>
                   <text className="sumname">
                     Total for
+                    {' '}
                     {group}
                   </text>
                   <text className="or lcl ucl">
@@ -100,7 +101,7 @@ function GroupingForestPlots(props) {
                     }]`
                     || 'err [err, err]'}
                   </text>
-                  <text className="wt">{`${dataGroup.groupAggregates.wt}%` || 'err'}</text>
+                  {/* <text className="wt">{`${dataGroup.groupAggregates.wt}%` || 'err'}</text> */}
                   <g className="sumgraph">
                     <polygon className="confidenceinterval" points={dataGroup.confidenceInterval} />
                   </g>
@@ -131,9 +132,9 @@ function GroupingForestPlots(props) {
           <text className="sumname sumtotal">Total</text>
           <text className="or lcl ucl">
             {`${Math.exp(aggregates.or).toFixed(1)}
-            [${Math.exp(aggregates.lcl).toFixed(1)}
-            , ${Math.exp(aggregates.ucl).toFixed(1)}]`
-            || 'err [err, err]'}
+            [${Math.exp(aggregates.lcl).toFixed(1)},
+            ${Math.exp(aggregates.ucl).toFixed(1)}]`
+            || 'err [err,err]'}
           </text>
           <line
             className="guideline"

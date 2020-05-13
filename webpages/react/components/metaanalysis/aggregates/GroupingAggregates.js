@@ -7,6 +7,7 @@ function GroupingAggregates(props) {
     <>
       <h3>
         Grouping aggregates by
+        {' '}
         {groupingColumn}
       </h3>
       <table>

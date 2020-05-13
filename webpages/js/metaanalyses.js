@@ -978,8 +978,6 @@
       var currGY = parseInt(plotEl.dataset.groupStartHeight);
       var hasInvalid = false;
 
-      //ici
-
       groups.forEach(function (group) {
         var groupAggregates = {
           or: 0,

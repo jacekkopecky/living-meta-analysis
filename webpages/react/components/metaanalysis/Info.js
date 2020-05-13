@@ -8,7 +8,6 @@ function InfoText(props) {
     <div className={name}>
       <p className="header">
         {name}
-        {' '}
         :
         {' '}
       </p>
