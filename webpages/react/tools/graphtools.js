@@ -1,13 +1,15 @@
+/* eslint-disable no-cond-assign */
+/* eslint-disable no-restricted-globals */
 import { isColCompletelyDefined, getDatumValue, getAggregateDatumValue } from './datatools';
 
 export function getSimpleForestPlotData(graph) {
   const { papers } = graph.metaanalysis;
+  const { formulaParams } = graph;
 
   let orFunc;
   let wtFunc;
   let lclFunc;
   let uclFunc;
-  let params;
 
   const lineHeight = 30;
   const graphWidth = 300;
@@ -15,29 +17,25 @@ export function getSimpleForestPlotData(graph) {
   const endHeight = 65;
   const minWtSize = 4;
   const maxWtSize = 14;
-  const extraLineLen = -30;
   const minDiamondWidth = 14;
 
   if (graph.formulaName === 'forestPlotGraph' && isColCompletelyDefined(graph)) {
-    params = graph.formulaParams;
-    orFunc = { formulaName: 'logOddsRatio', formulaParams: [params[0], params[2]] };
-    wtFunc = { formulaName: 'weight', formulaParams: params };
-    lclFunc = { formulaName: 'lowerConfidenceLimit', formulaParams: params };
-    uclFunc = { formulaName: 'upperConfidenceLimit', formulaParams: params };
+    orFunc = { formulaName: 'logOddsRatio', formulaParams: [formulaParams[0], formulaParams[2]] };
+    wtFunc = { formulaName: 'weight', formulaParams };
+    lclFunc = { formulaName: 'lowerConfidenceLimit', formulaParams };
+    uclFunc = { formulaName: 'upperConfidenceLimit', formulaParams };
   } else
   if (graph.formulaName === 'forestPlotNumberGraph' && isColCompletelyDefined(graph)) {
-    params = graph.formulaParams;
-    orFunc = { formulaName: 'logOddsRatioNumber', formulaParams: params };
-    wtFunc = { formulaName: 'weightNumber', formulaParams: params };
-    lclFunc = { formulaName: 'lowerConfidenceLimitNumber', formulaParams: params };
-    uclFunc = { formulaName: 'upperConfidenceLimitNumber', formulaParams: params };
+    orFunc = { formulaName: 'logOddsRatioNumber', formulaParams };
+    wtFunc = { formulaName: 'weightNumber', formulaParams };
+    lclFunc = { formulaName: 'lowerConfidenceLimitNumber', formulaParams };
+    uclFunc = { formulaName: 'upperConfidenceLimitNumber', formulaParams };
   } else
   if (graph.formulaName === 'forestPlotPercentGraph' && isColCompletelyDefined(graph)) {
-    params = graph.formulaParams;
-    orFunc = { formulaName: 'logOddsRatioPercent', formulaParams: [params[0], params[2]] };
-    wtFunc = { formulaName: 'weightPercent', formulaParams: params };
-    lclFunc = { formulaName: 'lowerConfidenceLimitPercent', formulaParams: params };
-    uclFunc = { formulaName: 'upperConfidenceLimitPercent', formulaParams: params };
+    orFunc = { formulaName: 'logOddsRatioPercent', formulaParams: [formulaParams[0], formulaParams[2]] };
+    wtFunc = { formulaName: 'weightPercent', formulaParams };
+    lclFunc = { formulaName: 'lowerConfidenceLimitPercent', formulaParams };
+    uclFunc = { formulaName: 'upperConfidenceLimitPercent', formulaParams };
   } else {
     return;
     // this function does not handle this type of graph or the graph is not completely defined
@@ -57,27 +55,28 @@ export function getSimpleForestPlotData(graph) {
 
   for (const paper of papers) {
     for (const exp of paper.experiments) {
-      if (exp.excluded) continue;
-      const line = {};
-      line.title = paper.title || 'new paper';
-      if (paper.experiments.length > 1) {
-        let expTitle = exp.title || 'new experiment';
-        if (expTitle.match(/^\d+$/)) expTitle = `Exp. ${expTitle}`;
-        line.title += ` (${expTitle})`;
-      }
-      line.or = getDatumValue(orFunc, exp);
-      line.wt = getDatumValue(wtFunc, exp);
-      line.lcl = getDatumValue(lclFunc, exp);
-      line.ucl = getDatumValue(uclFunc, exp);
-      lines.push(line);
+      if (!exp.excluded) {
+        const line = {};
+        line.title = paper.title || 'new paper';
+        if (paper.experiments.length > 1) {
+          let expTitle = exp.title || 'new experiment';
+          if (expTitle.match(/^\d+$/)) expTitle = `Exp. ${expTitle}`;
+          line.title += ` (${expTitle})`;
+        }
+        line.or = getDatumValue(orFunc, exp);
+        line.wt = getDatumValue(wtFunc, exp);
+        line.lcl = getDatumValue(lclFunc, exp);
+        line.ucl = getDatumValue(uclFunc, exp);
+        lines.push(line);
 
-      // if any of the values is NaN or ±Infinity, disregard this experiment
-      if (isNaN(line.or * 0) || isNaN(line.lcl * 0) || isNaN(line.ucl * 0) || isNaN(line.wt * 0)
+        // if any of the values is NaN or ±Infinity, disregard this experiment
+        if (isNaN(line.or * 0) || isNaN(line.lcl * 0) || isNaN(line.ucl * 0) || isNaN(line.wt * 0)
               || line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
-        delete line.or;
-        delete line.lcl;
-        delete line.ucl;
-        delete line.wt;
+          delete line.or;
+          delete line.lcl;
+          delete line.ucl;
+          delete line.wt;
+        }
       }
     }
   }
@@ -129,7 +128,10 @@ export function getSimpleForestPlotData(graph) {
   if (minLcl < -10) minLcl = -10;
   if (maxUcl > 10) maxUcl = 10;
 
-  if (minWt === Infinity) minWt = maxWt = 1;
+  if (minWt === Infinity) {
+    minWt = 1;
+    maxWt = 1;
+  }
   if (sumOfWt === 0) sumOfWt = 1;
   let TICK_SPACING;
 
@@ -160,7 +162,7 @@ export function getSimpleForestPlotData(graph) {
   }
   maxUcl = Math.log(newBound) + 0.1;
 
-  const xRatio = 1 / (maxUcl - minLcl) * graphWidth;
+  const xRatio = (1 / (maxUcl - minLcl)) * graphWidth;
 
   // return the X coordinate on the graph that corresponds to the given logarithmic value
   function getX(val) {
@@ -175,11 +177,10 @@ export function getSimpleForestPlotData(graph) {
   }
 
   // minWt = 0;
-  // todo we can uncomment this to make all weights relative to only the maximum weight
-  // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
+  // we can uncomment this to make all weights relative to only the maximum weight
   maxWt = Math.sqrt(maxWt);
   minWt = Math.sqrt(minWt);
-  const wtRatio = 1 / (maxWt - minWt) * (maxWtSize - minWtSize);
+  const wtRatio = (1 / (maxWt - minWt)) * (maxWtSize - minWtSize);
 
   let currY = startHeight;
 
@@ -214,6 +215,7 @@ export function getSimpleForestPlotData(graph) {
     let tickVal;
 
     while ((tickVal = Math.log(startingTickVal)) < maxUcl) {
+      tickVal = Math.log(startingTickVal);
       tickVals.push([tickVal, startingTickVal]);
       startingTickVal *= TICK_SPACING[window.lima._.mod(startingTick, TICK_SPACING.length)];
       startingTick += 1;
@@ -230,17 +232,16 @@ export function getSimpleForestPlotData(graph) {
 
 export function getGroupingForestPlotData(graph) {
   const { papers } = graph.metaanalysis;
+  const { formulaParams } = graph;
+  const moderatorParam = formulaParams[4];
 
   let orFunc;
   let wtFunc;
   let lclFunc;
   let uclFunc;
-  let moderatorParam;
-  let params;
 
   const headingOffset = 10;
   const groupLineOffset = 0;
-  const zeroGroupsWidth = 70;
   const lineHeight = 30;
   const graphWidth = 200;
   const startHeight = 80;
@@ -253,28 +254,22 @@ export function getGroupingForestPlotData(graph) {
   const minDiamondWidth = 14;
 
   if (graph.formulaName === 'forestPlotGroupGraph' && isColCompletelyDefined(graph)) {
-    params = graph.formulaParams;
-    orFunc = { formulaName: 'logOddsRatio', formulaParams: [params[0], params[2]] };
-    wtFunc = { formulaName: 'weight', formulaParams: params };
-    lclFunc = { formulaName: 'lowerConfidenceLimit', formulaParams: params };
-    uclFunc = { formulaName: 'upperConfidenceLimit', formulaParams: params };
-    moderatorParam = params[4];
+    orFunc = { formulaName: 'logOddsRatio', formulaParams: [formulaParams[0], formulaParams[2]] };
+    wtFunc = { formulaName: 'weight', formulaParams };
+    lclFunc = { formulaName: 'lowerConfidenceLimit', formulaParams };
+    uclFunc = { formulaName: 'upperConfidenceLimit', formulaParams };
   } else
   if (graph.formulaName === 'forestPlotGroupNumberGraph' && isColCompletelyDefined(graph)) {
-    params = graph.formulaParams;
-    orFunc = { formulaName: 'logOddsRatioNumber', formulaParams: params };
-    wtFunc = { formulaName: 'weightNumber', formulaParams: params };
-    lclFunc = { formulaName: 'lowerConfidenceLimitNumber', formulaParams: params };
-    uclFunc = { formulaName: 'upperConfidenceLimitNumber', formulaParams: params };
-    moderatorParam = params[4];
+    orFunc = { formulaName: 'logOddsRatioNumber', formulaParams };
+    wtFunc = { formulaName: 'weightNumber', formulaParams };
+    lclFunc = { formulaName: 'lowerConfidenceLimitNumber', formulaParams };
+    uclFunc = { formulaName: 'upperConfidenceLimitNumber', formulaParams };
   } else
   if (graph.formulaName === 'forestPlotGroupPercentGraph' && isColCompletelyDefined(graph)) {
-    params = graph.formulaParams;
-    orFunc = { formulaName: 'logOddsRatioPercent', formulaParams: [params[0], params[2]] };
-    wtFunc = { formulaName: 'weightPercent', formulaParams: params };
-    lclFunc = { formulaName: 'lowerConfidenceLimitPercent', formulaParams: params };
-    uclFunc = { formulaName: 'upperConfidenceLimitPercent', formulaParams: params };
-    moderatorParam = params[4];
+    orFunc = { formulaName: 'logOddsRatioPercent', formulaParams: [formulaParams[0], formulaParams[2]] };
+    wtFunc = { formulaName: 'weightPercent', formulaParams };
+    lclFunc = { formulaName: 'lowerConfidenceLimitPercent', formulaParams };
+    uclFunc = { formulaName: 'upperConfidenceLimitPercent', formulaParams };
   } else {
     // this function does not handle this type of graph or the graph is not completely defined
     return;
@@ -295,26 +290,26 @@ export function getGroupingForestPlotData(graph) {
 
   for (const paper of papers) {
     for (const exp of paper.experiments) {
-      if (exp.excluded) continue;
-      const line = {};
-      line.title = paper.title || 'new paper';
-      if (paper.experiments.length > 1) {
-        let expTitle = exp.title || 'new experiment';
-        if (expTitle.match(/^\d+$/)) expTitle = `Exp. ${expTitle}`;
-        line.title += ` (${expTitle})`;
-      }
-      line.or = getDatumValue(orFunc, exp);
-      line.wt = getDatumValue(wtFunc, exp);
-      line.lcl = getDatumValue(lclFunc, exp);
-      line.ucl = getDatumValue(uclFunc, exp);
-      line.group = getDatumValue(moderatorParam, exp);
-      if (line.group != null && line.group !== '' && groups.indexOf(line.group) === -1) {
-        groups.push(line.group);
-      }
+      if (!exp.excluded) {
+        const line = {};
+        line.title = paper.title || 'new paper';
+        if (paper.experiments.length > 1) {
+          let expTitle = exp.title || 'new experiment';
+          if (expTitle.match(/^\d+$/)) expTitle = `Exp. ${expTitle}`;
+          line.title += ` (${expTitle})`;
+        }
+        line.or = getDatumValue(orFunc, exp);
+        line.wt = getDatumValue(wtFunc, exp);
+        line.lcl = getDatumValue(lclFunc, exp);
+        line.ucl = getDatumValue(uclFunc, exp);
+        line.group = getDatumValue(moderatorParam, exp);
+        if (line.group != null && line.group !== '' && groups.indexOf(line.group) === -1) {
+          groups.push(line.group);
+        }
 
-      // if any of the values is NaN or ±Infinity, disregard this experiment
-      if (
-        isNaN(line.or * 0)
+        // if any of the values is NaN or ±Infinity, disregard this experiment
+        if (
+          isNaN(line.or * 0)
         || isNaN(line.lcl * 0)
         || isNaN(line.ucl * 0)
         || isNaN(line.wt * 0)
@@ -322,14 +317,15 @@ export function getGroupingForestPlotData(graph) {
         || line.lcl == null
         || line.ucl == null
         || line.wt == null
-      ) {
-        delete line.or;
-        delete line.lcl;
-        delete line.ucl;
-        delete line.wt;
-      }
+        ) {
+          delete line.or;
+          delete line.lcl;
+          delete line.ucl;
+          delete line.wt;
+        }
 
-      lines.push(line);
+        lines.push(line);
+      }
     }
   }
   // add indication to the graph when there is no data
@@ -360,16 +356,12 @@ export function getGroupingForestPlotData(graph) {
     }
   }
 
-  // const dataGroups = groups.map((group) => (
-  //   lines.filter((exp) => exp.group === group)
-  // ));
   const dataGroups = [];
   for (const group of groups) {
     const dataGroup = {};
     dataGroup.lines = lines.filter((exp) => exp.group === group);
     dataGroups.push(dataGroup);
   }
-  console.log(dataGroups);
 
   const perGroup = {};
   for (const dataGroup of dataGroups) {
@@ -431,18 +423,22 @@ export function getGroupingForestPlotData(graph) {
   if (isNaN(minLcl)) minLcl = 0;
   if (isNaN(maxUcl)) maxUcl = 0;
   for (const line of lines) {
-    if (line.or == null) break;
-    sumOfWt += line.wt;
-    if (line.wt < minWt) minWt = line.wt;
-    if (line.wt > maxWt) maxWt = line.wt;
-    if (line.lcl < minLcl) minLcl = line.lcl;
-    if (line.ucl > maxUcl) maxUcl = line.ucl;
+    if (line.or !== null) {
+      sumOfWt += line.wt;
+      if (line.wt < minWt) minWt = line.wt;
+      if (line.wt > maxWt) maxWt = line.wt;
+      if (line.lcl < minLcl) minLcl = line.lcl;
+      if (line.ucl > maxUcl) maxUcl = line.ucl;
+    }
   }
 
   if (minLcl < -10) minLcl = -10;
   if (maxUcl > 10) maxUcl = 10;
 
-  if (minWt === Infinity) minWt = maxWt = 1;
+  if (minWt === Infinity) {
+    minWt = 1;
+    maxWt = 1;
+  }
   if (sumOfWt === 0) sumOfWt = 1;
 
   let TICK_SPACING;
@@ -476,6 +472,10 @@ export function getGroupingForestPlotData(graph) {
 
   const xRatio = (1 / (maxUcl - minLcl)) * graphWidth;
 
+  function getX(val) {
+    return (val - minLcl) * xRatio;
+  }
+
   const MIN_WT_SPREAD = 2.5;
   if (maxWt / minWt < MIN_WT_SPREAD) {
     minWt = (maxWt + minWt) / 2 / Math.sqrt(MIN_WT_SPREAD);
@@ -484,15 +484,12 @@ export function getGroupingForestPlotData(graph) {
 
   maxWt = Math.sqrt(maxWt);
   minWt = Math.sqrt(minWt);
-  const wtRatio = (1 / (maxWt - minWt)) * maxWtSize - minWtSize;
+  const wtRatio = (1 / (maxWt - minWt)) * (maxWtSize - minWtSize);
 
   let currY = startHeight;
   let currGY = groupStartHeight;
   let hasInvalid = false;
 
-  function getX(val) {
-    return (val - minLcl) * xRatio;
-  }
 
   let i = 0;
   for (const group of groups) {
@@ -564,7 +561,7 @@ export function getGroupingForestPlotData(graph) {
     startingTick += 1;
   }
 
-  let yAxis = currY;
+  const yAxis = currY;
   // put summary into the plot
   if (!isNaN(aggregates.or * 0) && !hasInvalid) {
     currY += 2 * lineHeight;
@@ -601,7 +598,5 @@ export function getGroupingForestPlotData(graph) {
   graph.lineHeight = lineHeight;
 
 
-  console.log(yAxis);
-  console.log(currY);
   // todo set plot widths based on maximum text sizes
 }

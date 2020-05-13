@@ -1,5 +1,8 @@
+/* eslint-disable no-console */
+/* eslint-disable no-restricted-globals */
 /* eslint-disable consistent-return */
 /* eslint-disable no-use-before-define */
+
 export function populateCircularMa(ma) {
   // circular ref of ma in each paper
   for (const paper of ma.papers) {
@@ -13,7 +16,7 @@ export function populateCircularMa(ma) {
     }
   }
 
-  // excluded = true in each excluded experiment
+  // "excluded = true" in each excluded experiment
   const hashPapers = generateIDHash(ma.papers);
   for (const excludedExp of ma.excludedExperiments) {
     const [paperId, expIndex] = excludedExp.split(',');
@@ -21,31 +24,29 @@ export function populateCircularMa(ma) {
       hashPapers[paperId].experiments[expIndex].excluded = true;
     }
   }
-  ma.hashcols = generateIDHash(ma.columns);
 
+  ma.hashcols = generateIDHash(ma.columns);
   ma.groups = getGroups(ma);
   // if (ma.groupingColumns !== undefined) {
   //   for (const groupingCol of ma.groupingColumns) {
   //   }
   // }
 
+  // merge stock elements with the result of populateParsedFormula
   for (let col of ma.columns) {
     if (!col.id) {
       const colWithParsedFormula = populateParsedFormula(col, ma, ma.hashcols);
       col = Object.assign(col, colWithParsedFormula);
     }
   }
-
   for (let aggr of ma.aggregates) {
     const aggrWithParsedFormula = populateParsedFormula(aggr, ma, ma.hashcols);
     aggr = Object.assign(aggr, aggrWithParsedFormula);
   }
-
   for (let aggr of ma.groupingAggregates) {
     const aggrWithParsedFormula = populateParsedFormula(aggr, ma, ma.hashcols);
     aggr = Object.assign(aggr, aggrWithParsedFormula);
   }
-
   for (let graph of ma.graphs) {
     const aggrWithParsedFormula = populateParsedFormula(graph, ma, ma.hashcols);
     graph = Object.assign(graph, aggrWithParsedFormula);
@@ -53,7 +54,8 @@ export function populateCircularMa(ma) {
 }
 
 
-// DATATABLE FUNCTIONS
+// DATA FUNCTIONS :
+
 function generateIDHash(objects) {
   const retval = {};
   objects.forEach((obj) => {
@@ -133,6 +135,7 @@ function getExperimentsTableDatumValue(col, experiment) {
   return val;
 }
 
+// ACCESS TO DATA VALUES
 export function getDatumValue(col, experiment) {
   const { papers } = experiment.paper.metaanalysis;
   if (isExperimentsTableColumn(col)) {
@@ -176,13 +179,9 @@ export function getAggregateDatumValue(aggregate, papers, group) {
         currentInput = [];
         for (const paper of papers) {
           for (const exp of paper.experiments) {
-            // ignore excluded values
-            if (exp.excluded) continue;
-
-            // ignore values with the wrong groups
-            if (group != null && getGroup(exp) !== group) continue;
-
-            currentInput.push(getDatumValue(param, exp));
+            if (!exp.excluded && !(group != null && getGroup(exp) !== group)) {
+              currentInput.push(getDatumValue(param, exp));
+            }
           }
         }
       } else if (isAggregate(param)) {
@@ -216,10 +215,12 @@ export function getGroups(ma) {
   const groups = [];
   for (const paper of ma.papers) {
     for (const exp of paper.experiments) {
-      if (exp.excluded) continue;
-      const group = getGroup(exp);
-
-      if (group != null && group !== '' && groups.indexOf(group) === -1) groups.push(group);
+      if (!exp.excluded) {
+        const group = getGroup(exp);
+        if (group != null && group !== '' && groups.indexOf(group) === -1) {
+          groups.push(group);
+        }
+      }
     }
   }
 
