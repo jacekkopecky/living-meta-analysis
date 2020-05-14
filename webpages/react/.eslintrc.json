@@ -27,7 +27,6 @@
       "always",
       { "ignoreClassFields": true }
     ],
-    "react/jsx-child-element-spacing": [1],
     "react/prop-types": [0],
     "react/static-property-placement": [1],
     "no-param-reassign": [0],
