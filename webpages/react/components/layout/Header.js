@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import './Header.css';
 
 
-
 function Header() {
   const CLIENT_ID = '358237292980-kbme56c9ih4rpmob16sq8bjig5dms6pl.apps.googleusercontent.com';
   const { gapi, lima } = window;
@@ -16,11 +15,11 @@ function Header() {
       _.removeClass('body', 'signed-on');
       return;
     }
-  
+
     // check if we should redirect to the /register page - if LiMA doesn't know the user who has just logged in
     // if the user has canceled registration by leaving the page, we will sign them out
     if (window.location.pathname !== '/register') {
-      var idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+      const idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
       fetch('https://lima.soc.port.ac.uk/api/user', {
         method: 'GET',
         headers: _.idTokenToFetchHeaders(idToken),
@@ -38,7 +37,7 @@ function Header() {
         })
         .then((user) => {
           if (!user) return;
-  
+
           username = user.username || user.email;
           photo = user.photos[0].value;
         })
