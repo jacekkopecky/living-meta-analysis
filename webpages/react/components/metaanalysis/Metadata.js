@@ -15,24 +15,23 @@ function formatDateTime(timestamp) {
 }
 
 
-function Metadata(props) {
-  const {
-    username, ctime, mtime,
-  } = props;
-  const path = `/${username}/`;
+function Metadata({ metadata }) {
+  const { enteredByUsername, ctime, mtime } = metadata;
+
+  const path = `/${enteredByUsername}/`;
   return (
     <aside className="metadata">
       <p>
         Entered by
         {' '}
-        <a href={path}>{username}</a>
+        <a href={path}>{enteredByUsername}</a>
         {' '}
         on
         {' '}
         {formatDateTime(ctime)}
       </p>
       <p>
-        Last modified :
+        Last modified:
         {' '}
         {formatDateTime(mtime)}
       </p>

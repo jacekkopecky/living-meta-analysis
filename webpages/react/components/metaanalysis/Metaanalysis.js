@@ -75,11 +75,7 @@ function Metaanalysis(props) {
           graphs={graphs}
         />
       </Tabs>
-      <Metadata
-        username={metadata.enteredByUsername}
-        ctime={metadata.ctime}
-        mtime={metadata.mtime}
-      />
+      <Metadata metadata={metadata} />
     </main>
 
   );
