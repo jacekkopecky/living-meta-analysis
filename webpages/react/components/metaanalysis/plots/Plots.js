@@ -1,7 +1,8 @@
 import React from 'react';
 import SimpleForestPlots from './SimpleForestPlots';
 import GroupingForestPlots from './GroupingForestPlots';
-import { getSimpleForestPlotData, getGroupingForestPlotData } from '../../../tools/graphtools';
+import GrapeChart from './GrapeChart';
+import { getSimpleForestPlotData, getGroupingForestPlotData, getGrapeChartData } from '../../../tools/graphtools';
 import './Plots.css';
 
 // TODO: find keys for map()
@@ -14,6 +15,12 @@ function Plots(props) {
       {/* render the graphs */}
       {graphs.map((graph) => {
         const { formulaName } = graph;
+        if (formulaName === 'grapeChartPercentGraph'
+            || formulaName === 'grapeChartNumberGraph'
+            || formulaName === 'grapeChartGraph') {
+          getGrapeChartData(graph);
+          return <GrapeChart graph={graph} />;
+        }
         if (formulaName === 'forestPlotPercentGraph'
             || formulaName === 'forestPlotNumberGraph'
             || formulaName === 'forestPlotGraph') {
@@ -28,8 +35,6 @@ function Plots(props) {
           getGroupingForestPlotData(graph);
           return <GroupingForestPlots forestPlots={graph} />;
         }
-        // replace with GrapeCharts here
-        return 'GrapeChart';
       })}
     </>
   );
