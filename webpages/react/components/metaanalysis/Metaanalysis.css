@@ -1,4 +1,10 @@
 
+.metaanalysis {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .metaanalysis .titlebar {
   display: flex;
   justify-content: space-between;
