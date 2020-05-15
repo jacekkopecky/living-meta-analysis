@@ -25,6 +25,23 @@ function GrapeChart(props) {
       height={height}
       version="1.1"
     >
+      <g className="axes">
+        <line className="yaxis" x1="0" x2="0" y2="500" />
+
+        {tickVals.map((tickVal) => (
+          <g key={tickVal[0]} className="tick" transform={`translate(${0},${tickVal[2]})`}>
+            <line x2="5" />
+            <text>{tickVal[0] < 0 ? tickVal[1].toPrecision(1) : Math.round(tickVal[1])}</text>
+          </g>
+        ))}
+        <text className="ylabel" transform="translate(-40,-260) rotate(-90)">odds ratio</text>
+        {/* <!-- <g class="legend">
+              <text x="530" y="-515">Legend:</text>
+              <line class="guideline" x1="540" x2="575" y1="-490" y2="-490" />
+              <text x="580" y="-490">weighted mean</text>
+              </g> --> */}
+        <text className="title" transform="translate(-40,-530)">Grape Chart</text>
+      </g>
       {groups.map((group, index) => {
         const dataGroup = dataGroups[index];
         const { withPosButton, withLegend, guidelineY } = dataGroup;
@@ -102,24 +119,7 @@ function GrapeChart(props) {
           </React.Fragment>
         );
       })}
-
-      <g className="axes">
-        <line className="yaxis" x1="0" x2="0" y2="500" />
-
-        {tickVals.map((tickVal) => (
-          <g key={tickVal[0]} className="tick" transform={`translate(${0},${tickVal[2]})`}>
-            <line x2="5" />
-            <text>{tickVal[0] < 0 ? tickVal[1].toPrecision(1) : Math.round(tickVal[1])}</text>
-          </g>
-        ))}
-        <text className="ylabel" transform="translate(-40,-260) rotate(-90)">odds ratio</text>
-        {/* <!-- <g class="legend">
-              <text x="530" y="-515">Legend:</text>
-              <line class="guideline" x1="540" x2="575" y1="-490" y2="-490" />
-              <text x="580" y="-490">weighted mean</text>
-              </g> --> */}
-        <text className="title" transform="translate(-40,-530)">Grape Chart</text>
-      </g>
+      <use id="use" xlinkHref=".tooltips" />
     </svg>
   );
 }
