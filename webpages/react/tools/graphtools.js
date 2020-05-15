@@ -660,7 +660,6 @@ export function getGrapeChartData(graph) {
   const groups = [];
 
   for (const paper of papers) {
-    let index = 0;
     for (const exp of paper.experiments) {
       if (!exp.excluded) {
         const line = {};
@@ -674,7 +673,6 @@ export function getGrapeChartData(graph) {
         line.lcl = getDatumValue(lclFunc, exp);
         line.ucl = getDatumValue(uclFunc, exp);
         line.group = getDatumValue(moderatorParam, exp);
-        line.index = index;
         if (line.group != null && line.group !== '' && groups.indexOf(line.group) === -1) {
           groups.push(line.group);
         }
@@ -693,7 +691,6 @@ export function getGrapeChartData(graph) {
         }
         data.push(line);
       }
-      index += 1;
     }
   }
   if (data.length === 0) {
@@ -802,9 +799,9 @@ export function getGrapeChartData(graph) {
   // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
   maxWt = Math.sqrt(maxWt);
   minWt = Math.sqrt(minWt);
-  const wtRatio = (1 / (maxWt - minWt)) * maxGrapeSize - minGrapeSize;
+  const wtRatio = 1 / (maxWt - minWt) * (maxGrapeSize - minGrapeSize);
 
-  // return the grape radius for a given weight
+
   function getGrapeRadius(wt) {
     if (wt == null) return minGrapeSize;
     return (Math.sqrt(wt) - minWt) * wtRatio + minGrapeSize;
@@ -824,14 +821,18 @@ export function getGrapeChartData(graph) {
       dataGroup.withPosButton = true;
     }
     resetPositioning();
+    const index = 0;
     for (const exp of dataGroup.data) {
+      exp.index = index;
       precomputePosition(exp.index, getY(exp.or), getGrapeRadius(exp.wt) + grapeSpacing);
+      index += 1;
     }
     finalizePositioning();
 
     dataGroup.guidelineY = getY(perGroup[group].or);
 
     const texts = [];
+
     for (const exp of dataGroup.data) {
       const text = {};
       text.paper = exp.paper;
