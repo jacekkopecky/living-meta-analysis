@@ -6,12 +6,10 @@ const detailsRoot = document.getElementById('details');
 
 function Details(props) {
   const { children } = props;
-  const content = (
-    <>
-      {children}
-    </>
-  );
-  return ReactDOM.createPortal(content, detailsRoot);
+
+  console.log(children);
+  ReactDOM.render(children, detailsRoot);
+  return null;
 }
 
 export default Details;
