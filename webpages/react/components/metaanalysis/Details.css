@@ -1,0 +1,15 @@
+#details {
+  margin: 10px;
+  padding: 0.5em;
+  border: 2px solid black;
+  border-radius: 20px;
+  position: fixed;
+  bottom: 0;
+  height: 25%;
+  background: white;
+  overflow: auto;
+}
+
+#details:empty {
+  display: none;
+}
