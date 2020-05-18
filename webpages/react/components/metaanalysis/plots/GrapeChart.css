@@ -24,9 +24,24 @@ svg.grapechart .axes {
   transform: translate(60px, 560px);
 }
 
+svg.grapechart .positioningbutton line {
+  stroke-width: 1.5px;
+}
+
 svg.grapechart .axes .tick line {
   font-size: 12px;
   transform: translate(-5px, 0);
+}
+
+svg.grapechart .tooltip text {
+  text-anchor: start;
+  font-size: 12px;
+}
+
+svg.grapechart .legend text {
+  text-anchor: start;
+  font-size: 14px;
+  transform: translate(0, 4px);
 }
 
 svg.grapechart .axes .tick text {
@@ -90,21 +105,16 @@ svg.grapechart .tooltips .experiment .grape:hover {
   stroke: black;
 }
 
-svg.grapechart .tooltips .experiment .grape:not(:hover) + .tooltip {
-  display: none;
-}
-
 svg.grapechart .tooltip {
   transform: translate(-60px, -120px);
 }
 
-svg.grapechart .tooltip.tophalf {
-  transform: translate(-60px, 17px);
+svg.grapechart .tooltips .experiment .grape:not(:hover) + .tooltip {
+  display: none;
 }
 
-svg.grapechart .tooltip text {
-  text-anchor: start;
-  font-size: 12px;
+svg.grapechart .tooltip.tophalf {
+  transform: translate(-60px, 17px);
 }
 
 svg.grapechart .tooltip text.paper {
@@ -144,12 +154,6 @@ svg.grapechart .invalid .tooltip text.ci {
   display: none;
 }
 
-svg.grapechart .legend text {
-  text-anchor: start;
-  font-size: 14px;
-  transform: translate(0, 4px);
-}
-
 svg.grapechart .group:not(.with-legend) g.guideline .legend {
   display: none;
 }
@@ -166,17 +170,9 @@ svg.grapechart .group g.guideline .legend text:nth-child(2) {
   transform: translate(-127.5px, -5px) rotate(-90deg);
 }
 
-svg.grapechart .group:not(.with-pos-button) .positioningbutton {
-  display: none;
-}
-
 svg.grapechart .positioningbutton {
   transform: translate(140px, 20px);
   opacity: 0.2;
-}
-
-svg.grapechart .positioningbutton:not(:hover) line {
-  display: none;
 }
 
 svg.grapechart .positioningbutton:hover {
@@ -184,6 +180,10 @@ svg.grapechart .positioningbutton:hover {
   cursor: pointer;
 }
 
-svg.grapechart .positioningbutton line {
-  stroke-width: 1.5px;
+svg.grapechart .group:not(.with-pos-button) .positioningbutton {
+  display: none;
+}
+
+svg.grapechart .positioningbutton:not(:hover) line {
+  display: none;
 }

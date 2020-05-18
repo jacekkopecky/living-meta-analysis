@@ -1,6 +1,5 @@
 import React from 'react';
 import './GrapeChart.css';
-import { getGrapeChartData } from '../../../tools/graphtools';
 
 function GrapeChart(props) {
   const { graph } = props;
@@ -42,6 +41,8 @@ function GrapeChart(props) {
               </g> --> */}
         <text className="title" transform="translate(-40,-530)">Grape Chart</text>
       </g>
+
+      {/* Displaying circles and guidelines */}
       {groups.map((group, index) => {
         const dataGroup = dataGroups[index];
         const { withPosButton, withLegend, guidelineY } = dataGroup;
@@ -76,21 +77,29 @@ function GrapeChart(props) {
 
               </g>
             </g>
+          </React.Fragment>
+        );
+      })}
 
-            <g
-              className="group tooltips"
-              transform={`translate(${+firstGroup + groupSpacing * index}, ${0})`}
-            >
-              <g>
-                {dataGroup.data.map((exp) => {
-                  const {
-                    radius,
-                    grapeX,
-                    grapeY,
-                    text,
-                    isTopHalf,
-                  } = exp;
-                  return (
+      {/* Displaying tootltips after circles so that z-index > circles */}
+      {groups.map((group, index) => {
+        const dataGroup = dataGroups[index];
+        return (
+          <g
+            className="group tooltips"
+            transform={`translate(${+firstGroup + groupSpacing * index}, ${0})`}
+          >
+            <g>
+              {dataGroup.data.map((exp) => {
+                const {
+                  radius,
+                  grapeX,
+                  grapeY,
+                  text,
+                  isTopHalf,
+                } = exp;
+                return (
+                  <>
                     <g
                       key={exp.index}
                       className="experiment"
@@ -112,14 +121,13 @@ function GrapeChart(props) {
                         <text className="_ci  ">95% CI:</text>
                       </g>
                     </g>
-                  );
-                })}
-              </g>
+                  </>
+                );
+              })}
             </g>
-          </React.Fragment>
+          </g>
         );
       })}
-      <use id="use" xlinkHref=".tooltips" />
     </svg>
   );
 }
