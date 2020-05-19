@@ -3,11 +3,13 @@ import {
   NavLink, Route, Switch, HashRouter as Router, Redirect,
 } from 'react-router-dom';
 import './Tabs.css';
+import ScrollToTop from './ScrollToTop';
 
 function Tabs(props) {
   const { children } = props;
   return (
     <Router hashType="noslash">
+      <ScrollToTop />
       {/* Creating nav links corresponding to children components */}
       <nav className="tabs">
         <ul>
