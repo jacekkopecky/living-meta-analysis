@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Paper from './Paper';
 import './DataTable.css';
 
 function DataTable(props) {
+  const [displayedCell, setDisplayedCell] = useState(null);
   const { columns, papers } = props;
+
   return (
     <section>
       <table className="datatable table table-striped table-header-rotated">
@@ -28,6 +30,8 @@ function DataTable(props) {
               key={paper.id + paper.title}
               paper={paper}
               columns={columns}
+              displayedCell={displayedCell}
+              setDisplayedCell={setDisplayedCell}
             />
           ))}
         </tbody>
