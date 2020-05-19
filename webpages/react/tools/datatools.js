@@ -3,6 +3,20 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-use-before-define */
 
+
+function twoDigits(x) {
+  return x < 10 ? `0${x}` : `${x}`;
+}
+
+export function formatDateTime(timestamp) {
+  const d = new Date(timestamp);
+
+  const date = `${d.getFullYear()}-${twoDigits((d.getMonth() + 1))}-${twoDigits(d.getDate())}`;
+  const time = `${twoDigits(d.getHours())}:${twoDigits(d.getMinutes())}`;
+  const datetime = `${date} ${time}`;
+  return datetime;
+}
+
 export function populateCircularMa(ma) {
   // circular ref of ma in each paper
   for (const paper of ma.papers) {
