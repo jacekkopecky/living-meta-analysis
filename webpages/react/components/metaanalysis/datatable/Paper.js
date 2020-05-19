@@ -3,7 +3,9 @@ import Cell from './Cell';
 // TODO: find a cleaner way to import datatools
 
 function Paper(props) {
-  const { paper, columns } = props;
+  const {
+    paper, columns, displayedCell, setDisplayedCell,
+  } = props;
   const { title } = paper;
   const nExp = Object.keys(paper.experiments).length;
 
@@ -23,7 +25,13 @@ function Paper(props) {
           </td>
 
           {columns.map((col) => (
-            <Cell col={col} exp={exp} />
+            <Cell
+              ids={exp.ctime + paper.id + "+" + (col.formula || col.id)}
+              col={col}
+              exp={exp}
+              displayedCell={displayedCell}
+              setDisplayedCell={setDisplayedCell}
+            />
           ))}
 
         </tr>

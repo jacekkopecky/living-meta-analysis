@@ -1,9 +1,8 @@
 #details {
-  margin: 10px;
+  margin: 0.5em 0;
   padding: 0.5em;
-  border: 2px solid black;
-  border-radius: 20px;
-  position: fixed;
+  border-top: 2px solid rebeccapurple;
+  position: sticky;
   bottom: 0;
   height: 25%;
   background: white;

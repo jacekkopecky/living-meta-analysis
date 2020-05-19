@@ -4,12 +4,17 @@ import Details from '../Details';
 
 
 function Cell(props) {
-  const { col, exp } = props;
-  const [display, setDisplay] = useState(props.display);
+  const {
+    col, exp, displayedCell, setDisplayedCell, ids,
+  } = props;
 
-  const toggleDisplay = () => {
-    setDisplay(!display);
-    console.log('display set');
+  const [display, setDisplay] = useState(false)
+  const toggleVisible = () => {
+    setDisplay(true);
+    setDisplayedCell(ids);
+    if (displayedCell === ids) {
+      setDisplay(!display);
+    }
   };
 
   let value = getDatumValue(col, exp);
@@ -21,15 +26,22 @@ function Cell(props) {
     className = 'computed';
   }
   return (
-    <td className={className} key={col.id} onClick={toggleDisplay}>
+    <td className={className} key={col.id} onClick={toggleVisible}>
       {value}
-      {display && (
+      {display && displayedCell === ids && (
         <Details>
-          Entered by:
-          {exp.enteredBy}
-          <br />
-          Creation time:
-          {exp.ctime}
+          <p>
+            Col value: 
+            {col.formula || value}
+          </p>
+          <p>
+            Entered by: 
+            {exp.enteredBy}
+          </p>
+          <p>
+            Creation time: 
+            {exp.ctime}
+          </p>
         </Details>
       )}
     </td>
