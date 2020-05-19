@@ -31,15 +31,15 @@ function Cell(props) {
       {display && displayedCell === ids && (
         <Details>
           <p>
-            Col value: 
+            Col value:
             {col.formula || value}
           </p>
           <p>
-            Entered by: 
+            Entered by:
             {exp.enteredBy}
           </p>
           <p>
-            Creation time: 
+            Creation time:
             {exp.ctime}
           </p>
         </Details>
