@@ -4,7 +4,7 @@ import Details from '../Details';
 
 
 function Cell(props) {
-  const { col, exp, } = props;
+  const { col, exp } = props;
   const [display, setDisplay] = useState(props.display);
 
   const toggleDisplay = () => {
