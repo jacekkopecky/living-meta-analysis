@@ -1,12 +1,25 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import './Details.css';
 
-const detailsRoot = document.getElementById('details');
-
 function Details(props) {
-  const { children } = props;
-  return ReactDOM.createPortal(children, detailsRoot);
+  const { displayedCell, setDisplayedCell } = props;
+  function closeDetails() {
+    setDisplayedCell({ ids: null, text: null });
+  }
+  if (displayedCell.text) {
+    return (
+      <aside className="details">
+        <div className="header">
+          <h3>Details:</h3>
+          <div className="close" onClick={closeDetails}>×</div>
+        </div>
+        <div className="content">
+          {displayedCell.text}
+        </div>
+      </aside>
+    );
+  }
+  return null;
 }
 
 export default Details;

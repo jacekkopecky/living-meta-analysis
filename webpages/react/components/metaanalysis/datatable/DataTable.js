@@ -3,8 +3,9 @@ import Paper from './Paper';
 import './DataTable.css';
 
 function DataTable(props) {
-  const [displayedCell, setDisplayedCell] = useState(null);
-  const { columns, papers } = props;
+  const {
+    columns, papers, displayedCell, setDisplayedCell,
+  } = props;
 
   return (
     <section>

@@ -1,35 +1,53 @@
-import React, { useState } from 'react';
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+
+import React from 'react';
 import { getDatumValue, formatNumber } from '../../../tools/datatools';
-import Details from '../Details';
 
 
 function Cell(props) {
   const {
     col, exp, displayedCell, setDisplayedCell, ids,
   } = props;
-
-  const [display, setDisplay] = useState(false);
+  let value = getDatumValue(col, exp);
+  let className = '';
+  const details = (
+    <>
+      <p>
+        Col value:
+        {col.formula || value}
+      </p>
+      <p>
+        Entered by:
+        {exp.enteredBy}
+      </p>
+      <p>
+        Creation time:
+        {exp.ctime}
+      </p>
+    </>
+  );
   const toggleVisible = () => {
-    setDisplay(true);
-    setDisplayedCell(ids);
-    if (displayedCell === ids) {
-      setDisplay(!display);
+    if (ids !== displayedCell.ids) {
+      setDisplayedCell({ text: details, ids });
+    } else {
+      setDisplayedCell({ text: null, ids: null });
     }
   };
 
-  let value = getDatumValue(col, exp);
-  let className;
   if (col.id) {
-    className = 'data';
+    className += 'data';
   } else {
     value = formatNumber(value);
-    className = 'computed';
+    className += 'computed';
   }
   return (
-    <td className={className} key={col.id} onClick={toggleVisible}>
-      {value}
-      {display && displayedCell === ids && (
-        <Details>
+    <>
+      <td className={`${className}${ids === displayedCell.ids ? ' active' : ''}`} key={col.id} onClick={toggleVisible}>
+        {value}
+      </td>
+      {/* {displayedCell === ids && (
+        <Details setDisplayedCell={setDisplayedCell}>
           <p>
             Col value:
             {col.formula || value}
@@ -43,8 +61,8 @@ function Cell(props) {
             {exp.ctime}
           </p>
         </Details>
-      )}
-    </td>
+      )} */}
+    </>
   );
 }
 
