@@ -8,13 +8,8 @@ function Cell(props) {
     col, exp, displayedCell, setDisplayedCell, ids,
   } = props;
 
-  const [display, setDisplay] = useState(false)
   const toggleVisible = () => {
-    setDisplay(true);
-    setDisplayedCell(ids);
-    if (displayedCell === ids) {
-      setDisplay(!display);
-    }
+    setDisplayedCell(ids === displayedCell ? null : ids);
   };
 
   let value = getDatumValue(col, exp);
@@ -28,7 +23,7 @@ function Cell(props) {
   return (
     <td className={className} key={col.id} onClick={toggleVisible}>
       {value}
-      {display && displayedCell === ids && (
+      {displayedCell === ids && (
         <Details>
           <p>
             Col value:
