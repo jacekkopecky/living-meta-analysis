@@ -1,3 +1,9 @@
+.tabs {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+}
+
 .tabs ul {
   display: flex;
   align-items: center;

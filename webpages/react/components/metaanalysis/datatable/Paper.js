@@ -1,9 +1,11 @@
 import React from 'react';
-import { getDatumValue, formatNumber } from '../../../tools/datatools';
+import Cell from './Cell';
 // TODO: find a cleaner way to import datatools
 
 function Paper(props) {
-  const { paper, columns } = props;
+  const {
+    paper, columns, displayedCell, setDisplayedCell,
+  } = props;
   const { title } = paper;
   const nExp = Object.keys(paper.experiments).length;
 
@@ -22,19 +24,15 @@ function Paper(props) {
             {exp.title}
           </td>
 
-          {columns.map((col) => {
-            let value = getDatumValue(col, exp);
-            let className;
-            if (col.id) {
-              className = 'data';
-            } else {
-              value = formatNumber(value);
-              className = 'computed';
-            }
-            return (
-              <td className={className} key={col.id}>{value}</td>
-            );
-          })}
+          {columns.map((col) => (
+            <Cell
+              ids={exp.ctime + paper.id + "+" + (col.formula || col.id)}
+              col={col}
+              exp={exp}
+              displayedCell={displayedCell}
+              setDisplayedCell={setDisplayedCell}
+            />
+          ))}
 
         </tr>
       );

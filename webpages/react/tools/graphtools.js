@@ -602,6 +602,7 @@ export function getGroupingForestPlotData(graph) {
 }
 
 export function getGrapeChartData(graph) {
+  
   const { papers } = graph.metaanalysis;
   const { formulaParams } = graph;
   const moderatorParam = formulaParams[4];
@@ -612,6 +613,7 @@ export function getGrapeChartData(graph) {
   let lclFunc;
   let uclFunc;
 
+  const height = 600;
   const zeroGroupsWidth = 70;
   const graphHeight = 500;
   const minGrapeSize = 7;
@@ -718,11 +720,12 @@ export function getGrapeChartData(graph) {
       line.wt != null ? acc + line.wt : acc
     ), 0);
     if (perGroup[group].wt === 0) perGroup[group].wt = 1;
-    perGroup[group].or = dataGroup.lines.reduce((acc, line) => (
+    perGroup[group].or = dataGroup.data.reduce((acc, line) => (
       line.wt !== null ? acc + line.or * line.wt : acc
     ), 0) / perGroup[group].wt;
   }
 
+  
   let minWt = Infinity;
   let maxWt = -Infinity;
   let minOr = Infinity;
@@ -796,9 +799,9 @@ export function getGrapeChartData(graph) {
   // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
   maxWt = Math.sqrt(maxWt);
   minWt = Math.sqrt(minWt);
-  const wtRatio = (1 / (maxWt - minWt)) * maxGrapeSize - minGrapeSize;
+  const wtRatio = 1 / (maxWt - minWt) * (maxGrapeSize - minGrapeSize);
 
-  // return the grape radius for a given weight
+
   function getGrapeRadius(wt) {
     if (wt == null) return minGrapeSize;
     return (Math.sqrt(wt) - minWt) * wtRatio + minGrapeSize;
@@ -810,6 +813,7 @@ export function getGrapeChartData(graph) {
   for (const group of groups) {
     currentGroup += 1;
     const dataGroup = dataGroups[currentGroup];
+
     if (currentGroup === 0) {
       dataGroup.withLegend = true;
     }
@@ -817,14 +821,19 @@ export function getGrapeChartData(graph) {
       dataGroup.withPosButton = true;
     }
     resetPositioning();
-    for (const [exp, index] of dataGroup.entries()) {
-      precomputePosition(index, getY(exp.or), getGrapeRadius(exp.wt) + grapeSpacing);
+    const index = 0;
+    for (const exp of dataGroup.data) {
+      exp.index = index;
+      precomputePosition(exp.index, getY(exp.or), getGrapeRadius(exp.wt) + grapeSpacing);
+      index += 1;
     }
     finalizePositioning();
 
+    dataGroup.guidelineY = getY(perGroup[group].or);
+
     const texts = [];
-    for (const [exp, index] of dataGroup.entries()) {
-      const grapeX = getPosition(index);
+
+    for (const exp of dataGroup.data) {
       const text = {};
       text.paper = exp.paper;
       text.exp = exp.exp;
@@ -838,15 +847,19 @@ export function getGrapeChartData(graph) {
       if (isTopHalf(exp.or)) {
         exp.isTopHalf = true;
       }
-      const boxWidths = [];
+
       let boxWidth = +tooltipMinWidth;
       for (const text of texts) {
         try {
           const w = text.getBBox().width;
           boxWidth = Math.max(boxWidth, w);
-          boxWidths.push(boxWidth);
         } catch (e) {}
       }
+      exp.text = text;
+      exp.radius = getGrapeRadius(exp.wt);
+      exp.grapeX = getPosition(exp.index);
+      exp.grapeY = getY(exp.or);
+      exp.boxWidth = boxWidth;
     }
   }
   // put axes into the plot
@@ -854,18 +867,28 @@ export function getGrapeChartData(graph) {
   let tickVal;
 
   while ((tickVal = Math.log(startingTickVal)) < maxOr) {
-    tickVals.push([tickVal, startingTickVal]);
+    tickVals.push([tickVal, startingTickVal, getY(tickVal)]);
     startingTickVal *= TICK_SPACING[window.lima._.mod(startingTick, TICK_SPACING.length)];
     startingTick += 1;
   }
   let positionedGrapes;
 
+  graph.width = zeroGroupsWidth + groups.length * groupSpacing;
+  graph.height = height;
+  graph.viewBox = `0 0 ${graph.width} ${height}`;
+  graph.groups = groups;
+  graph.dataGroups = dataGroups;
+  graph.firstGroup = firstGroup;
+  graph.groupSpacing = groupSpacing;
+  graph.numberOfColours = numberOfColours;
+  graph.tooltipPadding = tooltipPadding;
+  graph.tickVals = tickVals;
   function resetPositioning() {
     positionedGrapes = {
       pre: [],
       sorted: [],
       post: [],
-      ybounds: new _.Bounds(), // this helps us center blocks of grapes
+      ybounds: new window.lima._.Bounds(), // this helps us center blocks of grapes
     };
   }
 
@@ -881,7 +904,7 @@ export function getGrapeChartData(graph) {
 
     // compute X coordinates
     positionedGrapes.sorted.forEach((g1, index) => {
-      const xbounds = new _.Bounds();
+      const xbounds = new window.lima._.Bounds();
       positionedGrapes.post.forEach((g2) => {
         // check that the current grape is close enough to g on the y axis that they can touch
         if (Math.abs(g1.y - g2.y) < (g1.r + g2.r)) {
@@ -907,7 +930,7 @@ export function getGrapeChartData(graph) {
     const buckets = [];
     positionedGrapes.pre.forEach((g) => {
       const bucketNo = positionedGrapes.ybounds.indexOf(g.y);
-      if (bucketNo == -1) throw new Error('assertion failed: grape not in ybounds'); // should never happen
+      if (bucketNo === -1) throw new Error('assertion failed: grape not in ybounds'); // should never happen
       if (!buckets[bucketNo]) buckets[bucketNo] = [];
       buckets[bucketNo].push(g);
     });

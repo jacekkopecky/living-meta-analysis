@@ -1,0 +1,14 @@
+#details {
+  margin: 0.5em 0;
+  padding: 0.5em;
+  border-top: 2px solid rebeccapurple;
+  position: sticky;
+  bottom: 0;
+  height: 25%;
+  background: white;
+  overflow: auto;
+}
+
+#details:empty {
+  display: none;
+}

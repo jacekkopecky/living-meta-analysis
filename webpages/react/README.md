@@ -46,14 +46,14 @@ $ npm run build
 -   The build is minified and the filenames include the hashes.
     Your application is ready to be deployed!
 
--   The files are correctly bundled to their relative paths. You need to serve the files in the `./dist` folder the same way you'll serve the index.html file when a meta-analysis is served.
+-   The files are correctly bundled to their relative paths. You need to serve the files in the `./dist` folder the same way you'll serve the index.html file when a meta-analysis is served. That means that you can test the front-end with calls to the real API using the symbolic link at `/webpages/HarmutBlank` and by accessing http://localhost:8080/HarmutBlank/MissinformationEffect (see next command)
 
 ## Running the production ready app
 ```shell
 $ npm run server
 ```
 
--   This script simply builds and serves the frontend app using http-server which you can install using :
+-   This script simply builds and serves the frontend app using `http-server` which you can install using :
 
 ```shell
 $ npm install -g http-server
@@ -75,6 +75,10 @@ In conclusion : the directory structure stays the same, and you can serve the `/
 
 ### Inside the `/webpages/react` directory
 
--   none of the code should have the lima.soc.port.ac.uk URL built in (this can cause trouble with parcel)
+-   None of the code should have the lima.soc.port.ac.uk URL built in (this can cause trouble with parcel)
+
+-   You can install the `ncu` package via npm and run `ncu`  to see dependencies upgrades. Then you can follow the instructions to proceed to the upgrades.
+
+> Don't forget to read changelogs, there are often breaking changes
 
 >**Note : the application must be accessed on http://localhost:8080 to comply with the CORS policy from the API**

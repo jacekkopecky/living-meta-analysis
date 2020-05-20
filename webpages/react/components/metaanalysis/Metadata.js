@@ -1,38 +1,24 @@
 import React from 'react';
+import { formatDateTime } from '../../tools/datatools';
 import './Metadata.css';
 
-function twoDigits(x) {
-  return x < 10 ? `0${x}` : `${x}`;
-}
+function Metadata({ metadata }) {
+  const { enteredByUsername, ctime, mtime } = metadata;
 
-function formatDateTime(timestamp) {
-  const d = new Date(timestamp);
-
-  const date = `${d.getFullYear()}-${twoDigits((d.getMonth() + 1))}-${twoDigits(d.getDate())}`;
-  const time = `${twoDigits(d.getHours())}:${twoDigits(d.getMinutes())}`;
-  const datetime = `${date} ${time}`;
-  return datetime;
-}
-
-
-function Metadata(props) {
-  const {
-    username, ctime, mtime,
-  } = props;
-  const path = `/${username}/`;
+  const path = `/${enteredByUsername}/`;
   return (
     <aside className="metadata">
       <p>
         Entered by
         {' '}
-        <a href={path}>{username}</a>
+        <a href={path}>{enteredByUsername}</a>
         {' '}
         on
         {' '}
         {formatDateTime(ctime)}
       </p>
       <p>
-        Last modified :
+        Last modified:
         {' '}
         {formatDateTime(mtime)}
       </p>
