@@ -8,7 +8,7 @@ function Cell(props) {
     col, exp, displayedCell, setDisplayedCell, ids,
   } = props;
 
-  const [display, setDisplay] = useState(false)
+  const [display, setDisplay] = useState(false);
   const toggleVisible = () => {
     setDisplay(true);
     setDisplayedCell(ids);
