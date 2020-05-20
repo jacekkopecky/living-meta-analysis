@@ -3,20 +3,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-use-before-define */
 
-
-function twoDigits(x) {
-  return x < 10 ? `0${x}` : `${x}`;
-}
-
-export function formatDateTime(timestamp) {
-  const d = new Date(timestamp);
-
-  const date = `${d.getFullYear()}-${twoDigits((d.getMonth() + 1))}-${twoDigits(d.getDate())}`;
-  const time = `${twoDigits(d.getHours())}:${twoDigits(d.getMinutes())}`;
-  const datetime = `${date} ${time}`;
-  return datetime;
-}
-
 export function populateCircularMa(ma) {
   // circular ref of ma in each paper
   for (const paper of ma.papers) {
@@ -29,7 +15,6 @@ export function populateCircularMa(ma) {
       i += 1;
     }
   }
-
   // "excluded = true" in each excluded experiment
   const hashPapers = generateIDHash(ma.papers);
   for (const excludedExp of ma.excludedExperiments) {
@@ -41,12 +26,14 @@ export function populateCircularMa(ma) {
 
   ma.hashcols = generateIDHash(ma.columns);
   ma.groups = getGroups(ma);
+
   // if (ma.groupingColumns !== undefined) {
   //   for (const groupingCol of ma.groupingColumns) {
   //   }
   // }
 
-  // merge stock elements with the result of populateParsedFormula
+
+  // merges stock elements with the result of populateParsedFormula
   for (let col of ma.columns) {
     if (!col.id) {
       const colWithParsedFormula = populateParsedFormula(col, ma, ma.hashcols);
@@ -169,8 +156,7 @@ export function getDatumValue(col, experiment) {
 }
 
 export function getAggregateDatumValue(aggregate, papers, group) {
-  const ma = papers[0].metaanalysis; // TODO: bug when
-  // console.log(papers);
+  const ma = papers[0].metaanalysis; // TODO: probably a bug here
   if (!aggregate.grouping) group = null;
 
   // return NaN if we have a group but don't have a grouping column
@@ -247,4 +233,17 @@ function getGroup(experiment) {
   if (groupingColumnObj) {
     return getDatumValue(groupingColumnObj, experiment);
   }
+}
+
+function twoDigits(x) {
+  return x < 10 ? `0${x}` : `${x}`;
+}
+
+export function formatDateTime(timestamp) {
+  const d = new Date(timestamp);
+
+  const date = `${d.getFullYear()}-${twoDigits((d.getMonth() + 1))}-${twoDigits(d.getDate())}`;
+  const time = `${twoDigits(d.getHours())}:${twoDigits(d.getMinutes())}`;
+  const datetime = `${date} ${time}`;
+  return datetime;
 }

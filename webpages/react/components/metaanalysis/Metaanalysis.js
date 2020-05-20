@@ -6,7 +6,7 @@ import DataTable from './datatable/DataTable';
 import Aggregates from './aggregates/Aggregates';
 import Plots from './plots/Plots';
 import Metadata from './Metadata';
-import PlotsDefinitions from './PlotsDefinitions'
+import PlotsDefinitions from './PlotsDefinitions';
 import { populateCircularMa } from '../../tools/datatools';
 
 import './Metaanalysis.css';

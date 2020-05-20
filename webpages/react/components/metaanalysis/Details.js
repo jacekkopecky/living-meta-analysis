@@ -6,7 +6,6 @@ const detailsRoot = document.getElementById('details');
 
 function Details(props) {
   const { children } = props;
-
   return ReactDOM.createPortal(children, detailsRoot);
 }
 

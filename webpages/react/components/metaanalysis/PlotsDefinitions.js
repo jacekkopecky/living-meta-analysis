@@ -1,4 +1,5 @@
 import React from 'react';
+import './PlotsDefinitions.css';
 
 function PlotsDefinitions({ graphs }) {
   return (
@@ -11,7 +12,6 @@ function PlotsDefinitions({ graphs }) {
               {graph.title}
             </td>
           </tr>
-
         ))}
       </table>
     </section>
