@@ -8,6 +8,7 @@ import Plots from './plots/Plots';
 import Metadata from './Metadata';
 import PlotsDefinitions from './PlotsDefinitions';
 import { populateCircularMa } from '../../tools/datatools';
+import Details from './Details';
 
 import './Metaanalysis.css';
 
@@ -35,7 +36,10 @@ function Metaanalysis(props) {
     ctime: metaanalysis.ctime,
     mtime: metaanalysis.mtime,
   });
-
+  const [displayedCell, setDisplayedCell] = useState({
+    ids: null,
+    text: null,
+  });
   console.log(metaanalysis);
 
   const editButtonMessage = edit ? 'STOP' : 'EDIT';
@@ -61,6 +65,8 @@ function Metaanalysis(props) {
           tabName="Table"
           columns={table.columns}
           papers={table.papers}
+          displayedCell={displayedCell}
+          setDisplayedCell={setDisplayedCell}
         />
         <Aggregates
           path="/aggregates"
@@ -81,6 +87,7 @@ function Metaanalysis(props) {
           graphs={graphs}
         />
       </Tabs>
+      <Details displayedCell={displayedCell} setDisplayedCell={setDisplayedCell} />
       <Metadata metadata={metadata} />
     </main>
 

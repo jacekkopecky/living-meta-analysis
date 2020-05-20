@@ -28,3 +28,11 @@
 .datatable .computed {
   background-color: rgba(182, 234, 255, 0.5);
 }
+
+.datatable .active {
+  background-color: lightgreen !important;
+}
+
+.datatable td:hover {
+  background-color: lightpink;
+}

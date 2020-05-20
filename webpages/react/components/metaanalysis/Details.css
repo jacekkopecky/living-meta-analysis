@@ -1,14 +1,46 @@
-#details {
+.details {
   margin: 0.5em 0;
-  padding: 0.5em;
-  border-top: 2px solid rebeccapurple;
+  padding: 0em;
   position: sticky;
   bottom: 0;
   height: 25%;
   background: white;
+  line-height: 50%;
   overflow: auto;
 }
 
-#details:empty {
+.details .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2f7494;
+  color: white;
+  padding: 0;
+  margin: 0;
+}
+
+.details h3,
+.details .close {
+  padding: 20px;
+}
+
+.details h3 {
+  margin: 0;
+}
+
+.details .header .close {
+  cursor: pointer;
+  font-size: 150%;
+}
+
+.details .header .close:hover {
+  background-color: red;
+}
+
+.details .content {
+  margin-left: 0.5em;
+}
+
+.details:empty {
   display: none;
 }
