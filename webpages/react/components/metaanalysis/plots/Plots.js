@@ -1,3 +1,6 @@
+/* linting rule ignored as modifications will happen in plots definitions
+   i.e: when all plots are unmounted. So we're safely using indexes as keys */
+/* eslint-disable react/no-array-index-key */
 import React from 'react';
 import SimpleForestPlots from './SimpleForestPlots';
 import GroupingForestPlots from './GroupingForestPlots';
@@ -8,8 +11,6 @@ import './Plots.css';
 
 function Plots(props) {
   const { graphs } = props;
-
-  // TODO: find other keys than graph's index
 
   return (
     <>
@@ -36,6 +37,7 @@ function Plots(props) {
           getGroupingForestPlotData(graph);
           return <GroupingForestPlots key={index} forestPlots={graph} />;
         }
+        return null;
       })}
     </>
   );

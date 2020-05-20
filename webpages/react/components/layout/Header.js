@@ -7,8 +7,6 @@ function Header() {
   const { gapi, lima } = window;
   const { _ } = lima;
   function onSignIn(googleUser) {
-    const { lima, gapi } = window;
-    const { _ } = lima;
     let username;
     let photo;
     if (!googleUser.isSignedIn()) {

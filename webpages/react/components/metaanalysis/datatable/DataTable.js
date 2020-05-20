@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Paper from './Paper';
 import './DataTable.css';
 
