@@ -9,7 +9,7 @@ function DataTable(props) {
 
   return (
     <section>
-      <table className="datatable table table-striped table-header-rotated">
+      <table className="datatable">
         <thead>
           <tr>
             <th>
