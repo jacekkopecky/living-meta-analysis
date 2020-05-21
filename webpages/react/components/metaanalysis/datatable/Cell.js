@@ -42,4 +42,11 @@ function Cell(props) {
   );
 }
 
-export default Cell;
+function shouldMemo(prev, next) {
+  if ((next.displayedCell.ids === next.ids) || prev.displayedCell.ids === prev.ids) {
+    return false;
+  }
+  return true;
+}
+// We'll re-render the Cell only when we detect a change (cell color)
+export default React.memo(Cell, shouldMemo);

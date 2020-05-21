@@ -29,4 +29,5 @@ function Aggregates(props) {
   );
 }
 
-export default Aggregates;
+// TODO: change this when adding onClick styles etc, see Cell
+export default React.memo(Aggregates, () => true);
