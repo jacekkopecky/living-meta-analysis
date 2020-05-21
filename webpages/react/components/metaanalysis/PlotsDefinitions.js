@@ -6,13 +6,18 @@ function PlotsDefinitions({ graphs }) {
     <section className="plots-definitions">
       <h2>Graphs :</h2>
       <table>
-        {graphs.map((graph) => (
-          <tr key={graph.title}>
-            <td>
-              {graph.title}
-            </td>
-          </tr>
-        ))}
+        <thead>
+          <th>Plots Definitions</th>
+        </thead>
+        <tbody>
+          {graphs.map((graph) => (
+            <tr key={graph.title}>
+              <td>
+                {graph.title}
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </table>
     </section>
   );

@@ -26,3 +26,34 @@
 .metaanalysis .btn-stop {
   background-color: red;
 }
+
+.metaanalysis table {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  margin: 20px;
+}
+
+.metaanalysis table td,
+.metaanalysis table th {
+  border-left: 0.5px solid rgb(66, 66, 66);
+  border-right: 0.5px;
+  padding: 4px;
+}
+
+.metaanalysis table tr:nth-child(even) { background-color: #ebebeb; }
+
+.metaanalysis table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #2f7494;
+  color: white;
+}
+
+.metaanalysis table .active {
+  background-color: lightgreen !important;
+}
+
+.metaanalysis table td:hover {
+  background-color: lightpink;
+}
