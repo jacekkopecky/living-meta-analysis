@@ -37,17 +37,17 @@ function Metaanalysis(props) {
     mtime: metaanalysis.mtime,
   });
   const [displayedCell, setDisplayedCell] = useState({
-    ids: null,
+    cellId: null,
     text: null,
   });
   console.log(metaanalysis);
 
   const editButtonMessage = edit ? 'STOP' : 'EDIT';
-  const toggleDisplay = (ids, details) => {
-    if (ids !== displayedCell.ids) {
-      setDisplayedCell({ text: details, ids });
+  const toggleDisplay = (cellId, details) => {
+    if (cellId !== displayedCell.cellId) {
+      setDisplayedCell({ text: details, cellId });
     } else {
-      setDisplayedCell({ text: null, ids: null });
+      setDisplayedCell({ text: null, cellId: null });
     }
   };
 
