@@ -8,16 +8,22 @@ function Aggregates(props) {
     groupingAggregates,
     groups,
     groupingColumn,
+    toggleDisplay,
   } = props;
   return (
     <section>
-      <SimpleAggregates aggregates={aggregates} /* groupingColumnsObjs={} */ />
+      <SimpleAggregates
+        aggregates={aggregates}
+        toggleDisplay={toggleDisplay}
+        /* groupingColumnsObjs={} */
+      />
 
       {/* TODO:  map on groupingColObj => multiple grouping aggregates */}
       <GroupingAggregates
         groupingAggregates={groupingAggregates}
         groups={groups}
         groupingColumn={groupingColumn}
+        toggleDisplay={toggleDisplay}
       />
     </section>
   );
