@@ -4,7 +4,7 @@ import Cell from './Cell';
 
 function Paper(props) {
   const {
-    paper, columns, displayedCell, setDisplayedCell,
+    paper, columns, displayedCell, toggleDisplay,
   } = props;
   const { title } = paper;
   const nExp = Object.keys(paper.experiments).length;
@@ -30,7 +30,7 @@ function Paper(props) {
               col={col}
               exp={exp}
               displayedCell={displayedCell}
-              setDisplayedCell={setDisplayedCell}
+              toggleDisplay={toggleDisplay}
             />
           ))}
 

@@ -4,7 +4,7 @@ import './DataTable.css';
 
 function DataTable(props) {
   const {
-    columns, papers, displayedCell, setDisplayedCell,
+    columns, papers, displayedCell, toggleDisplay,
   } = props;
 
   return (
@@ -32,7 +32,7 @@ function DataTable(props) {
               paper={paper}
               columns={columns}
               displayedCell={displayedCell}
-              setDisplayedCell={setDisplayedCell}
+              toggleDisplay={toggleDisplay}
             />
           ))}
         </tbody>

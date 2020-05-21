@@ -43,6 +43,13 @@ function Metaanalysis(props) {
   console.log(metaanalysis);
 
   const editButtonMessage = edit ? 'STOP' : 'EDIT';
+  const toggleDisplay = (ids, details) => {
+    if (ids !== displayedCell.ids) {
+      setDisplayedCell({ text: details, ids });
+    } else {
+      setDisplayedCell({ text: null, ids: null });
+    }
+  };
 
   return (
     <main className="metaanalysis">
@@ -66,7 +73,7 @@ function Metaanalysis(props) {
           columns={table.columns}
           papers={table.papers}
           displayedCell={displayedCell}
-          setDisplayedCell={setDisplayedCell}
+          toggleDisplay={toggleDisplay}
         />
         <Aggregates
           path="/aggregates"
@@ -75,6 +82,7 @@ function Metaanalysis(props) {
           groupingAggregates={groupingAggregates}
           groupingColumn={metaanalysis.groupingColumnObj.title}
           groups={metaanalysis.groups}
+          toggleDisplay={toggleDisplay}
         />
         <Plots
           path="/plots"
