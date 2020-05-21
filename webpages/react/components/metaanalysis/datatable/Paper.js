@@ -26,7 +26,7 @@ function Paper(props) {
 
           {columns.map((col) => (
             <Cell
-              ids={`${exp.ctime + paper.id}+${col.formula || col.id}`}
+              cellId={`${exp.ctime + paper.id}+${col.formula || col.id}`}
               col={col}
               exp={exp}
               displayedCell={displayedCell}

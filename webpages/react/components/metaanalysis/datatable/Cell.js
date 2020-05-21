@@ -7,7 +7,7 @@ import { getDatumValue, formatNumber } from '../../../tools/datatools';
 
 function Cell(props) {
   const {
-    col, exp, displayedCell, toggleDisplay, ids,
+    col, exp, displayedCell, toggleDisplay, cellId,
   } = props;
   let value = getDatumValue(col, exp);
   let className = '';
@@ -35,7 +35,7 @@ function Cell(props) {
     className += 'computed';
   }
   return (
-    <td className={`${className}${ids === displayedCell.ids ? ' active' : ''}`} key={col.id} onClick={() => toggleDisplay(ids, details)}>
+    <td className={`${className}${cellId === displayedCell.cellId ? ' active' : ''}`} key={col.id} onClick={() => toggleDisplay(cellId, details)}>
       {value}
     </td>
 
@@ -43,7 +43,7 @@ function Cell(props) {
 }
 
 function shouldMemo(prev, next) {
-  if ((next.displayedCell.ids === next.ids) || prev.displayedCell.ids === prev.ids) {
+  if ((prev.displayedCell.cellId === next.cellId) || (next.displayedCell.cellId === prev.cellId)) {
     return false;
   }
   return true;

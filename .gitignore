@@ -6,3 +6,4 @@ statsd-server-conf.sh
 test/gemini/screens
 coverage
 .DS_Store
+.vscode
