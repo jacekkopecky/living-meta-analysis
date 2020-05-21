@@ -7,7 +7,7 @@ import { getDatumValue, formatNumber } from '../../../tools/datatools';
 
 function Cell(props) {
   const {
-    col, exp, displayedCell, setDisplayedCell, ids,
+    col, exp, displayedCell, toggleDisplay, ids,
   } = props;
   let value = getDatumValue(col, exp);
   let className = '';
@@ -27,13 +27,6 @@ function Cell(props) {
       </p>
     </>
   );
-  const toggleVisible = () => {
-    if (ids !== displayedCell.ids) {
-      setDisplayedCell({ text: details, ids });
-    } else {
-      setDisplayedCell({ text: null, ids: null });
-    }
-  };
 
   if (col.id) {
     className += 'data';
@@ -42,27 +35,10 @@ function Cell(props) {
     className += 'computed';
   }
   return (
-    <>
-      <td className={`${className}${ids === displayedCell.ids ? ' active' : ''}`} key={col.id} onClick={toggleVisible}>
-        {value}
-      </td>
-      {/* {displayedCell === ids && (
-        <Details setDisplayedCell={setDisplayedCell}>
-          <p>
-            Col value:
-            {col.formula || value}
-          </p>
-          <p>
-            Entered by:
-            {exp.enteredBy}
-          </p>
-          <p>
-            Creation time:
-            {exp.ctime}
-          </p>
-        </Details>
-      )} */}
-    </>
+    <td className={`${className}${ids === displayedCell.ids ? ' active' : ''}`} key={col.id} onClick={() => toggleDisplay(ids, details)}>
+      {value}
+    </td>
+
   );
 }
 
