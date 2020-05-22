@@ -18,11 +18,32 @@ function DataTable(props) {
             <th>
               Study/Experiment
             </th>
-            {columns.map((col) => (
-              <th key={col.title}>
-                {col.title}
-              </th>
-            ))}
+            {columns.map((col) => {
+              // DETAILS : col title + description
+              let colDetails;
+              if (col.id) {
+                colDetails = (
+                  <>
+                    <p>{col.title}</p>
+                    <p>{col.description || 'no detailed description'}</p>
+                  </>
+                );
+              } else {
+                colDetails = (
+                  <>
+                    <p>{col.title}</p>
+                    <p>
+                      {col.fullLabel}
+                    </p>
+                  </>
+                );
+              }
+              return (
+                <th key={col.title} onClick={() => toggleDisplay(col.title, colDetails)}>
+                  {col.title}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
