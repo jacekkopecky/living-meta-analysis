@@ -7,7 +7,6 @@
 'use strict';
 
 console.log('LiMA server starting at ' + new Date());
-
 const express = require('express');
 const googleOpenID = require('simple-google-openid');
 const cors = require('cors');
@@ -19,14 +18,14 @@ const cookieParser = require('cookie-parser');
 
 const config = require('./config');
 
-const api = require('./api');
-const storage = require('./storage');
+const api = require('./routes');
+// const storage = require('./storage');
 const NotFoundError = require('./errors/NotFoundError');
 
 const exec = require('child_process').exec;
 
-storage.init();
-api.init();
+// storage.init();
+// api.init();
 
 const app = express({ caseSensitive: true });
 app.set('case sensitive routing', true);
@@ -92,23 +91,23 @@ app.use(cookieParser());
 // if we don't get a valid closed-beta code in the lima-beta-code cookie,
 // we will redirect to a coming-soon page
 
-if (!process.env.TESTING) {
-  // regex for quickly checking for selected paths to be allowed: /css, /js, /img, /api
-  const closedBetaAllowedURLs = /^\/(css|js|img|api|\.well-known)\//;
+// if (!process.env.TESTING) {
+//   // regex for quickly checking for selected paths to be allowed: /css, /js, /img, /api
+//   const closedBetaAllowedURLs = /^\/(css|js|img|api|\.well-known)\//;
 
-  app.use('/', (req, res, next) => {
-    if (req.url.match(closedBetaAllowedURLs)) {
-      next();
-    } else if (req.cookies && storage.betaCodes[req.cookies['lima-beta-code']]) {
-      storage.touchBetaCode(req.cookies['lima-beta-code'], req.user ? req.user.emails[0].value : undefined);
-      next();
-    } else if (req.url === '/') {
-      res.sendFile('coming-soon.html', { root: './webpages/' });
-    } else {
-      res.redirect('/');
-    }
-  });
-}
+//   app.use('/', (req, res, next) => {
+//     if (req.url.match(closedBetaAllowedURLs)) {
+//       next();
+//     } else if (req.cookies && storage.betaCodes[req.cookies['lima-beta-code']]) {
+//       // storage.touchBetaCode(req.cookies['lima-beta-code'], req.user ? req.user.emails[0].value : undefined);
+//       next();
+//     } else if (req.url === '/') {
+//       res.sendFile('coming-soon.html', { root: './webpages/' });
+//     } else {
+//       res.redirect('/');
+//     }
+//   });
+// }
 
 /* routes
  *
@@ -131,7 +130,7 @@ if (config.demoApiDelay) {
 // allow local testing of pages
 app.use(cors({ origin: 'http://localhost:8080' }));
 
-app.use('/api', api);
+app.use('/api', api.router);
 
 app.get('/version', oneLineVersion);
 app.get('/version/log',
@@ -146,18 +145,18 @@ app.use('/', express.static('webpages', { extensions: ['html'] }));
 
 app.use(`/:user(${config.USER_RE})/`, SLASH_URL);
 app.get(`/:user(${config.USER_RE})/`,
-  api.EXISTS_USER,
+  api.users.EXISTS_USER,
   (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
 
 app.use(`/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`, SLASH_URL);
 app.get(`/:user(${config.USER_RE})/${config.NEW_PAPER_TITLE}/`,
-  api.EXISTS_USER,
+  api.users.EXISTS_USER,
   (req, res) => res.sendFile('profile/paper.html', { root: './webpages/' }));
 app.get(`/:user(${config.USER_RE})/${config.NEW_META_TITLE}/`,
-  api.EXISTS_USER,
+  api.users.EXISTS_USER,
   (req, res) => res.sendFile('profile/metaanalysis.html', { root: './webpages/' }));
 app.get(`/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
-  api.EXISTS_USER,
+  api.users.EXISTS_USER,
   (req, res, next) => {
     Promise.resolve(req.query.type || api.getKindForTitle(req.params.user, req.params.title))
       .then((kind) => {
@@ -272,7 +271,7 @@ process.on('unhandledRejection', (err) => {
 const port = process.env.PORT || config.port;
 let httpsPort = process.env.HTTPSPORT || config.httpsPort;
 
-module.exports.ready = storage.ready = startServer();
+startServer();
 
 function startServer() {
   if (process.env.TESTING) {
