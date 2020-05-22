@@ -3,6 +3,62 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-use-before-define */
 
+function renumberComputedObjects(array, prefix) {
+  prefix = prefix || '';
+  let count = 0;
+  array.forEach((object) => {
+    if (object.formula) {
+      object.number = prefix + (count += 1);
+    }
+  });
+}
+
+// level is how much parameter nesting we want to show:
+// 0 - no parameters, e.g. sum(...)
+// 1 - parameters without their parameters, e.g. sum(weight(...))
+// Infinity - full nesting
+function getColTitle(col, level) {
+  if (col == null) {
+    return 'none';
+  } if (typeof col !== 'object') {
+    throw new Error(`we do not expect non-object param ${col}`);
+  } else if (col.id) {
+    return col.title;
+  } else if (col.formula) {
+    return getRichColumnLabel(col, level);
+  } else {
+    throw new Error(`this should never happen - we do not know what title this col should have: ${col}`);
+  }
+}
+
+function getFormulaLabel(formulaObj) {
+  return (formulaObj ? formulaObj.label : 'no formula selected');
+}
+
+function getRichColumnLabel(col, level) {
+  if (level === undefined) level = col.number == null ? 1 : 0;
+
+  if (col.title && level !== Infinity) { // Don't substitute full nesting for title
+    return col.title;
+  }
+
+  let retval = '';
+  if (level !== Infinity && col.number !== undefined) retval += col.number;
+  if (col.grouping) retval += 'Grouping';
+  retval += `${getFormulaLabel(col.formulaObj)}(`;
+
+  if (level === 0) {
+    retval += '…';
+  } else {
+    for (let i = 0; i < col.formulaParams.length; i += 1) {
+      retval += ` ${getColTitle(col.formulaParams[i], level - 1)}`;
+      if (i < col.formulaParams.length - 1) retval += ',';
+    }
+    retval += ' ';
+  }
+  return `${retval})`;
+}
+
 export function populateCircularMa(ma) {
   // circular ref of ma in each paper
   for (const paper of ma.papers) {
@@ -32,12 +88,14 @@ export function populateCircularMa(ma) {
   //   }
   // }
 
+  renumberComputedObjects(ma.columns);
 
   // merges stock elements with the result of populateParsedFormula
   for (let col of ma.columns) {
     if (!col.id) {
       const colWithParsedFormula = populateParsedFormula(col, ma, ma.hashcols);
       col = Object.assign(col, colWithParsedFormula);
+      col.fullLabel = getColTitle(col, Infinity);
     }
   }
   for (let aggr of ma.aggregates) {
