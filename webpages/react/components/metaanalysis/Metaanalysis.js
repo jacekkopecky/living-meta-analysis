@@ -7,6 +7,7 @@ import Aggregates from './aggregates/Aggregates';
 import Plots from './plots/Plots';
 import Metadata from './Metadata';
 import PlotsDefinitions from './PlotsDefinitions';
+import Clickable from './Clickable';
 import { populateCircularMa } from '../../tools/datatools';
 import Details from './Details';
 
@@ -51,6 +52,19 @@ function Metaanalysis(props) {
     }
   };
 
+  // const clickable = (cellId, cellContent, cellDetails) => (
+  //   <>
+  //     {React.cloneElement(cellContent, { onClick: () => toggleDisplay(cellId, cellDetails) })}
+  //   </>
+  // );
+
+  const clickable = <Clickable toggleDisplay={toggleDisplay} displayedCell={displayedCell} />;
+
+  // const clickable = {
+  //   toggleDisplay,
+  //   displayedCell,
+  // };
+
   return (
     <main className="metaanalysis">
       <div className="titlebar">
@@ -74,6 +88,7 @@ function Metaanalysis(props) {
           papers={table.papers}
           displayedCell={displayedCell}
           toggleDisplay={toggleDisplay}
+          Clickable={clickable}
         />
         <Aggregates
           path="/aggregates"

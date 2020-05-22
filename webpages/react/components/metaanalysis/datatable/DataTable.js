@@ -1,10 +1,11 @@
 import React from 'react';
 import Paper from './Paper';
 import './DataTable.css';
+// import Clickable from '../Clickable';
 
 function DataTable(props) {
   const {
-    columns, papers, displayedCell, toggleDisplay,
+    columns, papers, displayedCell, toggleDisplay, Clickable,
   } = props;
 
   return (
@@ -19,7 +20,6 @@ function DataTable(props) {
               Study/Experiment
             </th>
             {columns.map((col) => {
-              // DETAILS : col title + description
               let colDetails;
               if (col.id) {
                 colDetails = (
@@ -38,10 +38,30 @@ function DataTable(props) {
                   </>
                 );
               }
-              return (
-                <th key={col.title} onClick={() => toggleDisplay(col.title, colDetails)}>
+              const cellContent = (
+                <th>
                   {col.title}
                 </th>
+              );
+              // const rendu = clickable(col.title, cellContent, colDetails);
+              return (
+                <Clickable.type
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...Clickable.props}
+                  cellId={col.title}
+                  key={col.title}
+                  cellContent={(
+                    <th>
+                      {col.title}
+                    </th>
+                  )}
+                  cellDetails={
+                    colDetails
+                  }
+                />
+                // <>
+                //   {rendu}
+                // </>
               );
             })}
           </tr>
@@ -54,6 +74,7 @@ function DataTable(props) {
               columns={columns}
               displayedCell={displayedCell}
               toggleDisplay={toggleDisplay}
+              // clickable={clickable}
             />
           ))}
         </tbody>
