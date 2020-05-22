@@ -17,7 +17,7 @@
  * @property {string} description
  * @property {string} enteredBy
  * @property {number} ctime
- * @property {[key: string]: ExperimentData} data
+ * @property {Object.<string, ExperimentData[]>} data
  * @property {Comment[]} comments
  */
 
