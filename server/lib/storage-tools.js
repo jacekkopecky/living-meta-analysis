@@ -4,7 +4,7 @@ function log(e) {
   console.error(e.stack || e);
 }
 
-const storage = require('./../storage');
+const storage = require('../storage-old');
 
 module.exports.add = (data, options) => {
   if (!options) options = {};

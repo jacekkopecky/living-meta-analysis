@@ -10,7 +10,7 @@ describe('server/storage.js', () => {
   let metaanalysisBefore;
 
   beforeAll(() => {
-    storage = require('./../../server/storage');
+    storage = require('../../server/storage-old');
 
     columns = require('./data/storage-spec/columns');
     paperAfter = require('./data/storage-spec/paper-after');
@@ -34,14 +34,14 @@ describe('server/storage.js', () => {
 
   describe('migration to private columns', () => {
     describe('migration of paper', () => {
-      it('migrates correctly', function() {
+      it('migrates correctly', function () {
         const before = copyOf(paperBefore);
         storage.migratePaper(before, columns);
         const after = copyOf(paperAfter);
         after.migrated = true;
         expect(copyOf(before)).toEqual(after);
       });
-      it('does not change paper without global columns', function() {
+      it('does not change paper without global columns', function () {
         const after = copyOf(paperAfter);
         storage.migratePaper(after, columns);
         expect(after).toEqual(paperAfter);
@@ -54,14 +54,14 @@ describe('server/storage.js', () => {
         storage.migratePaper(paper2Before, columns);
         papers = [paper2Before, paperAfter];
       })
-      it('migrates correctly', function() {
+      it('migrates correctly', function () {
         const before = copyOf(metaanalysisBefore);
         storage.migrateMetaanalysis(before, papers, columns);
         const after = copyOf(metaanalysisAfter);
         after.migrated = true;
         expect(copyOf(before)).toEqual(after);
       });
-      it('does not change MA without global columns', function() {
+      it('does not change MA without global columns', function () {
         const after = copyOf(metaanalysisAfter);
         storage.migrateMetaanalysis(after, papers, columns);
         expect(after).toEqual(metaanalysisAfter);

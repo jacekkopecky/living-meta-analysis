@@ -11,7 +11,7 @@ const InternalError = require('./errors/InternalError');
 const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const config = require('./config');
-const storage = require('./storage');
+const storage = require('./storage-old');
 const tools = require('./lib/tools');
 
 const jsonBodyParser = express.json(config.jsonParserOptions);
