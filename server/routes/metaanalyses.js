@@ -52,7 +52,6 @@ async function saveMetaanalysis(req, res, next) {
 async function listTopMetaanalyses(req, res, next) {
   try {
     const mas = await storage.metaanalyses.listMetaanalyses();
-    console.log(mas);
 
     const retval = [];
     for (const ma of mas) {
