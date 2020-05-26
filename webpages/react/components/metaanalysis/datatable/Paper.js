@@ -1,6 +1,5 @@
 import React from 'react';
 import Cell from './Cell';
-// TODO: find a cleaner way to import datatools
 
 function Paper(props) {
   const {

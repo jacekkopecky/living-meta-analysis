@@ -2,7 +2,6 @@
 import React from 'react';
 import Paper from './Paper';
 import './DataTable.css';
-// import Clickable from '../Clickable';
 
 function DataTable(props) {
   const {
@@ -39,7 +38,6 @@ function DataTable(props) {
 
             {columns.map((col) => (
               <Clickable.type
-                // eslint-disable-next-line react/jsx-props-no-spreading
                 {...Clickable.props}
                 cellId={col.title}
                 key={col.title}

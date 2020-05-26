@@ -66,5 +66,3 @@ function shouldMemo(prev, next) {
 }
 // We'll re-render the Cell only when we detect a change (cell color)
 export default React.memo(Cell, shouldMemo);
-
-// export default React.memo(Cell, () => false);

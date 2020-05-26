@@ -52,18 +52,7 @@ function Metaanalysis(props) {
     }
   };
 
-  // const clickable = (cellId, cellContent, cellDetails) => (
-  //   <>
-  //     {React.cloneElement(cellContent, { onClick: () => toggleDisplay(cellId, cellDetails) })}
-  //   </>
-  // );
-
   const clickable = <Clickable toggleDisplay={toggleDisplay} displayedCell={displayedCell} />;
-
-  // const clickable = {
-  //   toggleDisplay,
-  //   displayedCell,
-  // };
 
   return (
     <main className="metaanalysis">
