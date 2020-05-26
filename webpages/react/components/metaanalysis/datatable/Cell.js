@@ -17,10 +17,6 @@ function Cell(props) {
         cellDetails={(
           <>
             <p>
-              Col value:
-              {col.formula || value}
-            </p>
-            <p>
               Entered by:
               {exp.enteredBy}
             </p>

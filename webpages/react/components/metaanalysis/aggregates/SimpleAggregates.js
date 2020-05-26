@@ -30,7 +30,7 @@ function SimpleAggregates(props) {
                   <>
                     <p>{value}</p>
                     <p>{aggr.title}</p>
-                    <p>{aggr.formula}</p>
+                    <p>{aggr.fullLabel}</p>
                   </>
                 )}
               />

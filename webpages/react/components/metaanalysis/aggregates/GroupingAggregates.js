@@ -2,7 +2,9 @@ import React from 'react';
 import { getAggregateDatumValue, formatNumber } from '../../../tools/datatools';
 
 function GroupingAggregates(props) {
-  const { groupingAggregates, groups, groupingColumn } = props;
+  const {
+    groupingAggregates, groups, groupingColumn, clickable,
+  } = props;
   return (
     <>
       <h3>
@@ -22,12 +24,48 @@ function GroupingAggregates(props) {
         <tbody>
           {groupingAggregates.map((aggr) => (
             <tr key={aggr.formula}>
-              <td>{aggr.title}</td>
-
+              <clickable.type
+                {...clickable.props}
+                key={aggr.title}
+                cellId={aggr.title}
+                cellContent={(
+                  <td>{aggr.title}</td>
+                )}
+                cellDetails={(
+                  <>
+                    <p>{aggr.title}</p>
+                    <p>
+                      {aggr.fullLabel}
+                    </p>
+                  </>
+                )}
+              />
               {groups.map((group) => {
                 const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers, group);
                 return (
-                  <td key={group}>{formatNumber(value)}</td>
+                  <clickable.type
+                    {...clickable.props}
+                    key={group}
+                    cellId={group}
+                    cellContent={(
+                      <td>{formatNumber(value)}</td>
+                    )}
+                    cellDetails={(
+                      <>
+                        <p>{value}</p>
+                        <p>
+                          Calculated for the
+                          {' '}
+                          {group}
+                          {' '}
+                          group as
+                          {' '}
+                          {aggr.fullLabel}
+                        </p>
+
+                      </>
+                    )}
+                  />
                 );
               })}
 
