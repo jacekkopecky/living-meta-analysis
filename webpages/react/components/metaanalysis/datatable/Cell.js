@@ -1,52 +1,70 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-
 import React from 'react';
 import { getDatumValue, formatNumber } from '../../../tools/datatools';
 
-
 function Cell(props) {
   const {
-    col, exp, displayedCell, toggleDisplay, cellId,
+    col, exp, cellId, Clickable,
   } = props;
-  let value = getDatumValue(col, exp);
-  let className = '';
-  const details = (
-    <>
-      <p>
-        Col value:
-        {col.formula || value}
-      </p>
-      <p>
-        Entered by:
-        {exp.enteredBy}
-      </p>
-      <p>
-        Creation time:
-        {exp.ctime}
-      </p>
-    </>
-  );
+  const value = getDatumValue(col, exp);
 
+  let details;
   if (col.id) {
-    className += 'data';
+    details = (
+      <Clickable.type
+        {...Clickable.props}
+        cellId={cellId}
+        cellContent={<td>{value}</td>}
+        cellDetails={(
+          <>
+            <p>
+              Col value:
+              {col.formula || value}
+            </p>
+            <p>
+              Entered by:
+              {exp.enteredBy}
+            </p>
+            <p>
+              Creation time:
+              {exp.ctime}
+            </p>
+          </>
+        )}
+      />
+    );
   } else {
-    value = formatNumber(value);
-    className += 'computed';
+    details = (
+      <Clickable.type
+        {...Clickable.props}
+        cellId={cellId}
+        cellContent={<td>{formatNumber(value)}</td>}
+        cellDetails={(
+          <>
+            <p>
+              {value}
+            </p>
+            <p>
+              Calculated as
+              {' '}
+              {col.fullLabel}
+            </p>
+          </>
+        )}
+      />
+    );
   }
-  return (
-    <td className={`${className}${cellId === displayedCell.cellId ? ' active' : ''}`} key={col.id} onClick={() => toggleDisplay(cellId, details)}>
-      {value}
-    </td>
-
-  );
+  return details;
 }
 
 function shouldMemo(prev, next) {
-  if ((prev.displayedCell.cellId === next.cellId) || (next.displayedCell.cellId === prev.cellId)) {
+  const oldDisplayedCell = prev.Clickable.props.displayedCell;
+  const newDisplayedCell = next.Clickable.props.displayedCell;
+  if ((oldDisplayedCell.cellId === next.cellId) || (newDisplayedCell.cellId === prev.cellId)) {
     return false;
   }
   return true;
 }
 // We'll re-render the Cell only when we detect a change (cell color)
 export default React.memo(Cell, shouldMemo);
+
+// export default React.memo(Cell, () => false);

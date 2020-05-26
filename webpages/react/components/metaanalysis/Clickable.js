@@ -2,9 +2,9 @@ import React from 'react';
 
 function Clickable(props) {
   const {
-    clickable, cellId, cellContent, cellDetails,
+    cellId, cellContent, cellDetails,
   } = props;
-  const { toggleDisplay, displayedCell } = props;
+  const { toggleDisplay } = props;
   return (
     <>
       {React.cloneElement(cellContent, { onClick: () => toggleDisplay(cellId, cellDetails) })}
