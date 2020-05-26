@@ -29,6 +29,7 @@ function Metaanalysis(props) {
     papers: metaanalysis.papers,
     excluded: metaanalysis.excludedExperiments,
   });
+  const [paperOrder, setPaperOrder] = useState(metaanalysis.paperOrder);
   const [aggregates] = useState(metaanalysis.aggregates);
   const [groupingAggregates] = useState(metaanalysis.groupingAggregates);
   const [graphs] = useState(metaanalysis.graphs);
@@ -75,6 +76,7 @@ function Metaanalysis(props) {
           tabName="Table"
           columns={table.columns}
           papers={table.papers}
+          paperOrder={paperOrder}
           displayedCell={displayedCell}
           clickable={clickable}
         />
