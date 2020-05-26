@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 
-function ScrollToTop({ history }) {
+function ScrollToTop({ history, toggleDisplay }) {
   useEffect(() => {
     const unlisten = history.listen(() => {
+      toggleDisplay();
       window.scrollTo(0, 0);
     });
     return () => {
