@@ -76,8 +76,7 @@ function Metaanalysis(props) {
           columns={table.columns}
           papers={table.papers}
           displayedCell={displayedCell}
-          toggleDisplay={toggleDisplay}
-          Clickable={clickable}
+          clickable={clickable}
         />
         <Aggregates
           path="/aggregates"
@@ -86,7 +85,7 @@ function Metaanalysis(props) {
           groupingAggregates={groupingAggregates}
           groupingColumn={metaanalysis.groupingColumnObj.title}
           groups={metaanalysis.groups}
-          toggleDisplay={toggleDisplay}
+          clickable={clickable}
         />
         <Plots
           path="/plots"

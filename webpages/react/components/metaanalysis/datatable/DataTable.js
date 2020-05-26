@@ -5,7 +5,7 @@ import './DataTable.css';
 
 function DataTable(props) {
   const {
-    columns, papers, Clickable,
+    columns, papers, clickable,
   } = props;
 
   return (
@@ -13,8 +13,8 @@ function DataTable(props) {
       <table className="datatable">
         <thead>
           <tr>
-            <Clickable.type
-              {...Clickable.props}
+            <clickable.type
+              {...clickable.props}
               cellId="Paper"
               cellContent={<th>Paper</th>}
               cellDetails={(
@@ -24,8 +24,8 @@ function DataTable(props) {
                 </>
               )}
             />
-            <Clickable.type
-              {...Clickable.props}
+            <clickable.type
+              {...clickable.props}
               cellId="Study/Experiment"
               cellContent={<th>Study/Experiment</th>}
               cellDetails={(
@@ -37,8 +37,8 @@ function DataTable(props) {
             />
 
             {columns.map((col) => (
-              <Clickable.type
-                {...Clickable.props}
+              <clickable.type
+                {...clickable.props}
                 cellId={col.title}
                 key={col.title}
                 cellContent={<th>{col.title}</th>}
@@ -70,8 +70,7 @@ function DataTable(props) {
               key={paper.id + paper.title}
               paper={paper}
               columns={columns}
-              Clickable={Clickable}
-
+              clickable={clickable}
             />
           ))}
         </tbody>

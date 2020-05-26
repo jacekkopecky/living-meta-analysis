@@ -3,7 +3,7 @@ import Cell from './Cell';
 
 function Paper(props) {
   const {
-    paper, columns, Clickable,
+    paper, columns, clickable,
   } = props;
   const {
     title, enteredBy, mtime, ctime,
@@ -43,8 +43,8 @@ function Paper(props) {
       let firstTr;
       if (key === 0) {
         newPaper = (
-          <Clickable.type
-            {...Clickable.props}
+          <clickable.type
+            {...clickable.props}
             key={title}
             cellId="Study/Experiment"
             cellContent={<td rowSpan={nExp}>{title}</td>}
@@ -59,8 +59,8 @@ function Paper(props) {
           className={firstTr}
         >
           {newPaper}
-          <Clickable.type
-            {...Clickable.props}
+          <clickable.type
+            {...clickable.props}
             key={exp.title}
             cellId={exp.ctime + paper.id}
             cellContent={<td>{exp.title}</td>}
@@ -79,7 +79,7 @@ function Paper(props) {
               key={`${exp.ctime + paper.id}+${col.formula || col.id}`}
               col={col}
               exp={exp}
-              Clickable={Clickable}
+              clickable={clickable}
             />
           ))}
 
