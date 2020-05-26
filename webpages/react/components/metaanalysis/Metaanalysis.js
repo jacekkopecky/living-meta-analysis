@@ -74,7 +74,7 @@ function Metaanalysis(props) {
         <Tags edit={edit} tags={tags} />
         <button className={edit === 0 ? 'btn-start' : 'btn-stop'} type="button" onClick={() => setEdit(edit === 0 ? 1 : 0)}>{editButtonMessage}</button>
       </div>
-      <Tabs>
+      <Tabs toggleDisplay={toggleDisplay}>
         <Info
           path="/info"
           tabName="Info"

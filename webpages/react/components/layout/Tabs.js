@@ -6,10 +6,10 @@ import './Tabs.css';
 import ScrollToTop from './ScrollToTop';
 
 function Tabs(props) {
-  const { children } = props;
+  const { children, toggleDisplay } = props;
   return (
     <Router hashType="noslash">
-      <ScrollToTop />
+      <ScrollToTop toggleDisplay={toggleDisplay} />
       {/* Creating nav links corresponding to children components */}
       <nav className="tabs">
         <ul>
