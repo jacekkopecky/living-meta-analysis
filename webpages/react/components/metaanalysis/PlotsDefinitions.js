@@ -7,7 +7,9 @@ function PlotsDefinitions({ graphs }) {
       <h2>Graphs :</h2>
       <table>
         <thead>
-          <th>Plots Definitions</th>
+          <tr>
+            <th>Plots Definitions</th>
+          </tr>
         </thead>
         <tbody>
           {graphs.map((graph) => (

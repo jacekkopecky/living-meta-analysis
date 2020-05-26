@@ -9,12 +9,14 @@ function Aggregates(props) {
     groups,
     groupingColumn,
     clickable,
+    makeClickable,
   } = props;
   return (
     <section>
       <SimpleAggregates
         aggregates={aggregates}
         clickable={clickable}
+        makeClickable={makeClickable}
         /* groupingColumnsObjs={} */
       />
 
@@ -24,6 +26,7 @@ function Aggregates(props) {
         groups={groups}
         groupingColumn={groupingColumn}
         clickable={clickable}
+        makeClickable={makeClickable}
       />
     </section>
   );

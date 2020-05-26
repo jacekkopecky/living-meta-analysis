@@ -3,9 +3,11 @@ import { getDatumValue, formatNumber } from '../../../tools/datatools';
 
 function Cell(props) {
   const {
-    col, exp, cellId, clickable,
+    col, exp, cellId, makeClickable,
   } = props;
   const value = getDatumValue(col, exp);
+
+  // TODO: functions for computed cell and data cell instead of if
 
   let details;
   if (col.id) {

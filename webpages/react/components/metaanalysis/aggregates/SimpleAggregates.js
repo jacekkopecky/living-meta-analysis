@@ -1,8 +1,16 @@
 import React from 'react';
 import { getAggregateDatumValue, formatNumber } from '../../../tools/datatools';
 
+const simpleAggregateDetails = (aggr, value) => (
+  <>
+    <p>{value}</p>
+    <p>{aggr.title}</p>
+    <p>{aggr.fullLabel}</p>
+  </>
+);
+
 function SimpleAggregates(props) {
-  const { aggregates, clickable } = props;
+  const { aggregates, makeClickable } = props;
   return (
     <>
       <table>
@@ -16,24 +24,10 @@ function SimpleAggregates(props) {
           {aggregates.map((aggr) => {
             const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers);
             return (
-              <clickable.type
-                {...clickable.props}
-                key={aggr.title}
-                cellId={aggr.title}
-                cellContent={(
-                  <tr>
-                    <td>{aggr.title}</td>
-                    <td>{formatNumber(value)}</td>
-                  </tr>
-                )}
-                cellDetails={(
-                  <>
-                    <p>{value}</p>
-                    <p>{aggr.title}</p>
-                    <p>{aggr.fullLabel}</p>
-                  </>
-                )}
-              />
+              <tr {...makeClickable(aggr.title, simpleAggregateDetails(aggr, value))}>
+                <td>{aggr.title}</td>
+                <td>{formatNumber(value)}</td>
+              </tr>
             );
           })}
         </tbody>
