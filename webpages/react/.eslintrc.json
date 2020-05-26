@@ -30,6 +30,7 @@
     "react/prop-types": [0],
     "react/static-property-placement": [1],
     "no-param-reassign": [0],
-    "no-restricted-syntax": [0]
+    "no-restricted-syntax": [0],
+    "react/jsx-props-no-spreading":[0]
   }
 }
