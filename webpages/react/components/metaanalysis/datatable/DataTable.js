@@ -5,7 +5,7 @@ import './DataTable.css';
 
 function DataTable(props) {
   const {
-    columns, papers, clickable,
+    columns, papers, clickable, paperOrder,
   } = props;
 
   return (
@@ -65,13 +65,21 @@ function DataTable(props) {
           </tr>
         </thead>
         <tbody>
-          {Object.values(papers).map((paper) => (
-            <Paper
-              key={paper.id + paper.title}
-              paper={paper}
-              columns={columns}
-              clickable={clickable}
-            />
+          {paperOrder.map((id) => (
+            Object.values(papers).map((paper) => {
+              if (paper.id === id) {
+                return (
+                  <Paper
+                    key={paper.id + paper.title}
+                    paper={paper}
+                    columns={columns}
+                    clickable={clickable}
+                  />
+                );
+              }
+              return null;
+            })
+
           ))}
         </tbody>
       </table>
