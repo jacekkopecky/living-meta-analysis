@@ -3,9 +3,38 @@ import React from 'react';
 import Paper from './Paper';
 import './DataTable.css';
 
+const paperColumnDetails = (
+  <>
+    <p>Paper</p>
+    <p>Paper description :</p>
+  </>
+);
+const expColumnDetails = (
+  <>
+    <p>Study/Experiment</p>
+    <p>Experiment description :</p>
+  </>
+);
+
+const dataColDetails = (col) => (
+  <>
+    <p>{col.title}</p>
+    <p>{col.description || 'no detailed description'}</p>
+  </>
+);
+
+const computedColDetails = (col) => (
+  <>
+    <p>{col.title}</p>
+    <p>{col.fullLabel}</p>
+  </>
+);
+
+// TODO: pbbly possible to find a nice way to use populate
+
 function DataTable(props) {
   const {
-    columns, papers, clickable, paperOrder,
+    columns, papers, clickable, paperOrder, makeClickable,
   } = props;
 
   return (
@@ -13,54 +42,21 @@ function DataTable(props) {
       <table className="datatable">
         <thead>
           <tr>
-            <clickable.type
-              {...clickable.props}
-              cellId="Paper"
-              cellContent={<th>Paper</th>}
-              cellDetails={(
-                <>
-                  <p>Paper</p>
-                  <p>Paper description :</p>
-                </>
-              )}
-            />
-            <clickable.type
-              {...clickable.props}
-              cellId="Study/Experiment"
-              cellContent={<th>Study/Experiment</th>}
-              cellDetails={(
-                <>
-                  <p>Study/Experiment</p>
-                  <p>Experiment description :</p>
-                </>
-              )}
-            />
-
+            <th {...makeClickable('Paper', paperColumnDetails)}>
+              Paper
+            </th>
+            <th {...makeClickable('Study/Experiment', expColumnDetails)}>
+              Study/Experiment
+            </th>
             {columns.map((col) => (
-              <clickable.type
-                {...clickable.props}
-                cellId={col.title}
-                key={col.title}
-                cellContent={<th>{col.title}</th>}
-                cellDetails={(
-                  col.id
-                    ? (
-                      <>
-                        <p>{col.title}</p>
-                        <p>{col.description || 'no detailed description'}</p>
-                      </>
-                    )
-                    : (
-                      <>
-                        <p>{col.title}</p>
-                        <p>
-                          {col.fullLabel}
-                        </p>
-                      </>
-                    )
+              <th
+                {...makeClickable(
+                  col.title,
+                  col.id ? dataColDetails(col) : computedColDetails(col),
                 )}
-              />
-
+              >
+                {col.title}
+              </th>
             ))}
           </tr>
         </thead>
@@ -73,7 +69,7 @@ function DataTable(props) {
                     key={paper.id + paper.title}
                     paper={paper}
                     columns={columns}
-                    clickable={clickable}
+                    makeClickable={makeClickable}
                   />
                 );
               }

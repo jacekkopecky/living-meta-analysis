@@ -1,9 +1,31 @@
 import React from 'react';
 import { getAggregateDatumValue, formatNumber } from '../../../tools/datatools';
 
+const aggregateDetails = (aggr) => (
+  <>
+    <p>{aggr.title}</p>
+    <p>{aggr.fullLabel}</p>
+  </>
+);
+
+const aggregateValDetails = (aggr, value, group) => (
+  <>
+    <p>{value}</p>
+    <p>
+      Calculated for the
+      {' '}
+      {group}
+      {' '}
+      group as
+      {' '}
+      {aggr.fullLabel}
+    </p>
+  </>
+);
+
 function GroupingAggregates(props) {
   const {
-    groupingAggregates, groups, groupingColumn, clickable,
+    groupingAggregates, groups, groupingColumn, makeClickable,
   } = props;
   return (
     <>
@@ -24,51 +46,22 @@ function GroupingAggregates(props) {
         <tbody>
           {groupingAggregates.map((aggr) => (
             <tr key={aggr.formula}>
-              <clickable.type
-                {...clickable.props}
-                key={aggr.title}
-                cellId={aggr.title}
-                cellContent={(
-                  <td>{aggr.title}</td>
-                )}
-                cellDetails={(
-                  <>
-                    <p>{aggr.title}</p>
-                    <p>
-                      {aggr.fullLabel}
-                    </p>
-                  </>
-                )}
-              />
+              <td {...makeClickable(aggr.title, aggregateDetails(aggr))}>
+                {aggr.title}
+              </td>
               {groups.map((group) => {
                 const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers, group);
                 return (
-                  <clickable.type
-                    {...clickable.props}
-                    key={group}
-                    cellId={group}
-                    cellContent={(
-                      <td>{formatNumber(value)}</td>
+                  <td
+                    {...makeClickable(
+                      aggr.title + group,
+                      aggregateValDetails(aggr, group, value),
                     )}
-                    cellDetails={(
-                      <>
-                        <p>{value}</p>
-                        <p>
-                          Calculated for the
-                          {' '}
-                          {group}
-                          {' '}
-                          group as
-                          {' '}
-                          {aggr.fullLabel}
-                        </p>
-
-                      </>
-                    )}
-                  />
+                  >
+                    {formatNumber(value)}
+                  </td>
                 );
               })}
-
             </tr>
           ))}
         </tbody>

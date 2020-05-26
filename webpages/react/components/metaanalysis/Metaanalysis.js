@@ -29,7 +29,7 @@ function Metaanalysis(props) {
     papers: metaanalysis.papers,
     excluded: metaanalysis.excludedExperiments,
   });
-  const [paperOrder, setPaperOrder] = useState(metaanalysis.paperOrder);
+  const [paperOrder] = useState(metaanalysis.paperOrder);
   const [aggregates] = useState(metaanalysis.aggregates);
   const [groupingAggregates] = useState(metaanalysis.groupingAggregates);
   const [graphs] = useState(metaanalysis.graphs);
@@ -52,6 +52,14 @@ function Metaanalysis(props) {
       setDisplayedCell({ text: null, cellId: null });
     }
   };
+
+  function makeClickable(cellId, details) {
+    return {
+      onClick: () => {
+        setDisplayedCell({ text: details, cellId })},
+      className: cellId === displayedCell.cellId ? 'active' : '',
+    };
+  }
 
   const clickable = <Clickable toggleDisplay={toggleDisplay} displayedCell={displayedCell} />;
 
@@ -79,6 +87,7 @@ function Metaanalysis(props) {
           paperOrder={paperOrder}
           displayedCell={displayedCell}
           clickable={clickable}
+          makeClickable={makeClickable}
         />
         <Aggregates
           path="/aggregates"
@@ -87,7 +96,7 @@ function Metaanalysis(props) {
           groupingAggregates={groupingAggregates}
           groupingColumn={metaanalysis.groupingColumnObj.title}
           groups={metaanalysis.groups}
-          clickable={clickable}
+          makeClickable={makeClickable}
         />
         <Plots
           path="/plots"
