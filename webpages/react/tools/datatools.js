@@ -101,10 +101,12 @@ export function populateCircularMa(ma) {
   for (let aggr of ma.aggregates) {
     const aggrWithParsedFormula = populateParsedFormula(aggr, ma, ma.hashcols);
     aggr = Object.assign(aggr, aggrWithParsedFormula);
+    aggr.fullLabel = getColTitle(aggr, Infinity);
   }
   for (let aggr of ma.groupingAggregates) {
     const aggrWithParsedFormula = populateParsedFormula(aggr, ma, ma.hashcols);
     aggr = Object.assign(aggr, aggrWithParsedFormula);
+    aggr.fullLabel = getColTitle(aggr, Infinity);
   }
   for (let graph of ma.graphs) {
     const aggrWithParsedFormula = populateParsedFormula(graph, ma, ma.hashcols);
