@@ -8,13 +8,13 @@ function Aggregates(props) {
     groupingAggregates,
     groups,
     groupingColumn,
-    toggleDisplay,
+    clickable,
   } = props;
   return (
     <section>
       <SimpleAggregates
         aggregates={aggregates}
-        toggleDisplay={toggleDisplay}
+        clickable={clickable}
         /* groupingColumnsObjs={} */
       />
 
@@ -23,7 +23,7 @@ function Aggregates(props) {
         groupingAggregates={groupingAggregates}
         groups={groups}
         groupingColumn={groupingColumn}
-        toggleDisplay={toggleDisplay}
+        clickable={clickable}
       />
     </section>
   );

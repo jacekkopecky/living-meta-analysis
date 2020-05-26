@@ -3,15 +3,15 @@ import { getDatumValue, formatNumber } from '../../../tools/datatools';
 
 function Cell(props) {
   const {
-    col, exp, cellId, Clickable,
+    col, exp, cellId, clickable,
   } = props;
   const value = getDatumValue(col, exp);
 
   let details;
   if (col.id) {
     details = (
-      <Clickable.type
-        {...Clickable.props}
+      <clickable.type
+        {...clickable.props}
         cellId={cellId}
         cellContent={<td>{value}</td>}
         cellDetails={(
@@ -34,8 +34,8 @@ function Cell(props) {
     );
   } else {
     details = (
-      <Clickable.type
-        {...Clickable.props}
+      <clickable.type
+        {...clickable.props}
         cellId={cellId}
         cellContent={<td>{formatNumber(value)}</td>}
         cellDetails={(
@@ -57,8 +57,8 @@ function Cell(props) {
 }
 
 function shouldMemo(prev, next) {
-  const oldDisplayedCell = prev.Clickable.props.displayedCell;
-  const newDisplayedCell = next.Clickable.props.displayedCell;
+  const oldDisplayedCell = prev.clickable.props.displayedCell;
+  const newDisplayedCell = next.clickable.props.displayedCell;
   if ((oldDisplayedCell.cellId === next.cellId) || (newDisplayedCell.cellId === prev.cellId)) {
     return false;
   }
