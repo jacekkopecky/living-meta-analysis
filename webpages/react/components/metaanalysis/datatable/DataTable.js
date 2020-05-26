@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import Paper from './Paper';
 import './DataTable.css';
@@ -5,7 +6,7 @@ import './DataTable.css';
 
 function DataTable(props) {
   const {
-    columns, papers, displayedCell, toggleDisplay, Clickable,
+    columns, papers, Clickable,
   } = props;
 
   return (
@@ -13,57 +14,56 @@ function DataTable(props) {
       <table className="datatable">
         <thead>
           <tr>
-            <th>
-              Paper
-            </th>
-            <th>
-              Study/Experiment
-            </th>
-            {columns.map((col) => {
-              let colDetails;
-              if (col.id) {
-                colDetails = (
-                  <>
-                    <p>{col.title}</p>
-                    <p>{col.description || 'no detailed description'}</p>
-                  </>
-                );
-              } else {
-                colDetails = (
-                  <>
-                    <p>{col.title}</p>
-                    <p>
-                      {col.fullLabel}
-                    </p>
-                  </>
-                );
-              }
-              const cellContent = (
-                <th>
-                  {col.title}
-                </th>
-              );
-              // const rendu = clickable(col.title, cellContent, colDetails);
-              return (
-                <Clickable.type
-                  // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...Clickable.props}
-                  cellId={col.title}
-                  key={col.title}
-                  cellContent={(
-                    <th>
-                      {col.title}
-                    </th>
-                  )}
-                  cellDetails={
-                    colDetails
-                  }
-                />
-                // <>
-                //   {rendu}
-                // </>
-              );
-            })}
+            <Clickable.type
+              {...Clickable.props}
+              cellId="Paper"
+              cellContent={<th>Paper</th>}
+              cellDetails={(
+                <>
+                  <p>Paper</p>
+                  <p>Paper description :</p>
+                </>
+              )}
+            />
+            <Clickable.type
+              {...Clickable.props}
+              cellId="Study/Experiment"
+              cellContent={<th>Study/Experiment</th>}
+              cellDetails={(
+                <>
+                  <p>Study/Experiment</p>
+                  <p>Experiment description :</p>
+                </>
+              )}
+            />
+
+            {columns.map((col) => (
+              <Clickable.type
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                {...Clickable.props}
+                cellId={col.title}
+                key={col.title}
+                cellContent={<th>{col.title}</th>}
+                cellDetails={(
+                  col.id
+                    ? (
+                      <>
+                        <p>{col.title}</p>
+                        <p>{col.description || 'no detailed description'}</p>
+                      </>
+                    )
+                    : (
+                      <>
+                        <p>{col.title}</p>
+                        <p>
+                          {col.fullLabel}
+                        </p>
+                      </>
+                    )
+                )}
+              />
+
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -72,9 +72,8 @@ function DataTable(props) {
               key={paper.id + paper.title}
               paper={paper}
               columns={columns}
-              displayedCell={displayedCell}
-              toggleDisplay={toggleDisplay}
-              // clickable={clickable}
+              Clickable={Clickable}
+
             />
           ))}
         </tbody>

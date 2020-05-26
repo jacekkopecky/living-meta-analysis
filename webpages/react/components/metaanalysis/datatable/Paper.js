@@ -4,7 +4,7 @@ import Cell from './Cell';
 
 function Paper(props) {
   const {
-    paper, columns, displayedCell, toggleDisplay,
+    paper, columns, Clickable,
   } = props;
   const {
     title, enteredBy, mtime, ctime,
@@ -42,22 +42,15 @@ function Paper(props) {
     paper.experiments.map((exp, key) => {
       let newPaper;
       let firstTr;
-      const expDetails = (
-        <>
-          <p>{title}</p>
-          <p>{exp.title}</p>
-          <p>{exp.description || 'no detailed description'}</p>
-        </>
-      );
       if (key === 0) {
         newPaper = (
-          <td
+          <Clickable.type
+            {...Clickable.props}
             key={title}
-            rowSpan={nExp}
-            onClick={() => toggleDisplay(title+ctime, paperDetails)}
-          >
-            {title}
-          </td>
+            cellId="Study/Experiment"
+            cellContent={<td rowSpan={nExp}>{title}</td>}
+            cellDetails={paperDetails}
+          />
         );
         firstTr = 'paperstart';
       }
@@ -67,9 +60,19 @@ function Paper(props) {
           className={firstTr}
         >
           {newPaper}
-          <td key={exp.title} onClick={() => toggleDisplay(exp.ctime + paper.id, expDetails)}>
-            {exp.title}
-          </td>
+          <Clickable.type
+            {...Clickable.props}
+            key={exp.title}
+            cellId={exp.ctime + paper.id}
+            cellContent={<td>{exp.title}</td>}
+            cellDetails={(
+              <>
+                <p>{title}</p>
+                <p>{exp.title}</p>
+                <p>{exp.description || 'no detailed description'}</p>
+              </>
+            )}
+          />
 
           {columns.map((col) => (
             <Cell
@@ -77,8 +80,7 @@ function Paper(props) {
               key={`${exp.ctime + paper.id}+${col.formula || col.id}`}
               col={col}
               exp={exp}
-              displayedCell={displayedCell}
-              toggleDisplay={toggleDisplay}
+              Clickable={Clickable}
             />
           ))}
 
