@@ -1,5 +1,7 @@
 import React from 'react';
 import { getAggregateDatumValue, formatNumber } from '../../../tools/datatools';
+import './SimpleAggregates.css';
+
 
 const simpleAggregateDetails = (aggr, value) => (
   <>
@@ -12,7 +14,7 @@ const simpleAggregateDetails = (aggr, value) => (
 function SimpleAggregates(props) {
   const { aggregates, makeClickable } = props;
   return (
-    <>
+    <div className="simpleaggregates">
       <table>
         <thead>
           <tr>
@@ -32,7 +34,7 @@ function SimpleAggregates(props) {
           })}
         </tbody>
       </table>
-    </>
+    </div>
   );
 }
 
