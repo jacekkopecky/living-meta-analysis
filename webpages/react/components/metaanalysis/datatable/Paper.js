@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 import Cell from './Cell';
+import { formatDateTime } from '../../../tools/datatools';
 
 const paperDetails = (paper) => {
   const {
@@ -9,12 +10,12 @@ const paperDetails = (paper) => {
   return (
     <>
       <p>Paper: {title}</p>
-      <p>Entered by {enteredBy} on {ctime}</p>
+      <p>Entered by {enteredBy} on {formatDateTime(ctime)}</p>
       <p>Reference: {reference}</p>
       <p>Description: {description}</p>
       <p>Link: {link}</p>
       <p>DOI: {doi}</p>
-      <p>Last Modified: {mtime}</p>
+      <p>Last Modified: {formatDateTime(mtime)}</p>
     </>
   );
 };
