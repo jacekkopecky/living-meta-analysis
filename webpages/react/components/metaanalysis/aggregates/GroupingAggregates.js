@@ -51,11 +51,14 @@ function GroupingAggregates(props) {
               </td>
               {groups.map((group) => {
                 const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers, group);
+                const padding = Math.trunc(value).toString().length;
                 return (
                   <td
+                    style={{ paddingRight: `${padding}ch` }}
                     {...makeClickable(
                       aggr.title + group,
-                      aggregateValDetails(aggr, group, value),
+                      aggregateValDetails(aggr, value, group),
+                      true,
                     )}
                   >
                     {formatNumber(value)}

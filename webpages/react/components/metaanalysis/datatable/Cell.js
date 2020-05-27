@@ -29,6 +29,7 @@ function Cell(props) {
     col, exp, cellId, makeClickable,
   } = props;
   const value = getDatumValue(col, exp);
+  const padding = Math.trunc(value).toString().length;
   return (
     col.id
       ? (
@@ -37,7 +38,10 @@ function Cell(props) {
         </td>
       )
       : (
-        <td {...makeClickable(cellId, computedCellDetails(col, value))}>
+        <td
+          style={{ paddingRight: `${padding}ch` }}
+          {...makeClickable(cellId, computedCellDetails(col, value), true)}
+        >
           { formatNumber(value)}
         </td>
       )
