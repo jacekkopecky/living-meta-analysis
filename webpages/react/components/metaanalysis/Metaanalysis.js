@@ -107,6 +107,7 @@ function Metaanalysis(props) {
           path="/plots_definitions"
           tabName="Plots Definitions"
           graphs={graphs}
+          makeClickable={makeClickable}
         />
       </Tabs>
       <Details displayedCell={displayedCell} setDisplayedCell={setDisplayedCell} />
