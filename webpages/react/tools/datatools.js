@@ -44,7 +44,7 @@ function getRichColumnLabel(col, level) {
 
   let retval = '';
   if (level !== Infinity && col.number !== undefined) retval += col.number;
-  if (col.grouping) retval += 'Grouping';
+  if (col.grouping) retval += 'Grouping ';
   retval += `${getFormulaLabel(col.formulaObj)}(`;
 
   if (level === 0) {

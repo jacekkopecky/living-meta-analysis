@@ -52,12 +52,14 @@ function Metaanalysis(props) {
     }
   };
 
-  function makeClickable(cellId, details) {
+  function makeClickable(cellId, details, computed) {
+    let className = cellId === displayedCell.cellId ? 'active' : '';
+    className += computed ? ' computed' : '';
     return {
       onClick: () => {
         setDisplayedCell({ text: details, cellId });
       },
-      className: cellId === displayedCell.cellId ? 'active' : '',
+      className,
     };
   }
 

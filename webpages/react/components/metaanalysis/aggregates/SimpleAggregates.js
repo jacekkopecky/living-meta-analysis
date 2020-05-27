@@ -22,10 +22,11 @@ function shouldMemo(prev, next) {
 const AggregateCell = React.memo((props) => {
   const { aggr, makeClickable } = props;
   const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers);
+  const padding = Math.trunc(value).toString().length;
   return (
     <tr {...makeClickable(aggr.title, simpleAggregateDetails(aggr, value))}>
-      <td>{aggr.title}</td>
-      <td>{formatNumber(value)}</td>
+      <td>{aggr.title}:</td>
+      <td className="computed" style={{ paddingRight: `${padding}ch` }}>{formatNumber(value)}</td>
     </tr>
   );
 }, shouldMemo);
@@ -37,8 +38,7 @@ function SimpleAggregates(props) {
       <table>
         <thead>
           <tr>
-            <th>Aggregates</th>
-            <th>Value</th>
+            <th colSpan="2">Aggregates</th>
           </tr>
         </thead>
         <tbody>

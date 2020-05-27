@@ -1,6 +1,7 @@
 import React from 'react';
 import SimpleAggregates from './SimpleAggregates';
 import GroupingAggregates from './GroupingAggregates';
+import './Aggregates.css';
 
 function Aggregates(props) {
   const {
@@ -12,7 +13,7 @@ function Aggregates(props) {
     makeClickable,
   } = props;
   return (
-    <section>
+    <section className="aggregates">
       <SimpleAggregates
         aggregates={aggregates}
         clickable={clickable}
