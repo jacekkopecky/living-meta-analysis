@@ -30,11 +30,9 @@ const computedColDetails = (col) => (
   </>
 );
 
-// TODO: pbbly possible to find a nice way to use populate
-
 function DataTable(props) {
   const {
-    columns, papers, clickable, paperOrder, makeClickable,
+    columns, papers, paperOrder, makeClickable,
   } = props;
 
   return (
@@ -62,20 +60,18 @@ function DataTable(props) {
         </thead>
         <tbody>
           {paperOrder.map((id) => (
-            Object.values(papers).map((paper) => {
-              if (paper.id === id) {
-                return (
+            Object.values(papers).map((paper) => (
+              paper.id === id
+                ? (
                   <Paper
                     key={paper.id + paper.title}
                     paper={paper}
                     columns={columns}
                     makeClickable={makeClickable}
                   />
-                );
-              }
-              return null;
-            })
-
+                )
+                : null
+            ))
           ))}
         </tbody>
       </table>
