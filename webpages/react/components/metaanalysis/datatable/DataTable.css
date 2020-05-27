@@ -1,3 +1,7 @@
+.datatable {
+  text-align: center;
+}
+
 .datatable .paperstart td {
   border-top: 2px solid black;
 }
@@ -5,4 +9,3 @@
 .datatable .computed {
   background-color: rgba(182, 234, 255, 0.5);
 }
-
