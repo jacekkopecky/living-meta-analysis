@@ -1,63 +1,52 @@
 import React from 'react';
 import { getDatumValue, formatNumber } from '../../../tools/datatools';
 
+const dataCellDetails = ({ enteredBy, ctime }) => (
+  <>
+    <p>
+      Entered by:
+      {enteredBy}
+    </p>
+    <p>
+      Creation time:
+      {ctime}
+    </p>
+  </>
+);
+const computedCellDetails = ({ fullLabel }, value) => (
+  <>
+    <p>
+      {value}
+    </p>
+    <p>
+      Calculated as {fullLabel}
+    </p>
+  </>
+);
+
 function Cell(props) {
   const {
     col, exp, cellId, makeClickable,
   } = props;
   const value = getDatumValue(col, exp);
-
-  // TODO: functions for computed cell and data cell instead of if
-
-  let details;
-  if (col.id) {
-    details = (
-      <clickable.type
-        {...clickable.props}
-        cellId={cellId}
-        cellContent={<td>{value}</td>}
-        cellDetails={(
-          <>
-            <p>
-              Entered by:
-              {exp.enteredBy}
-            </p>
-            <p>
-              Creation time:
-              {exp.ctime}
-            </p>
-          </>
-        )}
-      />
-    );
-  } else {
-    details = (
-      <clickable.type
-        {...clickable.props}
-        cellId={cellId}
-        cellContent={<td>{formatNumber(value)}</td>}
-        cellDetails={(
-          <>
-            <p>
-              {value}
-            </p>
-            <p>
-              Calculated as
-              {' '}
-              {col.fullLabel}
-            </p>
-          </>
-        )}
-      />
-    );
-  }
-  return details;
+  return (
+    col.id
+      ? (
+        <td {...makeClickable(cellId, dataCellDetails(exp))}>
+          {value}
+        </td>
+      )
+      : (
+        <td {...makeClickable(cellId, computedCellDetails(col, value))}>
+          { formatNumber(value)}
+        </td>
+      )
+  );
 }
 
 function shouldMemo(prev, next) {
-  const oldDisplayedCell = prev.clickable.props.displayedCell;
-  const newDisplayedCell = next.clickable.props.displayedCell;
-  if ((oldDisplayedCell.cellId === next.cellId) || (newDisplayedCell.cellId === prev.cellId)) {
+  if ((next.makeClickable(prev.cellId).className === 'active' && prev.makeClickable(prev.cellId).className === '')
+    || (next.makeClickable(prev.cellId).className === '' && prev.makeClickable(prev.cellId).className === 'active')) {
     return false;
   }
   return true;

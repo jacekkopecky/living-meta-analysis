@@ -7,7 +7,6 @@ import Aggregates from './aggregates/Aggregates';
 import Plots from './plots/Plots';
 import Metadata from './Metadata';
 import PlotsDefinitions from './PlotsDefinitions';
-import Clickable from './Clickable';
 import { populateCircularMa } from '../../tools/datatools';
 import Details from './Details';
 
@@ -56,12 +55,11 @@ function Metaanalysis(props) {
   function makeClickable(cellId, details) {
     return {
       onClick: () => {
-        setDisplayedCell({ text: details, cellId })},
+        setDisplayedCell({ text: details, cellId });
+      },
       className: cellId === displayedCell.cellId ? 'active' : '',
     };
   }
-
-  const clickable = <Clickable toggleDisplay={toggleDisplay} displayedCell={displayedCell} />;
 
   return (
     <main className="metaanalysis">
@@ -86,7 +84,6 @@ function Metaanalysis(props) {
           papers={table.papers}
           paperOrder={paperOrder}
           displayedCell={displayedCell}
-          clickable={clickable}
           makeClickable={makeClickable}
         />
         <Aggregates
