@@ -1,0 +1,16 @@
+.simpleaggregates.simpleaggregates table tr:hover {
+  background-color: lightpink;
+}
+
+.simpleaggregates.simpleaggregates table .active {
+  background-color: lightgreen;
+}
+
+.simpleaggregates.simpleaggregates table td,
+.simpleaggregates.simpleaggregates table th {
+  border-left: none;
+}
+
+.simpleaggregates.simpleaggregates table td:hover {
+  background-color: inherit;
+}
