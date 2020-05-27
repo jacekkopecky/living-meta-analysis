@@ -111,6 +111,7 @@ export function populateCircularMa(ma) {
   for (let graph of ma.graphs) {
     const aggrWithParsedFormula = populateParsedFormula(graph, ma, ma.hashcols);
     graph = Object.assign(graph, aggrWithParsedFormula);
+    graph.fullLabel = getColTitle(graph, Infinity);
   }
 }
 

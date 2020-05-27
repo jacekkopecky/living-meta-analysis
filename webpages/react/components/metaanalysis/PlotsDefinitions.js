@@ -1,7 +1,15 @@
 import React from 'react';
 import './PlotsDefinitions.css';
 
-function PlotsDefinitions({ graphs }) {
+const graphDetails = (graph) => (
+  <>
+    <p>{graph.title}</p>
+    <p>{graph.fullLabel}</p>
+  </>
+);
+
+function PlotsDefinitions(props) {
+  const { graphs, makeClickable } = props;
   return (
     <section className="plots-definitions">
       <h2>Graphs :</h2>
@@ -14,7 +22,7 @@ function PlotsDefinitions({ graphs }) {
         <tbody>
           {graphs.map((graph) => (
             <tr key={graph.title}>
-              <td>
+              <td {...makeClickable(graph.title, graphDetails(graph))}>
                 {graph.title}
               </td>
             </tr>
