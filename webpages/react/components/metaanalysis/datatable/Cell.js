@@ -1,5 +1,5 @@
 import React from 'react';
-import { getDatumValue, formatNumber } from '../../../tools/datatools';
+import { getDatumValue, formatNumber, formatDateTime } from '../../../tools/datatools';
 
 const dataCellDetails = ({ enteredBy, ctime }) => (
   <>
@@ -9,7 +9,7 @@ const dataCellDetails = ({ enteredBy, ctime }) => (
     </p>
     <p>
       Creation time:
-      {ctime}
+      {formatDateTime(ctime)}
     </p>
   </>
 );
