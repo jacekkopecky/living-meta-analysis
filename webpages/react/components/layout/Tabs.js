@@ -3,13 +3,13 @@ import {
   NavLink, Route, Switch, HashRouter as Router, Redirect,
 } from 'react-router-dom';
 import './Tabs.css';
-import ScrollToTop from './ScrollToTop';
+import OnTabChange from './OnTabChange';
 
 function Tabs(props) {
-  const { children, toggleDisplay } = props;
+  const { children, displayedCell, setDisplayedCell } = props;
   return (
     <Router hashType="noslash">
-      <ScrollToTop toggleDisplay={toggleDisplay} />
+      <OnTabChange displayedCell={displayedCell} setDisplayedCell={setDisplayedCell} />
       {/* Creating nav links corresponding to children components */}
       <nav className="tabs">
         <ul>
