@@ -5,19 +5,40 @@ const users = require('./users');
 const config = require('../config');
 
 
-// const paperCache = getAllPapers();
+async function getAllColumns() {
+  try {
+    console.log('getAllColumns: making a datastore request');
+    const retval = {};
+    const [results] = await datastore.createQuery('Column').run();
+
+    results.forEach((result) => {
+      try {
+        retval[result.id] = result;
+      } catch (error) {
+        console.error('error in a column entity (ignoring)', error);
+      }
+    });
+
+    console.log(`getAllColumns: ${Object.keys(retval).length} done`);
+    return retval;
+  } catch (error) {
+    console.error('error retrieving columns', error);
+    setTimeout(getAllColumns, 60 * 1000); // try loading again in a minute
+    throw error;
+  }
+}
 
 /**
  * @return {Promise<Paper[]>}
  */
 async function getAllPapers() {
-  // const columns = await columnCache;
+  const columns = await getAllColumns();
   try {
     const [retval] = await datastore.createQuery('Paper').run();
-    // retval.forEach(val => {
-    //   val = migratePaper(val, columns);
-    //   allTitles.push(val.title);
-    // });
+    retval.forEach(val => {
+      val = migratePaper(val, columns);
+      allTitles.push(val.title);
+    });
     console.log(`getAllPapers: ${retval.length} done`);
     return retval;
   } catch (error) {

@@ -7,23 +7,46 @@ const { ValidationError, NotImplementedError } = require('../errors');
 
 // const metaanalysisCache = getAllMetaanalyses();
 
+async function getAllColumns() {
+  try {
+    console.log('getAllColumns: making a datastore request');
+    const retval = {};
+    const [results] = await datastore.createQuery('Column').run();
+
+    results.forEach(result => {
+      try {
+        retval[result.id] = result;
+      } catch (error) {
+        console.error('error in a column entity (ignoring)', error);
+      }
+    });
+
+    console.log(`getAllColumns: ${Object.keys(retval).length} done`);
+    return retval;
+  } catch (error) {
+    console.error('error retrieving columns', error);
+    setTimeout(getAllColumns, 60 * 1000); // try loading again in a minute
+    throw error;
+  }
+}
+
 /**
  * @return {Promise<Metaanalysis[]>}
  */
 async function getAllMetaanalyses() {
-  // const columns = columnCache;
+  const columns = await getAllColumns();
   const papers = await getAllPapers();
 
-  // if (!columns) throw new Error('No columns in cache');
+  if (!columns) throw new Error('No columns in cache');
   if (!papers) throw new Error('No papers in cache');
 
   try {
     console.log('getAllMetaanalyses: making a datastore request');
     const [retval] = await datastore.createQuery('Metaanalysis').run();
-    // retval.forEach(val => {
-    //   migrateMetaanalysis(val, papers, columns);
-    //   allTitles.push(val.title);
-    // });
+    retval.forEach(val => {
+      migrateMetaanalysis(val, papers, columns);
+      allTitles.push(val.title);
+    });
     console.log(`getAllMetaanalyses: ${retval.length} done`);
     return retval;
   } catch (error) {
@@ -377,6 +400,27 @@ module.exports = {
   getMetaanalysesEnteredBy,
   migrateMetaanalysis,
 };
+
+/* -------------------------------------------------------------------------- */
+/*                                    Types                                   */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * @typedef {Object} Metaanalysis
+ * @property {string} title
+ * @property {string} enteredBy
+ * @property {number} ctime
+ * @property {number} mtime
+ * @property {string} published
+ * @property {string} description
+ * @property {string[]} tags
+ */
+//   saveMetaanalysis,
+//   listMetaanalyses,
+//   getMetaanalysisByTitle,
+//   getMetaanalysesEnteredBy,
+//   migrateMetaanalysis,
+// };
 
 /* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
