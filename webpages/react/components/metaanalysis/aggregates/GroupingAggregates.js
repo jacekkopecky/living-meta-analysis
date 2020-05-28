@@ -45,15 +45,16 @@ function GroupingAggregates(props) {
         </thead>
         <tbody>
           {groupingAggregates.map((aggr) => (
-            <tr key={aggr.formula}>
-              <td {...makeClickable(aggr.title, aggregateDetails(aggr))}>
-                {aggr.title}
+            <tr key={aggr.fullLabel}>
+              <td {...makeClickable(aggr.fullLabel, aggregateDetails(aggr))}>
+                {aggr.title || aggr.fullLabel}
               </td>
               {groups.map((group) => {
                 const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers, group);
                 const padding = Math.trunc(value).toString().length;
                 return (
                   <td
+                    key={aggr.title + group}
                     style={{ paddingRight: `${padding}ch` }}
                     {...makeClickable(
                       aggr.title + group,

@@ -93,7 +93,7 @@ function Metaanalysis(props) {
           tabName="Aggregates"
           aggregates={aggregates}
           groupingAggregates={groupingAggregates}
-          groupingColumn={metaanalysis.groupingColumnObj.title}
+          groupingColumn={metaanalysis.groupingColumnObj ? metaanalysis.groupingColumnObj.title : undefined}
           groups={metaanalysis.groups}
           makeClickable={makeClickable}
         />

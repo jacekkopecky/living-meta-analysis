@@ -118,7 +118,7 @@ export function getSimpleForestPlotData(graph) {
   if (isNaN(maxUcl)) maxUcl = 0;
 
   for (const line of lines) {
-    if (line.or == null) return;
+    if (line.or == null) continue;
     sumOfWt += line.wt;
     if (line.wt < minWt) minWt = line.wt;
     if (line.wt > maxWt) maxWt = line.wt;
@@ -188,7 +188,6 @@ export function getSimpleForestPlotData(graph) {
     line.currY = currY;
     currY += lineHeight;
   }
-
 
   if (!isNaN(aggregates.or * 0)) {
     let lclX = getX(aggregates.lcl);
@@ -602,7 +601,6 @@ export function getGroupingForestPlotData(graph) {
 }
 
 export function getGrapeChartData(graph) {
-  
   const { papers } = graph.metaanalysis;
   const { formulaParams } = graph;
   const moderatorParam = formulaParams[4];
@@ -725,7 +723,7 @@ export function getGrapeChartData(graph) {
     ), 0) / perGroup[group].wt;
   }
 
-  
+
   let minWt = Infinity;
   let maxWt = -Infinity;
   let minOr = Infinity;
