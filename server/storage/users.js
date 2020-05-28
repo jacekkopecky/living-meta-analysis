@@ -1,4 +1,4 @@
-const { datastore, checkForDisallowedChanges } = require('./index');
+const { datastore, checkForDisallowedChanges } = require('./shared');
 const { ForbiddenError } = require('../errors');
 const tools = require('../lib/tools');
 const config = require('../config');

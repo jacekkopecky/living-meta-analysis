@@ -1,4 +1,4 @@
-const { allTitles, datastore, checkForDisallowedChanges, fillByAndCtimes } = require('./index');
+const { allTitles, datastore, checkForDisallowedChanges, fillByAndCtimes } = require('./shared');
 const users = require('./users');
 const { getAllPapers } = require('./papers');
 const tools = require('../lib/tools');

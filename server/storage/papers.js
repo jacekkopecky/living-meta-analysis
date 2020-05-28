@@ -1,4 +1,4 @@
-const { allTitles, datastore, checkForDisallowedChanges, fillByAndCtimes } = require('./index');
+const { allTitles, datastore, checkForDisallowedChanges, fillByAndCtimes } = require('./shared');
 const { ValidationError, NotImplementedError } = require('../errors');
 const tools = require('../lib/tools');
 const users = require('./users');
