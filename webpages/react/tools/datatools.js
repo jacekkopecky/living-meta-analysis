@@ -81,7 +81,9 @@ export function populateCircularMa(ma) {
   }
 
   ma.hashcols = generateIDHash(ma.columns);
-  ma.groups = getGroups(ma);
+  if (ma.groupingColumn) {
+    ma.groups = getGroups(ma);
+  }
 
   // if (ma.groupingColumns !== undefined) {
   //   for (const groupingCol of ma.groupingColumns) {

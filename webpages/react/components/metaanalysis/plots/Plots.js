@@ -20,6 +20,7 @@ function Plots(props) {
         if (formulaName === 'grapeChartPercentGraph'
             || formulaName === 'grapeChartNumberGraph'
             || formulaName === 'grapeChartGraph') {
+          // Populate the graph with useful values
           getGrapeChartData(graph);
           return <GrapeChart key={index} graph={graph} />;
         }

@@ -48,12 +48,13 @@ function DataTable(props) {
             </th>
             {columns.map((col) => (
               <th
+                key={col.fullLabel}
                 {...makeClickable(
-                  col.title,
+                  col.id || col.fullLabel,
                   col.id ? dataColDetails(col) : computedColDetails(col),
                 )}
               >
-                {col.title}
+                {col.title || col.fullLabel}
               </th>
             ))}
           </tr>

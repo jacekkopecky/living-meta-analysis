@@ -12,8 +12,8 @@ const simpleAggregateDetails = (aggr, value) => (
 );
 
 function shouldMemo(prev, next) {
-  if ((next.makeClickable(prev.aggr.title).className === 'active' && prev.makeClickable(prev.aggr.title).className === '')
-  || (next.makeClickable(prev.aggr.title).className === '' && prev.makeClickable(prev.aggr.title).className === 'active')) {
+  if ((next.makeClickable(prev.aggr.fullLabel).className === 'active' && prev.makeClickable(prev.aggr.fullLabel).className === '')
+  || (next.makeClickable(prev.aggr.fullLabel).className === '' && prev.makeClickable(prev.aggr.fullLabel).className === 'active')) {
     return false;
   }
   return true;
@@ -24,8 +24,8 @@ const AggregateCell = React.memo((props) => {
   const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers);
   const padding = Math.trunc(value).toString().length;
   return (
-    <tr {...makeClickable(aggr.title, simpleAggregateDetails(aggr, value))}>
-      <td>{aggr.title}:</td>
+    <tr {...makeClickable(aggr.fullLabel, simpleAggregateDetails(aggr, value))}>
+      <td>{aggr.title || aggr.fullLabel}:</td>
       <td className="computed" style={{ paddingRight: `${padding}ch` }}>{formatNumber(value)}</td>
     </tr>
   );
@@ -43,7 +43,7 @@ function SimpleAggregates(props) {
         </thead>
         <tbody>
           {aggregates.map((aggr) => (
-            <AggregateCell aggr={aggr} makeClickable={makeClickable} />
+            <AggregateCell key={aggr.fullLabel} aggr={aggr} makeClickable={makeClickable} />
           ))}
         </tbody>
       </table>

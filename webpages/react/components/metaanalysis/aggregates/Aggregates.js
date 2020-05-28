@@ -18,17 +18,19 @@ function Aggregates(props) {
         aggregates={aggregates}
         clickable={clickable}
         makeClickable={makeClickable}
-        /* groupingColumnsObjs={} */
       />
+      {groupingColumn
+        ? (
+          <GroupingAggregates
+            groupingAggregates={groupingAggregates}
+            groups={groups}
+            groupingColumn={groupingColumn}
+            clickable={clickable}
+            makeClickable={makeClickable}
+          />
+        )
+        : null}
 
-      {/* TODO:  map on groupingColObj => multiple grouping aggregates */}
-      <GroupingAggregates
-        groupingAggregates={groupingAggregates}
-        groups={groups}
-        groupingColumn={groupingColumn}
-        clickable={clickable}
-        makeClickable={makeClickable}
-      />
     </section>
   );
 }

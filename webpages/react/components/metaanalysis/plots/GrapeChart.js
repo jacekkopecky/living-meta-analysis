@@ -86,6 +86,7 @@ function GrapeChart(props) {
         const dataGroup = dataGroups[index];
         return (
           <g
+            key={group}
             className="group tooltips"
             transform={`translate(${+firstGroup + groupSpacing * index}, ${0})`}
           >
@@ -99,9 +100,8 @@ function GrapeChart(props) {
                   isTopHalf,
                 } = exp;
                 return (
-                  <>
+                  <React.Fragment key={exp.index}>
                     <g
-                      key={exp.index}
                       className="experiment"
                       transform={`translate(${grapeX}, ${grapeY})`}
                     >
@@ -121,7 +121,7 @@ function GrapeChart(props) {
                         <text className="_ci  ">95% CI:</text>
                       </g>
                     </g>
-                  </>
+                  </React.Fragment>
                 );
               })}
             </g>
