@@ -44,13 +44,6 @@ function Metaanalysis(props) {
   console.log(metaanalysis);
 
   const editButtonMessage = edit ? 'STOP' : 'EDIT';
-  const toggleDisplay = (cellId, details) => {
-    if (cellId !== displayedCell.cellId) {
-      setDisplayedCell({ text: details, cellId });
-    } else {
-      setDisplayedCell({ text: null, cellId: null });
-    }
-  };
 
   function makeClickable(cellId, details, computed) {
     let className = cellId === displayedCell.cellId ? 'active' : '';
@@ -72,7 +65,7 @@ function Metaanalysis(props) {
         <Tags edit={edit} tags={tags} />
         <button className={edit === 0 ? 'btn-start' : 'btn-stop'} type="button" onClick={() => setEdit(edit === 0 ? 1 : 0)}>{editButtonMessage}</button>
       </div>
-      <Tabs toggleDisplay={toggleDisplay}>
+      <Tabs displayedCell={displayedCell} setDisplayedCell={setDisplayedCell}>
         <Info
           path="/info"
           tabName="Info"
