@@ -1,5 +1,6 @@
 import React from 'react';
 import { getDatumValue, formatNumber, formatDateTime } from '../../../tools/datatools';
+import HookEditable from '../HookEditable';
 
 const dataCellDetails = ({ enteredBy, ctime }) => (
   <>
@@ -25,6 +26,7 @@ const computedCellDetails = ({ fullLabel }, value) => (
 );
 
 function Cell(props) {
+  const EditableTD = HookEditable('td');
   const {
     col, exp, cellId, makeClickable,
   } = props;
@@ -33,9 +35,10 @@ function Cell(props) {
   return (
     col.id
       ? (
-        <td {...makeClickable(cellId, dataCellDetails(exp))}>
-          {value}
-        </td>
+        <EditableTD
+          {...makeClickable(cellId, dataCellDetails(exp))}
+          value={value}
+        />
       )
       : (
         <td
