@@ -415,24 +415,3 @@ module.exports = {
  * @property {string} description
  * @property {string[]} tags
  */
-//   saveMetaanalysis,
-//   listMetaanalyses,
-//   getMetaanalysisByTitle,
-//   getMetaanalysesEnteredBy,
-//   migrateMetaanalysis,
-// };
-
-/* -------------------------------------------------------------------------- */
-/*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
-
-/**
- * @typedef {Object} Metaanalysis
- * @property {string} title
- * @property {string} enteredBy
- * @property {number} ctime
- * @property {number} mtime
- * @property {string} published
- * @property {string} description
- * @property {string[]} tags
- */

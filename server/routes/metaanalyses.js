@@ -1,9 +1,4 @@
-const {
-  NotFoundError,
-  ValidationError,
-  NotImplementedError,
-  InternalError,
-} = require('../errors');
+const { NotFoundError, ValidationError, NotImplementedError, InternalError } = require('../errors');
 const storage = require('../storage');
 const config = require('../config');
 const tools = require('../lib/tools');
@@ -15,9 +10,7 @@ const { extractPaperForSending, extractReceivedComment } = require('./papers');
 
 async function listMetaanalysesForUser(req, res, next) {
   try {
-    const mas = await storage.metaanalyses.getMetaanalysesEnteredBy(
-      req.params.user,
-    );
+    const mas = await storage.metaanalyses.getMetaanalysesEnteredBy(req.params.user);
     if (mas.length === 0) throw new Error('no metaanalyses found');
 
     const retval = [];
@@ -32,16 +25,9 @@ async function listMetaanalysesForUser(req, res, next) {
 
 async function getMetaanalysisVersion(req, res, next) {
   try {
-    const ma = await storage.metaanalyses.getMetaanalysisByTitle(
-      req.params.user,
-      req.params.title,
-      req.params.time,
-      true,
-    );
+    const ma = await storage.metaanalyses.getMetaanalysisByTitle(req.params.user, req.params.title, req.params.time, true);
     const username = await storage.users.getUsernameOfUser(ma.enteredBy);
-    res.json(
-      extractMetaanalysisForSending(ma, true, req.params.user, username),
-    );
+    res.json(extractMetaanalysisForSending(ma, true, req.params.user, username));
   } catch (e) {
     next(e && e.status ? e : new NotFoundError());
   }
@@ -50,11 +36,7 @@ async function getMetaanalysisVersion(req, res, next) {
 async function saveMetaanalysis(req, res, next) {
   // extract from incoming data stuff that is allowed
   try {
-    const ma = await storage.metaanalyses.saveMetaanalysis(
-      extractReceivedMetaanalysis(req.body),
-      req.user.emails[0].value,
-      req.params.title,
-    );
+    const ma = await storage.metaanalyses.saveMetaanalysis(extractReceivedMetaanalysis(req.body), req.user.emails[0].value, req.params.title);
     res.json(extractMetaanalysisForSending(ma, false, req.params.user));
   } catch (e) {
     console.log(e);
@@ -90,12 +72,7 @@ async function listTopMetaanalyses(req, res, next) {
 /*                                   Helpers                                  */
 /* -------------------------------------------------------------------------- */
 
-function extractMetaanalysisForSending(
-  storageMetaanalysis,
-  includePapers,
-  user,
-  username,
-) {
+function extractMetaanalysisForSending(storageMetaanalysis, includePapers, user, username) {
   const retval = {
     id: storageMetaanalysis.id,
     title: storageMetaanalysis.title,
@@ -141,29 +118,14 @@ function extractReceivedMetaanalysis(receivedMetaanalysis) {
     published: tools.string(receivedMetaanalysis.published),
     description: tools.string(receivedMetaanalysis.description),
     tags: tools.array(receivedMetaanalysis.tags, tools.string),
-    columns: tools.array(
-      receivedMetaanalysis.columns,
-      extractReceivedMetaanalysisColumnEntry,
-    ),
+    columns: tools.array(receivedMetaanalysis.columns, extractReceivedMetaanalysisColumnEntry),
     paperOrder: tools.array(receivedMetaanalysis.paperOrder, tools.string),
     hiddenCols: tools.array(receivedMetaanalysis.hiddenCols, tools.string),
-    hiddenExperiments: tools.array(
-      receivedMetaanalysis.hiddenExperiments,
-      tools.string,
-    ),
-    excludedExperiments: tools.array(
-      receivedMetaanalysis.excludedExperiments,
-      tools.string,
-    ),
-    aggregates: tools.array(
-      receivedMetaanalysis.aggregates,
-      extractReceivedAggregate,
-    ),
+    hiddenExperiments: tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
+    excludedExperiments: tools.array(receivedMetaanalysis.excludedExperiments, tools.string),
+    aggregates: tools.array(receivedMetaanalysis.aggregates, extractReceivedAggregate),
     groupingColumn: tools.string(receivedMetaanalysis.groupingColumn),
-    groupingAggregates: tools.array(
-      receivedMetaanalysis.groupingAggregates,
-      extractReceivedAggregate,
-    ),
+    groupingAggregates: tools.array(receivedMetaanalysis.groupingAggregates, extractReceivedAggregate),
     graphs: tools.array(receivedMetaanalysis.graphs, extractReceivedGraph),
   };
 
