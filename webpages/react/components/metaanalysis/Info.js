@@ -1,9 +1,11 @@
 import React from 'react';
+import HookEditable from './HookEditable';
 import './Info.css';
 
 
 function InfoText(props) {
   const { name, value } = props;
+  const EditableP = HookEditable('p');
   return (
     <div className={name}>
       <p className="header">
@@ -11,7 +13,7 @@ function InfoText(props) {
         :
         {' '}
       </p>
-      <p className="text">{value}</p>
+      <EditableP className="text" value={value} />
     </div>
   );
 }
