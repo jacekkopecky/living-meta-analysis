@@ -77,8 +77,28 @@ In conclusion : the directory structure stays the same, and you can serve the `/
 
 -   None of the code should have the lima.soc.port.ac.uk URL built in (this can cause trouble with parcel)
 
+    - We chose to leave those URLs because it is less complicated that way than to use a proxy for development
+    - Pay attention to that when merging to production
+
 -   You can install the `ncu` package via npm and run `ncu`  to see dependencies upgrades. Then you can follow the instructions to proceed to the upgrades.
 
-> Don't forget to read changelogs, there are often breaking changes
+> Don't forget to read changelogs when updating dependancies, there are often breaking changes
 
 >**Note : the application must be accessed on http://localhost:8080 to comply with the CORS policy from the API**
+
+### About the code
+
+The code was built with maintainability in mind.
+
+The UI is separated from the data manipulation (most of the data manipulation happens in `tools/datatools.js`)
+
+The UI components try to be logically separated. You can start reading from index.html and follow the render logic to get a global overview of the app.
+
+If you want to know how a specific component works, you can easily find and read its source and the data it has access to (some of this data is generated in the `populateCircularMa` function in `tools/datatools.js`)
+
+Some tricky parts are documented with comments.
+
+It's ok to learn React while maintaining this version of LiMA, most of our use of React is well documented on the React documentation.
+We extensively use React hooks (`useState`, `useEffect`), you'll want to look them up.
+
+The directory structure tries to be logical as well.
