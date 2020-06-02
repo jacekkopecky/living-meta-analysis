@@ -19,7 +19,7 @@ const cookieParser = require('cookie-parser');
 const config = require('./config');
 
 const api = require('./routes');
-// const storage = require('./storage');
+const storage = require('./storage');
 const NotFoundError = require('./errors/NotFoundError');
 
 const exec = require('child_process').exec;
@@ -91,23 +91,29 @@ app.use(cookieParser());
 // if we don't get a valid closed-beta code in the lima-beta-code cookie,
 // we will redirect to a coming-soon page
 
-// if (!process.env.TESTING) {
-//   // regex for quickly checking for selected paths to be allowed: /css, /js, /img, /api
-//   const closedBetaAllowedURLs = /^\/(css|js|img|api|\.well-known)\//;
+if (!process.env.TESTING) {
+  // regex for quickly checking for selected paths to be allowed: /css, /js, /img, /api
+  const closedBetaAllowedURLs = /^\/(css|js|img|api|\.well-known)\//;
 
-//   app.use('/', (req, res, next) => {
-//     if (req.url.match(closedBetaAllowedURLs)) {
-//       next();
-//     } else if (req.cookies && storage.betaCodes[req.cookies['lima-beta-code']]) {
-//       // storage.touchBetaCode(req.cookies['lima-beta-code'], req.user ? req.user.emails[0].value : undefined);
-//       next();
-//     } else if (req.url === '/') {
-//       res.sendFile('coming-soon.html', { root: './webpages/' });
-//     } else {
-//       res.redirect('/');
-//     }
-//   });
-// }
+  app.use('/', async (req, res, next) => {
+    if (req.url.match(closedBetaAllowedURLs)) {
+      next();
+    } else if (req.cookies && req.cookies['lima-beta-code']) {
+      const codeKey = storage.shared.datastore.key(['BetaCode', req.cookies['lima-beta-code']]);
+      const validCode = await storage.shared.datastore.get(codeKey);
+      if (validCode[0]) {
+        next();
+      } else {
+        // console.log(req.url);
+        if (req.url === '/') {
+          res.sendFile('coming-soon.html', { root: './webpages/' });
+        } else {
+          res.redirect('/');
+        }
+      }
+    }
+  });
+}
 
 /* routes
  *
