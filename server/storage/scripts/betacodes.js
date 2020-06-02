@@ -11,12 +11,18 @@ const rl = readline.createInterface({
 rl.question('Enter the number of codes you want: ', (numCodes) => {
   rl.question('Enter a comment for the codes: ', (comment) => {
     let betaCodes = '';
+    const codes = [];
     for (let i = 0; i < numCodes; i++) {
       const code = uid(12);
-      const dataGenerated = new Date().toUTCString();
-      saveCode(code, dataGenerated, comment);
-      betaCodes += `${code} | ${dataGenerated} | ${comment}\n`;
+      const dateGenerated = new Date().toUTCString();
+      codes.push({
+        code: code,
+        timeGenerated: dateGenerated,
+        comment: comment,
+      });
+      betaCodes += `${code} | ${dateGenerated} | ${comment}\n`;
     }
+    saveCodes(codes);
     fs.appendFile('codes.txt', betaCodes, err => {
       if (err) return console.log(err);
       console.log('Successfully generated beta codes');
@@ -24,19 +30,15 @@ rl.question('Enter the number of codes you want: ', (numCodes) => {
   });
 });
 
-async function saveCode(codeValue, dataGenerated, comment) {
+async function saveCodes(codes) {
   const kind = 'BetaCode';
-
-  const name = codeValue;
-
-  const codeKey = datastore.key([kind, name]);
-  const code = {
-    key: codeKey,
-    data: {
-      timeGenerated: dataGenerated,
-      comment: comment,
-    },
-  };
-
-  await datastore.save(code);
+  const entities = [];
+  codes.forEach(element => {
+    const codeKey = datastore.key([kind, element.code]);
+    entities.push({
+      key: codeKey,
+      data: element,
+    });
+  });
+  await datastore.upsert(entities);
 }
