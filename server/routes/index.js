@@ -69,21 +69,8 @@ async function getKindForTitle(user, title) {
   throw new Error('Nothing found');
 }
 
-const sharedStorage = require('../storage/shared');
-
-// TODO: needed route? unsure of function of this
+// todo: implement using a query
 function listTitles(req, res, next) {
-  // try {
-  //   const titles = sharedStorage.allTitles;
-  //   const retval = [];
-  //   titles.forEach((t) => {
-  //     if (typeof t === 'string') retval.push(t);
-  //   });
-  //   res.json(retval);
-  // } catch (error) {
-  //   next(error);
-  // }
-  console.log('Do we need this?');
   res.send([]);
 }
 
