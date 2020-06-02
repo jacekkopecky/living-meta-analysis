@@ -1,6 +1,7 @@
 const metaanalyses = require('./metaanalyses');
 const papers = require('./papers');
 const users = require('./users');
+const shared = require('./shared');
 
 /* closed beta
  *
@@ -53,4 +54,5 @@ module.exports = {
   metaanalyses,
   papers,
   users,
-}
+  shared,
+};
