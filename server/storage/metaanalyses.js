@@ -3,7 +3,7 @@ const users = require('./users');
 const { getAllPapers } = require('./papers');
 const tools = require('../lib/tools');
 const config = require('../config');
-const { ValidationError, NotImplementedError } = require('../errors');
+const { ValidationError, NotImplementedError, InternalError } = require('../errors');
 
 // const metaanalysisCache = getAllMetaanalyses();
 
@@ -59,7 +59,7 @@ async function getAllMetaanalyses() {
 /*
  * change metaanalysis from an old format to the new one on load from datastore, if need be
  */
-function migrateMetaanalysis(metaanalysis, papers, columns) {
+async function migrateMetaanalysis(metaanalysis) {
   // 2017-02-23: move columnOrder to columns
   //     when all is migrated: just remove this code
   if (metaanalysis.columnOrder) {
@@ -97,30 +97,36 @@ function migrateMetaanalysis(metaanalysis, papers, columns) {
   //       remove all remaining mentions of global columns
   //       remove columns from datastore
   // prepare the papers this metaanalysis depends on
-  const maPapers = metaanalysis.paperOrder.map((paperId) => {
+  const maPapers = await Promise.all(metaanalysis.paperOrder.map(async (paperId) => {
     // find the paper with the matching ID
-    const retval = papers.find((paper) => paper.id === paperId);
-    if (!retval) {
+    const query = datastore.createQuery('Paper').filter('id', '=', paperId);
+    const [retval] = await datastore.runQuery(query);
+    if (retval.length === 0) {
       throw new Error(`metaanalysis ${metaanalysis.title} has a paper ${paperId} that isn't in the datastore`);
     }
-    return retval;
-  });
+    return retval[0];
+  }));
 
   // convert columns from string to object
   if (!metaanalysis.columns) metaanalysis.columns = [];
   let maxId = 0;
-  metaanalysis.columns.forEach((col, colIndex) => {
+  metaanalysis.columns.forEach(async (col, colIndex) => {
     if (typeof col === 'string') {
       // migrate the string into an object
-      if (!columns[col]) throw new Error(`metaanalysis ${metaanalysis.title} uses nonexistent column ${col}`);
+      const query = datastore.createQuery('Column').filter('id', '=', col);
+      const [retval] = await datastore.runQuery(query);
+      if (retval.length === 0) throw new Error(`metaanalysis ${metaanalysis.title} uses nonexistent column ${col}`);
+      const column = retval[0];
       const colObject = {
         id: '' + (maxId += 1),
-        title: columns[col].title,
-        description: columns[col].description,
-        type: columns[col].type,
+        title: column.title,
+        description: column.description,
+        type: column.type,
       };
+
       // add sourceColumnMap { paperId: columnId }
       colObject.sourceColumnMap = {};
+
       maPapers.forEach((paper) => {
         // go through paper's columns, find the one whose obsolete id matches col, use its ID in this map
         const paperCol = paper.columns.find((paperColObject) => paperColObject.obsoleteIDForMigration === col);
@@ -201,10 +207,15 @@ async function getMetaanalysesEnteredBy(user) {
     throw new Error('user parameter required');
   }
 
-  const metaanalysis = await getAllMetaanalyses();
   const email = await users.getEmailAddressOfUser(user);
+  const query = datastore.createQuery('Metaanalysis').filter('enteredBy', '=', email);
 
-  return metaanalysis.filter(ma => ma.enteredBy === email);
+  try {
+    const [metaanalyses] = await datastore.runQuery(query);
+    return metaanalyses;
+  } catch (error) {
+    throw new InternalError();
+  }
 }
 
 async function getMetaanalysisByTitle(user, title, time, includePapers) {
@@ -213,7 +224,6 @@ async function getMetaanalysisByTitle(user, title, time, includePapers) {
     throw new NotImplementedError('getMetaanalysisByTitle with time not implemented');
   }
 
-
   // todo different users can use different titles for the same thing
 
   if (title === config.NEW_META_TITLE) {
@@ -221,16 +231,19 @@ async function getMetaanalysisByTitle(user, title, time, includePapers) {
     return newMetaanalysis(email);
   }
 
-  const metaanalyses = await getAllMetaanalyses();
-  for (let ma of metaanalyses) {
-    if (ma.title === title) {
-      if (includePapers) {
-        // use a shallow copy of ma
-        ma = getMetaanalysisWithPapers(ma, time);
-      }
-      return ma;
+  // const metaanalyses = await getAllMetaanalyses();
+  const query = datastore.createQuery('Metaanalysis').filter('title', '=', title);
+
+  const [metaanalyses] = await datastore.runQuery(query);
+  if (metaanalyses.length >= 1) {
+    let ma = metaanalyses[0];
+    if (includePapers) {
+      ma = await migrateMetaanalysis(ma);
+      ma = getMetaanalysisWithPapers(ma, time);
     }
+    return ma;
   }
+
   throw new Error('No metaanalysis found');
 }
 
@@ -239,9 +252,13 @@ async function getMetaanalysisWithPapers(ma, time) {
     throw new NotImplementedError('getMetaanalysisWithPapers with time not implemented');
   }
 
-  const papers = await getAllPapers();
   // use a shallow copy of ma
   ma = { ...ma };
+
+  const createDatastoreKey = (id) => datastore.key(['Paper', id]);
+  const keys = ma.paperOrder.map(createDatastoreKey);
+
+  const [papers] = await datastore.get(keys);
 
   ma.papers = [];
   // populate the papers array in the order of ma.paperOrder
@@ -266,7 +283,7 @@ function listMetaanalyses() {
   return getAllMetaanalyses();
 }
 
-const currentMetaanalysisSave = Promise.resolve();
+// const currentMetaanalysisSave = Promise.resolve();
 
 async function saveMetaanalysis(metaanalysis, email, origTitle, options) {
   options = options || {};
@@ -280,13 +297,10 @@ async function saveMetaanalysis(metaanalysis, email, origTitle, options) {
   //   (must allow editing the last comment by this user in case in the meantime another user
   //    has added another comment)
 
-  let doAddMetaanalysisToCache;
-
   // the following serializes this save after the previous one, whether it fails or succeeds
   // this way we can't have two concurrent saves create metaanalyses with the same title
 
-  await currentMetaanalysisSave;
-  const metaanalyses = await getAllMetaanalyses();
+  // await currentMetaanalysisSave;
 
   // prepare the metaanalysis for saving
   const ctime = tools.uniqueNow();
@@ -295,18 +309,10 @@ async function saveMetaanalysis(metaanalysis, email, origTitle, options) {
     metaanalysis.id = '/id/ma/' + ctime;
     metaanalysis.enteredBy = email;
     metaanalysis.ctime = metaanalysis.mtime = ctime;
-    doAddMetaanalysisToCache = () => {
-      metaanalyses.push(metaanalysis);
-      allTitles.push(metaanalysis.title);
-    };
   } else {
-    let i = 0;
-    for (; i < metaanalyses.length; i++) {
-      if (metaanalyses[i].id === metaanalysis.id) { // todo change getAllMetaanalyses() to be indexed by id?
-        original = metaanalyses[i];
-        break;
-      }
-    }
+    const query = datastore.createQuery('Metaanalysis').filter('id', '=', metaanalysis.id);
+    const [retval] = await datastore.runQuery(query);
+    original = retval[0] || null;
 
     if (options.restoring) {
       // metaanalysis is a metaanalysis we're restoring from some other datastore
@@ -328,21 +334,6 @@ async function saveMetaanalysis(metaanalysis, email, origTitle, options) {
       metaanalysis.ctime = original.ctime;
       metaanalysis.mtime = tools.uniqueNow();
     }
-
-    doAddMetaanalysisToCache = () => {
-      // put the metaanalysis in the cache where the original metaanalysis was
-      // todo this can be broken by deletion - the `i` would then change
-      metaanalyses[i] = metaanalysis;
-      // replace in allTitles the old title of the metaanalysis with the new title
-      if (original && original.title !== metaanalysis.title) {
-        let titleIndex = allTitles.indexOf(original.title);
-        if (titleIndex === -1) {
-          titleIndex = allTitles.length;
-          console.warn(`for some reason, title ${original.title} was missing in allTitles`);
-        }
-        allTitles[titleIndex] = metaanalysis.title;
-      }
-    };
   }
 
   // validate incoming data
@@ -384,7 +375,6 @@ async function saveMetaanalysis(metaanalysis, email, origTitle, options) {
         ],
       },
     ]);
-    doAddMetaanalysisToCache();
     return metaanalysis;
   } catch (error) {
     console.error('error saving metaanalysis', error);
