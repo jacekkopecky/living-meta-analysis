@@ -77,13 +77,24 @@ async function getUser(user) {
     throw new ForbiddenError('provided username is a reserved word');
   }
 
-  const users = await getAllUsers();
-  const email = await getEmailAddressOfUser(user);
+  let query;
+
+  if (user.includes('@')) {
+    // user is an email
+    query = datastore.createQuery('User').filter('email', '=', user);
+  } else {
+    query = datastore.createQuery('User').filter('username', '=', user);
+  }
 
   try {
-    return users[email];
+    const [retval] = await datastore.runQuery(query);
+    if (retval.length >= 1) {
+      return retval[0];
+    } else {
+      throw new Error('User not found');
+    }
   } catch (error) {
-    throw new Error(`user ${email} not found`);
+    throw new Error('User not found');
   }
 }
 
@@ -173,15 +184,18 @@ const allUsernames = [LOCAL_STORAGE_SPECIAL_USERNAME];
 async function getEmailAddressOfUser(user) {
   if (user.indexOf('@') !== -1) return user;
 
-  const users = await getAllUsers();
+  const query = datastore.createQuery('User').filter('username', '=', user);
 
-  for (const email of Object.keys(users)) {
-    if (users[email].username === user) {
-      return email;
+  try {
+    const [emails] = await datastore.runQuery(query);
+    if (emails.length >= 1) {
+      return emails[0].email;
+    } else {
+      throw new Error('No email found');
     }
+  } catch (error) {
+    return null;
   }
-
-  return null;
 }
 
 // Take either the email address, or username and return the username (or null if there is none)
