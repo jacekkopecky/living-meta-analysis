@@ -11,7 +11,7 @@ async function saveUser(req, res, next) {
   user.mtime = Date.now(); // update modification time - this is the last time the user agreed to T&C&PP
   user.username = tools.string(req.body.username);
   try {
-    const storageUser = await storage.saveUser(user.email, user);
+    const storageUser = await storage.users.saveUser(user.email, user);
     res.json(extractUserForSending(storageUser));
   } catch (err) {
     next(err instanceof Error ? err : new InternalError(err));
