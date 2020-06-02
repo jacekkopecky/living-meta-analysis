@@ -98,21 +98,25 @@ if (!process.env.TESTING) {
   app.use('/', async (req, res, next) => {
     if (req.url.match(closedBetaAllowedURLs)) {
       next();
-    } else if (req.cookies && req.cookies['lima-beta-code']) {
-      const codeKey = storage.shared.datastore.key(['BetaCode', req.cookies['lima-beta-code']]);
-      const validCode = await storage.shared.datastore.get(codeKey);
-      if (validCode[0]) {
-        next();
-      } else {
-        // console.log(req.url);
-        if (req.url === '/') {
-          res.sendFile('coming-soon.html', { root: './webpages/' });
-        } else {
-          res.redirect('/');
-        }
-      }
+    } else if (await isValidBetaCode(req.cookies['lima-beta-code'])) {
+      next();
+    } else if (req.url === '/') {
+      res.sendFile('coming-soon.html', { root: './webpages/' });
+    } else {
+      res.redirect('/');
     }
   });
+}
+
+async function isValidBetaCode(betaCodeCookies) {
+  if (betaCodeCookies) {
+    const codeKey = storage.shared.datastore.key(['BetaCode', betaCodeCookies]);
+    const codes = await storage.shared.datastore.get(codeKey);
+    if (codes[0]) return true;
+    return false;
+  } else {
+    return false;
+  }
 }
 
 /* routes
