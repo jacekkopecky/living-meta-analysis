@@ -18,7 +18,6 @@ async function getAllUsers() {
   try {
     const [retval] = await datastore.createQuery('User').run();
     retval.forEach(user => {
-      // SUGGESTION: is this needed anymore?
       user = migrateUser(user);
       if (user.username) {
         allUsernames.push(user.username.toLowerCase());
