@@ -43,7 +43,7 @@ function Metaanalysis(props) {
 
   const editButtonMessage = edit ? 'STOP' : 'EDIT';
 
-  function makeClickable(cellId, details, computed) {
+  const makeClickable = (cellId, details, computed) => {
     let className = cellId === displayedCell.cellId ? 'active' : '';
     className += computed ? ' computed' : '';
     return {
@@ -79,7 +79,6 @@ function Metaanalysis(props) {
           columns={table.columns}
           papers={table.papers}
           paperOrder={paperOrder}
-          displayedCell={displayedCell}
           makeClickable={makeClickable}
           edit={edit}
         />

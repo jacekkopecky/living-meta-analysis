@@ -50,11 +50,9 @@ function Cell(props) {
 }
 
 function shouldMemo(prev, next) {
-  if ((next.makeClickable(prev.cellId).className === 'active' && prev.makeClickable(prev.cellId).className === '')
-    || (next.makeClickable(prev.cellId).className === '' && prev.makeClickable(prev.cellId).className === 'active')) {
-    return false;
-  }
-  return true;
+  return prev.cellId === next.cellId
+    && next.makeClickable(prev.cellId).className === prev.makeClickable(prev.cellId).className;
 }
+
 // We'll re-render the Cell only when we detect a change (cell color)
 export default React.memo(Cell, shouldMemo);
