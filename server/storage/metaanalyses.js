@@ -218,6 +218,11 @@ async function getMetaanalysisWithPapers(ma, time) {
   return ma;
 }
 
+async function listMetaanalyses() {
+  const [retval] = await datastore.createQuery('Metaanalysis').run();
+  return retval;
+}
+
 function newMetaanalysis(email) {
   const time = tools.uniqueNow();
   return {
@@ -330,6 +335,7 @@ module.exports = {
   saveMetaanalysis,
   getMetaanalysisByTitle,
   getMetaanalysesEnteredBy,
+  listMetaanalyses,
   migrateMetaanalysis,
 };
 
