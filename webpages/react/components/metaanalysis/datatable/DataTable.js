@@ -48,7 +48,7 @@ function DataTable(props) {
             </th>
             {columns.map((col) => (
               <th
-                key={col.fullLabel}
+                key={col.id || col.fullLabel}
                 {...makeClickable(
                   col.id || col.fullLabel,
                   col.id ? dataColDetails(col) : computedColDetails(col),
@@ -82,4 +82,3 @@ function DataTable(props) {
 }
 
 export default DataTable;
-
