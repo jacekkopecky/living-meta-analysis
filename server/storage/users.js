@@ -88,7 +88,7 @@ function getForbiddenUsernames() {
   const retval = [...config.FORBIDDEN_USERNAMES, LOCAL_STORAGE_SPECIAL_USERNAME];
 
   // then populate the rest by taking a look at /webpages
-  const files = fs.readdirSync(path.join(__dirname, '..', 'webpages'));
+  const files = fs.readdirSync(path.join(__dirname, '..', '..', 'webpages'));
 
   files.forEach((name) => {
     addUsernameIfNotThere(retval, name);
