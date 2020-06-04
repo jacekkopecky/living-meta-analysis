@@ -2,10 +2,12 @@ const config = require('../config');
 const { ValidationError } = require('../errors');
 const tools = require('../lib/tools');
 const { Datastore } = require('@google-cloud/datastore');
-const { forbiddenUsernames } = require('./users')
+const fs = require('fs');
+const path = require('path');
 
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
 const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
+const LOCAL_STORAGE_SPECIAL_USERNAME = 'local';
 
 const datastore = process.env.TESTING ? createStubDatastore()
   : new Datastore({
@@ -206,8 +208,37 @@ async function checkForDisallowedChanges(current, original) {
   }
 }
 
+// on start of web server put all file names in /webpages into this list, with and without filename extensions
+const forbiddenUsernames = [];
+
+function getForbiddenUsernames() {
+  // start initially with those defined in config
+  const retval = [...config.FORBIDDEN_USERNAMES, LOCAL_STORAGE_SPECIAL_USERNAME];
+
+  // then populate the rest by taking a look at /webpages
+  const files = fs.readdirSync(path.join(__dirname, '..', '..', 'webpages'));
+
+  files.forEach((name) => {
+    addUsernameIfNotThere(retval, name);
+    addUsernameIfNotThere(retval, name.replace(/\..*$/, ''));
+  });
+
+  function addUsernameIfNotThere(arr, name) {
+    // don't add usernames that wouldn't be allowed anyway
+    if (!name) return;
+    if (!name.match(USERNAME_REXP)) return;
+
+    if (arr.indexOf(name) === -1) arr.push(name.toLowerCase());
+  }
+
+  // push all the found forbidden usernames into the global array
+  forbiddenUsernames.push(...retval);
+}
+
 module.exports = {
   datastore,
   fillByAndCtimes,
   checkForDisallowedChanges,
+  forbiddenUsernames,
+  getForbiddenUsernames,
 };

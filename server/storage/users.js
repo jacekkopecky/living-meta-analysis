@@ -1,12 +1,7 @@
-const { datastore, checkForDisallowedChanges } = require('./shared');
+const { datastore, checkForDisallowedChanges, forbiddenUsernames } = require('./shared');
 const { ForbiddenError } = require('../errors');
 const tools = require('../lib/tools');
-const config = require('../config');
-const fs = require('fs');
-const path = require('path');
-const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
 const LOCAL_STORAGE_SPECIAL_USER = 'lima@local';
-const LOCAL_STORAGE_SPECIAL_USERNAME = 'local';
 
 /**
  * @param {string} user
@@ -78,33 +73,6 @@ async function saveUser(email, user, options) {
   }
 }
 
-// on start of web server put all file names in /webpages into this list, with and without filename extensions
-const forbiddenUsernames = [];
-
-function getForbiddenUsernames() {
-  // start initially with those defined in config
-  const retval = [...config.FORBIDDEN_USERNAMES, LOCAL_STORAGE_SPECIAL_USERNAME];
-
-  // then populate the rest by taking a look at /webpages
-  const files = fs.readdirSync(path.join(__dirname, '..', '..', 'webpages'));
-
-  files.forEach((name) => {
-    addUsernameIfNotThere(retval, name);
-    addUsernameIfNotThere(retval, name.replace(/\..*$/, ''));
-  });
-
-  function addUsernameIfNotThere(arr, name) {
-    // don't add usernames that wouldn't be allowed anyway
-    if (!name) return;
-    if (!name.match(USERNAME_REXP)) return;
-
-    if (arr.indexOf(name) === -1) arr.push(name.toLowerCase());
-  }
-
-  // push all the found forbidden usernames into the global array
-  forbiddenUsernames.push(...retval);
-}
-
 // Take either the email address, or username and return the email address
 async function getEmailAddressOfUser(user) {
   if (user.indexOf('@') !== -1) return user;
@@ -136,7 +104,6 @@ module.exports = {
   getEmailAddressOfUser,
   getUsernameOfUser,
   forbiddenUsernames,
-  getForbiddenUsernames,
 };
 
 /* -------------------------------------------------------------------------- */

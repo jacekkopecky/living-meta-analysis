@@ -4,7 +4,7 @@ const users = require('./users');
 const shared = require('./shared');
 
 function setup() {
-  users.getForbiddenUsernames();
+  shared.getForbiddenUsernames();
 }
 
 module.exports = {
