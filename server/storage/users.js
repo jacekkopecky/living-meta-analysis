@@ -97,10 +97,6 @@ async function getUser(user) {
   }
 }
 
-function listUsers() {
-  return getAllUsers();
-}
-
 async function saveUser(email, user, options) {
   options = options || {};
   // todo do we want to keep a Log of users?
@@ -207,7 +203,6 @@ async function getUsernameOfUser(user) {
 module.exports = {
   migrateUser,
   getUser,
-  listUsers,
   saveUser,
   getEmailAddressOfUser,
   getUsernameOfUser,
