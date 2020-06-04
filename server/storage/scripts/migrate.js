@@ -1,5 +1,7 @@
 'use strict';
-const { datastore } = require('../shared');
+const { datastore, checkForDisallowedChanges } = require('../shared');
+const LOCAL_STORAGE_SPECIAL_USER = 'lima@local';
+const LOCAL_STORAGE_SPECIAL_USERNAME = 'local';
 
 /*
  * change metaanalysis from an old format to the new one on load from datastore, if need be
@@ -294,10 +296,26 @@ async function getAllColumns() {
   }
 }
 
-async function migrate() {
+async function migrateAllUsers() {
+  const kind = 'User';
+  const [retval] = await datastore.createQuery(kind).run();
+  const entities = [];
+  retval.forEach(user => {
+    const val = migrateUser(user);
+    const userKey = datastore.key([kind, val.email]);
+    entities.push({
+      key: userKey,
+      data: val,
+    });
+  });
+  await datastore.upsert(entities);
+
+}
+
+async function migrateAllPapers() {
   const columns = await getAllColumns();
-  const [retval] = await datastore.createQuery('Paper').run();
   const kind = 'Paper';
+  const [retval] = await datastore.createQuery(kind).run();
   const entities = [];
   retval.forEach(element => {
     const val = migratePaper(element, columns);
@@ -310,4 +328,23 @@ async function migrate() {
   await datastore.upsert(entities);
 }
 
-migrate();
+async function migrateAllMetaanalysis() {
+  const kind = 'Metaanalysis';
+  const [retval] = await datastore.createQuery(kind).run();
+  const entities = [];
+  retval.forEach(async (element) => {
+    try {
+      const val = await migrateMetaanalysis(element);
+      const metaanalysisKey = datastore.key([kind, val.id]);
+      entities.push({
+        key: metaanalysisKey,
+        data: val,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  })
+  console.log('this', entities)
+  // await datastore.upsert(entities);
+}
+
