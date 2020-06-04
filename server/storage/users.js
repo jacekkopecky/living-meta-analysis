@@ -58,8 +58,6 @@ async function saveUser(email, user, options) {
   }
 
   const original = await getUser(email);
-
-  const original = users[email];
   // reject the save if we're restoring from another datastore and we already have this user
   if (options.restoring && original) {
     throw new Error(`user ${user.email} already exists`);
@@ -128,8 +126,8 @@ async function getEmailAddressOfUser(user) {
 // Take either the email address, or username and return the username (or null if there is none)
 async function getUsernameOfUser(user) {
   if (user.indexOf('@') === -1) return user;
-  const users = await getAllUsers();
-  return users[user].username;
+  const retval = await getUser(user);
+  return retval.username;
 }
 
 module.exports = {
