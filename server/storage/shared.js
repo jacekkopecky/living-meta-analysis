@@ -123,10 +123,10 @@ async function checkForDisallowedChanges(current, original) {
     if (!USERNAME_REXP.test(current.username)) {
       throw new ValidationError('username cannot contain spaces or special characters');
     }
-    // todo: check for unique and allowed username via datastore query
-    // if (users.allUsernames.indexOf(current.username.toLowerCase()) !== -1) {
-    //   throw new ValidationError('username must be unique, must not be from the forbidden list');
-    // }
+    const [usernameCheck] = await datastore.createQuery('User').filter('username', '=', current.username).run();
+    if (usernameCheck.length > 0) {
+      throw new ValidationError('username must be unique, must not be from the forbidden list');
+    }
     // todo: do we need extra checks here? I.e. length of username? encodings? emojis?
   }
 
