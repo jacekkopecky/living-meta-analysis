@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-restricted-globals */
 import { isColCompletelyDefined, getDatumValue, getAggregateDatumValue } from './datatools';
@@ -118,6 +119,7 @@ export function getSimpleForestPlotData(graph) {
   if (isNaN(maxUcl)) maxUcl = 0;
 
   for (const line of lines) {
+    // eslint-disable-next-line no-continue
     if (line.or == null) continue;
     sumOfWt += line.wt;
     if (line.wt < minWt) minWt = line.wt;
@@ -760,7 +762,8 @@ export function getGrapeChartData(graph) {
   let tickNo = 0;
   while (Math.log(newBound) > minOr) {
     tickNo -= 1;
-    newBound /= TICK_SPACING[window.lima._.mod(tickNo, TICK_SPACING.length)]; // JS % can be negative
+    newBound /= TICK_SPACING[window.lima._.mod(tickNo, TICK_SPACING.length)];
+    // JS % can be negative
   }
   minOr = Math.log(newBound) - 0.1;
 
@@ -794,10 +797,11 @@ export function getGrapeChartData(graph) {
 
   // minWt = 0;
   // todo we can uncomment this to make all weights relative to only the maximum weight
-  // square root the weights because we're using them as lengths of the side of a square whose area should correspond to the weight
+  // square root the weights because we're using them as
+  // lengths of the side of a square whose area should correspond to the weight
   maxWt = Math.sqrt(maxWt);
   minWt = Math.sqrt(minWt);
-  const wtRatio = 1 / (maxWt - minWt) * (maxGrapeSize - minGrapeSize);
+  const wtRatio = (1 / (maxWt - minWt)) * (maxGrapeSize - minGrapeSize);
 
 
   function getGrapeRadius(wt) {
@@ -819,7 +823,7 @@ export function getGrapeChartData(graph) {
       dataGroup.withPosButton = true;
     }
     resetPositioning();
-    const index = 0;
+    let index = 0;
     for (const exp of dataGroup.data) {
       exp.index = index;
       precomputePosition(exp.index, getY(exp.or), getGrapeRadius(exp.wt) + grapeSpacing);
@@ -837,7 +841,7 @@ export function getGrapeChartData(graph) {
       text.exp = exp.exp;
       if (exp.or != null) {
         text.or = Math.exp(exp.or).toFixed(2);
-        text.wt = `${(exp.wt * 100 / perGroup[group].wt).toFixed(2)}%`;
+        text.wt = `${((exp.wt * 100) / perGroup[group].wt).toFixed(2)}%`;
         text.ci = `${Math.exp(exp.lcl).toFixed(2)}, ${Math.exp(exp.ucl).toFixed(2)}`;
       } else {
         dataGroup.invalid = true;
@@ -847,10 +851,11 @@ export function getGrapeChartData(graph) {
       }
 
       let boxWidth = +tooltipMinWidth;
-      for (const text of texts) {
+      for (const txt of texts) {
         try {
-          const w = text.getBBox().width;
+          const w = txt.getBBox().width;
           boxWidth = Math.max(boxWidth, w);
+        // eslint-disable-next-line no-empty
         } catch (e) {}
       }
       exp.text = text;
@@ -892,12 +897,13 @@ export function getGrapeChartData(graph) {
 
   function precomputePosition(index, y, r) {
     positionedGrapes.ybounds.add(y - r, y + r);
-    positionedGrapes.pre[index] = positionedGrapes.sorted[index] = { index, y, r };
+    positionedGrapes.sorted[index] = { index, y, r };
+    positionedGrapes.pre[index] = positionedGrapes.sorted[index];
   }
 
   function finalizePositioning() {
     // position big grapes first so they tend to be more central
-    const sortingStrategy = function (a, b) { return b.r - a.r; };
+    const sortingStrategy = (a, b) => b.r - a.r;
     positionedGrapes.sorted.sort(sortingStrategy);
 
     // compute X coordinates

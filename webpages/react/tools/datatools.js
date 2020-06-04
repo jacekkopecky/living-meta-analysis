@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable consistent-return */
 /* eslint-disable no-use-before-define */
@@ -59,18 +58,22 @@ function getRichColumnLabel(col, level) {
   return `${retval})`;
 }
 
+// this function is the center of the app :
+// it will add some data to the MA object we receive from the API so we can display them in the app
+// it will also give some objects a circular reference to the parent object :
+// e.g.: each experiment will have access to its parent paper
 export function populateCircularMa(ma) {
-  // circular ref of ma in each paper
-  for (const paper of ma.papers) {
-    paper.metaanalysis = ma;
+  for (const paper of ma.papers) { // for each paper
+    paper.metaanalysis = ma; // we add a circular ref to the entire metaanalysis object
     let i = 0;
-    // circular ref of parent paper in each experiment
-    for (const exp of paper.experiments) {
-      exp.index = i;
-      exp.paper = paper;
+    for (const exp of paper.experiments) { // for each experiment of a paper
+      exp.index = i; // we add an index which will be usefull later
+      exp.paper = paper; // we also add a reference to its parent paper
       i += 1;
     }
   }
+  // ..........
+
   // "excluded = true" in each excluded experiment
   const hashPapers = generateIDHash(ma.papers);
   for (const excludedExp of ma.excludedExperiments) {
@@ -117,9 +120,7 @@ export function populateCircularMa(ma) {
   }
 }
 
-
-// DATA FUNCTIONS :
-
+// "converts" an object into one that is easier to manipulate
 function generateIDHash(objects) {
   const retval = {};
   objects.forEach((obj) => {
@@ -199,7 +200,6 @@ function getExperimentsTableDatumValue(col, experiment) {
   return val;
 }
 
-// ACCESS TO DATA VALUES
 export function getDatumValue(col, experiment) {
   const { papers } = experiment.paper.metaanalysis;
   if (isExperimentsTableColumn(col)) {
@@ -270,6 +270,13 @@ export function getAggregateDatumValue(aggregate, papers, group) {
   return val;
 }
 
+function getGroup(experiment) {
+  const { groupingColumnObj } = experiment.paper.metaanalysis;
+  if (groupingColumnObj) {
+    return getDatumValue(groupingColumnObj, experiment);
+  }
+}
+
 export function getGroups(ma) {
   const groupingColumnObj = window.lima.parseFormulaString(ma.groupingColumn, ma.hashcols);
   ma.groupingColumnObj = groupingColumnObj;
@@ -291,17 +298,11 @@ export function getGroups(ma) {
   return groups;
 }
 
-function getGroup(experiment) {
-  const { groupingColumnObj } = experiment.paper.metaanalysis;
-  if (groupingColumnObj) {
-    return getDatumValue(groupingColumnObj, experiment);
-  }
-}
-
 function twoDigits(x) {
   return x < 10 ? `0${x}` : `${x}`;
 }
 
+// this function is used each time we display ctime or mtime
 export function formatDateTime(timestamp) {
   const d = new Date(timestamp);
 

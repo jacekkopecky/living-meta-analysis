@@ -56,3 +56,8 @@
 .metaanalysis table td:hover {
   background-color: lightpink;
 }
+
+textarea {
+  background: transparent;
+  outline: none;
+}
