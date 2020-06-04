@@ -2,6 +2,7 @@ const config = require('../config');
 const { ValidationError } = require('../errors');
 const tools = require('../lib/tools');
 const { Datastore } = require('@google-cloud/datastore');
+const { forbiddenUsernames } = require('./users')
 
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
 const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
@@ -124,7 +125,7 @@ async function checkForDisallowedChanges(current, original) {
       throw new ValidationError('username cannot contain spaces or special characters');
     }
     const [usernameCheck] = await datastore.createQuery('User').filter('username', '=', current.username).run();
-    if (usernameCheck.length > 0) {
+    if (usernameCheck.length > 0 || forbiddenUsernames.includes(current.username)) {
       throw new ValidationError('username must be unique, must not be from the forbidden list');
     }
     // todo: do we need extra checks here? I.e. length of username? encodings? emojis?
