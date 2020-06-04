@@ -18,7 +18,6 @@ async function getAllUsers() {
   try {
     const [retval] = await datastore.createQuery('User').run();
     retval.forEach(user => {
-      user = migrateUser(user);
       if (user.username) {
         allUsernames.push(user.username.toLowerCase());
       }
@@ -45,23 +44,7 @@ async function getAllUsers() {
   }
 }
 
-/*
- * change user from an old format to the new one on load from datastore, if need be
- */
-function migrateUser(user) {
-  // 2017-06-08: Only store limited user information
-  //     when all is migrated: just remove this code
-  if (user.emails) {
-    user.email = user.emails[0].value;
-    delete user.emails;
-    delete user.CHECKid;
-    delete user.id;
-    delete user.name;
-    delete user.provider;
-    user.migrated = true;
-  }
-  return user;
-}
+
 
 /**
  * @param {string} user
@@ -201,7 +184,6 @@ async function getUsernameOfUser(user) {
 }
 
 module.exports = {
-  migrateUser,
   getUser,
   saveUser,
   getEmailAddressOfUser,

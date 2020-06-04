@@ -4,39 +4,14 @@ const tools = require('../lib/tools');
 const users = require('./users');
 const config = require('../config');
 
-
-async function getAllColumns() {
-  try {
-    console.log('getAllColumns: making a datastore request');
-    const retval = {};
-    const [results] = await datastore.createQuery('Column').run();
-
-    results.forEach((result) => {
-      try {
-        retval[result.id] = result;
-      } catch (error) {
-        console.error('error in a column entity (ignoring)', error);
-      }
-    });
-
-    console.log(`getAllColumns: ${Object.keys(retval).length} done`);
-    return retval;
-  } catch (error) {
-    console.error('error retrieving columns', error);
-    setTimeout(getAllColumns, 60 * 1000); // try loading again in a minute
-    throw error;
-  }
-}
-
 /**
  * @return {Promise<Paper[]>}
  */
 async function getAllPapers() {
-  const columns = await getAllColumns();
   try {
     const [retval] = await datastore.createQuery('Paper').run();
     retval.forEach(val => {
-      val = migratePaper(val, columns);
+      // val = migratePaper(val, columns);
       allTitles.push(val.title);
     });
     console.log(`getAllPapers: ${retval.length} done`);
@@ -47,115 +22,6 @@ async function getAllPapers() {
     throw error;
   }
 }
-
-/*
- * change paper from an old format to the new one on load from datastore, if need be
- */
-function migratePaper(paper, columns) {
-  // 2017-02-23: move columnOrder to columns
-  //     when all is migrated: just remove this code
-  if (paper.columnOrder) {
-    paper.columns = paper.columnOrder;
-    delete paper.columnOrder;
-    paper.migrated = true;
-  }
-
-  // 2017-06-27: migrate global columns to private columns
-  //     when all is migrated:
-  //       remove this code,
-  //       remove obsoleteIDForMigration from api.js
-  //       update tests to check migration no longer does this
-  //       remove all remaining mentions of global columns
-  //       remove columns from datastore
-
-  // if we have a datum whose column ID isn't in paper.columns then add it there
-  if (!paper.columns) paper.columns = [];
-  if (paper.experiments) {
-    paper.experiments.forEach((exp) => {
-      if (exp.data) {
-        Object.keys(exp.data).forEach((colId) => {
-          if (colId.startsWith('/id/col/') && paper.columns.indexOf(colId) === -1) {
-            paper.columns.push(colId);
-            paper.migrated = true;
-          }
-        });
-      }
-    });
-  }
-
-  let maxId = 0;
-  paper.columns.forEach((col, colIndex) => {
-    if (typeof col === 'string') {
-      // migrate the string into an object
-      if (!columns[col]) throw new Error(`paper ${paper.title} uses nonexistent column ${col}`);
-      const colObject = {
-        id: '' + (maxId += 1),
-        title: columns[col].title,
-        description: columns[col].description,
-        type: columns[col].type,
-        obsoleteIDForMigration: col,
-      };
-      paper.columns[colIndex] = colObject;
-      // migrate experiment data so it uses the column ID
-      if (paper.experiments) {
-        paper.experiments.forEach((exp) => {
-          if (exp.data && col in exp.data) {
-            exp.data[colObject.id] = exp.data[col];
-            delete exp.data[col];
-          }
-        });
-      }
-      // migrate hidden columns so it uses the right column ID
-      if (paper.hiddenCols) {
-        const colPos = paper.hiddenCols.indexOf(col);
-        if (colPos !== -1) {
-          paper.hiddenCols[colPos] = colObject.id;
-        }
-      }
-      // migrate every parameter in computed anything into the right ID
-      paper.columns.forEach((computed) => {
-        if (!computed.formula) return; // not computed
-        // replace all occurrences of col in the formula with colObject.id
-        computed.formula = computed.formula.split(col).join(colObject.id);
-      });
-      paper.migrated = true;
-    }
-  });
-  // check that every computed column's formula doesn't contain '/id/col/',
-  // remove offending ones because they don't have data in the paper anyway so no loss
-  // also migrate customName to title and add type: result
-  let computedIndex = paper.columns.length - 1;
-  while (computedIndex >= 0) {
-    const computed = paper.columns[computedIndex];
-    if (computed.formula) {
-      if (computed.formula.indexOf('/id/col/') !== -1) {
-        paper.columns.splice(computedIndex, 1);
-        paper.migrated = true;
-      }
-      if (computed.customName || !computed.type) {
-        computed.title = computed.customName;
-        delete computed.customName;
-        computed.type = 'result';
-        paper.migrated = true;
-      }
-    }
-    computedIndex -= 1;
-  }
-  // if we have a hiddenColumn that's not migrated, drop it
-  if (paper.hiddenCols) {
-    let hiddenIndex = paper.hiddenCols.length - 1;
-    while (hiddenIndex >= 0) {
-      if (paper.hiddenCols[hiddenIndex].startsWith('/id/col/')) {
-        paper.hiddenCols.splice(hiddenIndex, 1);
-        paper.migrated = true;
-      }
-      hiddenIndex -= 1;
-    }
-  }
-
-  return paper;
-}
-
 
 async function getPapersEnteredBy(user) {
   if (!user) {
@@ -341,7 +207,6 @@ async function savePaper(paper, email, origTitle, options) {
 
 module.exports = {
   getAllPapers,
-  migratePaper,
   getPapersEnteredBy,
   savePaper,
   getPaperByTitle,

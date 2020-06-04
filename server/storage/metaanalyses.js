@@ -4,150 +4,6 @@ const tools = require('../lib/tools');
 const config = require('../config');
 const { ValidationError, NotImplementedError, InternalError } = require('../errors');
 
-/*
- * change metaanalysis from an old format to the new one on load from datastore, if need be
- */
-async function migrateMetaanalysis(metaanalysis) {
-  // 2017-02-23: move columnOrder to columns
-  //     when all is migrated: just remove this code
-  if (metaanalysis.columnOrder) {
-    metaanalysis.columns = metaanalysis.columnOrder;
-    delete metaanalysis.columnOrder;
-    metaanalysis.migrated = true;
-  }
-
-  // 2017-05-02: move graph aggregates to graphs
-  //     when all is migrated: just remove this code
-  // migrate aggregate graphs to graphs
-  if (metaanalysis.aggregates) {
-    const oldGraphs = ['forestPlotNumberAggr', 'forestPlotPercentAggr',
-      'grapeChartNumberAggr', 'grapeChartPercentAggr'];
-    // going backwards so we can safely delete array elements
-    for (let i = metaanalysis.aggregates.length - 1; i >= 0; i -= 1) {
-      const formulaName = metaanalysis.aggregates[i].formula.split('(')[0];
-      if (oldGraphs.indexOf(formulaName) !== -1) {
-        const graph = metaanalysis.aggregates[i];
-        metaanalysis.aggregates.splice(i, 1);
-        graph.formula = graph.formula.replace('Aggr', 'Graph');
-        if (!metaanalysis.graphs) {
-          metaanalysis.graphs = [];
-        }
-        metaanalysis.graphs.unshift(graph);
-        metaanalysis.migrated = true;
-      }
-    }
-  }
-
-  // 2017-06-28: migrate global columns to private columns
-  //     when all is migrated:
-  //       remove this code,
-  //       update tests to check migration no longer does this
-  //       remove all remaining mentions of global columns
-  //       remove columns from datastore
-  // prepare the papers this metaanalysis depends on
-  const maPapers = await Promise.all(metaanalysis.paperOrder.map(async (paperId) => {
-    // find the paper with the matching ID
-    const query = datastore.createQuery('Paper').filter('id', '=', paperId);
-    const [retval] = await datastore.runQuery(query);
-    if (retval.length === 0) {
-      throw new Error(`metaanalysis ${metaanalysis.title} has a paper ${paperId} that isn't in the datastore`);
-    }
-    return retval[0];
-  }));
-
-  // convert columns from string to object
-  if (!metaanalysis.columns) metaanalysis.columns = [];
-  let maxId = 0;
-  metaanalysis.columns.forEach(async (col, colIndex) => {
-    if (typeof col === 'string') {
-      // migrate the string into an object
-      const query = datastore.createQuery('Column').filter('id', '=', col);
-      const [retval] = await datastore.runQuery(query);
-      if (retval.length === 0) throw new Error(`metaanalysis ${metaanalysis.title} uses nonexistent column ${col}`);
-      const column = retval[0];
-      const colObject = {
-        id: '' + (maxId += 1),
-        title: column.title,
-        description: column.description,
-        type: column.type,
-      };
-
-      // add sourceColumnMap { paperId: columnId }
-      colObject.sourceColumnMap = {};
-
-      maPapers.forEach((paper) => {
-        // go through paper's columns, find the one whose obsolete id matches col, use its ID in this map
-        const paperCol = paper.columns.find((paperColObject) => paperColObject.obsoleteIDForMigration === col);
-        if (paperCol) colObject.sourceColumnMap[paper.id] = paperCol.id;
-        // if the paper doesn't have such a column, just don't have a mapping;
-        // the column in the paper, and the mapping here, will get added when
-        // the metaanalysis is being edited and the user puts in a datum in this column
-      });
-      metaanalysis.columns[colIndex] = colObject;
-      // migrate hidden columns so it uses the right column ID
-      if (metaanalysis.hiddenCols) {
-        const colPos = metaanalysis.hiddenCols.indexOf(col);
-        if (colPos !== -1) {
-          metaanalysis.hiddenCols[colPos] = colObject.id;
-        }
-      }
-      // convert grouping column to new ID
-      if (metaanalysis.groupingColumn === col) metaanalysis.groupingColumn = colObject.id;
-      // migrate every parameter in computed anything into the right ID
-      for (const fieldName of ['columns', 'aggregates', 'groupingAggregates', 'graphs']) {
-        if (metaanalysis[fieldName]) {
-          metaanalysis[fieldName].forEach((computed) => {
-            if (!computed.formula) return; // not computed
-            // replace all occurrences of col in the formula with colObject.id
-            computed.formula = computed.formula.split(col).join(colObject.id);
-          });
-        }
-      }
-      metaanalysis.migrated = true;
-    }
-  });
-  // check that every computed thing's formula doesn't contain '/id/col/',
-  // remove offending ones because they don't have data in the metaanalysis anyway so no loss
-  // also migrate customName to title and add type: result
-  for (const fieldName of ['columns', 'aggregates', 'groupingAggregates', 'graphs']) {
-    if (metaanalysis[fieldName]) {
-      let computedIndex = metaanalysis[fieldName].length - 1;
-      while (computedIndex >= 0) {
-        const computed = metaanalysis[fieldName][computedIndex];
-        if (computed.formula) {
-          if (computed.formula.indexOf('/id/col/') !== -1) {
-            metaanalysis[fieldName].splice(computedIndex, 1);
-            metaanalysis.migrated = true;
-          }
-          if (computed.customName) {
-            computed.title = computed.customName;
-            delete computed.customName;
-            metaanalysis.migrated = true;
-          }
-          if (!computed.type && fieldName === 'columns') {
-            computed.type = 'result';
-            metaanalysis.migrated = true;
-          }
-        }
-        computedIndex -= 1;
-      }
-    }
-  }
-  // if we have a hiddenColumn that's not migrated, drop it
-  if (metaanalysis.hiddenCols) {
-    let hiddenIndex = metaanalysis.hiddenCols.length - 1;
-    while (hiddenIndex >= 0) {
-      if (metaanalysis.hiddenCols[hiddenIndex].startsWith('/id/col/')) {
-        metaanalysis.hiddenCols.splice(hiddenIndex, 1);
-        metaanalysis.migrated = true;
-      }
-      hiddenIndex -= 1;
-    }
-  }
-
-  return metaanalysis;
-}
-
 
 async function getMetaanalysesEnteredBy(user) {
   // todo also return metaanalyses contributed to by `email`
@@ -186,7 +42,6 @@ async function getMetaanalysisByTitle(user, title, time, includePapers) {
   if (metaanalyses.length >= 1) {
     let ma = metaanalyses[0];
     if (includePapers) {
-      ma = await migrateMetaanalysis(ma);
       ma = await getMetaanalysisWithPapers(ma, time);
     }
     return ma;
@@ -340,7 +195,6 @@ module.exports = {
   getMetaanalysisByTitle,
   getMetaanalysesEnteredBy,
   listMetaanalyses,
-  migrateMetaanalysis,
 };
 
 /* -------------------------------------------------------------------------- */
