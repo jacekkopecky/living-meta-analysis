@@ -27,7 +27,7 @@ async function getUser(user) {
 
   try {
     const [retval] = await datastore.runQuery(query);
-    if (retval.length >= 1) {
+    if (retval.length > 0) {
       return retval[0];
     } else {
       throw new Error('User not found');
@@ -81,7 +81,7 @@ async function getEmailAddressOfUser(user) {
 
   try {
     const [emails] = await datastore.runQuery(query);
-    if (emails.length >= 1) {
+    if (emails.length > 0) {
       return emails[0].email;
     } else {
       throw new Error('No email found');

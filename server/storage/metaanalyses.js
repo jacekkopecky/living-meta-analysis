@@ -39,7 +39,7 @@ async function getMetaanalysisByTitle(user, title, time, includePapers) {
   const query = datastore.createQuery('Metaanalysis').filter('title', '=', title);
 
   const [metaanalyses] = await datastore.runQuery(query);
-  if (metaanalyses.length >= 1) {
+  if (metaanalyses.length > 0) {
     let ma = metaanalyses[0];
     if (includePapers) {
       ma = await getMetaanalysisWithPapers(ma, time);
