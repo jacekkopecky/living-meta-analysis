@@ -24,8 +24,7 @@ const NotFoundError = require('./errors/NotFoundError');
 
 const exec = require('child_process').exec;
 
-// storage.init();
-// api.init();
+storage.setup();
 
 const app = express({ caseSensitive: true });
 app.set('case sensitive routing', true);

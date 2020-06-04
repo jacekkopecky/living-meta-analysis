@@ -3,8 +3,8 @@ const papers = require('./papers');
 const users = require('./users');
 const shared = require('./shared');
 
-/* closed beta
- *
+function setup() {
+  users.getForbiddenUsernames();
  *
  *    ####  #       ####   ####  ###### #####     #####  ###### #####   ##
  *   #    # #      #    # #      #      #    #    #    # #        #    #  #
@@ -51,6 +51,7 @@ function setupClosedBeta() {
 }
 
 module.exports = {
+  setup,
   metaanalyses,
   papers,
   users,
