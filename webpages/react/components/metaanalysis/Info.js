@@ -1,11 +1,12 @@
 import React from 'react';
-import HookEditable from './HookEditable';
+import Editable from './Editable';
 import './Info.css';
 
 
 function InfoText(props) {
-  const { name, value } = props;
-  const EditableP = HookEditable('p');
+  const {
+    name, value, onSave, edit,
+  } = props;
   return (
     <div className={name}>
       <p className="header">
@@ -13,17 +14,21 @@ function InfoText(props) {
         :
         {' '}
       </p>
-      <EditableP className="text" value={value} />
+      <p className="text">
+        <Editable edit={edit} onSave={onSave} type="textarea">{value}</Editable>
+      </p>
     </div>
   );
 }
 
 function Info(props) {
-  const { reference, description } = props;
+  const {
+    published, setPublished, description, setDescription, edit,
+  } = props;
   return (
     <section className="info">
-      <InfoText name="reference" value={reference} />
-      <InfoText name="description" value={description} />
+      <InfoText name="published" onSave={setPublished} edit={edit} value={published} />
+      <InfoText name="description" onSave={setDescription} edit={edit} value={description} />
     </section>
   );
 }

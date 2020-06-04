@@ -32,7 +32,7 @@ const computedColDetails = (col) => (
 
 function DataTable(props) {
   const {
-    columns, papers, paperOrder, makeClickable,
+    columns, papers, paperOrder, makeClickable, edit,
   } = props;
 
   return (
@@ -69,6 +69,7 @@ function DataTable(props) {
                     paper={paper}
                     columns={columns}
                     makeClickable={makeClickable}
+                    edit={edit}
                   />
                 )
                 : null
@@ -81,3 +82,4 @@ function DataTable(props) {
 }
 
 export default DataTable;
+

@@ -33,7 +33,7 @@ const expDetails = (exp) => {
 
 function Paper(props) {
   const {
-    paper, columns, makeClickable,
+    paper, columns, makeClickable, edit,
   } = props;
   const { title } = paper;
 
@@ -68,6 +68,7 @@ function Paper(props) {
               col={col}
               exp={exp}
               makeClickable={makeClickable}
+              edit={edit}
             />
           ))}
 

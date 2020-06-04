@@ -16,14 +16,12 @@ import './Metaanalysis.css';
 function Metaanalysis(props) {
   const { metaanalysis } = props;
   populateCircularMa(metaanalysis);
-  const [edit, setEdit] = useState(0);
+  const [edit, setEdit] = useState(false);
   const [title] = useState(metaanalysis.title);
   const [tags] = useState(metaanalysis.tags);
-  const [info] = useState({
-    description: metaanalysis.description,
-    published: metaanalysis.published,
-  });
-  const [table] = useState({
+  const [description, setDescription] = useState(metaanalysis.description);
+  const [published, setPublished] = useState(metaanalysis.published);
+  const [table, setTable] = useState({
     columns: metaanalysis.columns,
     papers: metaanalysis.papers,
     excluded: metaanalysis.excludedExperiments,
@@ -63,14 +61,17 @@ function Metaanalysis(props) {
           <p type="input">{title}</p>
         </div>
         <Tags edit={edit} tags={tags} />
-        <button className={edit === 0 ? 'btn-start' : 'btn-stop'} type="button" onClick={() => setEdit(edit === 0 ? 1 : 0)}>{editButtonMessage}</button>
+        <button className={edit ? 'btn-stop' : 'btn-start'} type="button" onClick={() => setEdit(!edit)}>{editButtonMessage}</button>
       </div>
       <Tabs displayedCell={displayedCell} setDisplayedCell={setDisplayedCell}>
         <Info
           path="/info"
           tabName="Info"
-          description={info.description}
-          reference={info.published}
+          description={description}
+          setDescription={setDescription}
+          published={published}
+          setPublished={setPublished}
+          edit={edit}
         />
         <DataTable
           path="/table"
@@ -80,6 +81,7 @@ function Metaanalysis(props) {
           paperOrder={paperOrder}
           displayedCell={displayedCell}
           makeClickable={makeClickable}
+          edit={edit}
         />
         <Aggregates
           path="/aggregates"
