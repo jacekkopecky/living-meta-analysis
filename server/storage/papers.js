@@ -291,7 +291,7 @@ async function savePaper(paper, email, origTitle, options) {
   }
 
   // validate incoming data
-  checkForDisallowedChanges(paper, original);
+  await checkForDisallowedChanges(paper, original);
 
   // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
   fillByAndCtimes(paper, original, email);

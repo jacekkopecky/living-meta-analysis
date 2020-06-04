@@ -84,7 +84,7 @@ function fillByAndCtimeInComments(comments, origComments, email) {
   }
 }
 
-function checkForDisallowedChanges(current, original) {
+async function checkForDisallowedChanges(current, original) {
   // todo really, this should use a diff format and check that all diffs are allowed
   //   this will be a diff from the user's last version to the incoming version,
   //   not from the existing version to the incoming version,
@@ -108,7 +108,9 @@ function checkForDisallowedChanges(current, original) {
     if (!TITLE_REXP.test(current.title)) {
       throw new ValidationError('title cannot contain spaces or special characters');
     }
-    if (allTitles.indexOf(current.title) !== -1) {
+    const [metaanalysesCheck] = await datastore.createQuery('Metaanalysis').filter('title', '=', current.title).run();
+    const [paperCheck] = await datastore.createQuery('Metaanalysis').filter('title', '=', current.title).run();
+    if (metaanalysesCheck.length > 0 || paperCheck.length > 0) {
       throw new ValidationError('title must be unique');
     }
     if (current.title === config.NEW_PAPER_TITLE || current.title === config.NEW_META_TITLE) {

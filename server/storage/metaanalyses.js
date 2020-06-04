@@ -288,7 +288,7 @@ async function saveMetaanalysis(metaanalysis, email, origTitle, options) {
   }
 
   // validate incoming data
-  checkForDisallowedChanges(metaanalysis, original);
+  await checkForDisallowedChanges(metaanalysis, original);
 
   // put ctime and enteredBy on every experiment, datum, and comment that doesn't have them
   fillByAndCtimes(metaanalysis, original, email);
