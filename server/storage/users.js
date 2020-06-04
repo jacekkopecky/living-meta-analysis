@@ -8,44 +8,6 @@ const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
 const LOCAL_STORAGE_SPECIAL_USER = 'lima@local';
 const LOCAL_STORAGE_SPECIAL_USERNAME = 'local';
 
-// const userCache = getAllUsers();
-
-/**
- * @return {Promise<User>}
- */
-async function getAllUsers() {
-  console.log('getAllUsers: making a datastore request');
-  try {
-    const [retval] = await datastore.createQuery('User').run();
-    retval.forEach(user => {
-      if (user.username) {
-        allUsernames.push(user.username.toLowerCase());
-      }
-      try {
-        retval[user.email] = user;
-      } catch (err) {
-        console.error('error in a user entity (ignoring)');
-        console.error(err);
-      }
-    });
-    console.log(`getAllUsers: ${retval.length} done`);
-    // add a special user for local storage
-    // - after all other users are loaded so datastore never overrides this one
-    // - we expect our auth providers never go issue this email address so no user can use it
-    retval[LOCAL_STORAGE_SPECIAL_USER] = {
-      email: LOCAL_STORAGE_SPECIAL_USER,
-      username: LOCAL_STORAGE_SPECIAL_USERNAME,
-    };
-    return retval;
-  } catch (error) {
-    console.error('error retrieving users', error);
-    setTimeout(getAllUsers, 60 * 1000); // try loading again in a minute
-    throw error;
-  }
-}
-
-
-
 /**
  * @param {string} user
  * @return {Promise<User>}
@@ -95,7 +57,7 @@ async function saveUser(email, user, options) {
     user.ctime = tools.uniqueNow();
   }
 
-  const users = await getAllUsers();
+  const original = await getUser(email);
 
   const original = users[email];
   // reject the save if we're restoring from another datastore and we already have this user
@@ -110,15 +72,6 @@ async function saveUser(email, user, options) {
       key,
       data: user,
     });
-    // update the local cache of users
-    users[email] = user;
-    if (original && original.username) {
-      const index = allUsernames.indexOf(original.username.toLowerCase());
-      if (index !== -1) {
-        allUsernames.splice(index, 1);
-      }
-    }
-    if (user.username) allUsernames.push(user.username.toLowerCase());
     // then return the user
     return user;
   } catch (err) {
@@ -152,11 +105,7 @@ function getForbiddenUsernames() {
 
   // push all the found forbidden usernames into the global array
   forbiddenUsernames.push(...retval);
-  allUsernames.push(...forbiddenUsernames);
 }
-
-// all the forbidden usernames will be treated as taken
-const allUsernames = [LOCAL_STORAGE_SPECIAL_USERNAME];
 
 // Take either the email address, or username and return the email address
 async function getEmailAddressOfUser(user) {
@@ -188,7 +137,7 @@ module.exports = {
   saveUser,
   getEmailAddressOfUser,
   getUsernameOfUser,
-  allUsernames,
+  forbiddenUsernames,
   getForbiddenUsernames,
 };
 

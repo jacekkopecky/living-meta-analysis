@@ -205,11 +205,8 @@ async function checkForDisallowedChanges(current, original) {
   }
 }
 
-const allTitles = [];
-
 module.exports = {
   datastore,
   fillByAndCtimes,
   checkForDisallowedChanges,
-  allTitles,
 };
