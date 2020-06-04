@@ -187,7 +187,7 @@ async function getMetaanalysisByTitle(user, title, time, includePapers) {
     let ma = metaanalyses[0];
     if (includePapers) {
       ma = await migrateMetaanalysis(ma);
-      ma = getMetaanalysisWithPapers(ma, time);
+      ma = await getMetaanalysisWithPapers(ma, time);
     }
     return ma;
   }
@@ -199,6 +199,8 @@ async function getMetaanalysisWithPapers(ma, time) {
   if (time) {
     throw new NotImplementedError('getMetaanalysisWithPapers with time not implemented');
   }
+
+  if (!ma.paperOrder || ma.paperOrder.length === 0) return ma;
 
   // use a shallow copy of ma
   ma = { ...ma };
