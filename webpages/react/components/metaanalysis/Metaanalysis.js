@@ -7,8 +7,11 @@ import Aggregates from './aggregates/Aggregates';
 import Plots from './plots/Plots';
 import Metadata from './Metadata';
 import PlotsDefinitions from './PlotsDefinitions';
-import { populateCircularMa } from '../../tools/datatools';
 import Details from './Details';
+import EditContext from './EditContext';
+
+import { populateCircularMa } from '../../tools/datatools';
+import replaceCell from '../../tools/editTools';
 
 import './Metaanalysis.css';
 
@@ -16,16 +19,14 @@ import './Metaanalysis.css';
 function Metaanalysis(props) {
   const { metaanalysis } = props;
   populateCircularMa(metaanalysis);
+  console.log(metaanalysis);
   const [edit, setEdit] = useState(false);
   const [title] = useState(metaanalysis.title);
   const [tags] = useState(metaanalysis.tags);
   const [description, setDescription] = useState(metaanalysis.description);
   const [published, setPublished] = useState(metaanalysis.published);
-  const [table, setTable] = useState({
-    columns: metaanalysis.columns,
-    papers: metaanalysis.papers,
-    excluded: metaanalysis.excludedExperiments,
-  });
+  const [columns] = useState(metaanalysis.columns);
+  const [papers, setPapers] = useState(metaanalysis.papers);
   const [paperOrder] = useState(metaanalysis.paperOrder);
   const [aggregates] = useState(metaanalysis.aggregates);
   const [groupingAggregates] = useState(metaanalysis.groupingAggregates);
@@ -39,7 +40,6 @@ function Metaanalysis(props) {
     cellId: null,
     text: null,
   });
-  console.log(metaanalysis);
 
   const editButtonMessage = edit ? 'STOP' : 'EDIT';
 
@@ -52,7 +52,11 @@ function Metaanalysis(props) {
       },
       className,
     };
-  }
+  };
+
+  const editCell = (value, cellId) => {
+    setPapers(replaceCell(papers, columns, value, cellId));
+  };
 
   return (
     <main className="metaanalysis">
@@ -63,50 +67,51 @@ function Metaanalysis(props) {
         <Tags edit={edit} tags={tags} />
         <button className={edit ? 'btn-stop' : 'btn-start'} type="button" onClick={() => setEdit(!edit)}>{editButtonMessage}</button>
       </div>
-      <Tabs displayedCell={displayedCell} setDisplayedCell={setDisplayedCell}>
-        <Info
-          path="/info"
-          tabName="Info"
-          description={description}
-          setDescription={setDescription}
-          published={published}
-          setPublished={setPublished}
-          edit={edit}
-        />
-        <DataTable
-          path="/table"
-          tabName="Table"
-          columns={table.columns}
-          papers={table.papers}
-          paperOrder={paperOrder}
-          makeClickable={makeClickable}
-          edit={edit}
-        />
-        <Aggregates
-          path="/aggregates"
-          tabName="Aggregates"
-          aggregates={aggregates}
-          groupingAggregates={groupingAggregates}
-          groupingColumn={metaanalysis.groupingColumnObj ? metaanalysis.groupingColumnObj.title : undefined}
-          groups={metaanalysis.groups}
-          makeClickable={makeClickable}
-        />
-        <Plots
-          path="/plots"
-          tabName="Plots"
-          graphs={graphs}
-        />
-        <PlotsDefinitions
-          path="/plots_definitions"
-          tabName="Plots Definitions"
-          graphs={graphs}
-          makeClickable={makeClickable}
-        />
-      </Tabs>
+      <EditContext.Provider value={edit}>
+        <Tabs displayedCell={displayedCell} setDisplayedCell={setDisplayedCell}>
+          <Info
+            path="/info"
+            tabName="Info"
+            description={description}
+            setDescription={setDescription}
+            published={published}
+            setPublished={setPublished}
+          />
+          <DataTable
+            path="/table"
+            tabName="Table"
+            columns={columns}
+            papers={papers}
+            paperOrder={paperOrder}
+            makeClickable={makeClickable}
+            edit={edit}
+            editCell={editCell}
+          />
+          <Aggregates
+            path="/aggregates"
+            tabName="Aggregates"
+            aggregates={aggregates}
+            groupingAggregates={groupingAggregates}
+            groupingColumn={metaanalysis.groupingColumnObj ? metaanalysis.groupingColumnObj.title : undefined}
+            groups={metaanalysis.groups}
+            makeClickable={makeClickable}
+          />
+          <Plots
+            path="/plots"
+            tabName="Plots"
+            graphs={graphs}
+          />
+          <PlotsDefinitions
+            path="/plots_definitions"
+            tabName="Plots Definitions"
+            graphs={graphs}
+            makeClickable={makeClickable}
+          />
+        </Tabs>
+      </EditContext.Provider>
       <Details displayedCell={displayedCell} setDisplayedCell={setDisplayedCell} />
       <Metadata metadata={metadata} />
     </main>
-
   );
 }
 

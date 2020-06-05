@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Editable from './Editable';
-import './Info.css';
+import EditContext from './EditContext';
 
+import './Info.css';
 
 function InfoText(props) {
   const {
-    name, value, onSave, edit,
+    name, value, onSave,
   } = props;
+  const edit = useContext(EditContext);
   return (
     <div className={name}>
       <p className="header">
