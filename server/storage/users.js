@@ -74,15 +74,16 @@ async function saveUser(email, user, options) {
 }
 
 // Take either the email address, or username and return the email address
-async function getEmailAddressOfUser(user) {
-  if (user.indexOf('@') !== -1) return user;
+async function getEmailAddressOfUser(username) {
+  if (username.indexOf('@') !== -1) return username;
 
-  const query = datastore.createQuery('User').filter('username', '=', user);
+  const query = datastore.createQuery('User').filter('username', '=', username);
 
   try {
-    const [emails] = await datastore.runQuery(query);
-    if (emails.length > 0) {
-      return emails[0].email;
+    const [[user]] = await datastore.runQuery(query);
+
+    if (user) {
+      return user.email;
     } else {
       throw new Error('No email found');
     }

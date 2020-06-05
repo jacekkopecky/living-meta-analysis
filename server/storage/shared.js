@@ -111,9 +111,9 @@ async function checkForDisallowedChanges(current, original) {
     if (!TITLE_REXP.test(current.title)) {
       throw new ValidationError('title cannot contain spaces or special characters');
     }
-    const [metaanalysesCheck] = await datastore.createQuery('Metaanalysis').filter('title', '=', current.title).run();
-    const [paperCheck] = await datastore.createQuery('Metaanalysis').filter('title', '=', current.title).run();
-    if (metaanalysesCheck.length > 0 || paperCheck.length > 0) {
+    const [[metaanalysesCheck]] = await datastore.createQuery('Metaanalysis').filter('title', '=', current.title).run();
+    const [[paperCheck]] = await datastore.createQuery('Metaanalysis').filter('title', '=', current.title).run();
+    if (metaanalysesCheck || paperCheck) {
       throw new ValidationError('title must be unique');
     }
     if (current.title === config.NEW_PAPER_TITLE || current.title === config.NEW_META_TITLE) {
@@ -126,8 +126,8 @@ async function checkForDisallowedChanges(current, original) {
     if (!USERNAME_REXP.test(current.username)) {
       throw new ValidationError('username cannot contain spaces or special characters');
     }
-    const [usernameCheck] = await datastore.createQuery('User').filter('username', '=', current.username).run();
-    if (usernameCheck.length > 0 || forbiddenUsernames.includes(current.username)) {
+    const [[usernameCheck]] = await datastore.createQuery('User').filter('username', '=', current.username).run();
+    if (usernameCheck || forbiddenUsernames.includes(current.username)) {
       throw new ValidationError('username must be unique, must not be from the forbidden list');
     }
     // todo: do we need extra checks here? I.e. length of username? encodings? emojis?

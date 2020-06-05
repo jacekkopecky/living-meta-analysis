@@ -38,9 +38,9 @@ async function getMetaanalysisByTitle(user, title, time, includePapers) {
   // const metaanalyses = await getAllMetaanalyses();
   const query = datastore.createQuery('Metaanalysis').filter('title', '=', title);
 
-  const [metaanalyses] = await datastore.runQuery(query);
-  if (metaanalyses.length > 0) {
-    let ma = metaanalyses[0];
+  const [[metaanalyses]] = await datastore.runQuery(query);
+  if (metaanalyses) {
+    let ma = metaanalyses;
     if (includePapers) {
       ma = await getMetaanalysisWithPapers(ma, time);
     }
@@ -119,8 +119,8 @@ async function saveMetaanalysis(metaanalysis, email, origTitle, options) {
     metaanalysis.ctime = metaanalysis.mtime = ctime;
   } else {
     const query = datastore.createQuery('Metaanalysis').filter('id', '=', metaanalysis.id);
-    const [retval] = await datastore.runQuery(query);
-    original = retval[0] || null;
+    const [[retval]] = await datastore.runQuery(query);
+    original = retval || null;
 
     if (options.restoring) {
       // metaanalysis is a metaanalysis we're restoring from some other datastore

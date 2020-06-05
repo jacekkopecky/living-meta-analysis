@@ -32,11 +32,10 @@ async function getPaperByTitle(user, title, time) {
   if (!validUser) return;
 
   const query = datastore.createQuery('Paper').filter('title', '=', title);
-  const [paper] = await datastore.runQuery(query);
+  const [[paper]] = await datastore.runQuery(query);
 
-  // ? original returned the title if the paper was found, unsure if the function should return the title or the paper
-  if (paper.length > 0) {
-    return title;
+  if (paper) {
+    return paper;
   }
 
   throw new Error('No paper found');
@@ -86,9 +85,9 @@ async function savePaper(paper, email, origTitle, options) {
     paper.ctime = paper.mtime = ctime;
   } else {
     const query = datastore.createQuery('Paper').filter('id', '=', paper.id);
-    const [paperSearch] = await datastore.runQuery(query);
-    if (paperSearch.length > 0) {
-      original = paperSearch[0];
+    const [[paperSearch]] = await datastore.runQuery(query);
+    if (paperSearch) {
+      original = paperSearch;
 
       if (options.restoring) {
         // paper is a paper we're restoring from some other datastore
