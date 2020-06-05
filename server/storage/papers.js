@@ -1,35 +1,17 @@
-const { allTitles, datastore, checkForDisallowedChanges, fillByAndCtimes } = require('./shared');
+const { datastore, checkForDisallowedChanges, fillByAndCtimes } = require('./shared');
 const { ValidationError, NotImplementedError } = require('../errors');
 const tools = require('../lib/tools');
 const users = require('./users');
 const config = require('../config');
-
-/**
- * @return {Promise<Paper[]>}
- */
-async function getAllPapers() {
-  try {
-    const [retval] = await datastore.createQuery('Paper').run();
-    retval.forEach(val => {
-      // val = migratePaper(val, columns);
-      allTitles.push(val.title);
-    });
-    console.log(`getAllPapers: ${retval.length} done`);
-    return retval;
-  } catch (error) {
-    console.error('error retrieving papers', error);
-    setTimeout(getAllPapers, 60 * 1000); // try loading again in a minute
-    throw error;
-  }
-}
 
 async function getPapersEnteredBy(user) {
   if (!user) {
     throw new Error('user parameter required');
   }
   const email = await users.getEmailAddressOfUser(user);
-  const papers = await getAllPapers();
-  return papers.filter(p => p.enteredBy === email);
+  const query = datastore.createQuery('Paper').filter('enteredBy', '=', email);
+  const [papers] = await datastore.runQuery(query);
+  return papers;
 }
 
 async function getPaperByTitle(user, title, time) {
@@ -49,11 +31,12 @@ async function getPaperByTitle(user, title, time) {
   const validUser = await users.getUser(user);
   if (!validUser) return;
 
-  const papers = await getAllPapers();
-  for (const p of papers) {
-    if (p.title === title) {
-      return title;
-    }
+  const query = datastore.createQuery('Paper').filter('title', '=', title);
+  const [paper] = await datastore.runQuery(query);
+
+  // ? original returned the title if the paper was found, unsure if the function should return the title or the paper
+  if (paper.length > 0) {
+    return title;
   }
 
   throw new Error('No paper found');
@@ -66,10 +49,6 @@ function newPaper(email) {
     ctime: time,
     mtime: time,
   };
-}
-
-function listPapers() {
-  return getAllPapers();
 }
 
 const currentPaperSave = Promise.resolve();
@@ -93,67 +72,45 @@ async function savePaper(paper, email, origTitle, options) {
   //   (must allow editing the last comment by this user in case in the meantime another user
   //    has added another comment)
 
-  let doAddPaperToCache;
-
   // the following serializes this save after the previous one, whether it fails or succeeds
   // this way we can't have two concurrent saves create papers with the same title
   await currentPaperSave;
-  const papers = await getAllPapers();
+
   // prepare the paper for saving
   const ctime = tools.uniqueNow();
   let original = null;
+
   if (!paper.id) {
     paper.id = '/id/p/' + ctime;
     paper.enteredBy = email;
     paper.ctime = paper.mtime = ctime;
-    doAddPaperToCache = () => {
-      papers.push(paper);
-      allTitles.push(paper.title);
-    };
   } else {
-    let i = 0;
-    for (; i < papers.length; i++) {
-      if (papers[i].id === paper.id) { // todo change getAllPapers() to be indexed by id?
-        original = papers[i];
-        break;
-      }
-    }
+    const query = datastore.createQuery('Paper').filter('id', '=', paper.id);
+    const [paperSearch] = await datastore.runQuery(query);
+    if (paperSearch.length > 0) {
+      original = paperSearch[0];
 
-    if (options.restoring) {
-      // paper is a paper we're restoring from some other datastore
-      // reject the save if we already have it
-      if (original) throw new Error(`paper ${paper.id} already exists`);
-      // otherwise save unchanged
-    } else {
-      // paper overwrites an existing paper
-      if (!original || origTitle !== original.title) {
-        throw new ValidationError(
-          `failed savePaper: did not find id ${paper.id} with title ${origTitle}`,
-        );
-      }
-      if (email !== original.enteredBy) {
-        throw new NotImplementedError('not implemented saving someone else\'s paper');
-      }
-
-      paper.enteredBy = original.enteredBy;
-      paper.ctime = original.ctime;
-      paper.mtime = tools.uniqueNow();
-    }
-
-    doAddPaperToCache = () => {
-      // put the paper in the cache where the original paper was
-      // todo this can be broken by deletion - the `i` would then change
-      papers[i] = paper;
-      // replace in allTitles the old title of the paper with the new title
-      if (original && original.title !== paper.title) {
-        let titleIndex = allTitles.indexOf(original.title);
-        if (titleIndex === -1) {
-          titleIndex = allTitles.length;
-          console.warn(`for some reason, title ${original.title} was missing in allTitles`);
+      if (options.restoring) {
+        // paper is a paper we're restoring from some other datastore
+        // reject the save if we already have it
+        if (original) throw new Error(`paper ${paper.id} already exists`);
+        // otherwise save unchanged
+      } else {
+        // paper overwrites an existing paper
+        if (!original || origTitle !== original.title) {
+          throw new ValidationError(
+            `failed savePaper: did not find id ${paper.id} with title ${origTitle}`,
+          );
         }
-        allTitles[titleIndex] = paper.title;
+        if (email !== original.enteredBy) {
+          throw new NotImplementedError('not implemented saving someone else\'s paper');
+        }
+
+        paper.enteredBy = original.enteredBy;
+        paper.ctime = original.ctime;
+        paper.mtime = tools.uniqueNow();
       }
-    };
+    }
   }
 
   // validate incoming data
@@ -197,7 +154,6 @@ async function savePaper(paper, email, origTitle, options) {
         },
       ],
     );
-    doAddPaperToCache();
     return paper;
   } catch (error) {
     console.error('error saving paper');
@@ -206,11 +162,9 @@ async function savePaper(paper, email, origTitle, options) {
 }
 
 module.exports = {
-  getAllPapers,
   getPapersEnteredBy,
   savePaper,
   getPaperByTitle,
-  listPapers,
 };
 
 /* -------------------------------------------------------------------------- */
