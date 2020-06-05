@@ -1,8 +1,12 @@
 'use strict';
-const { datastore, checkForDisallowedChanges } = require('../shared');
-const LOCAL_STORAGE_SPECIAL_USER = 'lima@local';
-const LOCAL_STORAGE_SPECIAL_USERNAME = 'local';
+const { datastore } = require('../shared');
+const readline = require('readline');
+const fs = require('fs');
 
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 /*
  * change metaanalysis from an old format to the new one on load from datastore, if need be
  */
@@ -332,7 +336,7 @@ async function migrateAllMetaanalysis() {
   const kind = 'Metaanalysis';
   const [retval] = await datastore.createQuery(kind).run();
   const entities = [];
-  retval.forEach(async (element) => {
+  for (const element of retval) {
     try {
       const val = await migrateMetaanalysis(element);
       const metaanalysisKey = datastore.key([kind, val.id]);
@@ -343,8 +347,15 @@ async function migrateAllMetaanalysis() {
     } catch (error) {
       console.log(error);
     }
-  })
-  console.log('this', entities)
-  // await datastore.upsert(entities);
+  }
+  await datastore.upsert(entities);
 }
 
+async function migrate() {
+  await migrateAllUsers();
+  await migrateAllPapers();
+  await migrateAllMetaanalysis();
+  console.log('Migration complete');
+}
+
+migrate();
