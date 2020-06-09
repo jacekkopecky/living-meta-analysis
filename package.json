@@ -10,6 +10,7 @@
     "db-add": "node server/storage/scripts/add",
     "db-migrate": "node server/storage/scripts/migrate",
     "beta-codes": "node server/storage/scripts/betacodes",
+    "test-server": "qunit test/qunit/test.js",
     "lint-server": "echo eslint && eslint server/** --ext .js,.json",
     "lint": "echo eslint && eslint . --ext .js,.json && echo stylelint && stylelint webpages"
   },
