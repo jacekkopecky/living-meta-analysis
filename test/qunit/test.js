@@ -112,3 +112,39 @@ QUnit.test('Get a metaanalysis by title', async assert => {
 });
 
 
+/* -------------------------------------------------------------------------- */
+/*                       Test to check structure of data                      */
+/* -------------------------------------------------------------------------- */
+QUnit.module('Structure Test');
+
+QUnit.test('Check the structure of the user', async assert => {
+  const user = await getProfile(LOCAL_API, TEST_USER);
+  
+  assert.ok(user.displayName, 'Check the user has a display name');
+  assert.ok(user.email, 'Check the username');
+  assert.ok(Array.isArray(user.photos), 'Check if photos is an array');
+  assert.ok(user.photos[0], 'Check if the first element of photos array is not null');
+  assert.ok(user.joined, 'Check if the user has a joined date');
+  assert.ok(user.username, 'Check if the user has a username');
+});
+
+QUnit.test('Check the structure of the papers', async assert => {
+  const papers = await getPapers(LOCAL_API, TEST_USER);
+  assert.ok(Array.isArray(papers), 'Check that the response is an array');
+  papers.forEach(paper => testSinglePaper(assert, paper))
+});
+
+QUnit.test('Check the structure of a specific paper', async assert => {
+  const paper = await getPaperByTitle(LOCAL_API, TEST_USER, TEST_PAPER);
+  testSinglePaper(assert, paper);
+});
+
+QUnit.test('Check the strucutre of the metaanalysis', async assert => {
+  const metaanalyses = await getMetaanalyses(LOCAL_API, TEST_USER);
+  metaanalyses.forEach(meta => testSingleMetaanalysis(assert, meta));
+});
+
+QUnit.test('Check the strucutre of the metaanalysis for specific title', async assert => {
+  const metaanalysis = await getMetaanlysisByTitle(LOCAL_API, TEST_USER, TEST_METAANALYSES);  
+  testSingleMetaanalysis(assert, metaanalysis);
+});
