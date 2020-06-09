@@ -36,7 +36,7 @@ module.exports = {
     projectId: 'lima-cloud-functions-2020',
     keyFilename: 'lima-google-key.json',
   },
-  gcloudDatastoreNamespace: 'living-meta-analysis-v2',
+  gcloudDatastoreNamespace: 'living-meta-analysis-v2-prod',
   googleClientID: '760012515336-d7mher4ga5qjql29n76ettedogdhbpqh.apps.googleusercontent.com',
   port: 8080,
   // comment out, or delete, the following lines, to have LiMA running on HTTP only
