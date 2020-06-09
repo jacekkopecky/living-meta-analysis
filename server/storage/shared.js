@@ -213,7 +213,7 @@ const forbiddenUsernames = [];
 
 function getForbiddenUsernames() {
   // start initially with those defined in config
-  const retval = [...config.FORBIDDEN_USERNAMES, LOCAL_STORAGE_SPECIAL_USERNAME];
+  const retval = [...config.FORBIDDEN_USERNAMES];
 
   // then populate the rest by taking a look at /webpages
   const files = fs.readdirSync(path.join(__dirname, '..', '..', 'webpages'));
