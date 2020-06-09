@@ -10,11 +10,6 @@
     "db-add": "node server/storage/scripts/add",
     "db-migrate": "node server/storage/scripts/migrate",
     "beta-codes": "node server/storage/scripts/betacodes",
-    "jasmine": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/jasmine ; true # ignore jasmine exit status",
-    "coverage": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/istanbul cover ./node_modules/.bin/jasmine ; true",
-    "coverage-open": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/istanbul cover ./node_modules/.bin/jasmine ; open ./coverage/lcov-report/index.html ; true",
-    "test": "JASMINE_CONFIG_PATH=test/.jasmine.js ./node_modules/.bin/jasmine && (cd test; ../node_modules/.bin/gemini test) ; true",
-    "testing-server": "TESTING=1 PORT=8081 node_modules/.bin/nodemon -w server/ -w test/data.json server",
     "lint-server": "echo eslint && eslint server/** --ext .js,.json",
     "lint": "echo eslint && eslint . --ext .js,.json && echo stylelint && stylelint webpages"
   },
@@ -35,6 +30,7 @@
     "istanbul": "^0.4.5",
     "jasmine": "^3.5.0",
     "nodemon": "^2.0.3",
+    "qunit": "^2.10.0",
     "selenium-standalone": "^6.17.0"
   },
   "dependencies": {
@@ -43,6 +39,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "morgan": "^1.10.0",
+    "node-fetch": "^2.6.0",
     "on-headers": "^1.0.2",
     "rotating-file-stream": "^2.0.2",
     "simple-google-openid": "^0.3.0",
