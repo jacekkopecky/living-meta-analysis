@@ -82,7 +82,7 @@ function testSingleMetaanalysis(assert, metaanalysis) {
 QUnit.module('API Comparison')
 
 QUnit.test('Get user profile', async assert => {
-  const req1 = await getProfile(TEST_API, TEST_USER);
+  const req1 = await getProfile(LOCAL_API, TEST_USER);
   const req2 = await getProfile(TEST_API, TEST_USER);  
   assert.deepEqual(req1, req2, 'The body should be the same');
 });
