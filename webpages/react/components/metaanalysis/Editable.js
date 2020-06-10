@@ -1,38 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import EditContext from './EditContext';
 import './Editable.css';
 
 function Editable(props) {
   const {
-    children, onSave, type, edit, cellId,
+    children, onSave, type, cellId,
   } = props;
+  const edit = useContext(EditContext);
   const value = children;
   const [currentValue, setCurrentValue] = useState(value);
 
-  // const save = () => {
-  //   console.log(currentValue);
-  //   onSave(currentValue);
-  // };
-
-  // useEffect(() => {
-  //   const keyPressHandler = (e) => {
-  //     const { key } = e;
-  //     switch (key) {
-  //     case 'Enter':
-  //       save();
-  //       break;
-  //     default:
-  //       break;
-  //     }
-  //   };
-
-  //   document.addEventListener('keydown', keyPressHandler);
-  //   return () => {
-  //     document.removeEventListener('keydown', keyPressHandler);
-  //   };
-  // }, []);
-
   const handleChange = (e) => {
-    cellId ? onSave(e.target.value, cellId) : onSave(e.target.value);
+    if (cellId) {
+      onSave(e.target.value, cellId);
+    } else {
+      onSave(e.target.value);
+    }
     setCurrentValue(e.target.value);
   };
 

@@ -1,26 +1,27 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import Paper from './Paper';
+import Editable from '../Editable';
+
 import './DataTable.css';
 
 const paperColumnDetails = (
   <>
-    <p>Paper</p>
-    <p>Paper description :</p>
+    <p>Paper column</p>
   </>
 );
 const expColumnDetails = (
   <>
-    <p>Study/Experiment</p>
-    <p>Experiment description :</p>
+    <p>Study/Experiment column</p>
   </>
 );
 
 const dataColDetails = (col) => (
   <>
-    <p>{col.title}</p>
-    <p>{col.description || 'no detailed description'}</p>
+    <p><Editable type="input" cellId={col.id}>{col.title}</Editable></p>
+    <p><Editable type="input" cellId={col.id}>{col.description || 'no detailed description'}</Editable></p>
   </>
+
 );
 
 const computedColDetails = (col) => (
