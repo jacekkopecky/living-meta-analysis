@@ -4,7 +4,8 @@ const express = require('express');
 const config = require('../config');
 
 // guard middleware enforcing that a user is logged in
-const GOOGLE_USER = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
+let GOOGLE_USER = require('simple-google-openid').guardMiddleware({ realm: 'accounts.google.com' });
+const fakeAuthMiddleware = require('./fake-auth');
 
 const api = express.Router({ caseSensitive: true });
 const jsonBodyParser = express.json(config.jsonParserOptions);
@@ -14,6 +15,21 @@ const papers = require('./papers');
 const users = require('./users');
 
 const storage = require('../storage');
+
+if (process.env.TESTING) {
+  // Fake middleware while in testing mode to allow all requests
+  GOOGLE_USER = (req, res, next) => next();
+  /*
+  * allows fake bearer tokens for authentication
+  * something like:
+  *
+  * Authorization: Fake jack
+  *
+  * this will be interpreted as user jack@fake.example.org
+  *
+  */
+  api.use(fakeAuthMiddleware);
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                   Routes                                   */
