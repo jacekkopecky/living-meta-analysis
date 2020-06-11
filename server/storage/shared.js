@@ -7,7 +7,6 @@ const path = require('path');
 
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
 const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
-const LOCAL_STORAGE_SPECIAL_USERNAME = 'local';
 
 const datastore = process.env.TESTING ? createStubDatastore()
   : new Datastore({

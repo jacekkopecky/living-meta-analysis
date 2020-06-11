@@ -70,7 +70,7 @@ async function getKindForTitle(user, title) {
 }
 
 // todo: implement using a query
-function listTitles(req, res, next) {
+function listTitles(req, res) {
   res.send([]);
 }
 
