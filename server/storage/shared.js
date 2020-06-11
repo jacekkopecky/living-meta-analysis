@@ -8,25 +8,11 @@ const path = require('path');
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
 const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
 
-const datastore = process.env.TESTING ? createStubDatastore()
-  : new Datastore({
-    projectId: config.gcloudProject.projectId,
-    keyFilename: config.gcloudProject.keyFilename,
-    namespace: config.gcloudDatastoreNamespace,
-  });
-
-function createStubDatastore() {
-  const retval = {};
-  function empty() { return retval; }
-  function asyncCall(x, cb) { setImmediate(cb); return retval; }
-  function asyncCallIfEnd(x, cb) { if (x === 'end') setImmediate(cb); return retval; }
-  retval.key = empty;
-  retval.save = asyncCall;
-  retval.createQuery = empty;
-  retval.runStream = empty;
-  retval.on = asyncCallIfEnd;
-  return retval;
-}
+const datastore = new Datastore({
+  projectId: config.gcloudProject.projectId,
+  keyFilename: config.gcloudProject.keyFilename,
+  namespace: config.gcloudDatastoreNamespace,
+});
 
 // in papers, metaanalyses, and comments fill in enteredBy and ctime
 function fillByAndCtimes(current, original, email) {
