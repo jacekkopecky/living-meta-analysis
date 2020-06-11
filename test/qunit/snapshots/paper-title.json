@@ -1,0 +1,198 @@
+{
+  "id": "/id/p/1495131991350",
+  "title": "LiveVideo",
+  "enteredBy": "hartmut.blank@port.ac.uk",
+  "enteredByUsername": "HartmutBlank",
+  "ctime": 1495131991350,
+  "mtime": 1495136240413,
+  "tags": [],
+  "apiurl": "/api/papers/hartmut.blank@port.ac.uk/LiveVideo",
+  "experiments": [
+    {
+      "ctime": 1495131991351,
+      "data": {
+        "1": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "2",
+          "ctime": 1495132199045
+        },
+        "2": {
+          "value": "6",
+          "ctime": 1495132199046,
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        "3": {
+          "value": "3",
+          "ctime": 1495132199047,
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        "4": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "4",
+          "ctime": 1495132199048
+        },
+        "5": {
+          "value": "2",
+          "ctime": 1495132432844,
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        }
+      },
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "title": "week1"
+    },
+    {
+      "title": "week4",
+      "ctime": 1495132199049,
+      "data": {
+        "1": {
+          "value": "0.1",
+          "ctime": 1495132199050,
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        "2": {
+          "value": "5",
+          "ctime": 1495132199051,
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        "3": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "4",
+          "ctime": 1495132199052
+        },
+        "4": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "6",
+          "ctime": 1495132199053
+        },
+        "5": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "2",
+          "ctime": 1495132432845
+        }
+      },
+      "enteredBy": "hartmut.blank@port.ac.uk"
+    },
+    {
+      "title": "week5",
+      "ctime": 1495132199054,
+      "data": {
+        "1": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "2",
+          "ctime": 1495132199055
+        },
+        "2": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "5",
+          "ctime": 1495132199056
+        },
+        "3": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "3.99",
+          "ctime": 1495132432846
+        },
+        "4": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "4",
+          "ctime": 1495132199058
+        },
+        "5": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "2",
+          "ctime": 1495132432847
+        }
+      },
+      "enteredBy": "hartmut.blank@port.ac.uk"
+    },
+    {
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "title": "week6",
+      "ctime": 1495132199059,
+      "data": {
+        "1": {
+          "value": "2",
+          "ctime": 1495132199060,
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        "2": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "5",
+          "ctime": 1495132432848
+        },
+        "3": {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "value": "3",
+          "ctime": 1495132432849
+        },
+        "4": {
+          "value": "6",
+          "ctime": 1495132432850,
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        "5": {
+          "value": "2",
+          "ctime": 1495132432851,
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        }
+      }
+    },
+    {
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "title": "week7",
+      "ctime": 1495136240414
+    },
+    {
+      "ctime": 1495136240415,
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "title": "week8"
+    },
+    {
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "title": "week9",
+      "ctime": 1495136240416
+    },
+    {
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "title": "week10",
+      "ctime": 1495136240417
+    },
+    {
+      "ctime": 1495136240418,
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "title": "week11"
+    },
+    {
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "title": "week12",
+      "ctime": 1495136240419
+    }
+  ],
+  "columns": [
+    {
+      "id": "1",
+      "type": "characteristic",
+      "title": "ExpID"
+    },
+    {
+      "id": "2",
+      "type": "characteristic",
+      "title": "ExpTOTAL"
+    },
+    {
+      "id": "3",
+      "type": "characteristic",
+      "title": "ControlID"
+    },
+    {
+      "id": "4",
+      "type": "characteristic",
+      "title": "ControlTOTAL"
+    },
+    {
+      "id": "5",
+      "type": "characteristic",
+      "title": "type"
+    }
+  ],
+  "hiddenCols": []
+}

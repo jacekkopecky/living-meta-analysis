@@ -2,11 +2,31 @@
 'use strict';
 
 const fetch = require('node-fetch');
+const Ajv = require('ajv');
 const LOCAL_API = 'http://localhost:8080/api';
 const TEST_API = 'http://jacekkopecky.myvm.port.ac.uk/api';
 const TEST_USER = 'hartmut.blank@port.ac.uk';
 const TEST_METAANALYSES = 'MisinformationEffect';
 const TEST_PAPER = 'LiveVideo';
+
+/* --------------------------------- Schemas -------------------------------- */
+
+const profileSchema = require('../schemas/profile');
+const userPapersSchema = require('../schemas/user-papers');
+const paperTitleSchema = require('../schemas/paper-title');
+const ajv = new Ajv();
+
+/* -------------------------------------------------------------------------- */
+/*                                  test data                                 */
+/* -------------------------------------------------------------------------- */
+
+const profileTestData = require('./snapshots/profile.json');
+// const commentTestData = require('./snapshots/comments.json');
+const paperTestData = require('./snapshots/user_papers.json');
+const paperTitleTestData = require('./snapshots/paper-title.json');
+const metaanalysesTestData = require('./snapshots/metaanalyses.json');
+const metaanalysesTitleTestData = require('./snapshots/metaanalyses-title.json');
+
 
 /* -------------------------------------------------------------------------- */
 /*                               Fetch Functions                              */
@@ -83,32 +103,28 @@ QUnit.module('API Comparison')
 
 QUnit.test('Get user profile', async assert => {
   const req1 = await getProfile(LOCAL_API, TEST_USER);
-  const req2 = await getProfile(TEST_API, TEST_USER);  
-  assert.deepEqual(req1, req2, 'The body should be the same');
+  assert.deepEqual(req1, profileTestData, 'The body should be the same');
 });
 
 QUnit.test('Get papers from a specific user', async assert => {
   const req1 = await getPapers(LOCAL_API, TEST_USER);
-  const req2 = await getPapers(TEST_API, TEST_USER);  
-  assert.deepEqual(req1, req2, 'The body should be the same');
+  assert.deepEqual(req1, paperTestData, 'The body should be the same');
 });
 
 QUnit.test('Get a paper by title', async assert => {
   const req1 = await getPaperByTitle(LOCAL_API, TEST_USER, TEST_PAPER);
-  const req2 = await getPaperByTitle(TEST_API, TEST_USER, TEST_PAPER);
-  assert.deepEqual(req1, req2, 'The body should be the same');
+  assert.deepEqual(req1, paperTitleTestData, 'The body should be the same');
 });
 
 QUnit.test('Get all metaanalysis by a user', async assert => {
   const req1 = await getMetaanalyses(LOCAL_API, TEST_USER);
   const req2 = await getMetaanalyses(TEST_API, TEST_USER);
-  assert.deepEqual(req1, req2, 'The body should be the same');
+  assert.deepEqual(req1, metaanalysesTestData, 'The body should be the same');
 });
 
 QUnit.test('Get a metaanalysis by title', async assert => {
   const req1 = await getMetaanlysisByTitle(LOCAL_API, TEST_USER, TEST_METAANALYSES);
-  const req2 = await getMetaanlysisByTitle(TEST_API, TEST_USER, TEST_METAANALYSES);
-  assert.deepEqual(req1, req2, 'The body should be the same');
+  assert.deepEqual(req1, metaanalysesTitleTestData, 'The body should be the same');
 });
 
 
@@ -119,19 +135,16 @@ QUnit.module('Structure Test');
 
 QUnit.test('Check the structure of the user', async assert => {
   const user = await getProfile(LOCAL_API, TEST_USER);
-  
-  assert.ok(user.displayName, 'Check the user has a display name');
-  assert.ok(user.email, 'Check the username');
-  assert.ok(Array.isArray(user.photos), 'Check if photos is an array');
-  assert.ok(user.photos[0], 'Check if the first element of photos array is not null');
-  assert.ok(user.joined, 'Check if the user has a joined date');
-  assert.ok(user.username, 'Check if the user has a username');
+  const validate = ajv.compile(profileSchema);
+  const valid = validate(user);
+  assert.ok(valid, 'Check the structure of the user matches the schema');
 });
 
 QUnit.test('Check the structure of the papers', async assert => {
   const papers = await getPapers(LOCAL_API, TEST_USER);
-  assert.ok(Array.isArray(papers), 'Check that the response is an array');
-  papers.forEach(paper => testSinglePaper(assert, paper))
+  const validate = ajv.compile(userPapersSchema);
+  const valid = validate(papers);
+  assert.ok(valid, 'Check the structure of the papers matches the schema')
 });
 
 QUnit.test('Check the structure of a specific paper', async assert => {
@@ -148,3 +161,7 @@ QUnit.test('Check the strucutre of the metaanalysis for specific title', async a
   const metaanalysis = await getMetaanlysisByTitle(LOCAL_API, TEST_USER, TEST_METAANALYSES);  
   testSingleMetaanalysis(assert, metaanalysis);
 });
+
+
+// { "id": "/id/p/1591873074600", "title": "paper-new", "enteredBy": "up932006@myport.ac.uk", "ctime": 1591873074600, "mtime": 1591873074600, "tags": [], "apiurl": "/api/papers/up932006/paper-new", "experiments": [{ "title": "exp", "data": { "1": { "value": "10", "enteredBy": "up932006@myport.ac.uk", "ctime": 1591873074602 } }, "enteredBy": "up932006@myport.ac.uk", "ctime": 1591873074601 }], "columns": [{ "id": "1", "title": "col", "type": "characteristic" }], "hiddenCols": [] }
+// { "id": "/id/ma/1591873074809", "title": "testing123", "enteredBy": "up932006@myport.ac.uk", "ctime": 1591873074809, "mtime": 1591873074809, "tags": [], "columns": [{ "id": "1", "title": "col", "type": "characteristic", "sourceColumnMap": { "new_paper_1591873012770": "1" } }], "paperOrder": ["/id/p/1591873074600"], "hiddenCols": [], "hiddenExperiments": [], "excludedExperiments": [], "aggregates": [], "groupingAggregates": [], "graphs": [], "apiurl": "/api/metaanalyses/up932006/testing123" }
