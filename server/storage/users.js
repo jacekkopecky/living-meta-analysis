@@ -52,7 +52,14 @@ async function saveUser(email, user, options) {
     user.ctime = tools.uniqueNow();
   }
 
-  const original = await getUser(email);
+  let original = null;
+
+  try {
+    original = await getUser(email);
+  } catch (error) {
+    // original user does't exist
+  }
+
   // reject the save if we're restoring from another datastore and we already have this user
   if (options.restoring && original) {
     throw new Error(`user ${user.email} already exists`);
