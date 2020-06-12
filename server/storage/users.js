@@ -26,9 +26,9 @@ async function getUser(user) {
   }
 
   try {
-    const [retval] = await datastore.runQuery(query);
-    if (retval.length > 0) {
-      return retval[0];
+    const [[retval]] = await datastore.runQuery(query);
+    if (retval) {
+      return retval;
     } else {
       throw new Error('User not found');
     }
