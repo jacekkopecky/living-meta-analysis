@@ -1,4 +1,5 @@
 module.exports = {
+  $id: 'https://lima.soc.port.ac.uk/schemas/paper-title',
   $schema: 'http://json-schema.org/draft-07/schema#',
   type: 'object',
   properties: {
@@ -11,6 +12,10 @@ module.exports = {
       minLength: 1,
     },
     enteredBy: {
+      type: 'string',
+      minLength: 1,
+    },
+    enteredByUsername: {
       type: 'string',
       minLength: 1,
     },
@@ -51,39 +56,39 @@ module.exports = {
     comments: {
       type: 'array',
       items: {
-        $ref: 'comments.json'
-      }
+        $ref: 'https://lima.soc.port.ac.uk/schemas/comments',
+      },
     },
     columns: {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          minLength: 1,
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            minLength: 1,
+          },
+          title: {
+            type: 'string',
+            minLength: 1,
+          },
+          description: {
+            type: 'string',
+            minLength: 1,
+          },
+          unit: {
+            type: 'string',
+            minLength: 1,
+          },
+          comments: {
+            type: 'array',
+            items: {
+              $ref: 'https://lima.soc.port.ac.uk/schemas/comments',
+            },
+          },
         },
-        title: {
-          type: 'string',
-          minLength: 1,
-        },
-        description: {
-          type: 'string',
-          minLength: 1,
-        },
-        unit: {
-          type: 'string',
-          minLength: 1,
-        },
-        comments: {
-          type: 'array',
-          items: {
-            $ref: 'comments.json'
-          }
-        },
-        ctime: {
-          type: 'number'
-        }
+        required: ['id', 'title'],
       },
-      required: ["id", "title", "ctime"]
     },
     experiments: {
       type: 'array',
@@ -116,7 +121,7 @@ module.exports = {
                     minLength: 1,
                   },
                   ctime: {
-                    type: 'number'
+                    type: 'number',
                   },
                   enteredBy: {
                     type: 'string',
@@ -125,23 +130,23 @@ module.exports = {
                   comments: {
                     type: 'array',
                     items: {
-                      $ref: 'comments.json'
-                    }
+                      $ref: 'https://lima.soc.port.ac.uk/schemas/comments',
+                    },
                   },
                 },
-                required: ["value", "ctime", "enteredBy"]
-              }
-            }
+                required: ['value', 'ctime', 'enteredBy'],
+              },
+            },
           },
           comments: {
             type: 'array',
             items: {
-              $ref: 'comments.json'
-            }
+              $ref: 'https://lima.soc.port.ac.uk/schemas/comments',
+            },
           },
         },
-        required: ["title", "enteredBy", "ctime"]
+        required: ['title', 'enteredBy', 'ctime'],
       },
-    }
-  }
-}
+    },
+  },
+};

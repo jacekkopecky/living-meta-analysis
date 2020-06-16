@@ -1,4 +1,5 @@
 module.exports = {
+  $id: 'https://lima.soc.port.ac.uk/schemas/user-papers',
   $schema: 'http://json-schema.org/draft-07/schema#',
   type: 'array',
   items: {
@@ -37,8 +38,8 @@ module.exports = {
       apiurl: {
         type: 'string',
         minLength: 1,
-      }
+      },
     },
-    required: ["id", "title", "enteredBy", "ctime", "mtime", "tags", "apiurl"]
+    required: ['id', 'title', 'enteredBy', 'ctime', 'mtime', 'tags', 'apiurl'],
   },
-}
+};

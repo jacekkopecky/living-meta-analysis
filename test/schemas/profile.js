@@ -1,4 +1,5 @@
 module.exports = {
+  $id: 'https://lima.soc.port.ac.uk/schemas/profile',
   $schema: 'http://json-schema.org/draft-07/schema#',
   type: 'object',
   properties: {
@@ -18,7 +19,7 @@ module.exports = {
       type: 'number',
     },
     username: {
-      type: 'string'
+      type: 'string',
     },
-  }
-}
+  },
+};
