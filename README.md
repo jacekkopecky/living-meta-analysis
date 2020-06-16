@@ -5,7 +5,7 @@ Todo this README should be about 'how to use this tool', 'what the benefits are'
 
 ## Installation and Maintenance
 
-See `deployment/README.md`.
+See `DEPLOYMENT.md`.
 
 ## Testing
 
