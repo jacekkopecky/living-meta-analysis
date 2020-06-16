@@ -1,12 +1,6 @@
 'use strict';
 const { datastore } = require('../shared');
-const readline = require('readline');
-const fs = require('fs');
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
 /*
  * change metaanalysis from an old format to the new one on load from datastore, if need be
  */
@@ -313,7 +307,6 @@ async function migrateAllUsers() {
     });
   });
   await datastore.upsert(entities);
-
 }
 
 async function migrateAllPapers() {
