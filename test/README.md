@@ -1,25 +1,20 @@
 # LiMA testing
 
-We use [Jasmine](https://jasmine.github.io/) and [Gemini](https://github.com/gemini-testing/gemini) for testing.
+We use [QUnit](https://github.com/qunitjs/qunit) and [Gemini](https://github.com/gemini-testing/gemini) for testing.
 
-The tests use a special _testing_ environment of LiMA that disables invites, stats, and the datastore; it imports data from `test/data.json`.
-If storage changes and the testing data need migrating, use the npm script `npm run db-migrate` described in the deployment README.
+The tests use a special _testing_ environment of LiMA that disables invites; it tests against snapshot data in `test/qunit/snapshots`.
+If storage changes and the testing data need updating, use the npm script `npm run create-api-snapshot`.
 
-## Unit Testing (Jasmine)
+## Unit Testing (QUnit)
 
 ### Running tests
 
-Just run `npm run jasmine`.
+First start the server in test mode using `npm run start:test-server`.
+Then run `npm run test-server`.
 
 ### Adding tests
 
-Put your tests in `test/jasmine`, name them `*-spec.js` and follow the directory structure of `server/` as appropriate. Files in `test/jasmine/helpers` run before all jasmine tests.
-
-### Coverage
-
-We use [Istanbul](https://github.com/gotwarlost/istanbul) for checking test coverage. Simply run it using `npm run coverage`. It produces a report in `coverage/`; open `coverage/lcov-report/index.html` in your browser to see it.
-
-**Note that Istanbul only reports coverage on files that have been loaded by the jasmine tests.**
+Put your tests in `test/qunit/test.js`.
 
 --------------------------------------
 
