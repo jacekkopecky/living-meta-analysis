@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Header from './layout/Header';
 import Footer from './layout/Footer';
 import Metaanalysis from './metaanalysis/Metaanalysis';
+import useGoogleAuth from '../tools/google-auth';
 import './App.css';
-
 
 function App() {
   const [metaanalysis, updateMetaanalysis] = useState([]);
   const [isLoaded, setLoaded] = useState(false);
   const [error, setError] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser] = useGoogleAuth(null);
+
   // fetch request to the API
   // then everything is spread in children components
   useEffect(() => {
@@ -37,7 +38,7 @@ function App() {
       </div>
     );
   } else if (isLoaded === true) {
-    content = (<Metaanalysis metaanalysis={metaanalysis} currentUser={currentUser} />);
+    content = (<Metaanalysis metaanalysis={metaanalysis} />);
   } else {
     content = <div>Loading...</div>;
   }
