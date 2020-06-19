@@ -2,7 +2,7 @@
 
 We use [QUnit](https://github.com/qunitjs/qunit) and [Gemini](https://github.com/gemini-testing/gemini) for testing.
 
-The tests use a special _testing_ environment of LiMA that disables invites; it tests against snapshot data in `test/qunit/snapshots`.
+The tests use a special _testing_ environment of LiMA that disables invites; it tests against snapshot data in `test/qunit/snapshots` and schemas located in `test/schemas`.
 If storage changes and the testing data need updating, use the npm script `npm run create-api-snapshot`.
 
 ## Unit Testing (QUnit)
@@ -14,7 +14,8 @@ Then run `npm run test-server`.
 
 ### Adding tests
 
-Put your tests in `test/qunit/test.js`.
+Put your tests in `test/qunit/tests/*-test.js` where `*` specifies the type of tests the file holds.
+Any configuration, such as API urls, test users or anything else should be stored in `test/qunit/config.js`. Helper functions, such as API requests are stored in `test/qunit/helpers.js`.
 
 --------------------------------------
 
