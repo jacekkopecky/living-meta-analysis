@@ -8,11 +8,16 @@ const path = require('path');
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
 const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
 
-const datastore = new Datastore({
-  projectId: config.gcloudProject.projectId,
-  keyFilename: config.gcloudProject.keyFilename,
+const datastoreConfig = {
   namespace: config.gcloudDatastoreNamespace,
-});
+};
+
+if (!process.env.GAE_APPLICATION) {
+  datastoreConfig.projectId = config.gcloudProject.projectId;
+  datastoreConfig.keyFilename = config.gcloudProject.keyFilename;
+}
+
+const datastore = new Datastore(datastoreConfig);
 
 // in papers, metaanalyses, and comments fill in enteredBy and ctime
 function fillByAndCtimes(current, original, email) {
