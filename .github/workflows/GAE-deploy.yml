@@ -1,0 +1,13 @@
+name: App Engine Deploy
+on: [push]
+jobs:
+  build:
+    name: AppEngineDeploy
+    runs-on: ubuntu-latest
+    steps:
+    id: deploy
+    uses: GoogleCloudPlatform/github-actions/appengine-deploy@master
+    with:
+      credentials: ${{ secrets.GCP_SA_KEY }}
+    id: deploy-complete
+    run: curl "${{ steps.deploy.outputs.url }}"
