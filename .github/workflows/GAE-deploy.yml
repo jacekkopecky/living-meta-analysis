@@ -5,9 +5,11 @@ jobs:
     name: AppEngineDeploy
     runs-on: ubuntu-latest
     steps:
-    id: deploy
-    uses: GoogleCloudPlatform/github-actions/appengine-deploy@master
-    with:
-      credentials: ${{ secrets.GCP_SA_KEY }}
-    id: deploy-complete
-    run: curl "${{ steps.deploy.outputs.url }}"
+      - name: Deploy
+        id: deploy
+        uses: GoogleCloudPlatform/github-actions/appengine-deploy@master
+        with:
+          credentials: ${{ secrets.GCP_SA_KEY }}
+      - name: Return URL
+        id: deploy-complete
+        run: curl "${{ steps.deploy.outputs.url }}"
