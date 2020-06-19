@@ -9,9 +9,9 @@
     "db-dump": "fn=\"storage-dump-`date '+%Y-%m-%d--%H-%M-%S'`.json\"; echo saving into \"$fn\"; node server/storage/scripts/dump > \"$fn\"; echo saved into \"$fn\"",
     "db-add": "node server/storage/scripts/add",
     "db-migrate": "node server/storage/scripts/migrate",
-    "create-api-snapshot": "node test/qunit/create_snapshot",
+    "create-api-snapshot": "node test/qunit/snapshots/create_snapshot",
     "beta-codes": "node server/storage/scripts/betacodes",
-    "test-server": "qunit test/qunit/test.js",
+    "test-server": "qunit test/qunit/tests/*-test.js",
     "lint-server": "echo eslint && eslint server/** --ext .js,.json",
     "lint": "echo eslint && eslint . --ext .js,.json && echo stylelint && stylelint webpages"
   },
