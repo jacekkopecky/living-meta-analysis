@@ -1,0 +1,28 @@
+name: Run API Tests
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install Dependancies
+      id: install
+      run: npm install
+    - name: Start Test Server
+      id: start-server
+      run: npm run start:test-server
+    - name: Start Server Tests
+      id: test-server
+      run: npm run test-server
