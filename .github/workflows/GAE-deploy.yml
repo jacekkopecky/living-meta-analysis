@@ -1,10 +1,11 @@
 name: App Engine Deploy
 on: [push]
 jobs:
-  build:
+  deploy:
     name: AppEngineDeploy
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Deploy
         id: deploy
         uses: GoogleCloudPlatform/github-actions/appengine-deploy@master
