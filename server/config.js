@@ -31,11 +31,11 @@ module.exports = {
   // this is a delay for demonstration purposes so the server seems slow
   demoApiDelay: 0,
 
-  // google-specific settings
-  gcloudProject: {
-    projectId: 'lima-cloud-functions-2020',
-    keyFilename: 'lima-google-key.json',
-  },
+  // google-specific settings - commented out because appengine doesn't need that
+  // gcloudProject: {
+  //   projectId: 'lima-cloud-functions-2020',
+  //   keyFilename: 'lima-google-key.json',
+  // },
   gcloudDatastoreNamespace: 'living-meta-analysis-v2-prod',
   googleClientID: '760012515336-d7mher4ga5qjql29n76ettedogdhbpqh.apps.googleusercontent.com',
   port: 8080,
