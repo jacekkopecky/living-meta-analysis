@@ -13,4 +13,4 @@ jobs:
           credentials: ${{ secrets.GCP_SA_KEY }}
       - name: Return URL
         id: deploy-complete
-        run: curl "${{ steps.deploy.outputs.url }}"
+        run: echo "${{ steps.deploy.outputs.url }}"
