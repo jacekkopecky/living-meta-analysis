@@ -30,15 +30,7 @@ We expect LiMA to be installed on a machine that supports the below requirements
 
 ### Updating
 
-```
-cd /<path_to_lima>/living-meta-analysis
-git diff -U2             # review currently existing local changes
-git stash
-git pull
-git stash apply
-git diff -U2             # verify the local changes haven't been broken
-npm install --production # if package.json has changed
-```
+commit in branch `production` to push to main service; commit to branch `master` to push to staging service.
 
 ### Invite Codes
 
