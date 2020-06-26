@@ -281,62 +281,69 @@ process.on('unhandledRejection', (err) => {
 const port = process.env.PORT || config.port;
 let httpsPort = process.env.PORT || config.httpsPort;
 
-startServer();
+const serverReady = startServer();
 
 function startServer() {
-  if (process.env.TESTING) {
-    console.info('**************************************************');
-    console.info('');
-    console.info('RUNNING IN TESTING MODE');
-    console.info('');
-    console.info('**************************************************');
-  }
-
-  if (process.env.DISABLE_HTTPS || process.env.TESTING) {
-    if (!process.env.TESTING) {
-      console.warn('**************************************************');
-      console.warn('');
-      console.warn('WARNING: DISABLING HTTPS, THIS SERVER IS INSECURE');
-      console.warn('');
-      console.warn('**************************************************');
+  return new Promise((resolve, reject) => {
+    if (process.env.TESTING) {
+      console.info('**************************************************');
+      console.info('');
+      console.info('RUNNING IN TESTING MODE');
+      console.info('');
+      console.info('**************************************************');
     }
-    httpsPort = null;
-  }
 
-  if (!httpsPort) {
-    // only HTTP
-    http.createServer(app)
-      .listen(port, () => {
-        console.log(`LiMA server listening on insecure port ${port}`);
-      });
-  } else {
-    // HTTPS; with HTTP redirecting to thatf
-    if (process.env.GAE_APPLICATION) {
+    if (process.env.DISABLE_HTTPS || process.env.TESTING) {
+      if (!process.env.TESTING) {
+        console.warn('**************************************************');
+        console.warn('');
+        console.warn('WARNING: DISABLING HTTPS, THIS SERVER IS INSECURE');
+        console.warn('');
+        console.warn('**************************************************');
+      }
+      httpsPort = null;
+    }
+
+    if (!httpsPort) {
+      // only HTTP
       http.createServer(app)
         .listen(port, () => {
-          console.log(`LiMA server running on App Engine, Port: ${port}`);
+          console.log(`LiMA server listening on insecure port ${port}`);
+          resolve();
         });
     } else {
-      console.error('error starting HTTPS');
-      try {
-        const credentials = {};
-        credentials.key = fs.readFileSync(config.httpsKey, 'utf8');
-        credentials.cert = fs.readFileSync(config.httpsCert, 'utf8');
-        https.createServer(credentials, app).listen(httpsPort, () => {
-          console.log(`LiMA server listening on HTTPS port ${httpsPort}`);
-
-          // HTTP app will just redirect to HTTPS
-          const redirectApp = express();
-          // if (loggingMiddleware) redirectApp.use(loggingMiddleware);
-          redirectApp.get('*', (req, res) => res.redirect('https://' + req.hostname + req.url));
-
-          http.createServer(redirectApp).listen(port, () => {
-            console.log(`LiMA redirect server listening on port ${port}`);
+      // HTTPS; with HTTP redirecting to that
+      if (process.env.GAE_APPLICATION) {
+        http.createServer(app)
+          .listen(port, () => {
+            console.log(`LiMA server running on App Engine, Port: ${port}`);
+            resolve();
           });
-        });
-      } catch (error) {
-        console.log(error);
+      } else {
+        try {
+          const credentials = {};
+          credentials.key = fs.readFileSync(config.httpsKey, 'utf8');
+          credentials.cert = fs.readFileSync(config.httpsCert, 'utf8');
+          https.createServer(credentials, app).listen(httpsPort, () => {
+            console.log(`LiMA server listening on HTTPS port ${httpsPort}`);
+
+            // HTTP app will just redirect to HTTPS
+            const redirectApp = express();
+            // if (loggingMiddleware) redirectApp.use(loggingMiddleware);
+            redirectApp.get('*', (req, res) => res.redirect('https://' + req.hostname + req.url));
+
+            http.createServer(redirectApp).listen(port, () => {
+              console.log(`LiMA redirect server listening on port ${port}`);
+              resolve();
+            });
+          });
+        } catch (error) {
+          console.log(error);
+          reject(error);
+        }
       }
     }
-  }
+  });
 }
+
+module.exports = { serverReady };
