@@ -1,6 +1,5 @@
 runtime: nodejs12
 env: standard
-service: staging
 handlers:
   - url: /.*
     script: auto

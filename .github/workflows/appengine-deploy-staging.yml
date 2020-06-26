@@ -1,5 +1,8 @@
 name: App Engine Deploy
-on: [push]
+on:
+  push:
+    branches:
+      - master
 jobs:
   deploy:
     name: AppEngineDeploy
