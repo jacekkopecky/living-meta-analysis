@@ -1,7 +1,8 @@
 node_modules
 *-google-key.json
+storage-dump-*.json
 log
-invites.txt
+codes.txt
 statsd-server-conf.sh
 test/gemini/screens
 coverage

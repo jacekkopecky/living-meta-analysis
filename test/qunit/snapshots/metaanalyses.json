@@ -1,0 +1,998 @@
+[
+  {
+    "id": "/id/ma/1089071495934",
+    "title": "MisinformationEffect",
+    "enteredBy": "hartmut.blank@port.ac.uk",
+    "ctime": 1489071495934,
+    "mtime": 1574956187235,
+    "published": "Blank, H., & Launay, C. (2014). How to protect eyewitness memory against the misinformation effect: A meta-analysis of post-warning studies. Journal of Applied Research in Memory and Cognition, 3, 377-88. doi:10.1016/j.jarmac.2014.03.005",
+    "description": "The 'misinformation effect' is a well-known phenomenon in the psychology of memory. In its classical version, it refers to negative effects of post-event misinformation on memory for previously witnessed events (i.e. memory for event details becomes less accurate and misleading details are remembered instead), but it has been investigated outside the eyewitness context as well. \n\nIn a number of studies, researchers have tried to reduce the misinformation effect through warnings about the (potential) presence of misinformation. This has been tried either before or after the introduction of misinformation, but the latter (i.e. post-warnings) is more practically relevant, as it is rarely possible to pre-warn people about misinformation. \n\nThe featured meta-analysis investigated the effectiveness of post-warnings (compared to no-postwarning control conditions) in terms of (1) improving the accuracy of memory for witnessed event details and (2) reducing the reporting of misinformation in memory tests. It also explored if the beneficial effects of post-warnings depend on additional variables (moderators).",
+    "tags": [],
+    "columns": [
+      {
+        "title": "Specification",
+        "sourceColumnMap": {
+          "/id/p/1089073733111": "6",
+          "/id/p/1089072895987": "6",
+          "/id/p/1089073218431": "6",
+          "/id/p/1089074765574": "6",
+          "/id/p/1089074001814": "6",
+          "/id/p/1089072805326": "6",
+          "/id/p/1089074763734": "6",
+          "/id/p/1089071496167": "6",
+          "/id/p/1089073733406": "6",
+          "/id/p/1089072434411": "6",
+          "/id/p/1089074215795": "6",
+          "/id/p/1089071833896": "6",
+          "/id/p/1089074863028": "6"
+        },
+        "id": "1",
+        "type": "characteristic"
+      },
+      {
+        "sourceColumnMap": {
+          "/id/p/1089074763734": "2",
+          "/id/p/1089071496167": "2",
+          "/id/p/1089073730245": "5",
+          "/id/p/1089073733406": "1",
+          "/id/p/1089074943690": "3",
+          "/id/p/1089072434411": "1",
+          "/id/p/1089074215795": "1",
+          "/id/p/1089074765942": "1",
+          "/id/p/1089071833896": "1",
+          "/id/p/1089074863028": "2",
+          "/id/p/1089073733111": "1",
+          "/id/p/1089073732903": "3",
+          "/id/p/1089073129398": "5",
+          "/id/p/1089074764850": "4",
+          "/id/p/1089072895987": "1",
+          "/id/p/1089073218431": "5",
+          "/id/p/1089074765574": "4",
+          "/id/p/1089072805326": "2",
+          "/id/p/1089074001814": "4"
+        },
+        "id": "2",
+        "type": "characteristic",
+        "title": "Group",
+        "description": "distinguishes experiments with or without warning about misinformation"
+      },
+      {
+        "id": "7",
+        "type": "characteristic",
+        "title": "Participant type",
+        "sourceColumnMap": {
+          "/id/p/1089074764850": "6",
+          "/id/p/1089072895987": "7",
+          "/id/p/1089073218431": "14",
+          "/id/p/1089074765574": "7",
+          "/id/p/1089072805326": "7",
+          "/id/p/1089074001814": "7",
+          "/id/p/1089074763734": "7",
+          "/id/p/1089071496167": "10",
+          "/id/p/1089073730245": "6",
+          "/id/p/1089073733406": "7",
+          "/id/p/1089074943690": "7",
+          "/id/p/1089072434411": "12",
+          "/id/p/1089074215795": "7",
+          "/id/p/1089074765942": "6",
+          "/id/p/1089071833896": "10",
+          "/id/p/1089074863028": "7",
+          "/id/p/1089073733111": "7",
+          "/id/p/1089073732903": "6",
+          "/id/p/1089073129398": "6"
+        }
+      },
+      {
+        "id": "3",
+        "type": "characteristic",
+        "title": "Exp Outcome [%]",
+        "description": "How many participants (in %) endorsed misinformation.",
+        "sourceColumnMap": {
+          "/id/p/1089073733111": "3",
+          "/id/p/1089073732903": "2",
+          "/id/p/1089073129398": "4",
+          "/id/p/1089074764850": "3",
+          "/id/p/1089072895987": "2",
+          "/id/p/1089073218431": "4",
+          "/id/p/1089074765574": "3",
+          "/id/p/1089072805326": "1",
+          "/id/p/1089074001814": "3",
+          "/id/p/1089074763734": "1",
+          "/id/p/1089071496167": "1",
+          "/id/p/1089073730245": "4",
+          "/id/p/1089073733406": "2",
+          "/id/p/1089074943690": "2",
+          "/id/p/1089072434411": "5",
+          "/id/p/1089074215795": "2",
+          "/id/p/1089074765942": "2",
+          "/id/p/1089071833896": "2",
+          "/id/p/1089074863028": "1"
+        }
+      },
+      {
+        "id": "4",
+        "type": "characteristic",
+        "title": "n (exp)",
+        "sourceColumnMap": {
+          "/id/p/1089073730245": "2",
+          "/id/p/1089073733406": "3",
+          "/id/p/1089074943690": "5",
+          "/id/p/1089072434411": "3",
+          "/id/p/1089074215795": "3",
+          "/id/p/1089074765942": "3",
+          "/id/p/1089071833896": "4",
+          "/id/p/1089074863028": "4",
+          "/id/p/1089073733111": "5",
+          "/id/p/1089073732903": "5",
+          "/id/p/1089073129398": "2",
+          "/id/p/1089074764850": "1",
+          "/id/p/1089072895987": "3",
+          "/id/p/1089073218431": "2",
+          "/id/p/1089074765574": "1",
+          "/id/p/1089072805326": "4",
+          "/id/p/1089074001814": "1",
+          "/id/p/1089074763734": "4",
+          "/id/p/1089071496167": "4"
+        }
+      },
+      {
+        "title": "Control Outcome [%]",
+        "description": "How many participants (in %) endorsed misinformation.",
+        "sourceColumnMap": {
+          "/id/p/1089074763734": "3",
+          "/id/p/1089071496167": "3",
+          "/id/p/1089073730245": "1",
+          "/id/p/1089073733406": "4",
+          "/id/p/1089074943690": "4",
+          "/id/p/1089072434411": "2",
+          "/id/p/1089074215795": "4",
+          "/id/p/1089074765942": "4",
+          "/id/p/1089071833896": "3",
+          "/id/p/1089074863028": "3",
+          "/id/p/1089073733111": "4",
+          "/id/p/1089073732903": "4",
+          "/id/p/1089073129398": "1",
+          "/id/p/1089074764850": "5",
+          "/id/p/1089072895987": "4",
+          "/id/p/1089073218431": "1",
+          "/id/p/1089074765574": "5",
+          "/id/p/1089072805326": "3",
+          "/id/p/1089074001814": "5"
+        },
+        "id": "5",
+        "type": "characteristic"
+      },
+      {
+        "sourceColumnMap": {
+          "/id/p/1089072805326": "5",
+          "/id/p/1089074001814": "2",
+          "/id/p/1089074763734": "5",
+          "/id/p/1089071496167": "5",
+          "/id/p/1089073730245": "3",
+          "/id/p/1089073733406": "5",
+          "/id/p/1089074943690": "1",
+          "/id/p/1089072434411": "4",
+          "/id/p/1089074215795": "5",
+          "/id/p/1089074765942": "5",
+          "/id/p/1089071833896": "5",
+          "/id/p/1089074863028": "5",
+          "/id/p/1089073733111": "2",
+          "/id/p/1089073732903": "1",
+          "/id/p/1089073129398": "3",
+          "/id/p/1089074764850": "2",
+          "/id/p/1089072895987": "5",
+          "/id/p/1089073218431": "3",
+          "/id/p/1089074765574": "2"
+        },
+        "id": "6",
+        "type": "characteristic",
+        "title": "n (con)"
+      },
+      {
+        "type": "result",
+        "formula": "logOddsRatioPercent(3,5)",
+        "title": "Log Odds Ratio"
+      },
+      {
+        "type": "result",
+        "formula": "weightPercent(3,4,5,6)",
+        "title": "FEM Weight"
+      },
+      {
+        "type": "result",
+        "formula": "fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))",
+        "title": "FEM Effect Error"
+      },
+      {
+        "formula": "randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))",
+        "title": "REM Weight",
+        "type": "result"
+      }
+    ],
+    "paperOrder": [
+      "/id/p/1089074943690",
+      "/id/p/1089071496167",
+      "/id/p/1089071833896",
+      "/id/p/1089072434411",
+      "/id/p/1089072805326",
+      "/id/p/1089072895987",
+      "/id/p/1089073129398",
+      "/id/p/1089073218431",
+      "/id/p/1089073730245",
+      "/id/p/1089073732903",
+      "/id/p/1089073733111",
+      "/id/p/1089073733406",
+      "/id/p/1089074001814",
+      "/id/p/1089074215795",
+      "/id/p/1089074763734",
+      "/id/p/1089074764850",
+      "/id/p/1089074765574",
+      "/id/p/1089074765942",
+      "/id/p/1089074863028",
+      "/id/p/1574956186204"
+    ],
+    "hiddenCols": [],
+    "hiddenExperiments": [],
+    "excludedExperiments": [
+      "/id/p/1089072434411,14"
+    ],
+    "aggregates": [
+      {
+        "formula": "weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+        "title": "Fixed Effect Model (FEM) Point Estimate"
+      },
+      {
+        "formula": "standardErrorAggr(weightPercent(3,4,5,6))",
+        "title": "FEM Standard Error"
+      },
+      {
+        "formula": "varianceAggr(weightPercent(3,4,5,6))",
+        "title": "FEM Variance"
+      },
+      {
+        "formula": "lowerConfidenceLimitAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+        "title": "FEM 95% Lower Confidence Limit"
+      },
+      {
+        "formula": "upperConfidenceLimitAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+        "title": "FEM 95% Upper Confidence Limit"
+      },
+      {
+        "formula": "zValueAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+        "title": "FEM Z-value"
+      },
+      {
+        "formula": "pValue2TailedAggr(zValueAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))",
+        "title": "FEM P-value (2-tail)"
+      },
+      {
+        "formula": "sumAggr(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+        "title": "FEM Heterogeneity Q-value"
+      },
+      {
+        "formula": "degreesOfFreedomAggr(logOddsRatioPercent(3,5))",
+        "title": "FEM Degrees of Freedom"
+      },
+      {
+        "formula": "heterogeneityPValueAggr(sumAggr(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))), degreesOfFreedomAggr(logOddsRatioPercent(3,5)))",
+        "title": "FEM Heterogeneity P-value"
+      },
+      {
+        "formula": "iSquaredAggr(sumAggr(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))), degreesOfFreedomAggr(logOddsRatioPercent(3,5)))",
+        "title": "FEM Heterogeneity I²"
+      },
+      {
+        "formula": "tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+        "title": "FEM 𝛕²"
+      },
+      {
+        "formula": "tauStandardErrorAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+        "title": "FEM 𝛕 Standard Error"
+      },
+      {
+        "formula": "tauVarianceAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+        "title": "FEM 𝛕 Variance"
+      },
+      {
+        "formula": "tauAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+        "title": "FEM 𝛕"
+      },
+      {
+        "formula": "weightedMeanAggr(logOddsRatioPercent(3,5),randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+        "title": "Random Effect Model (REM) Point Estimate"
+      },
+      {
+        "formula": "standardErrorAggr(randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+        "title": "REM Standard Error"
+      },
+      {
+        "formula": "varianceAggr(randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+        "title": "REM Variance"
+      },
+      {
+        "formula": "lowerConfidenceLimitAggr(logOddsRatioPercent(3,5),randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+        "title": "REM 95% Lower Confidence Limit"
+      },
+      {
+        "formula": "upperConfidenceLimitAggr(logOddsRatioPercent(3,5),randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+        "title": "REM 95% Upper Confidence Limit"
+      },
+      {
+        "formula": "zValueAggr(logOddsRatioPercent(3,5),randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+        "title": "REM Z-value"
+      },
+      {
+        "formula": "pValue2TailedAggr(zValueAggr(logOddsRatioPercent(3,5),randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))))",
+        "title": "REM P-value (2-tail)"
+      },
+      {
+        "formula": "sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))))",
+        "title": "Moderator Analysis (MA) Total Heterogeneity Q-value Within Groups"
+      },
+      {
+        "formula": "sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(3,5)))",
+        "title": "MA Total Degrees of Freedom Within Groups"
+      },
+      {
+        "formula": "heterogeneityPValueAggr(sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))), sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(3,5))))",
+        "title": "MA Total Heterogeneity P-value Within Groups"
+      },
+      {
+        "formula": "subtractAggr(sumAggr(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))),sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))))",
+        "title": "MA Heterogeneity Q-value Between Groups"
+      },
+      {
+        "formula": "subtractAggr(degreesOfFreedomAggr(logOddsRatioPercent(3,5)),sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(3,5))))",
+        "title": "MA Degrees of Freedom Between Groups"
+      },
+      {
+        "formula": "heterogeneityPValueAggr(subtractAggr(sumAggr(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))),sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))))), subtractAggr(degreesOfFreedomAggr(logOddsRatioPercent(3,5)),sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(3,5)))))",
+        "title": "MA Heterogeneity P-value Between Groups"
+      }
+    ],
+    "groupingColumn": "2",
+    "groupingAggregates": [
+      {
+        "formula": "weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+        "title": "FEM Group Point Estimates"
+      },
+      {
+        "formula": "sumAggr*(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+        "title": "Within-group Heterogeneity Q-values"
+      },
+      {
+        "formula": "degreesOfFreedomAggr*(logOddsRatioPercent(3,5))",
+        "title": "Within-group Degrees of Freedom"
+      }
+    ],
+    "graphs": [
+      {
+        "formula": "grapeChartPercentGraph(3,4,5,6,7)",
+        "title": "Grape Chart by type"
+      },
+      {
+        "formula": "grapeChartPercentGraph(3,4,5,6,2)",
+        "title": "Grape Chart by warning group"
+      },
+      {
+        "formula": "forestPlotPercentGraph(3,4,5,6)",
+        "title": "Forest Plot"
+      },
+      {
+        "formula": "forestPlotGroupPercentGraph(3,4,5,6,2)",
+        "title": "Forest Plot with Groups"
+      }
+    ],
+    "apiurl": "/api/metaanalyses/hartmut.blank@port.ac.uk/MisinformationEffect"
+  },
+  {
+    "id": "/id/ma/1489344905111",
+    "title": "MyMeta-analysis",
+    "enteredBy": "hartmut.blank@port.ac.uk",
+    "ctime": 1489344905111,
+    "mtime": 1544458861682,
+    "published": "Blank & Kopecky, 2018, A Small Mock Meta-analysis For Illustrating LiMA, unpublishable.",
+    "description": "This is a completely made-up short example of a meta-analysis, designed for the sole purpose of being able to see many features of LiMA meta-analyses within a small space.",
+    "tags": [],
+    "columns": [
+      {
+        "sourceColumnMap": {
+          "/id/p/1489345835498": "5",
+          "/id/p/1489344905953": "5",
+          "/id/p/1489344905796": "5",
+          "/id/p/1489345971971": "5",
+          "/id/p/1489344906086": "5",
+          "/id/p/1489345971012": "5"
+        },
+        "id": "1",
+        "type": "characteristic",
+        "title": "Age"
+      },
+      {
+        "sourceColumnMap": {
+          "/id/p/1489345971012": "4",
+          "/id/p/1489345835498": "4",
+          "/id/p/1489344905953": "4",
+          "/id/p/1489344905796": "4",
+          "/id/p/1489345971971": "3",
+          "/id/p/1489344906086": "4"
+        },
+        "id": "2",
+        "type": "characteristic",
+        "title": "Exp Outcome [N]"
+      },
+      {
+        "sourceColumnMap": {
+          "/id/p/1489345971971": "4",
+          "/id/p/1489344906086": "3",
+          "/id/p/1489345971012": "2",
+          "/id/p/1489345835498": "3",
+          "/id/p/1489344905953": "2",
+          "/id/p/1489344905796": "3"
+        },
+        "id": "3",
+        "type": "characteristic",
+        "title": "Exp TOTAL [N]"
+      },
+      {
+        "title": "Control Outcome [N]",
+        "sourceColumnMap": {
+          "/id/p/1489344906086": "2",
+          "/id/p/1489345971012": "3",
+          "/id/p/1489345835498": "1",
+          "/id/p/1489344905953": "3",
+          "/id/p/1489344905796": "2",
+          "/id/p/1489345971971": "1"
+        },
+        "id": "4",
+        "type": "characteristic"
+      },
+      {
+        "id": "5",
+        "type": "characteristic",
+        "title": "Control TOTAL [N]",
+        "sourceColumnMap": {
+          "/id/p/1489345971012": "1",
+          "/id/p/1489345835498": "2",
+          "/id/p/1489344905953": "1",
+          "/id/p/1489344905796": "1",
+          "/id/p/1489345971971": "2",
+          "/id/p/1489344906086": "1"
+        }
+      },
+      {
+        "type": "result",
+        "formula": "logOddsRatioNumber(2,3,4,5)",
+        "title": "Log Odds Ratio"
+      },
+      {
+        "type": "result",
+        "formula": "weightNumber(2,3,4,5)",
+        "title": "FEM Weight"
+      },
+      {
+        "type": "result",
+        "formula": "fixedEffectError(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5),weightedMeanAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5)))",
+        "title": "FEM Effect Error"
+      }
+    ],
+    "paperOrder": [
+      "/id/p/1489344905796",
+      "/id/p/1489344905953",
+      "/id/p/1489344906086",
+      "/id/p/1489345835498",
+      "/id/p/1489345971012",
+      "/id/p/1489345971971"
+    ],
+    "hiddenCols": [],
+    "hiddenExperiments": [],
+    "excludedExperiments": [],
+    "aggregates": [
+      {
+        "formula": "weightedMeanAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))",
+        "title": "Fixed Effect Model (FEM) Point Estimate"
+      },
+      {
+        "formula": "standardErrorAggr(weightNumber(2,3,4,5))",
+        "title": "FEM Standard Error"
+      },
+      {
+        "formula": "varianceAggr(weightNumber(2,3,4,5))",
+        "title": "FEM Variance"
+      },
+      {
+        "formula": "lowerConfidenceLimitAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))",
+        "title": "FEM 95% Lower Confidence Limit"
+      },
+      {
+        "formula": "upperConfidenceLimitAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))",
+        "title": "FEM 95% Upper Confidence Limit"
+      },
+      {
+        "formula": "zValueAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))",
+        "title": "FEM Z-value"
+      },
+      {
+        "formula": "pValue2TailedAggr(zValueAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5)))",
+        "title": "FEM P-value (2-tail)"
+      },
+      {
+        "formula": "sumAggr(fixedEffectError(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5),weightedMeanAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))))",
+        "title": "FEM Heterogeneity Q-value"
+      },
+      {
+        "formula": "degreesOfFreedomAggr(logOddsRatioNumber(2,3,4,5))",
+        "title": "FEM Degrees of Freedom"
+      },
+      {
+        "formula": "heterogeneityPValueAggr(sumAggr(fixedEffectError(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5),weightedMeanAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5)))),degreesOfFreedomAggr(logOddsRatioNumber(2,3,4,5)))",
+        "title": "FEM Heterogeneity P-value"
+      },
+      {
+        "formula": "iSquaredAggr(sumAggr(fixedEffectError(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5),weightedMeanAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5)))),degreesOfFreedomAggr(logOddsRatioNumber(2,3,4,5)))",
+        "title": "FEM Heterogeneity I²"
+      },
+      {
+        "formula": "tauSquaredAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))",
+        "title": "FEM 𝛕²"
+      },
+      {
+        "formula": "tauStandardErrorAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))",
+        "title": "FEM 𝛕 Standard Error"
+      },
+      {
+        "formula": "tauVarianceAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))",
+        "title": "FEM 𝛕 Variance"
+      },
+      {
+        "formula": "tauAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))",
+        "title": "FEM 𝛕"
+      },
+      {
+        "formula": "sumAggr(sumAggr*(fixedEffectError(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5),weightedMeanAggr*(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5)))))",
+        "title": "Moderator Analysis (MA) Total Heterogeneity Q-value Within Groups"
+      },
+      {
+        "formula": "sumAggr(degreesOfFreedomAggr*(logOddsRatioNumber(2,3,4,5)))",
+        "title": "MA Total Degrees of Freedom Within Groups"
+      },
+      {
+        "formula": "heterogeneityPValueAggr(sumAggr(sumAggr*(fixedEffectError(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5),weightedMeanAggr*(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))))),sumAggr(degreesOfFreedomAggr*(logOddsRatioNumber(2,3,4,5))))",
+        "title": "MA Total Heterogeneity P-value Within Groups"
+      },
+      {
+        "formula": "subtractAggr(sumAggr(fixedEffectError(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5),weightedMeanAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5)))),sumAggr(sumAggr*(fixedEffectError(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5),weightedMeanAggr*(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))))))",
+        "title": "MA Heterogeneity Q-value Between Groups"
+      },
+      {
+        "formula": "subtractAggr(degreesOfFreedomAggr(logOddsRatioNumber(2,3,4,5)),sumAggr(degreesOfFreedomAggr*(logOddsRatioNumber(2,3,4,5))))",
+        "title": "MA Degrees of Freedom Between Groups"
+      },
+      {
+        "formula": "heterogeneityPValueAggr(subtractAggr(sumAggr(fixedEffectError(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5),weightedMeanAggr(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5)))),sumAggr(sumAggr*(fixedEffectError(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5),weightedMeanAggr*(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5)))))),subtractAggr(degreesOfFreedomAggr(logOddsRatioNumber(2,3,4,5)),sumAggr(degreesOfFreedomAggr*(logOddsRatioNumber(2,3,4,5)))))",
+        "title": "MA Heterogeneity P-value Between Groups"
+      }
+    ],
+    "groupingColumn": "1",
+    "groupingAggregates": [
+      {
+        "formula": "weightedMeanAggr*(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))",
+        "title": "FEM Group Point Estimates"
+      },
+      {
+        "formula": "sumAggr*(fixedEffectError(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5),weightedMeanAggr*(logOddsRatioNumber(2,3,4,5),weightNumber(2,3,4,5))))",
+        "title": "Within-group Heterogeneity Q-values"
+      },
+      {
+        "formula": "degreesOfFreedomAggr*(logOddsRatioNumber(2,3,4,5))",
+        "title": "Within-group Degrees of Freedom"
+      }
+    ],
+    "graphs": [
+      {
+        "formula": "forestPlotNumberGraph(2,3,4,5)",
+        "title": "Forest Plot"
+      }
+    ],
+    "apiurl": "/api/metaanalyses/hartmut.blank@port.ac.uk/MyMeta-analysis"
+  },
+  {
+    "id": "/id/ma/1494605120183",
+    "title": "more-stats",
+    "enteredBy": "hartmut.blank@port.ac.uk",
+    "ctime": 1494605120183,
+    "mtime": 1494853411405,
+    "description": "from \nhttps://docs.google.com/spreadsheets/d/1oeKAFeFQuqyTMmWqHfrBvU4KRf0ZZr3oi2ZjiBaGNvQ  ",
+    "tags": [],
+    "columns": [
+      {
+        "sourceColumnMap": {
+          "/id/p/1494605246779": "4"
+        },
+        "id": "1",
+        "type": "characteristic",
+        "title": "Experimental Events"
+      },
+      {
+        "id": "2",
+        "type": "characteristic",
+        "title": "Exp TOTAL [N]",
+        "sourceColumnMap": {
+          "/id/p/1494605246779": "1"
+        }
+      },
+      {
+        "title": "Control Events",
+        "sourceColumnMap": {
+          "/id/p/1494605246779": "3"
+        },
+        "id": "3",
+        "type": "characteristic"
+      },
+      {
+        "sourceColumnMap": {
+          "/id/p/1494605246779": "2"
+        },
+        "id": "4",
+        "type": "characteristic",
+        "title": "Control TOTAL [N]"
+      },
+      {
+        "type": "result",
+        "formula": "logOddsRatioNumber(1,2,3,4)"
+      },
+      {
+        "type": "result",
+        "formula": "weightNumber(1,2,3,4)"
+      },
+      {
+        "type": "result",
+        "formula": "fixedEffectError(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4),weightedMeanAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4)))"
+      },
+      {
+        "type": "result",
+        "formula": "randomEffectWeightNumber(1,2,3,4,tauSquaredAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4)))"
+      }
+    ],
+    "paperOrder": [
+      "/id/p/1494605246779"
+    ],
+    "hiddenCols": [],
+    "excludedExperiments": [],
+    "aggregates": [
+      {
+        "formula": "countAggr(logOddsRatioNumber(1,2,3,4))"
+      },
+      {
+        "formula": "weightedMeanAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))"
+      },
+      {
+        "formula": "standardErrorAggr(weightNumber(1,2,3,4))"
+      },
+      {
+        "formula": "varianceAggr(weightNumber(1,2,3,4))"
+      },
+      {
+        "formula": "lowerConfidenceLimitAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))"
+      },
+      {
+        "formula": "upperConfidenceLimitAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))"
+      },
+      {
+        "formula": "zValueAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))"
+      },
+      {
+        "formula": "pValue2TailedAggr(zValueAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4)))"
+      },
+      {
+        "formula": "sumAggr(fixedEffectError(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4),weightedMeanAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))))"
+      },
+      {
+        "formula": "degreesOfFreedomAggr(logOddsRatioNumber(1,2,3,4))"
+      },
+      {
+        "formula": "heterogeneityPValueAggr(sumAggr(fixedEffectError(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4),weightedMeanAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4)))),degreesOfFreedomAggr(logOddsRatioNumber(1,2,3,4)))"
+      },
+      {
+        "formula": "iSquaredAggr(sumAggr(fixedEffectError(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4),weightedMeanAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4)))),degreesOfFreedomAggr(logOddsRatioNumber(1,2,3,4)))"
+      },
+      {
+        "formula": "tauSquaredAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))"
+      },
+      {
+        "formula": "tauStandardErrorAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))"
+      },
+      {
+        "formula": "tauVarianceAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))"
+      },
+      {
+        "formula": "tauAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))"
+      },
+      {
+        "formula": "weightedMeanAggr(logOddsRatioNumber(1,2,3,4),randomEffectWeightNumber(1,2,3,4,tauSquaredAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))))"
+      },
+      {
+        "formula": "standardErrorAggr(randomEffectWeightNumber(1,2,3,4,tauSquaredAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))))"
+      },
+      {
+        "formula": "varianceAggr(randomEffectWeightNumber(1,2,3,4,tauSquaredAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))))"
+      },
+      {
+        "formula": "lowerConfidenceLimitAggr(logOddsRatioNumber(1,2,3,4),randomEffectWeightNumber(1,2,3,4,tauSquaredAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))))"
+      },
+      {
+        "formula": "upperConfidenceLimitAggr(logOddsRatioNumber(1,2,3,4),randomEffectWeightNumber(1,2,3,4,tauSquaredAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))))"
+      },
+      {
+        "formula": "zValueAggr(logOddsRatioNumber(1,2,3,4),randomEffectWeightNumber(1,2,3,4,tauSquaredAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4))))"
+      },
+      {
+        "formula": "pValue2TailedAggr(zValueAggr(logOddsRatioNumber(1,2,3,4),randomEffectWeightNumber(1,2,3,4,tauSquaredAggr(logOddsRatioNumber(1,2,3,4),weightNumber(1,2,3,4)))))"
+      }
+    ],
+    "graphs": [],
+    "apiurl": "/api/metaanalyses/hartmut.blank@port.ac.uk/more-stats"
+  },
+  {
+    "id": "/id/ma/1495059998211",
+    "title": "moderator-analysis",
+    "enteredBy": "hartmut.blank@port.ac.uk",
+    "ctime": 1495059998211,
+    "mtime": 1495713185073,
+    "tags": [],
+    "columns": [
+      {
+        "id": "1",
+        "type": "characteristic",
+        "title": "Group",
+        "sourceColumnMap": {
+          "/id/p/1495059994980": "2"
+        }
+      },
+      {
+        "id": "2",
+        "type": "characteristic",
+        "title": "Experimental Output",
+        "description": "this is a value between 0 and 1, meaning between 0 and 100%.",
+        "sourceColumnMap": {
+          "/id/p/1495059994980": "1"
+        }
+      },
+      {
+        "sourceColumnMap": {
+          "/id/p/1495059994980": "4"
+        },
+        "id": "3",
+        "type": "characteristic",
+        "title": "Exp TOTAL [N]"
+      },
+      {
+        "sourceColumnMap": {
+          "/id/p/1495059994980": "3"
+        },
+        "id": "4",
+        "type": "characteristic",
+        "title": "Control Output",
+        "description": "this is a value between 0 and 1, meaning between 0 and 100%."
+      },
+      {
+        "sourceColumnMap": {
+          "/id/p/1495059994980": "5"
+        },
+        "id": "5",
+        "type": "characteristic",
+        "title": "Control TOTAL [N]"
+      },
+      {
+        "type": "result",
+        "formula": "logOddsRatio(2,4)",
+        "title": "Log Odds Ratio"
+      },
+      {
+        "type": "result",
+        "formula": "weight(2,3,4,5)",
+        "title": "FEM Weight"
+      },
+      {
+        "formula": "fixedEffectError(logOddsRatio(2,4),weight(2,3,4,5),weightedMeanAggr(logOddsRatio(2,4),weight(2,3,4,5)))",
+        "title": "FEM Effect Error",
+        "type": "result"
+      },
+      {
+        "formula": "randomEffectWeight(2,3,4,5,tauSquaredAggr(logOddsRatio(2,4),weight(2,3,4,5)))",
+        "title": "REM Weight",
+        "type": "result"
+      }
+    ],
+    "paperOrder": [
+      "/id/p/1495059994980"
+    ],
+    "hiddenCols": [],
+    "hiddenExperiments": [],
+    "excludedExperiments": [],
+    "aggregates": [
+      {
+        "formula": "weightedMeanAggr(logOddsRatio(2,4),weight(2,3,4,5))",
+        "title": "Fixed Effect Model (FEM) Point Estimate"
+      },
+      {
+        "formula": "standardErrorAggr(weight(2,3,4,5))",
+        "title": "FEM Standard Error"
+      },
+      {
+        "formula": "varianceAggr(weight(2,3,4,5))",
+        "title": "FEM Variance"
+      },
+      {
+        "formula": "lowerConfidenceLimitAggr(logOddsRatio(2,4),weight(2,3,4,5))",
+        "title": "FEM 95% Lower Confidence Limit"
+      },
+      {
+        "formula": "upperConfidenceLimitAggr(logOddsRatio(2,4),weight(2,3,4,5))",
+        "title": "FEM 95% Upper Confidence Limit"
+      },
+      {
+        "formula": "zValueAggr(logOddsRatio(2,4),weight(2,3,4,5))",
+        "title": "FEM Z-value"
+      },
+      {
+        "formula": "pValue2TailedAggr(zValueAggr(logOddsRatio(2,4),weight(2,3,4,5)))",
+        "title": "FEM P-value (2-tail)"
+      },
+      {
+        "formula": "sumAggr(fixedEffectError(logOddsRatio(2,4),weight(2,3,4,5),weightedMeanAggr(logOddsRatio(2,4),weight(2,3,4,5))))",
+        "title": "FEM Heterogeneity Q-value"
+      },
+      {
+        "formula": "degreesOfFreedomAggr(logOddsRatio(2,4))",
+        "title": "FEM Degrees of Freedom"
+      },
+      {
+        "formula": "heterogeneityPValueAggr(sumAggr(fixedEffectError(logOddsRatio(2,4),weight(2,3,4,5),weightedMeanAggr(logOddsRatio(2,4),weight(2,3,4,5)))), degreesOfFreedomAggr(logOddsRatio(2,4)))",
+        "title": "FEM Heterogeneity P-value"
+      },
+      {
+        "formula": "iSquaredAggr(sumAggr(fixedEffectError(logOddsRatio(2,4),weight(2,3,4,5),weightedMeanAggr(logOddsRatio(2,4),weight(2,3,4,5)))), degreesOfFreedomAggr(logOddsRatio(2,4)))",
+        "title": "FEM Heterogeneity I²"
+      },
+      {
+        "formula": "tauSquaredAggr(logOddsRatio(2,4),weight(2,3,4,5))",
+        "title": "FEM 𝛕²"
+      },
+      {
+        "formula": "tauStandardErrorAggr(logOddsRatio(2,4),weight(2,3,4,5))",
+        "title": "FEM 𝛕 Standard Error"
+      },
+      {
+        "formula": "tauVarianceAggr(logOddsRatio(2,4),weight(2,3,4,5))",
+        "title": "FEM 𝛕 Variance"
+      },
+      {
+        "formula": "tauAggr(logOddsRatio(2,4),weight(2,3,4,5))",
+        "title": "FEM 𝛕"
+      },
+      {
+        "formula": "weightedMeanAggr(logOddsRatio(2,4),randomEffectWeight(2,3,4,5,tauSquaredAggr(logOddsRatio(2,4),weight(2,3,4,5))))",
+        "title": "Random Effect Model (REM) Point Estimate"
+      },
+      {
+        "formula": "standardErrorAggr(randomEffectWeight(2,3,4,5,tauSquaredAggr(logOddsRatio(2,4),weight(2,3,4,5))))",
+        "title": "REM Standard Error"
+      },
+      {
+        "formula": "varianceAggr(randomEffectWeight(2,3,4,5,tauSquaredAggr(logOddsRatio(2,4),weight(2,3,4,5))))",
+        "title": "REM Variance"
+      },
+      {
+        "formula": "lowerConfidenceLimitAggr(logOddsRatio(2,4),randomEffectWeight(2,3,4,5,tauSquaredAggr(logOddsRatio(2,4),weight(2,3,4,5))))",
+        "title": "REM 95% Lower Confidence Limit"
+      },
+      {
+        "formula": "upperConfidenceLimitAggr(logOddsRatio(2,4),randomEffectWeight(2,3,4,5,tauSquaredAggr(logOddsRatio(2,4),weight(2,3,4,5))))",
+        "title": "REM 95% Upper Confidence Limit"
+      },
+      {
+        "formula": "zValueAggr(logOddsRatio(2,4),randomEffectWeight(2,3,4,5,tauSquaredAggr(logOddsRatio(2,4),weight(2,3,4,5))))",
+        "title": "REM Z-value"
+      },
+      {
+        "formula": "pValue2TailedAggr(zValueAggr(logOddsRatio(2,4),randomEffectWeight(2,3,4,5,tauSquaredAggr(logOddsRatio(2,4),weight(2,3,4,5)))))",
+        "title": "REM P-value (2-tail)"
+      },
+      {
+        "formula": "sumAggr(sumAggr*(fixedEffectError(logOddsRatio(2,4),weight(2,3,4,5),weightedMeanAggr*(logOddsRatio(2,4),weight(2,3,4,5)))))",
+        "title": "Moderator Analysis (MA) Total Heterogeneity Q-value Within Groups"
+      },
+      {
+        "formula": "sumAggr(degreesOfFreedomAggr*(logOddsRatio(2,4)))",
+        "title": "MA Total Degrees of Freedom Within Groups"
+      },
+      {
+        "formula": "heterogeneityPValueAggr(sumAggr(sumAggr*(fixedEffectError(logOddsRatio(2,4),weight(2,3,4,5),weightedMeanAggr*(logOddsRatio(2,4),weight(2,3,4,5))))), sumAggr(degreesOfFreedomAggr*(logOddsRatio(2,4))))",
+        "title": "MA Total Heterogeneity P-value Within Groups"
+      },
+      {
+        "formula": "subtractAggr(sumAggr(fixedEffectError(logOddsRatio(2,4),weight(2,3,4,5),weightedMeanAggr(logOddsRatio(2,4),weight(2,3,4,5)))),sumAggr(sumAggr*(fixedEffectError(logOddsRatio(2,4),weight(2,3,4,5),weightedMeanAggr*(logOddsRatio(2,4),weight(2,3,4,5))))))",
+        "title": "MA Heterogeneity Q-value Between Groups"
+      },
+      {
+        "formula": "subtractAggr(degreesOfFreedomAggr(logOddsRatio(2,4)),sumAggr(degreesOfFreedomAggr*(logOddsRatio(2,4))))",
+        "title": "MA Degrees of Freedom Between Groups"
+      },
+      {
+        "formula": "heterogeneityPValueAggr(subtractAggr(sumAggr(fixedEffectError(logOddsRatio(2,4),weight(2,3,4,5),weightedMeanAggr(logOddsRatio(2,4),weight(2,3,4,5)))),sumAggr(sumAggr*(fixedEffectError(logOddsRatio(2,4),weight(2,3,4,5),weightedMeanAggr*(logOddsRatio(2,4),weight(2,3,4,5)))))), subtractAggr(degreesOfFreedomAggr(logOddsRatio(2,4)),sumAggr(degreesOfFreedomAggr*(logOddsRatio(2,4)))))",
+        "title": "MA Heterogeneity P-value Between Groups"
+      },
+      {
+        "formula": "sumAggr(1)",
+        "customName": null
+      }
+    ],
+    "groupingColumn": "1",
+    "groupingAggregates": [
+      {
+        "formula": "weightedMeanAggr*(logOddsRatio(2,4),weight(2,3,4,5))",
+        "title": "FEM Group Point Estimates"
+      },
+      {
+        "formula": "sumAggr*(fixedEffectError(logOddsRatio(2,4),weight(2,3,4,5),weightedMeanAggr*(logOddsRatio(2,4),weight(2,3,4,5))))",
+        "title": "Within-group Heterogeneity Q-values"
+      },
+      {
+        "formula": "degreesOfFreedomAggr*(logOddsRatio(2,4))",
+        "title": "Within-group Degrees of Freedom"
+      }
+    ],
+    "graphs": [
+      {
+        "formula": "forestPlotGraph(2,3,4,5)",
+        "title": "Forest Plot"
+      },
+      {
+        "formula": "grapeChartGraph(2,3,4,5,1)",
+        "title": "Grape Chart"
+      },
+      {
+        "formula": "forestPlotGroupGraph(2,3,4,5,1)",
+        "title": "Forest Plot with Groups"
+      }
+    ],
+    "apiurl": "/api/metaanalyses/hartmut.blank@port.ac.uk/moderator-analysis"
+  },
+  {
+    "id": "/id/ma/1495128894655",
+    "title": "ShowUp",
+    "enteredBy": "hartmut.blank@port.ac.uk",
+    "ctime": 1495128894655,
+    "mtime": 1495128894655,
+    "tags": [],
+    "columns": [],
+    "paperOrder": [
+      "/id/p/1495128892070"
+    ],
+    "hiddenCols": [],
+    "excludedExperiments": [],
+    "aggregates": [],
+    "graphs": [],
+    "apiurl": "/api/metaanalyses/hartmut.blank@port.ac.uk/ShowUp"
+  },
+  {
+    "id": "/id/ma/1495713949674",
+    "title": "Testing03",
+    "enteredBy": "hartmut.blank@port.ac.uk",
+    "ctime": 1495713949674,
+    "mtime": 1495713949674,
+    "tags": [],
+    "columns": [],
+    "paperOrder": [
+      "/id/p/1495713947105"
+    ],
+    "hiddenCols": [],
+    "hiddenExperiments": [],
+    "excludedExperiments": [],
+    "aggregates": [],
+    "groupingAggregates": [],
+    "graphs": [],
+    "apiurl": "/api/metaanalyses/hartmut.blank@port.ac.uk/Testing03"
+  }
+]

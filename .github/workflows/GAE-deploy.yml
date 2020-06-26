@@ -1,0 +1,16 @@
+name: App Engine Deploy
+on: [push]
+jobs:
+  deploy:
+    name: AppEngineDeploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy
+        id: deploy
+        uses: GoogleCloudPlatform/github-actions/appengine-deploy@master
+        with:
+          credentials: ${{ secrets.GCP_SA_KEY }}
+      - name: Return URL
+        id: deploy-complete
+        run: echo "${{ steps.deploy.outputs.url }}"

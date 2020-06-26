@@ -1,0 +1,5046 @@
+{
+  "id": "/id/ma/1089071495934",
+  "title": "MisinformationEffect",
+  "enteredBy": "hartmut.blank@port.ac.uk",
+  "enteredByUsername": "HartmutBlank",
+  "ctime": 1489071495934,
+  "mtime": 1574956187235,
+  "published": "Blank, H., & Launay, C. (2014). How to protect eyewitness memory against the misinformation effect: A meta-analysis of post-warning studies. Journal of Applied Research in Memory and Cognition, 3, 377-88. doi:10.1016/j.jarmac.2014.03.005",
+  "description": "The 'misinformation effect' is a well-known phenomenon in the psychology of memory. In its classical version, it refers to negative effects of post-event misinformation on memory for previously witnessed events (i.e. memory for event details becomes less accurate and misleading details are remembered instead), but it has been investigated outside the eyewitness context as well. \n\nIn a number of studies, researchers have tried to reduce the misinformation effect through warnings about the (potential) presence of misinformation. This has been tried either before or after the introduction of misinformation, but the latter (i.e. post-warnings) is more practically relevant, as it is rarely possible to pre-warn people about misinformation. \n\nThe featured meta-analysis investigated the effectiveness of post-warnings (compared to no-postwarning control conditions) in terms of (1) improving the accuracy of memory for witnessed event details and (2) reducing the reporting of misinformation in memory tests. It also explored if the beneficial effects of post-warnings depend on additional variables (moderators).",
+  "tags": [],
+  "columns": [
+    {
+      "title": "Specification",
+      "sourceColumnMap": {
+        "/id/p/1089073733111": "6",
+        "/id/p/1089072895987": "6",
+        "/id/p/1089073218431": "6",
+        "/id/p/1089074765574": "6",
+        "/id/p/1089074001814": "6",
+        "/id/p/1089072805326": "6",
+        "/id/p/1089074763734": "6",
+        "/id/p/1089071496167": "6",
+        "/id/p/1089073733406": "6",
+        "/id/p/1089072434411": "6",
+        "/id/p/1089074215795": "6",
+        "/id/p/1089071833896": "6",
+        "/id/p/1089074863028": "6"
+      },
+      "id": "1",
+      "type": "characteristic"
+    },
+    {
+      "sourceColumnMap": {
+        "/id/p/1089074763734": "2",
+        "/id/p/1089071496167": "2",
+        "/id/p/1089073730245": "5",
+        "/id/p/1089073733406": "1",
+        "/id/p/1089074943690": "3",
+        "/id/p/1089072434411": "1",
+        "/id/p/1089074215795": "1",
+        "/id/p/1089074765942": "1",
+        "/id/p/1089071833896": "1",
+        "/id/p/1089074863028": "2",
+        "/id/p/1089073733111": "1",
+        "/id/p/1089073732903": "3",
+        "/id/p/1089073129398": "5",
+        "/id/p/1089074764850": "4",
+        "/id/p/1089072895987": "1",
+        "/id/p/1089073218431": "5",
+        "/id/p/1089074765574": "4",
+        "/id/p/1089072805326": "2",
+        "/id/p/1089074001814": "4"
+      },
+      "id": "2",
+      "type": "characteristic",
+      "title": "Group",
+      "description": "distinguishes experiments with or without warning about misinformation"
+    },
+    {
+      "id": "7",
+      "type": "characteristic",
+      "title": "Participant type",
+      "sourceColumnMap": {
+        "/id/p/1089074764850": "6",
+        "/id/p/1089072895987": "7",
+        "/id/p/1089073218431": "14",
+        "/id/p/1089074765574": "7",
+        "/id/p/1089072805326": "7",
+        "/id/p/1089074001814": "7",
+        "/id/p/1089074763734": "7",
+        "/id/p/1089071496167": "10",
+        "/id/p/1089073730245": "6",
+        "/id/p/1089073733406": "7",
+        "/id/p/1089074943690": "7",
+        "/id/p/1089072434411": "12",
+        "/id/p/1089074215795": "7",
+        "/id/p/1089074765942": "6",
+        "/id/p/1089071833896": "10",
+        "/id/p/1089074863028": "7",
+        "/id/p/1089073733111": "7",
+        "/id/p/1089073732903": "6",
+        "/id/p/1089073129398": "6"
+      }
+    },
+    {
+      "id": "3",
+      "type": "characteristic",
+      "title": "Exp Outcome [%]",
+      "description": "How many participants (in %) endorsed misinformation.",
+      "sourceColumnMap": {
+        "/id/p/1089073733111": "3",
+        "/id/p/1089073732903": "2",
+        "/id/p/1089073129398": "4",
+        "/id/p/1089074764850": "3",
+        "/id/p/1089072895987": "2",
+        "/id/p/1089073218431": "4",
+        "/id/p/1089074765574": "3",
+        "/id/p/1089072805326": "1",
+        "/id/p/1089074001814": "3",
+        "/id/p/1089074763734": "1",
+        "/id/p/1089071496167": "1",
+        "/id/p/1089073730245": "4",
+        "/id/p/1089073733406": "2",
+        "/id/p/1089074943690": "2",
+        "/id/p/1089072434411": "5",
+        "/id/p/1089074215795": "2",
+        "/id/p/1089074765942": "2",
+        "/id/p/1089071833896": "2",
+        "/id/p/1089074863028": "1"
+      }
+    },
+    {
+      "id": "4",
+      "type": "characteristic",
+      "title": "n (exp)",
+      "sourceColumnMap": {
+        "/id/p/1089073730245": "2",
+        "/id/p/1089073733406": "3",
+        "/id/p/1089074943690": "5",
+        "/id/p/1089072434411": "3",
+        "/id/p/1089074215795": "3",
+        "/id/p/1089074765942": "3",
+        "/id/p/1089071833896": "4",
+        "/id/p/1089074863028": "4",
+        "/id/p/1089073733111": "5",
+        "/id/p/1089073732903": "5",
+        "/id/p/1089073129398": "2",
+        "/id/p/1089074764850": "1",
+        "/id/p/1089072895987": "3",
+        "/id/p/1089073218431": "2",
+        "/id/p/1089074765574": "1",
+        "/id/p/1089072805326": "4",
+        "/id/p/1089074001814": "1",
+        "/id/p/1089074763734": "4",
+        "/id/p/1089071496167": "4"
+      }
+    },
+    {
+      "title": "Control Outcome [%]",
+      "description": "How many participants (in %) endorsed misinformation.",
+      "sourceColumnMap": {
+        "/id/p/1089074763734": "3",
+        "/id/p/1089071496167": "3",
+        "/id/p/1089073730245": "1",
+        "/id/p/1089073733406": "4",
+        "/id/p/1089074943690": "4",
+        "/id/p/1089072434411": "2",
+        "/id/p/1089074215795": "4",
+        "/id/p/1089074765942": "4",
+        "/id/p/1089071833896": "3",
+        "/id/p/1089074863028": "3",
+        "/id/p/1089073733111": "4",
+        "/id/p/1089073732903": "4",
+        "/id/p/1089073129398": "1",
+        "/id/p/1089074764850": "5",
+        "/id/p/1089072895987": "4",
+        "/id/p/1089073218431": "1",
+        "/id/p/1089074765574": "5",
+        "/id/p/1089072805326": "3",
+        "/id/p/1089074001814": "5"
+      },
+      "id": "5",
+      "type": "characteristic"
+    },
+    {
+      "sourceColumnMap": {
+        "/id/p/1089072805326": "5",
+        "/id/p/1089074001814": "2",
+        "/id/p/1089074763734": "5",
+        "/id/p/1089071496167": "5",
+        "/id/p/1089073730245": "3",
+        "/id/p/1089073733406": "5",
+        "/id/p/1089074943690": "1",
+        "/id/p/1089072434411": "4",
+        "/id/p/1089074215795": "5",
+        "/id/p/1089074765942": "5",
+        "/id/p/1089071833896": "5",
+        "/id/p/1089074863028": "5",
+        "/id/p/1089073733111": "2",
+        "/id/p/1089073732903": "1",
+        "/id/p/1089073129398": "3",
+        "/id/p/1089074764850": "2",
+        "/id/p/1089072895987": "5",
+        "/id/p/1089073218431": "3",
+        "/id/p/1089074765574": "2"
+      },
+      "id": "6",
+      "type": "characteristic",
+      "title": "n (con)"
+    },
+    {
+      "type": "result",
+      "formula": "logOddsRatioPercent(3,5)",
+      "title": "Log Odds Ratio"
+    },
+    {
+      "type": "result",
+      "formula": "weightPercent(3,4,5,6)",
+      "title": "FEM Weight"
+    },
+    {
+      "type": "result",
+      "formula": "fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))",
+      "title": "FEM Effect Error"
+    },
+    {
+      "formula": "randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))",
+      "title": "REM Weight",
+      "type": "result"
+    }
+  ],
+  "paperOrder": [
+    "/id/p/1089074943690",
+    "/id/p/1089071496167",
+    "/id/p/1089071833896",
+    "/id/p/1089072434411",
+    "/id/p/1089072805326",
+    "/id/p/1089072895987",
+    "/id/p/1089073129398",
+    "/id/p/1089073218431",
+    "/id/p/1089073730245",
+    "/id/p/1089073732903",
+    "/id/p/1089073733111",
+    "/id/p/1089073733406",
+    "/id/p/1089074001814",
+    "/id/p/1089074215795",
+    "/id/p/1089074763734",
+    "/id/p/1089074764850",
+    "/id/p/1089074765574",
+    "/id/p/1089074765942",
+    "/id/p/1089074863028",
+    "/id/p/1574956186204"
+  ],
+  "hiddenCols": [],
+  "hiddenExperiments": [],
+  "excludedExperiments": [
+    "/id/p/1089072434411,14"
+  ],
+  "aggregates": [
+    {
+      "formula": "weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+      "title": "Fixed Effect Model (FEM) Point Estimate"
+    },
+    {
+      "formula": "standardErrorAggr(weightPercent(3,4,5,6))",
+      "title": "FEM Standard Error"
+    },
+    {
+      "formula": "varianceAggr(weightPercent(3,4,5,6))",
+      "title": "FEM Variance"
+    },
+    {
+      "formula": "lowerConfidenceLimitAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+      "title": "FEM 95% Lower Confidence Limit"
+    },
+    {
+      "formula": "upperConfidenceLimitAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+      "title": "FEM 95% Upper Confidence Limit"
+    },
+    {
+      "formula": "zValueAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+      "title": "FEM Z-value"
+    },
+    {
+      "formula": "pValue2TailedAggr(zValueAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))",
+      "title": "FEM P-value (2-tail)"
+    },
+    {
+      "formula": "sumAggr(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+      "title": "FEM Heterogeneity Q-value"
+    },
+    {
+      "formula": "degreesOfFreedomAggr(logOddsRatioPercent(3,5))",
+      "title": "FEM Degrees of Freedom"
+    },
+    {
+      "formula": "heterogeneityPValueAggr(sumAggr(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))), degreesOfFreedomAggr(logOddsRatioPercent(3,5)))",
+      "title": "FEM Heterogeneity P-value"
+    },
+    {
+      "formula": "iSquaredAggr(sumAggr(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))), degreesOfFreedomAggr(logOddsRatioPercent(3,5)))",
+      "title": "FEM Heterogeneity I²"
+    },
+    {
+      "formula": "tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+      "title": "FEM 𝛕²"
+    },
+    {
+      "formula": "tauStandardErrorAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+      "title": "FEM 𝛕 Standard Error"
+    },
+    {
+      "formula": "tauVarianceAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+      "title": "FEM 𝛕 Variance"
+    },
+    {
+      "formula": "tauAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+      "title": "FEM 𝛕"
+    },
+    {
+      "formula": "weightedMeanAggr(logOddsRatioPercent(3,5),randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+      "title": "Random Effect Model (REM) Point Estimate"
+    },
+    {
+      "formula": "standardErrorAggr(randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+      "title": "REM Standard Error"
+    },
+    {
+      "formula": "varianceAggr(randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+      "title": "REM Variance"
+    },
+    {
+      "formula": "lowerConfidenceLimitAggr(logOddsRatioPercent(3,5),randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+      "title": "REM 95% Lower Confidence Limit"
+    },
+    {
+      "formula": "upperConfidenceLimitAggr(logOddsRatioPercent(3,5),randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+      "title": "REM 95% Upper Confidence Limit"
+    },
+    {
+      "formula": "zValueAggr(logOddsRatioPercent(3,5),randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+      "title": "REM Z-value"
+    },
+    {
+      "formula": "pValue2TailedAggr(zValueAggr(logOddsRatioPercent(3,5),randomEffectWeightPercent(3,4,5,6,tauSquaredAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))))",
+      "title": "REM P-value (2-tail)"
+    },
+    {
+      "formula": "sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))))",
+      "title": "Moderator Analysis (MA) Total Heterogeneity Q-value Within Groups"
+    },
+    {
+      "formula": "sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(3,5)))",
+      "title": "MA Total Degrees of Freedom Within Groups"
+    },
+    {
+      "formula": "heterogeneityPValueAggr(sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))), sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(3,5))))",
+      "title": "MA Total Heterogeneity P-value Within Groups"
+    },
+    {
+      "formula": "subtractAggr(sumAggr(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))),sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))))",
+      "title": "MA Heterogeneity Q-value Between Groups"
+    },
+    {
+      "formula": "subtractAggr(degreesOfFreedomAggr(logOddsRatioPercent(3,5)),sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(3,5))))",
+      "title": "MA Degrees of Freedom Between Groups"
+    },
+    {
+      "formula": "heterogeneityPValueAggr(subtractAggr(sumAggr(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))),sumAggr(sumAggr*(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6)))))), subtractAggr(degreesOfFreedomAggr(logOddsRatioPercent(3,5)),sumAggr(degreesOfFreedomAggr*(logOddsRatioPercent(3,5)))))",
+      "title": "MA Heterogeneity P-value Between Groups"
+    }
+  ],
+  "groupingColumn": "2",
+  "groupingAggregates": [
+    {
+      "formula": "weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))",
+      "title": "FEM Group Point Estimates"
+    },
+    {
+      "formula": "sumAggr*(fixedEffectError(logOddsRatioPercent(3,5),weightPercent(3,4,5,6),weightedMeanAggr*(logOddsRatioPercent(3,5),weightPercent(3,4,5,6))))",
+      "title": "Within-group Heterogeneity Q-values"
+    },
+    {
+      "formula": "degreesOfFreedomAggr*(logOddsRatioPercent(3,5))",
+      "title": "Within-group Degrees of Freedom"
+    }
+  ],
+  "graphs": [
+    {
+      "formula": "grapeChartPercentGraph(3,4,5,6,7)",
+      "title": "Grape Chart by type"
+    },
+    {
+      "formula": "grapeChartPercentGraph(3,4,5,6,2)",
+      "title": "Grape Chart by warning group"
+    },
+    {
+      "formula": "forestPlotPercentGraph(3,4,5,6)",
+      "title": "Forest Plot"
+    },
+    {
+      "formula": "forestPlotGroupPercentGraph(3,4,5,6,2)",
+      "title": "Forest Plot with Groups"
+    }
+  ],
+  "apiurl": "/api/metaanalyses/hartmut.blank@port.ac.uk/MisinformationEffect",
+  "papers": [
+    {
+      "id": "/id/p/1089074943690",
+      "title": "Blank1998",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489074943690,
+      "mtime": 1573223585483,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/Blank1998",
+      "experiments": [
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "22",
+              "ctime": 1489074943696
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "22",
+              "ctime": 1489074943693
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489074943692
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "22",
+              "ctime": 1489074943695
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "22",
+              "ctime": 1489074943694
+            },
+            "6": {
+              "value": "adult",
+              "ctime": 1573223552121,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223585484,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074943691
+        },
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "24",
+              "ctime": 1489074943702
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "50",
+              "ctime": 1489074943699
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489074943698
+            },
+            "4": {
+              "value": "22",
+              "ctime": 1489074943701,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "24",
+              "ctime": 1489074943700
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223552122
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074943697
+        }
+      ],
+      "columns": [
+        {
+          "title": "Control TOTAL [N]",
+          "id": "1",
+          "type": "characteristic"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "7",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089071496167",
+      "title": "Bodner2009",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489071496167,
+      "mtime": 1573223586721,
+      "reference": "Bodner, G. E., Musch, E., & Azad, T. (2009). Reevaluating the potency of the memory conformity effect. Memory & Cognition, 37(8), 1069-1076.",
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/Bodner2009",
+      "experiments": [
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1and2",
+          "ctime": 1489071496168,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "29",
+              "ctime": 1489071615952
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489071615956
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "10",
+              "ctime": 1489071615954
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "29",
+              "ctime": 1489071615953
+            },
+            "5": {
+              "value": "20",
+              "ctime": 1489071615955,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "cowitness",
+              "ctime": 1489339310959
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223553184,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "10": {
+              "value": "adult",
+              "ctime": 1573223586722,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1and2",
+          "ctime": 1489071496169,
+          "data": {
+            "1": {
+              "value": "66",
+              "ctime": 1529071165987,
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "comments": [
+                {
+                  "by": "hartmut.blank@port.ac.uk",
+                  "text": "data provided by the authors",
+                  "ctime": 1489340201948
+                }
+              ]
+            },
+            "2": {
+              "value": "no warning",
+              "ctime": 1489071615961,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "10",
+              "ctime": 1489071615959
+            },
+            "4": {
+              "value": "35",
+              "ctime": 1489071615958,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489071615960
+            },
+            "6": {
+              "value": "cowitness",
+              "ctime": 1489339310960,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "8": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223553185
+            },
+            "10": {
+              "value": "adult",
+              "ctime": 1573223586723,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "ctime": 1489071496170,
+          "data": {
+            "1": {
+              "value": "21",
+              "ctime": 1489071615962,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "warning",
+              "ctime": 1489071615966,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "10",
+              "ctime": 1489071615964,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "29",
+              "ctime": 1489071615963
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489071615965
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "standard",
+              "ctime": 1489339988084
+            },
+            "9": {
+              "value": "adult",
+              "ctime": 1573223553186,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "10": {
+              "value": "adult",
+              "ctime": 1573223586724,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1and2"
+        },
+        {
+          "title": "1and2",
+          "ctime": 1489071496171,
+          "data": {
+            "1": {
+              "value": "49",
+              "ctime": 1489071615967,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "no warning",
+              "ctime": 1489071615971,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "10",
+              "ctime": 1489071615969,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "39",
+              "ctime": 1489071615968,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "20",
+              "ctime": 1489071615970,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "standard",
+              "ctime": 1489339988085,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "10": {
+              "value": "adult",
+              "ctime": 1573223553187,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "title": "Exp TOTAL [N]",
+          "id": "4",
+          "type": "characteristic"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Specification"
+        },
+        {
+          "id": "7",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "8",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "9",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "10",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089071833896",
+      "title": "ChristiansenOchalek1983",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489071833896,
+      "mtime": 1573223587559,
+      "reference": "Christiaansen, R. E., & Ochalek, K. (1983). Editing misleading information from memory: Evidence for the coexistence of original and postevent information. Memory & Cognition, 11(5), 467-475.",
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/ChristiansenOchalek1983",
+      "experiments": [
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489071833897,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489071833898
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "5",
+              "ctime": 1489071913393
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "5",
+              "ctime": 1489071913395
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "18",
+              "ctime": 1489071913394
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "16",
+              "ctime": 1489071913396
+            },
+            "6": {
+              "value": "delayed",
+              "ctime": 1489339311465,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223554336,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "10": {
+              "value": "adult",
+              "ctime": 1573223587560,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489071833900
+            },
+            "2": {
+              "value": "59",
+              "ctime": 1489071913397,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "5",
+              "ctime": 1489071913399
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "15",
+              "ctime": 1489071913398
+            },
+            "5": {
+              "value": "16",
+              "ctime": 1489071913400,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "delayed",
+              "ctime": 1489339311466
+            },
+            "8": {
+              "value": "adult",
+              "ctime": 1573223554337,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "10": {
+              "value": "adult",
+              "ctime": 1573223587561,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489071833899
+        },
+        {
+          "data": {
+            "1": {
+              "value": "warning",
+              "ctime": 1489071833902,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "47",
+              "ctime": 1489071913401,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "32",
+              "ctime": 1489071913403,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "18",
+              "ctime": 1489071913402,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "22",
+              "ctime": 1489071913404,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "delayed",
+              "ctime": 1489339311467,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "9": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223554338
+            },
+            "10": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223587562
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489071833901
+        },
+        {
+          "ctime": 1489071833903,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489071833904
+            },
+            "2": {
+              "value": "74",
+              "ctime": 1489071913405,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "32",
+              "ctime": 1489071913407
+            },
+            "4": {
+              "value": "21",
+              "ctime": 1489071913406,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "22",
+              "ctime": 1489071913408
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "delayed",
+              "ctime": 1489339311468
+            },
+            "10": {
+              "value": "adult",
+              "ctime": 1573223554339,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2"
+        }
+      ],
+      "columns": [
+        {
+          "title": "Group",
+          "id": "1",
+          "type": "characteristic"
+        },
+        {
+          "title": "Exp Outcome [N]",
+          "id": "2",
+          "type": "characteristic"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "title": "Exp TOTAL [N]",
+          "id": "4",
+          "type": "characteristic"
+        },
+        {
+          "title": "Control TOTAL [N]",
+          "id": "5",
+          "type": "characteristic"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Specification"
+        },
+        {
+          "id": "7",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "8",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "9",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "10",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089072434411",
+      "title": "Echterhoff2005",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489072434411,
+      "mtime": 1573223621252,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/Echterhoff2005",
+      "experiments": [
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489072434412,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489072551401
+            },
+            "2": {
+              "value": "13",
+              "ctime": 1489072551404,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "28",
+              "ctime": 1489072551403
+            },
+            "4": {
+              "value": "28",
+              "ctime": 1489072551405,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "24",
+              "ctime": 1489072551402
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "incompetent",
+              "ctime": 1489339312186
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223555281
+            },
+            "12": {
+              "value": "adult",
+              "ctime": 1573223588509,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "title": "1",
+          "ctime": 1489072434413,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489072551406
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "5",
+              "ctime": 1489072551409
+            },
+            "3": {
+              "value": "34",
+              "ctime": 1489072551408,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "34",
+              "ctime": 1489072551410
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "46",
+              "ctime": 1489072551407
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "incompetent",
+              "ctime": 1489339312187
+            },
+            "8": {
+              "value": "adult",
+              "ctime": 1573223555282,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "12": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223588510
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "ctime": 1489072434414,
+          "data": {
+            "1": {
+              "value": "warning",
+              "ctime": 1489072551411,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "9",
+              "ctime": 1489072551414,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "29",
+              "ctime": 1489072551413
+            },
+            "4": {
+              "value": "29",
+              "ctime": 1489072551415,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "32",
+              "ctime": 1489072551412
+            },
+            "6": {
+              "value": "untrustworthy",
+              "ctime": 1489339312188,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "9": {
+              "value": "adult",
+              "ctime": 1573223555283,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "12": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223588511
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1"
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489072434415,
+          "data": {
+            "1": {
+              "value": "no warning",
+              "ctime": 1489072551416,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "5",
+              "ctime": 1489072551419
+            },
+            "3": {
+              "value": "34",
+              "ctime": 1489072551418,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "34",
+              "ctime": 1489072551420,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "46",
+              "ctime": 1489072551417
+            },
+            "6": {
+              "value": "untrustworthy",
+              "ctime": 1489339312189,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "10": {
+              "value": "adult",
+              "ctime": 1573223555284,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "12": {
+              "value": "adult",
+              "ctime": 1573223588512,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489072434416,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489072551421
+            },
+            "2": {
+              "value": "8",
+              "ctime": 1489072551424,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489072551423
+            },
+            "4": {
+              "value": "20",
+              "ctime": 1489072551425,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "13",
+              "ctime": 1489072551422
+            },
+            "6": {
+              "value": "social postwarning",
+              "ctime": 1489339312190,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "11": {
+              "value": "adult",
+              "ctime": 1573223555285,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "12": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223588513
+            }
+          }
+        },
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489072551426
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "6",
+              "ctime": 1489072551429
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489072551428
+            },
+            "4": {
+              "value": "20",
+              "ctime": 1489072551430,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "26",
+              "ctime": 1489072551427
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "social postwarning",
+              "ctime": 1489339312191
+            },
+            "12": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223555286
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489072434417
+        },
+        {
+          "ctime": 1489072434418,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489072551431
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "6",
+              "ctime": 1489072551434
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "23",
+              "ctime": 1489072551433
+            },
+            "4": {
+              "value": "23",
+              "ctime": 1489072551435,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "19",
+              "ctime": 1489072551432,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "explicit monitoring",
+              "ctime": 1489339312192
+            },
+            "12": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223621253
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "3"
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "3",
+          "ctime": 1489072434419,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489072551436
+            },
+            "2": {
+              "value": "5",
+              "ctime": 1489072551439,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "23",
+              "ctime": 1489072551438,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "23",
+              "ctime": 1489072551440,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "41",
+              "ctime": 1489072551437,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "explicit monitoring",
+              "ctime": 1489339312193,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "12": {
+              "value": "adult",
+              "ctime": 1573223621254,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "ctime": 1489072434420,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489072551441
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "5",
+              "ctime": 1489072551444
+            },
+            "3": {
+              "value": "24",
+              "ctime": 1489072551443,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "24",
+              "ctime": 1489072551445
+            },
+            "5": {
+              "value": "24",
+              "ctime": 1489072551442,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "social postwarning",
+              "ctime": 1489339312194,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "12": {
+              "value": "adult",
+              "ctime": 1573223621255,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "3"
+        },
+        {
+          "data": {
+            "1": {
+              "value": "no warning",
+              "ctime": 1489072551446,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "5",
+              "ctime": 1489072551449,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "23",
+              "ctime": 1489072551448,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "23",
+              "ctime": 1489072551450
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "41",
+              "ctime": 1489072551447
+            },
+            "6": {
+              "value": "social postwarning",
+              "ctime": 1489339312195,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "12": {
+              "value": "adult",
+              "ctime": 1573223621256,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "3",
+          "ctime": 1489072434421
+        },
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489072551451
+            },
+            "2": {
+              "value": "19",
+              "ctime": 1489072551454,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "29",
+              "ctime": 1489072551453,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "29",
+              "ctime": 1489072551455,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "23",
+              "ctime": 1489072551452
+            },
+            "6": {
+              "value": "explicit monitoring",
+              "ctime": 1489339312196,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "12": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223621257
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "4",
+          "ctime": 1489072434422
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "4",
+          "ctime": 1489072434423,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489072551456
+            },
+            "2": {
+              "value": "22",
+              "ctime": 1489072551459,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "29",
+              "ctime": 1489072551458
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "29",
+              "ctime": 1489072551460
+            },
+            "5": {
+              "value": "42",
+              "ctime": 1489072551457,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "explicit monitoring",
+              "ctime": 1489339312197,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "12": {
+              "value": "adult",
+              "ctime": 1573223621258,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "4",
+          "ctime": 1489072434424,
+          "data": {
+            "1": {
+              "value": "warning",
+              "ctime": 1489072551461,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "22",
+              "ctime": 1489072551464,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "30",
+              "ctime": 1489072551463,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "30",
+              "ctime": 1489072551465
+            },
+            "5": {
+              "value": "26",
+              "ctime": 1489072551462,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "social postwarning",
+              "ctime": 1489339312198,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "12": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223621259
+            }
+          }
+        },
+        {
+          "ctime": 1489072434425,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489072551466
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "22",
+              "ctime": 1489072551469
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "29",
+              "ctime": 1489072551468
+            },
+            "4": {
+              "value": "29",
+              "ctime": 1489072551470,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "42",
+              "ctime": 1489072551467,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "social postwarning",
+              "ctime": 1489339312199
+            },
+            "12": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223621260
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "4"
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Specification"
+        },
+        {
+          "id": "7",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "title": "Participant type",
+          "id": "8",
+          "type": "characteristic"
+        },
+        {
+          "id": "9",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "10",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "11",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "12",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089072805326",
+      "title": "Echterhoff2007",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489072805326,
+      "mtime": 1573223758372,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/Echterhoff2007",
+      "experiments": [
+        {
+          "title": "1",
+          "ctime": 1489072805327,
+          "data": {
+            "1": {
+              "value": "39",
+              "ctime": 1489072805329,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "warning",
+              "ctime": 1489072805328,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "25",
+              "ctime": 1489072805331
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "18",
+              "ctime": 1489072805330
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "18",
+              "ctime": 1489072805332
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "explicit warning",
+              "ctime": 1489339378721
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223622467
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489072805333,
+          "data": {
+            "1": {
+              "value": "49",
+              "ctime": 1489072805335,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489072805334
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489072805337
+            },
+            "4": {
+              "value": "21",
+              "ctime": 1489072805336,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "21",
+              "ctime": 1489072805338
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "explicit warning",
+              "ctime": 1489339378722
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223758373,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "ctime": 1489072805339,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "37",
+              "ctime": 1489072805341
+            },
+            "2": {
+              "value": "warning",
+              "ctime": 1489072805340,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "26",
+              "ctime": 1489072805343
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489072805342
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489072805344
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "social warning",
+              "ctime": 1489339378723
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223758374,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1"
+        },
+        {
+          "ctime": 1489072805345,
+          "data": {
+            "1": {
+              "value": "49",
+              "ctime": 1489072805347,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "no warning",
+              "ctime": 1489072805346,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489072805349
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "21",
+              "ctime": 1489072805348
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "21",
+              "ctime": 1489072805350
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "social warning",
+              "ctime": 1489339378724
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223758375,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1"
+        },
+        {
+          "ctime": 1489072805351,
+          "data": {
+            "1": {
+              "value": "29",
+              "ctime": 1489072805353,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "warning",
+              "ctime": 1489072805352,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "21",
+              "ctime": 1489072805355
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "30",
+              "ctime": 1489072805354
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "30",
+              "ctime": 1489072805356
+            },
+            "6": {
+              "value": "social warning",
+              "ctime": 1489339378725,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223758376,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2"
+        },
+        {
+          "title": "2",
+          "ctime": 1489072805357,
+          "data": {
+            "1": {
+              "value": "50",
+              "ctime": 1489072805359,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489072805358
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "25",
+              "ctime": 1489072805361
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "28",
+              "ctime": 1489072805360
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "28",
+              "ctime": 1489072805362
+            },
+            "6": {
+              "value": "social warning",
+              "ctime": 1489339378726,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223758377
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "title": "Specification",
+          "id": "6",
+          "type": "characteristic"
+        },
+        {
+          "id": "7",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089072895987",
+      "title": "Frost2002",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489072895987,
+      "mtime": 1573223759456,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/Frost2002",
+      "experiments": [
+        {
+          "ctime": 1489072895988,
+          "data": {
+            "1": {
+              "value": "warning",
+              "ctime": 1489072978605,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "25",
+              "ctime": 1489073037566
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "24",
+              "ctime": 1489073037567
+            },
+            "4": {
+              "value": "2.5",
+              "ctime": 1489075196205,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "24",
+              "ctime": 1489073037569,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "placement warning short",
+              "ctime": 1489339379433,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223623476,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1and2"
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1and2",
+          "ctime": 1489072895989,
+          "data": {
+            "1": {
+              "value": "no warning",
+              "ctime": 1489073037570,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "30",
+              "ctime": 1489073037571
+            },
+            "3": {
+              "value": "24",
+              "ctime": 1489073037572,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2.5",
+              "ctime": 1489075196206
+            },
+            "5": {
+              "value": "24",
+              "ctime": 1489073037574,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "placement warning short",
+              "ctime": 1489339379434,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223759457
+            }
+          }
+        },
+        {
+          "ctime": 1489072950878,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489073037575
+            },
+            "2": {
+              "value": "35",
+              "ctime": 1489073037576,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "24",
+              "ctime": 1489073037577
+            },
+            "4": {
+              "value": "2.5",
+              "ctime": 1489075196207,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "24",
+              "ctime": 1489073037579
+            },
+            "6": {
+              "value": "placement warning long",
+              "ctime": 1489339379435,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223759458
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1and2"
+        },
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489073037580
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "38",
+              "ctime": 1489073037581
+            },
+            "3": {
+              "value": "24",
+              "ctime": 1489073037582,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2.5",
+              "ctime": 1489075196208
+            },
+            "5": {
+              "value": "24",
+              "ctime": 1489073037584,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "placement warning long",
+              "ctime": 1489339379436
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223759459
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1and2",
+          "ctime": 1489072950879
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "title": "Exp Outcome [N]",
+          "id": "2",
+          "type": "characteristic"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "title": "Control TOTAL [N]",
+          "id": "5",
+          "type": "characteristic"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Specification"
+        },
+        {
+          "id": "7",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089073129398",
+      "title": "HighhouseBotrill1995",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489073129398,
+      "mtime": 1573223760493,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/HighhouseBotrill1995",
+      "experiments": [
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489073129399,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "54",
+              "ctime": 1489073129403
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "23",
+              "ctime": 1489073129402
+            },
+            "3": {
+              "value": "36",
+              "ctime": 1489073129404,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "58",
+              "ctime": 1489073129401
+            },
+            "5": {
+              "value": "warning",
+              "ctime": 1489073129400,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223624274
+            }
+          }
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489073129405,
+          "data": {
+            "1": {
+              "value": "54",
+              "ctime": 1489073129409,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "34",
+              "ctime": 1489073129408
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "36",
+              "ctime": 1489073129410
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "83",
+              "ctime": 1489073129407
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489073129406
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223760494
+            }
+          }
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089073218431",
+      "title": "Lindsay1995",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489073218431,
+      "mtime": 1573223800771,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/Lindsay1995",
+      "experiments": [
+        {
+          "title": "2",
+          "ctime": 1489073218432,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "1.4",
+              "ctime": 1489073421660
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "17.5",
+              "ctime": 1489073421659
+            },
+            "3": {
+              "value": "17.5",
+              "ctime": 1489073421661,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "19.4",
+              "ctime": 1489073421658,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "warning",
+              "ctime": 1489073421657,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "3rdgradersHighDisc",
+              "ctime": 1489339493836,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "child",
+              "ctime": 1573223761280,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "14": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223800772
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "data": {
+            "1": {
+              "value": "3.7",
+              "ctime": 1489073421665,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "17.5",
+              "ctime": 1489073421664,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "17.5",
+              "ctime": 1489073421666
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "30",
+              "ctime": 1489073421663
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489073421662
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "3rdgradersHighDisc",
+              "ctime": 1489339493837
+            },
+            "8": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223761281
+            },
+            "14": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223800773
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489073218433
+        },
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2.9",
+              "ctime": 1489073421671
+            },
+            "2": {
+              "value": "17.5",
+              "ctime": 1489073421670,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "17.5",
+              "ctime": 1489073421672
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2.9",
+              "ctime": 1489073421669
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489073421668
+            },
+            "6": {
+              "value": "3rdgradersLowDisc",
+              "ctime": 1489339493838,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "9": {
+              "value": "child",
+              "ctime": 1573223761282,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "14": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223800774
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489073421667
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489073421673,
+          "data": {
+            "1": {
+              "value": "3.4",
+              "ctime": 1489073421677,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "17.5",
+              "ctime": 1489073421676,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "17.5",
+              "ctime": 1489073421678,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "6.7",
+              "ctime": 1489073421675,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489073421674
+            },
+            "6": {
+              "value": "3rdgradersLowDisc",
+              "ctime": 1489339493839,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "10": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223761283
+            },
+            "14": {
+              "value": "child",
+              "ctime": 1573223800775,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "title": "2",
+          "ctime": 1489073421679,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "4.2",
+              "ctime": 1489073421683
+            },
+            "2": {
+              "value": "24",
+              "ctime": 1489073421682,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "24",
+              "ctime": 1489073421684
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "14.6",
+              "ctime": 1489073421681
+            },
+            "5": {
+              "value": "warning",
+              "ctime": 1489073421680,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "preschoolHighDisc",
+              "ctime": 1489339493840
+            },
+            "11": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223761284
+            },
+            "14": {
+              "value": "child",
+              "ctime": 1573223800776,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "ctime": 1489073421685,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "11.5",
+              "ctime": 1489073421689
+            },
+            "2": {
+              "value": "24",
+              "ctime": 1489073421688,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "24",
+              "ctime": 1489073421690,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "35.4",
+              "ctime": 1489073421687,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489073421686
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "preschoolHighDisc",
+              "ctime": 1489339493841
+            },
+            "12": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223761285
+            },
+            "14": {
+              "value": "child",
+              "ctime": 1573223800777,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2"
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489073421691,
+          "data": {
+            "1": {
+              "value": "6.3",
+              "ctime": 1489073421695,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "24",
+              "ctime": 1489073421694
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "24",
+              "ctime": 1489073421696
+            },
+            "4": {
+              "value": "10.4",
+              "ctime": 1489073421693,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "warning",
+              "ctime": 1489073421692,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "preschoolLowDisc",
+              "ctime": 1489339493842
+            },
+            "13": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223761286
+            },
+            "14": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223800778
+            }
+          }
+        },
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "3.1",
+              "ctime": 1489073421701
+            },
+            "2": {
+              "value": "24",
+              "ctime": 1489073421700,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "24",
+              "ctime": 1489073421702,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "18.8",
+              "ctime": 1489073421699,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "no warning",
+              "ctime": 1489073421698,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "preschoolLowDisc",
+              "ctime": 1489339493843
+            },
+            "14": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223761287
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489073421697
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Specification"
+        },
+        {
+          "id": "7",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "8",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "id": "9",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "title": "Participant type",
+          "id": "10",
+          "type": "characteristic"
+        },
+        {
+          "id": "11",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "title": "Participant type",
+          "id": "12",
+          "type": "characteristic"
+        },
+        {
+          "id": "13",
+          "type": "characteristic",
+          "title": "Participant type"
+        },
+        {
+          "title": "Participant type",
+          "id": "14",
+          "type": "characteristic"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089073730245",
+      "title": "MaedeRoediger2002",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489073730245,
+      "mtime": 1573223769180,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/MaedeRoediger2002",
+      "experiments": [
+        {
+          "title": "1",
+          "ctime": 1489073730246,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "5.5",
+              "ctime": 1489073730250
+            },
+            "2": {
+              "value": "18",
+              "ctime": 1489073730249,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "18",
+              "ctime": 1489073730251
+            },
+            "4": {
+              "value": "16.5",
+              "ctime": 1489073730248,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489073730247
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223625329
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "ctime": 1489073730252,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "6.5",
+              "ctime": 1489073730256
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "18",
+              "ctime": 1489073730255
+            },
+            "3": {
+              "value": "18",
+              "ctime": 1489073730257,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "36",
+              "ctime": 1489073730254,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489073730253
+            },
+            "6": {
+              "value": "adult",
+              "ctime": 1573223769181,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1"
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089073732903",
+      "title": "OebrstBlank2012",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489073732903,
+      "mtime": 1573223770043,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/OebrstBlank2012",
+      "experiments": [
+        {
+          "ctime": 1489073732904,
+          "data": {
+            "1": {
+              "value": "26",
+              "ctime": 1489073732909,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "15",
+              "ctime": 1489073732906
+            },
+            "3": {
+              "value": "warning",
+              "ctime": 1489073732905,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "17",
+              "ctime": 1489073732908
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "26",
+              "ctime": 1489073732907
+            },
+            "6": {
+              "value": "adult",
+              "ctime": 1573223626365,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2"
+        },
+        {
+          "data": {
+            "1": {
+              "value": "26",
+              "ctime": 1489073732915,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "37",
+              "ctime": 1489073732912
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489073732911
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "19",
+              "ctime": 1489073732914
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "26",
+              "ctime": 1489073732913
+            },
+            "6": {
+              "value": "adult",
+              "ctime": 1573223770044,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489073732910
+        }
+      ],
+      "columns": [
+        {
+          "title": "Control TOTAL [N]",
+          "id": "1",
+          "type": "characteristic"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "title": "Exp TOTAL [N]",
+          "id": "5",
+          "type": "characteristic"
+        },
+        {
+          "title": "Participant type",
+          "id": "6",
+          "type": "characteristic"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089073733111",
+      "title": "PatersonKempMcIntyre2012",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489073733111,
+      "mtime": 1573223771160,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/PatersonKempMcIntyre2012",
+      "experiments": [
+        {
+          "ctime": 1489073733112,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489073778498
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "17",
+              "ctime": 1489073858442
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "11",
+              "ctime": 1489073858439
+            },
+            "4": {
+              "value": ".75",
+              "ctime": 1489073858441,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "17",
+              "ctime": 1489073858440
+            },
+            "6": {
+              "value": "specificwarning",
+              "ctime": 1489339494340,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223627238,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1"
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489073733113,
+          "data": {
+            "1": {
+              "value": "no warning",
+              "ctime": 1489073778499,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "17",
+              "ctime": 1489073858446
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "8.75",
+              "ctime": 1489073858443
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": ".75",
+              "ctime": 1489073858445
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "17",
+              "ctime": 1489073858444
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "specificwarning",
+              "ctime": 1489339494341
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223771161,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "ctime": 1489073733114,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489073778500
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "16",
+              "ctime": 1489073858450
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "9.25",
+              "ctime": 1489073858447
+            },
+            "4": {
+              "value": ".75",
+              "ctime": 1489073858449,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "16",
+              "ctime": 1489073858448,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223771162
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2"
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489073733115,
+          "data": {
+            "1": {
+              "value": "no warning",
+              "ctime": 1489073778501,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "16",
+              "ctime": 1489073858454,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "11.25",
+              "ctime": 1489073858451,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": ".75",
+              "ctime": 1489073858453
+            },
+            "5": {
+              "value": "16",
+              "ctime": 1489073858452,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223771163,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "title": "Exp Outcome [N]",
+          "id": "3",
+          "type": "characteristic"
+        },
+        {
+          "title": "Control Outcome [N]",
+          "id": "4",
+          "type": "characteristic"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Specification"
+        },
+        {
+          "title": "Participant type",
+          "id": "7",
+          "type": "characteristic"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089073733406",
+      "title": "PatersonKemp2009",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489073733406,
+      "mtime": 1573223771971,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/PatersonKemp2009",
+      "experiments": [
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489073733407,
+          "data": {
+            "1": {
+              "value": "warning",
+              "ctime": 1489073733408,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "10",
+              "ctime": 1489073733409
+            },
+            "3": {
+              "value": "16",
+              "ctime": 1489073733410,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "4",
+              "ctime": 1489073733411
+            },
+            "5": {
+              "value": "16",
+              "ctime": 1489073733412,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223651086,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "data": {
+            "1": {
+              "value": "no warning",
+              "ctime": 1489073733414,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "9.4",
+              "ctime": 1489073733415
+            },
+            "3": {
+              "value": "16",
+              "ctime": 1489073733416,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "3.8",
+              "ctime": 1489073733417,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "16",
+              "ctime": 1489073733418
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223771972
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489073733413
+        },
+        {
+          "data": {
+            "1": {
+              "value": "warning",
+              "ctime": 1489073778218,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "28.4",
+              "ctime": 1489073858150,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "12",
+              "ctime": 1489073858151,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "3.4",
+              "ctime": 1489073858152
+            },
+            "5": {
+              "value": "12",
+              "ctime": 1489073858153,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "delayed warning",
+              "ctime": 1529675672011,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223771973
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489073733419
+        },
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489073778220
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "21.6",
+              "ctime": 1489073858154
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "12",
+              "ctime": 1489073858155
+            },
+            "4": {
+              "value": "3.4",
+              "ctime": 1489073858156,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "12",
+              "ctime": 1489073858157,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "delayed warning",
+              "ctime": 1529675672012
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223771974
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489073733420
+        }
+      ],
+      "columns": [
+        {
+          "title": "Group",
+          "id": "1",
+          "type": "characteristic"
+        },
+        {
+          "title": "Exp Outcome [N]",
+          "id": "2",
+          "type": "characteristic"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Specification"
+        },
+        {
+          "id": "7",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089074001814",
+      "title": "PriceConnolly2004",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489074001814,
+      "mtime": 1573223762366,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/PriceConnolly2004",
+      "experiments": [
+        {
+          "data": {
+            "1": {
+              "value": "15",
+              "ctime": 1489074001818,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "15",
+              "ctime": 1489074001820,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2.166667",
+              "ctime": 1489074001817
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489074001816
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2",
+              "ctime": 1489074001819
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "repeatedevent",
+              "ctime": 1489339495237
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223762367
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074001815
+        },
+        {
+          "data": {
+            "1": {
+              "value": "15",
+              "ctime": 1489074001824,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "15",
+              "ctime": 1489074001826
+            },
+            "3": {
+              "value": "3.333333",
+              "ctime": 1489074001823,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489074001822
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2",
+              "ctime": 1489074001825
+            },
+            "6": {
+              "value": "repeatedevent",
+              "ctime": 1489339495238,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "child",
+              "ctime": 1573223762368,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074001821
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074001827,
+          "data": {
+            "1": {
+              "value": "15",
+              "ctime": 1489074001830,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "15",
+              "ctime": 1489074001832,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "4.5",
+              "ctime": 1489074001829
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489074001828
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2",
+              "ctime": 1489074001831
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "singleevent",
+              "ctime": 1489339495239
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223762369
+            }
+          }
+        },
+        {
+          "ctime": 1489074001833,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "15",
+              "ctime": 1489074001836
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "15",
+              "ctime": 1489074001838
+            },
+            "3": {
+              "value": "1.166667",
+              "ctime": 1489074001835,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "no warning",
+              "ctime": 1489074001834,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2",
+              "ctime": 1489074001837
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "singleevent",
+              "ctime": 1489339495240
+            },
+            "7": {
+              "value": "child",
+              "ctime": 1573223762370,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1"
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "title": "Group",
+          "id": "4",
+          "type": "characteristic"
+        },
+        {
+          "title": "Control Outcome [N]",
+          "id": "5",
+          "type": "characteristic"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Specification"
+        },
+        {
+          "title": "Participant type",
+          "id": "7",
+          "type": "characteristic"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089074215795",
+      "title": "Principe2001",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489074215795,
+      "mtime": 1573223763148,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/Principe2001",
+      "experiments": [
+        {
+          "title": "3to4",
+          "ctime": 1489074215796,
+          "data": {
+            "1": {
+              "value": "warning",
+              "ctime": 1489074215797,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "comments": [
+                {
+                  "ctime": 1489340972438,
+                  "by": "hartmut.blank@port.ac.uk",
+                  "text": "Principe, Haines, Adkins & Guiliano (2010).\n‘Overheard’ and ‘classmate’ refer to different ways of encountering misinformation;\n‘3-4 y’ and ‘5-6 y’ denote the age of the investigated children. As the\n‘classmate’ condition involved encountering the misinformation as a rumour from\nclassmates at some point between planting of the misinformation and the final\nmemory test, no clear delays could be determined. Control Misinformation\nEndorsement of the 3-4 year olds was at 0%, making it impossible to calculate\nour effect sizes; therefore we estimated the control performance by including\nthe performance of the 5-6 year olds (originally 5%; see Fr02 for the same\nproblem and solution). "
+                }
+              ],
+              "value": "65.217391",
+              "ctime": 1489074215798
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "23",
+              "ctime": 1489074215799
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2.325581",
+              "ctime": 1489074215800
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "21",
+              "ctime": 1489074215801
+            },
+            "6": {
+              "value": "overheard",
+              "ctime": 1489339495786,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "child",
+              "ctime": 1573223763149,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "title": "3to4",
+          "ctime": 1489074215802,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489074215803
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "91.666667",
+              "ctime": 1489074215804
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "24",
+              "ctime": 1489074215805
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2.325581",
+              "ctime": 1489074215806
+            },
+            "5": {
+              "value": "21",
+              "ctime": 1489074215807,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "overheard",
+              "ctime": 1489339495787
+            },
+            "7": {
+              "value": "child",
+              "ctime": 1573223763150,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "data": {
+            "1": {
+              "value": "warning",
+              "ctime": 1489074215809,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "95.652174",
+              "ctime": 1489074215810
+            },
+            "3": {
+              "value": "23",
+              "ctime": 1489074215811,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2.325581",
+              "ctime": 1489074215812
+            },
+            "5": {
+              "value": "21",
+              "ctime": 1489074215813,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "rumor",
+              "ctime": 1489339495788
+            },
+            "7": {
+              "value": "child",
+              "ctime": 1573223763151,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "3to4",
+          "ctime": 1489074215808
+        },
+        {
+          "title": "3to4",
+          "ctime": 1489074215814,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489074215815
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "90.4047619",
+              "ctime": 1489074215816
+            },
+            "3": {
+              "value": "21",
+              "ctime": 1489074215817,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "2.325581",
+              "ctime": 1489074761134,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "21",
+              "ctime": 1489074761135,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "rumor",
+              "ctime": 1489339495789
+            },
+            "7": {
+              "value": "child",
+              "ctime": 1573223763152,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489074215819
+            },
+            "2": {
+              "value": "55",
+              "ctime": 1489074761136,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489074761137
+            },
+            "4": {
+              "value": "2.325581",
+              "ctime": 1489074761138,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "22",
+              "ctime": 1489074761139
+            },
+            "6": {
+              "value": "overheard",
+              "ctime": 1489339495790,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223763153
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "5to6",
+          "ctime": 1489074215818
+        },
+        {
+          "title": "5to6",
+          "ctime": 1489074215820,
+          "data": {
+            "1": {
+              "value": "no warning",
+              "ctime": 1489074215821,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "95",
+              "ctime": 1489074761142
+            },
+            "3": {
+              "value": "20",
+              "ctime": 1489074761143,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2.325581",
+              "ctime": 1489074761140
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "22",
+              "ctime": 1489074761141
+            },
+            "6": {
+              "value": "overheard",
+              "ctime": 1489339495791,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "child",
+              "ctime": 1573223763154,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "5to6",
+          "ctime": 1489074215822,
+          "data": {
+            "1": {
+              "value": "warning",
+              "ctime": 1489074215823,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "63.636364",
+              "ctime": 1489074761146,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "22",
+              "ctime": 1489074761147,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2.325581",
+              "ctime": 1489074761144
+            },
+            "5": {
+              "value": "22",
+              "ctime": 1489074761145,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "rumor",
+              "ctime": 1489339495792,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "child",
+              "ctime": 1573223763155
+            }
+          }
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "5to6",
+          "ctime": 1489074215824,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489074215825
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "95",
+              "ctime": 1489074761150
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489074761151
+            },
+            "4": {
+              "value": "2.325581",
+              "ctime": 1489074761148,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "22",
+              "ctime": 1489074761149,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "rumor",
+              "ctime": 1489339495793
+            },
+            "7": {
+              "value": "child",
+              "ctime": 1573223763156,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        }
+      ],
+      "columns": [
+        {
+          "title": "Group",
+          "id": "1",
+          "type": "characteristic"
+        },
+        {
+          "title": "Exp Outcome [N]",
+          "id": "2",
+          "type": "characteristic"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "title": "Specification",
+          "id": "6",
+          "type": "characteristic"
+        },
+        {
+          "id": "7",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089074763734",
+      "title": "SzpitalakPolczyk2010",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489074763734,
+      "mtime": 1573223764236,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/SzpitalakPolczyk2010",
+      "experiments": [
+        {
+          "title": "1",
+          "ctime": 1489074763735,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "43.823529",
+              "ctime": 1489074763737
+            },
+            "2": {
+              "value": "warning",
+              "ctime": 1489074763736,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "53.076923",
+              "ctime": 1489074763739,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "34",
+              "ctime": 1489074763738,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "39",
+              "ctime": 1489074763740,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "highinvolv",
+              "ctime": 1489339496327,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223653993,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074763741,
+          "data": {
+            "1": {
+              "value": "68.717949",
+              "ctime": 1489074763743,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "no warning",
+              "ctime": 1489412251161,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "41.481481",
+              "ctime": 1489074763745,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "39",
+              "ctime": 1489074763744
+            },
+            "5": {
+              "value": "54",
+              "ctime": 1489074763746,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "highinvolv",
+              "ctime": 1489339496328,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223764237
+            }
+          }
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074763747,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "63.404255",
+              "ctime": 1489074763749
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489074763748
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "47.142857",
+              "ctime": 1489074763751
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "47",
+              "ctime": 1489074763750
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "49",
+              "ctime": 1489074763752
+            },
+            "6": {
+              "value": "lowinvolv",
+              "ctime": 1489339496329,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223764238,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          }
+        },
+        {
+          "ctime": 1489074763753,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "62.790698",
+              "ctime": 1489074763755
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489074763754
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "52.727273",
+              "ctime": 1489074763757
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "43",
+              "ctime": 1489074763756
+            },
+            "5": {
+              "value": "44",
+              "ctime": 1489074763758,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "lowinvolv",
+              "ctime": 1489339496330
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223764239
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1"
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "title": "Group",
+          "id": "2",
+          "type": "characteristic"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "title": "Exp TOTAL [N]",
+          "id": "4",
+          "type": "characteristic"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Specification"
+        },
+        {
+          "id": "7",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089074764850",
+      "title": "SzpitalakPolczyk2011",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489074764850,
+      "mtime": 1573223765022,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/SzpitalakPolczyk2011",
+      "experiments": [
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074764851,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "32",
+              "ctime": 1489074764854
+            },
+            "2": {
+              "value": "63",
+              "ctime": 1489074764856,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "41.75",
+              "ctime": 1489074764853
+            },
+            "4": {
+              "value": "warning",
+              "ctime": 1489074764852,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "37.470238",
+              "ctime": 1489074764855
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223654813
+            }
+          }
+        },
+        {
+          "title": "1",
+          "ctime": 1489074764857,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "36",
+              "ctime": 1489074764860
+            },
+            "2": {
+              "value": "60",
+              "ctime": 1489074764862,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "51.75",
+              "ctime": 1489074764859
+            },
+            "4": {
+              "value": "no warning",
+              "ctime": 1489074764858,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "23.375",
+              "ctime": 1489074764861,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223765023
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "title": "Group",
+          "id": "4",
+          "type": "characteristic"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Control Outcome [N]"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089074765574",
+      "title": "Thomas2010",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489074765574,
+      "mtime": 1573223766144,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/Thomas2010",
+      "experiments": [
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489074765578
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489074765580
+            },
+            "3": {
+              "value": "20",
+              "ctime": 1489074765577,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "warning",
+              "ctime": 1489074765576,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "3.2",
+              "ctime": 1489074765579
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "repeatedTesting",
+              "ctime": 1489339496869
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223655838,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074765575
+        },
+        {
+          "data": {
+            "1": {
+              "value": "20",
+              "ctime": 1489074765584,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489074765586
+            },
+            "3": {
+              "value": "48",
+              "ctime": 1489074765583,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "no warning",
+              "ctime": 1489074765582,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "5.45",
+              "ctime": 1489074765585,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "repeatedTesting",
+              "ctime": 1489339496870
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223766145
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074765581
+        },
+        {
+          "title": "1",
+          "ctime": 1489074765587,
+          "data": {
+            "1": {
+              "value": "20",
+              "ctime": 1489074765590,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "20",
+              "ctime": 1489074765592
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "19",
+              "ctime": 1489074765589
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489074765588
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "5.4525",
+              "ctime": 1489074765591
+            },
+            "6": {
+              "value": "singleTesting",
+              "ctime": 1489339496871,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223766146
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "data": {
+            "1": {
+              "value": "20",
+              "ctime": 1489074765596,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "20",
+              "ctime": 1489074765598,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "30",
+              "ctime": 1489074765595,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489074765594
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2.25",
+              "ctime": 1489074765597
+            },
+            "6": {
+              "value": "singleTesting",
+              "ctime": 1489339496872,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223766147
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074765593
+        },
+        {
+          "title": "2",
+          "ctime": 1489074765599,
+          "data": {
+            "1": {
+              "value": "14",
+              "ctime": 1489074765602,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "14",
+              "ctime": 1489074765604
+            },
+            "3": {
+              "value": "24",
+              "ctime": 1489074765601,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "value": "warning",
+              "ctime": 1489074765600,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "value": "10.365",
+              "ctime": 1489074765603,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "repeatedTesting",
+              "ctime": 1489339496873
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223766148
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489074765605,
+          "data": {
+            "1": {
+              "value": "17",
+              "ctime": 1489074765608,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "17",
+              "ctime": 1489074765610,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "value": "53",
+              "ctime": 1489074765607,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489074765606
+            },
+            "5": {
+              "value": "8.6785",
+              "ctime": 1489074765609,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "repeatedTesting",
+              "ctime": 1489339496874
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223766149
+            }
+          }
+        },
+        {
+          "data": {
+            "1": {
+              "value": "18",
+              "ctime": 1489074765614,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "value": "18",
+              "ctime": 1489074765616,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "31",
+              "ctime": 1489074765613
+            },
+            "4": {
+              "value": "warning",
+              "ctime": 1489074765612,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "9.195",
+              "ctime": 1489074765615
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "singleTesting",
+              "ctime": 1489339496875
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223766150
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2",
+          "ctime": 1489074765611
+        },
+        {
+          "ctime": 1489074765617,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "17",
+              "ctime": 1489074765620
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "17",
+              "ctime": 1489074765622
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "31",
+              "ctime": 1489074765619
+            },
+            "4": {
+              "value": "no warning",
+              "ctime": 1489074765618,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "10.5",
+              "ctime": 1489074765621
+            },
+            "6": {
+              "value": "singleTesting",
+              "ctime": 1489339496876,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223766151,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "2"
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "title": "Control TOTAL [N]",
+          "id": "2",
+          "type": "characteristic"
+        },
+        {
+          "id": "3",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "title": "Control Outcome [N]",
+          "id": "5",
+          "type": "characteristic"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Specification"
+        },
+        {
+          "title": "Participant type",
+          "id": "7",
+          "type": "characteristic"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089074765942",
+      "title": "Wright1993",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489074765942,
+      "mtime": 1573223767275,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/Wright1993",
+      "experiments": [
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "1",
+          "ctime": 1489074765943,
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "warning",
+              "ctime": 1489074765944
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "2",
+              "ctime": 1489074765945
+            },
+            "3": {
+              "value": "34",
+              "ctime": 1489074765946,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "4",
+              "ctime": 1489074765947
+            },
+            "5": {
+              "value": "68",
+              "ctime": 1489074765948,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223656827
+            }
+          }
+        },
+        {
+          "title": "1",
+          "ctime": 1489074765949,
+          "data": {
+            "1": {
+              "value": "no warning",
+              "ctime": 1489074765950,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "43",
+              "ctime": 1489074765951
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "34",
+              "ctime": 1489074862264
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "4",
+              "ctime": 1489074862265
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "68",
+              "ctime": 1489074862266
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223767276
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk"
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "title": "Exp Outcome [N]",
+          "id": "2",
+          "type": "characteristic"
+        },
+        {
+          "title": "Exp TOTAL [N]",
+          "id": "3",
+          "type": "characteristic"
+        },
+        {
+          "title": "Control Outcome [N]",
+          "id": "4",
+          "type": "characteristic"
+        },
+        {
+          "id": "5",
+          "type": "characteristic",
+          "title": "Control TOTAL [N]"
+        },
+        {
+          "title": "Participant type",
+          "id": "6",
+          "type": "characteristic"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1089074863028",
+      "title": "ZaragozaLane1994",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1489074863028,
+      "mtime": 1573223768073,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/ZaragozaLane1994",
+      "experiments": [
+        {
+          "data": {
+            "1": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "35",
+              "ctime": 1489074863031
+            },
+            "2": {
+              "value": "warning",
+              "ctime": 1489074863030,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "3": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "15",
+              "ctime": 1489074863033
+            },
+            "4": {
+              "value": "66",
+              "ctime": 1489074863032,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "5": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "66",
+              "ctime": 1489074863034
+            },
+            "6": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "explicitWarning",
+              "ctime": 1489339497339
+            },
+            "7": {
+              "value": "adult",
+              "ctime": 1573223657926,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            }
+          },
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "4",
+          "ctime": 1489074863029
+        },
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "4",
+          "ctime": 1489074863035,
+          "data": {
+            "1": {
+              "value": "30",
+              "ctime": 1489074863037,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "2": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "no warning",
+              "ctime": 1489074863036
+            },
+            "3": {
+              "value": "16",
+              "ctime": 1489074863039,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "4": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "66",
+              "ctime": 1489074863038
+            },
+            "5": {
+              "value": "66",
+              "ctime": 1489074863040,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "6": {
+              "value": "explicitWarning",
+              "ctime": 1489339497340,
+              "enteredBy": "hartmut.blank@port.ac.uk"
+            },
+            "7": {
+              "enteredBy": "hartmut.blank@port.ac.uk",
+              "value": "adult",
+              "ctime": 1573223768074
+            }
+          }
+        }
+      ],
+      "columns": [
+        {
+          "id": "1",
+          "type": "characteristic",
+          "title": "Exp Outcome [N]"
+        },
+        {
+          "id": "2",
+          "type": "characteristic",
+          "title": "Group"
+        },
+        {
+          "title": "Control Outcome [N]",
+          "id": "3",
+          "type": "characteristic"
+        },
+        {
+          "id": "4",
+          "type": "characteristic",
+          "title": "Exp TOTAL [N]"
+        },
+        {
+          "title": "Control TOTAL [N]",
+          "id": "5",
+          "type": "characteristic"
+        },
+        {
+          "id": "6",
+          "type": "characteristic",
+          "title": "Specification"
+        },
+        {
+          "id": "7",
+          "type": "characteristic",
+          "title": "Participant type"
+        }
+      ],
+      "hiddenCols": []
+    },
+    {
+      "id": "/id/p/1574956186204",
+      "title": "Lindsayjustforillustration",
+      "enteredBy": "hartmut.blank@port.ac.uk",
+      "ctime": 1574956186204,
+      "mtime": 1574956186204,
+      "tags": [],
+      "apiurl": "/api/papers/hartmut.blank@port.ac.uk/Lindsayjustforillustration",
+      "experiments": [
+        {
+          "enteredBy": "hartmut.blank@port.ac.uk",
+          "title": "Exp1",
+          "ctime": 1574956186206
+        }
+      ],
+      "columns": [],
+      "hiddenCols": []
+    }
+  ]
+}

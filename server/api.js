@@ -11,25 +11,16 @@ const InternalError = require('./errors/InternalError');
 const ValidationError = require('./errors/ValidationError');
 const NotImplementedError = require('./errors/NotImplementedError');
 const config = require('./config');
-const storage = require('./storage');
-const stats = require('./lib/stats');
+const storage = require('./storage-old');
 const tools = require('./lib/tools');
 
-const jsonBodyParser = require('body-parser').json(config.jsonParserOptions);
+const jsonBodyParser = express.json(config.jsonParserOptions);
 
 const api = module.exports = express.Router({
   caseSensitive: true,
 });
 
 module.exports.init = () => {
-  // log stats
-  api.use('/', (req, res, next) => {
-    stats.count('access.api');
-    // this will make index.js log the request time specially
-    res.limaStatsIsAPI = true;
-    next();
-  });
-
   setUpRoutes();
   return module.exports;
 };
@@ -63,24 +54,24 @@ function setUpRoutes() {
   api.get(`/profile/:user(${config.USER_RE})`, returnUserProfile);
 
   api.get(`/papers/:user(${config.USER_RE})/`,
-      listPapersForUser);
+    listPapersForUser);
   api.get(`/papers/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
-      getPaperVersion);
-  api.get(`/papers/:user(${config.USER_RE})\/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
-      getPaperVersion);
+    getPaperVersion);
+  api.get(`/papers/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
+    getPaperVersion);
   api.post(`/papers/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
-          GOOGLE_USER, SAME_USER, jsonBodyParser, savePaper);
+    GOOGLE_USER, SAME_USER, jsonBodyParser, savePaper);
 
   // todo above, a user that isn't SAME_USER should be able to submit new comments
 
   api.get(`/metaanalyses/:user(${config.USER_RE})`,
-          listMetaanalysesForUser);
+    listMetaanalysesForUser);
   api.get(`/metaanalyses/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
-          getMetaanalysisVersion);
+    getMetaanalysisVersion);
   api.get(`/metaanalyses/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/:time([0-9]+)/`,
-          getMetaanalysisVersion);
+    getMetaanalysisVersion);
   api.post(`/metaanalyses/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
-          GOOGLE_USER, SAME_USER, jsonBodyParser, saveMetaanalysis);
+    GOOGLE_USER, SAME_USER, jsonBodyParser, saveMetaanalysis);
 }
 
 
@@ -104,26 +95,26 @@ function apiMetaanalysisURL(user, title) {
   return `/api/metaanalyses/${user}/${title || config.NEW_META_TITLE}`;
 }
 
-module.exports.getKindForTitle = function getKindForTitle(user, title) {
-  return new Promise((resolve, reject) => {
-    storage.getMetaanalysisByTitle(user, title)
-    .then(() => resolve('metaanalysis'))
-    .catch(() => storage.getPaperByTitle(user, title))
-    .then(() => resolve('paper'))
-    .catch((err) => reject(err));
-  });
+// TODO: Test/Review function
+module.exports.getKindForTitle = async (user, title) => {
+  const metaanalyses = await storage.getMetaanalysisByTitle(user, title);
+  if (metaanalyses) return 'metaanalysis';
+  const paper = await storage.getPaperByTitle(user, title);
+  if (paper) return 'paper';
+  throw new Error('Nothing found');
 };
 
-function listTitles(req, res, next) {
-  storage.listTitles()
-  .then((titles) => {
+async function listTitles(req, res, next) {
+  try {
+    const titles = await storage.listTitles();
     const retval = [];
-    titles.forEach((t) => {
+    titles.forEach(t => {
       if (typeof t === 'string') retval.push(t);
     });
     res.json(retval);
-  })
-  .catch((err) => next(err));
+  } catch (error) {
+    next(error);
+  }
 }
 
 /* users
@@ -140,78 +131,73 @@ function listTitles(req, res, next) {
  */
 
 // check that the user in the URL is the same as the one logged in, and that they are registered
-function SAME_USER(req, res, next) {
+async function SAME_USER(req, res, next) {
   const email = req.user.emails[0].value;
-  storage.getUser(email) // check the user is registered
-  .then((user) => {
-    if (user.email === req.params.user ||
-        user.username === req.params.user) {
+  try {
+    const user = await storage.getUser(email);
+    if (user.email === req.params.user || user.username === req.params.user) {
       next();
     } else {
-      throw new Error(); // will be turned to UnauthorizedError below
+      throw new Error();
     }
-  })
-  .catch(() => {
-    // User is not known, return 401 to be caught by caller
+  } catch (error) {
     next(new UnauthorizedError('Please register with LiMA at /register'));
-  });
+  }
 }
 
-module.exports.EXISTS_USER = function (req, res, next) {
-  storage.getUser(req.params.user)
-  .then(
-    () => next(),
-    () => next(new NotFoundError())
-  );
+module.exports.EXISTS_USER = async function (req, res, next) {
+  try {
+    await storage.getUser(req.params.user);
+    next();
+  } catch (error) {
+    next(new NotFoundError());
+  }
 };
 
-function saveUser(req, res, next) {
+async function saveUser(req, res, next) {
   const user = extractReceivedUser(req.user);
   user.mtime = Date.now(); // update modification time - this is the last time the user agreed to T&C&PP
   user.username = tools.string(req.body.username);
-  storage.saveUser(user.email, user)
-  .then((storageUser) => {
+  try {
+    const storageUser = await storage.saveUser(user.email, user);
     res.json(extractUserForSending(storageUser));
-  })
-  .catch((err) => {
+  } catch (err) {
     next(err instanceof Error ? err : new InternalError(err));
-  });
+  }
 }
 
 // Check that the user is known to LiMA and that LiMA has up-to-date values from the identity provider.
-function checkUser(req, res, next) {
+async function checkUser(req, res, next) {
   const email = req.user.emails[0].value;
-  storage.getUser(email)
-  .then((storageUser) => {
+  try {
+    const storageUser = await storage.getUser(email);
     // Check whether there are any changes to the Google Object
     const strippedGoogleUser = extractReceivedUser(req.user);
     if (strippedGoogleUser.displayName !== storageUser.displayName ||
-        strippedGoogleUser.email !== storageUser.email ||
-        JSON.stringify(strippedGoogleUser.photos) !== JSON.stringify(storageUser.photos)) {
+      strippedGoogleUser.email !== storageUser.email ||
+      JSON.stringify(strippedGoogleUser.photos) !== JSON.stringify(storageUser.photos)) {
       Object.assign(storageUser, strippedGoogleUser);
-      storage.saveUser(storageUser.email, storageUser)
-      .then((savedUser) => {
+      try {
+        const savedUser = await storage.saveUser(storageUser.email, storageUser);
         res.json(extractUserForSending(savedUser));
-      })
-      .catch((err) => {
+      } catch (err) {
         next(new InternalError(err));
-      });
+      }
     } else {
       res.json(extractUserForSending(storageUser));
     }
-  })
-  .catch(() => {
+  } catch (error) {
     // User is not known to LiMA, return 401 to be caught by caller
     next(new UnauthorizedError('Please register with LiMA at /register'));
-  });
+  }
 }
 
 function extractReceivedUser(receivedUser) {
   // expecting receivedUser to be a Javascript object
   const retval = {
-    displayName:      tools.string(receivedUser.displayName),
-    email:            tools.string(receivedUser.emails[0].value),
-    photos:           tools.array(receivedUser.photos, extractReceivedPhoto),
+    displayName: tools.string(receivedUser.displayName),
+    email: tools.string(receivedUser.emails[0].value),
+    photos: tools.array(receivedUser.photos, extractReceivedPhoto),
   };
 
   return retval;
@@ -224,18 +210,17 @@ function extractReceivedPhoto(recPhoto) {
   return retval;
 }
 
-function returnUserProfile(req, res, next) {
-  storage.getUser(req.params.user)
-  .then((user) => {
+async function returnUserProfile(req, res, next) {
+  try {
+    const user = await storage.getUser(req.params.user);
     res.json(extractUserForSending(user));
-  })
-  .catch((err) => {
+  } catch (err) {
     if (err && err.status) {
       next(err);
     } else {
       next(new NotFoundError());
     }
-  });
+  }
 }
 
 function extractUserForSending(user) {
@@ -263,49 +248,46 @@ function extractUserForSending(user) {
  *
  *
  */
-function listPapersForUser(req, res, next) {
-  storage.getPapersEnteredBy(req.params.user)
-  .then((papers) => {
+async function listPapersForUser(req, res, next) {
+  try {
+    const papers = await storage.getPapersEnteredBy(req.params.user);
     if (papers.length === 0) throw new Error('no papers found');
 
     const retval = [];
-    papers.forEach((p) => {
+    papers.forEach(p => {
       retval.push(extractPaperForSending(p, false, req.params.user));
     });
     res.json(retval);
-  })
-  .catch(() => next(new NotFoundError()));
+  } catch (error) {
+    next(new NotFoundError());
+  }
 }
 
-function getPaperVersion(req, res, next) {
-  storage.getPaperByTitle(req.params.user, req.params.title, req.params.time)
-  .then((p) => {
-    return storage.getUsernameOfUser(p.enteredBy)
-    .then((username) => {
-      res.json(extractPaperForSending(p, true, req.params.user, username));
-    });
-  })
-  .catch((e) => {
+async function getPaperVersion(req, res, next) {
+  try {
+    const paper = await storage.getPaperByTitle(req.params.user, req.params.title);
+    const username = await storage.getUsernameOfUser(paper.enteredBy);
+    res.json(extractPaperForSending(paper, true, req.params.user, username));
+  } catch (e) {
     next(e.status ? e : new NotFoundError());
-  });
+  }
 }
 
-function savePaper(req, res, next) {
+async function savePaper(req, res, next) {
   // extract from incoming data stuff that is allowed
-  storage.savePaper(
-    extractReceivedPaper(req.body),
-    req.user.emails[0].value,
-    req.params.title)
-  .then((p) => {
+  try {
+    const p = await storage.savePaper(
+      extractReceivedPaper(req.body),
+      req.user.emails[0].value,
+      req.params.title);
     res.json(extractPaperForSending(p, true, req.params.user));
-  })
-  .catch((e) => {
+  } catch (e) {
     if (e instanceof ValidationError || e instanceof NotImplementedError) {
       next(e);
     } else {
       next(new InternalError(e));
     }
-  });
+  }
 }
 
 function extractPaperForSending(storagePaper, includeDataValues, user, username) {
@@ -338,19 +320,19 @@ function extractPaperForSending(storagePaper, includeDataValues, user, username)
 function extractReceivedPaper(receivedPaper) {
   // expecting receivedPaper to come from JSON.parse()
   const retval = {
-    id:             tools.string(receivedPaper.id),        // identifies the paper to be changed
-    title:          tools.string(receivedPaper.title),
+    id: tools.string(receivedPaper.id), // identifies the paper to be changed
+    title: tools.string(receivedPaper.title),
     CHECKenteredBy: tools.string(receivedPaper.enteredBy), // can't be changed but should be checked
-    CHECKctime:     tools.number(receivedPaper.ctime),     // can't be changed but should be checked
+    CHECKctime: tools.number(receivedPaper.ctime), // can't be changed but should be checked
     // mtime: tools.number(receivedPaper.mtime),           // will be updated
-    reference:      tools.string(receivedPaper.reference),
-    description:    tools.string(receivedPaper.description),
-    link:           tools.string(receivedPaper.link),
-    doi:            tools.string(receivedPaper.doi),
-    tags:           tools.array(receivedPaper.tags, tools.string),
-    experiments:    tools.array(receivedPaper.experiments, extractReceivedExperiment),
-    columns:        tools.array(receivedPaper.columns, extractReceivedColumnEntry),
-    hiddenCols:     tools.array(receivedPaper.hiddenCols, tools.string),
+    reference: tools.string(receivedPaper.reference),
+    description: tools.string(receivedPaper.description),
+    link: tools.string(receivedPaper.link),
+    doi: tools.string(receivedPaper.doi),
+    tags: tools.array(receivedPaper.tags, tools.string),
+    experiments: tools.array(receivedPaper.experiments, extractReceivedExperiment),
+    columns: tools.array(receivedPaper.columns, extractReceivedColumnEntry),
+    hiddenCols: tools.array(receivedPaper.hiddenCols, tools.string),
   };
 
   // todo anything else recently added to the data
@@ -404,49 +386,44 @@ function extractReceivedComment(receivedComment) {
  *
  *
  */
-function listMetaanalysesForUser(req, res, next) {
-  storage.getMetaanalysesEnteredBy(req.params.user)
-  .then((mas) => {
+async function listMetaanalysesForUser(req, res, next) {
+  try {
+    const mas = await storage.getMetaanalysesEnteredBy(req.params.user);
     if (mas.length === 0) throw new Error('no metaanalyses found');
 
     const retval = [];
-    mas.forEach((m) => {
+    mas.forEach(m => {
       retval.push(extractMetaanalysisForSending(m, false, req.params.user));
     });
     res.json(retval);
-  })
-  .catch(() => next(new NotFoundError()));
+  } catch (error) {
+    next(new NotFoundError());
+  }
 }
 
-function getMetaanalysisVersion(req, res, next) {
-  storage.getMetaanalysisByTitle(req.params.user, req.params.title, req.params.time, true)
-  .then((ma) => {
-    return storage.getUsernameOfUser(ma.enteredBy)
-    .then((username) => {
-      res.json(extractMetaanalysisForSending(ma, true, req.params.user, username));
-    });
-  })
-  .catch((e) => {
+async function getMetaanalysisVersion(req, res, next) {
+  try {
+    const ma = await storage.getMetaanalysisByTitle(req.params.user, req.params.title, req.params.time, true);
+    const username = await storage.getUsernameOfUser(ma.enteredBy);
+    res.json(extractMetaanalysisForSending(ma, true, req.params.user, username));
+  } catch (e) {
     next(e && e.status ? e : new NotFoundError());
-  });
+  }
 }
 
-function saveMetaanalysis(req, res, next) {
+async function saveMetaanalysis(req, res, next) {
   // extract from incoming data stuff that is allowed
-  storage.saveMetaanalysis(
-    extractReceivedMetaanalysis(req.body),
-    req.user.emails[0].value,
-    req.params.title)
-  .then((ma) => {
+  try {
+    const ma = await storage.saveMetaanalysis(extractReceivedMetaanalysis(req.body), req.user.emails[0].value, req.params.title);
     res.json(extractMetaanalysisForSending(ma, false, req.params.user));
-  })
-  .catch((e) => {
+  } catch (e) {
+    console.log(e);
     if (e instanceof ValidationError || e instanceof NotImplementedError) {
       next(e);
     } else {
       next(new InternalError(e));
     }
-  });
+  }
 }
 
 function extractMetaanalysisForSending(storageMetaanalysis, includePapers, user, username) {
@@ -485,23 +462,23 @@ function extractMetaanalysisForSending(storageMetaanalysis, includePapers, user,
 function extractReceivedMetaanalysis(receivedMetaanalysis) {
   // expecting receivedMetaanalysis to come from JSON.parse()
   const retval = {
-    id:                  tools.string(receivedMetaanalysis.id),        // identifies the MA to be changed
-    title:               tools.string(receivedMetaanalysis.title),
-    CHECKenteredBy:      tools.string(receivedMetaanalysis.enteredBy), // can't be changed but should be checked
-    CHECKctime:          tools.number(receivedMetaanalysis.ctime),     // can't be changed but should be checked
+    id: tools.string(receivedMetaanalysis.id), // identifies the MA to be changed
+    title: tools.string(receivedMetaanalysis.title),
+    CHECKenteredBy: tools.string(receivedMetaanalysis.enteredBy), // can't be changed but should be checked
+    CHECKctime: tools.number(receivedMetaanalysis.ctime), // can't be changed but should be checked
     // mtime: tools.number(receivedMetaanalysis.mtime),              // will be updated
-    published:           tools.string(receivedMetaanalysis.published),
-    description:         tools.string(receivedMetaanalysis.description),
-    tags:                tools.array(receivedMetaanalysis.tags, tools.string),
-    columns:             tools.array(receivedMetaanalysis.columns, extractReceivedMetaanalysisColumnEntry),
-    paperOrder:          tools.array(receivedMetaanalysis.paperOrder, tools.string),
-    hiddenCols:          tools.array(receivedMetaanalysis.hiddenCols, tools.string),
-    hiddenExperiments:   tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
+    published: tools.string(receivedMetaanalysis.published),
+    description: tools.string(receivedMetaanalysis.description),
+    tags: tools.array(receivedMetaanalysis.tags, tools.string),
+    columns: tools.array(receivedMetaanalysis.columns, extractReceivedMetaanalysisColumnEntry),
+    paperOrder: tools.array(receivedMetaanalysis.paperOrder, tools.string),
+    hiddenCols: tools.array(receivedMetaanalysis.hiddenCols, tools.string),
+    hiddenExperiments: tools.array(receivedMetaanalysis.hiddenExperiments, tools.string),
     excludedExperiments: tools.array(receivedMetaanalysis.excludedExperiments, tools.string),
-    aggregates:          tools.array(receivedMetaanalysis.aggregates, extractReceivedAggregate),
-    groupingColumn:      tools.string(receivedMetaanalysis.groupingColumn),
-    groupingAggregates:  tools.array(receivedMetaanalysis.groupingAggregates, extractReceivedAggregate),
-    graphs:              tools.array(receivedMetaanalysis.graphs, extractReceivedGraph),
+    aggregates: tools.array(receivedMetaanalysis.aggregates, extractReceivedAggregate),
+    groupingColumn: tools.string(receivedMetaanalysis.groupingColumn),
+    groupingAggregates: tools.array(receivedMetaanalysis.groupingAggregates, extractReceivedAggregate),
+    graphs: tools.array(receivedMetaanalysis.graphs, extractReceivedGraph),
   };
 
   return retval;
@@ -552,9 +529,9 @@ function extractReceivedGraph(recGraph) {
 }
 
 // todo filter by tag 'showcase' here rather than in index.html
-function listTopMetaanalyses(req, res, next) {
-  storage.listMetaanalyses()
-  .then((mas) => {
+async function listTopMetaanalyses(req, res, next) {
+  try {
+    const mas = await storage.listMetaanalyses();
     const retval = [];
     for (const ma of mas) {
       retval.push({
@@ -563,6 +540,7 @@ function listTopMetaanalyses(req, res, next) {
       });
     }
     res.json(retval);
-  })
-  .catch(() => next(new InternalError()));
+  } catch (error) {
+    next(new InternalError());
+  }
 }

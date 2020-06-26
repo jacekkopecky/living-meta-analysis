@@ -1,0 +1,17 @@
+{
+  "id": "/id/ma/1592314773102",
+  "title": "test-metanalysis",
+  "enteredBy": "test@fake.example.org",
+  "ctime": 1592314773102,
+  "mtime": 1592314773102,
+  "tags": [],
+  "columns": [],
+  "paperOrder": [],
+  "hiddenCols": [],
+  "hiddenExperiments": [],
+  "excludedExperiments": [],
+  "aggregates": [],
+  "groupingAggregates": [],
+  "graphs": [],
+  "apiurl": "/api/metaanalyses/test-account/test-metanalysis"
+}
