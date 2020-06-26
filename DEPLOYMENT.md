@@ -32,6 +32,10 @@ We expect LiMA to be installed on a machine that supports the below requirements
 
 commit in branch `production` to push to main service; commit to branch `master` to push to staging service.
 
+The production is running at https://lima.soc.port.ac.uk
+
+The staging service is at https://staging-dot-uop-soc-lima.ew.r.appspot.com/
+
 ### Invite Codes
 
 You must first generate beta codes to access the site.
