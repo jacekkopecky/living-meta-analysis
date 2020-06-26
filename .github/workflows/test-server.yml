@@ -1,4 +1,4 @@
-name: Lint Server
+name: Test Server
 
 on: [push]
 
