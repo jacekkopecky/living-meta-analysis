@@ -3,8 +3,12 @@ import React, { useEffect, useState } from 'react';
 const CLIENT_ID = '358237292980-kbme56c9ih4rpmob16sq8bjig5dms6pl.apps.googleusercontent.com';
 
 export function SignInButton() {
+  const gapi = window.gapi;
   useEffect(() => {
-    window.gapi.signin2.render('gbutton');
+    gapi.load('auth2', async () => {
+      await gapi.auth2.init({ client_id: CLIENT_ID });
+      window.gapi.signin2.render('gbutton');
+    });
   });
   return <div id="gbutton" />;
 }
