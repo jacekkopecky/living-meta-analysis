@@ -1,4 +1,4 @@
-name: App Engine Deploy
+name: Staging – App Engine Deploy
 on:
   push:
     branches:
