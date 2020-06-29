@@ -1,7 +1,3 @@
-/* eslint-disable no-restricted-globals */
-/* eslint-disable consistent-return */
-/* eslint-disable no-use-before-define */
-
 function renumberComputedObjects(array, prefix) {
   prefix = prefix || '';
   let count = 0;
@@ -35,14 +31,14 @@ function getFormulaLabel(formulaObj) {
 }
 
 function getRichColumnLabel(col, level) {
-  if (level === undefined) level = col.number == null ? 1 : 0;
+  if (level == null) level = col.number == null ? 1 : 0;
 
   if (col.title && level !== Infinity) { // Don't substitute full nesting for title
     return col.title;
   }
 
   let retval = '';
-  if (level !== Infinity && col.number !== undefined) retval += col.number;
+  if (level !== Infinity && col.number != null) retval += col.number;
   if (col.grouping) retval += 'Grouping ';
   retval += `${getFormulaLabel(col.formulaObj)}(`;
 
@@ -78,7 +74,7 @@ export function populateCircularMa(ma) {
   const hashPapers = generateIDHash(ma.papers);
   for (const excludedExp of ma.excludedExperiments) {
     const [paperId, expIndex] = excludedExp.split(',');
-    if (hashPapers[paperId].experiments[expIndex] !== undefined) {
+    if (hashPapers[paperId].experiments[expIndex] != null) {
       hashPapers[paperId].experiments[expIndex].excluded = true;
     }
   }
@@ -88,7 +84,7 @@ export function populateCircularMa(ma) {
     ma.groups = getGroups(ma);
   }
 
-  // if (ma.groupingColumns !== undefined) {
+  // if (ma.groupingColumns != null) {
   //   for (const groupingCol of ma.groupingColumns) {
   //   }
   // }
@@ -192,7 +188,7 @@ function getExperimentsTableDatumValue(col, experiment) {
       val = formula.func.apply(null, inputs);
     }
     // if the result is NaN but some of the inputs were empty, change the result to empty.
-    if (typeof val === 'number' && isNaN(val)) {
+    if (typeof val === 'number' && Number.isNaN(val)) {
       if (inputs.some((x) => x == null || x === '')) val = null;
     }
   }
@@ -204,18 +200,24 @@ export function getDatumValue(col, experiment) {
   const { papers } = experiment.paper.metaanalysis;
   if (isExperimentsTableColumn(col)) {
     return getExperimentsTableDatumValue(col, experiment);
-  } if (isAggregate(col)) {
+  }
+
+  if (isAggregate(col)) {
     if (col.grouping) {
       const group = getGroup(experiment);
       if (group == null) {
         // no need to run the grouping aggregate if we don't have a group
         console.warn('trying to compute a grouping aggregate without a group');
         return NaN;
+      } else {
+        return getAggregateDatumValue(col, papers, group);
       }
-      return getAggregateDatumValue(col, papers, group);
+    } else {
+      return getAggregateDatumValue(col, papers);
     }
-    return getAggregateDatumValue(col, papers);
   }
+
+  return null;
 }
 
 export function getAggregateDatumValue(aggregate, papers, group) {
@@ -274,6 +276,8 @@ function getGroup(experiment) {
   const { groupingColumnObj } = experiment.paper.metaanalysis;
   if (groupingColumnObj) {
     return getDatumValue(groupingColumnObj, experiment);
+  } else {
+    return null;
   }
 }
 

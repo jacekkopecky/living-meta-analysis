@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 import Cell from './Cell';
 import { formatDateTime } from '../../../tools/datatools';
