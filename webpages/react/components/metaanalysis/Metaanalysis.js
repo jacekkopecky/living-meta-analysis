@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Tabs from '../layout/Tabs';
-import Tags from './tags/TagList';
+import TagList from './tags/TagList';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Aggregates from './aggregates/Aggregates';
@@ -22,7 +22,7 @@ function Metaanalysis(props) {
   console.log(metaanalysis);
   const [edit, setEdit] = useState(false);
   const [title] = useState(metaanalysis.title);
-  const [tags] = useState(metaanalysis.tags);
+  const [tags, setTags] = useState(metaanalysis.tags);
   const [description, setDescription] = useState(metaanalysis.description);
   const [published, setPublished] = useState(metaanalysis.published);
   const [columns] = useState(metaanalysis.columns);
@@ -64,7 +64,7 @@ function Metaanalysis(props) {
         <div className="title">
           <p type="input">{title}</p>
         </div>
-        <Tags edit={edit} tags={tags} />
+        <TagList edit={edit} tags={tags} setTags={setTags} />
         <button className={edit ? 'btn-stop' : 'btn-start'} type="button" onClick={() => setEdit(!edit)}>{editButtonMessage}</button>
       </div>
       <EditContext.Provider value={edit}>

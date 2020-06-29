@@ -36,6 +36,8 @@
     "prefer-destructuring": [0],
     "no-else-return": [0],
     "no-console": [0],
-    "no-use-before-define": ["error", { "functions": false }]
+    "no-use-before-define": ["error", { "functions": false }],
+    "react/jsx-curly-spacing": ["error", { "when": "never", "children": { "when": "always" }}],
+    "jsx-a11y/no-autofocus": [0]
   }
 }

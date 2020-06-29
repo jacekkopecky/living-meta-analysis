@@ -1,38 +1,36 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Tag from './Tag';
 import NewTag from './NewTag';
 import './TagList.css';
 
 export default function TagList(props) {
-  const { tags, edit } = props;
-  const [tagList, setTagList] = useState(tags);
-
+  const { tags, setTags, edit } = props;
 
   const handleDelete = (text) => {
-    const newTags = [...tagList];
-    const index = newTags.findIndex((tag) => tag === text);
+    const newTags = [...tags];
+    const index = newTags.indexOf(text);
     newTags.splice(index, 1);
-    setTagList(newTags);
+    setTags(newTags);
   };
 
   const handleAdd = (tag) => {
-    const newTags = [...tagList];
-    let exists = false;
-    for (const t of tagList) {
-      if (t === tag) exists = true;
-    }
-    if (!exists && tag !== '') {
+    tag = String(tag).trim();
+    const newTags = [...tags];
+    if (tag && !tags.includes(tag)) {
       newTags.push(tag);
-      setTagList(newTags);
+      setTags(newTags);
     }
   };
 
   return (
-    <div className="tags">
-      <ul className="tags">
-        {tagList.map((tag) => <Tag key={tag} edit={edit} text={tag} onDelete={handleDelete} />)}
-      </ul>
-      {edit ? <NewTag onClientAdd={handleAdd} /> : ''}
-    </div>
+    <ul className="tags">
+      { tags.map((tag) => <Tag key={tag} edit={edit} text={tag} onDelete={handleDelete} />) }
+      { edit && (
+        <NewTag
+          empty={tags.length === 0}
+          onAdd={handleAdd}
+        />
+      ) }
+    </ul>
   );
 }
