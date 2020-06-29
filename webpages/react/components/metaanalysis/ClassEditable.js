@@ -42,7 +42,7 @@ export default function ClassEditable(WrappedComponent) {
 
     isValueChanged = () => this.props.value !== this.domElm.textContent;
 
-    handleKeyDown = (e) => {
+    handleKey = (e) => {
       const { key } = e;
       switch (key) {
       case 'Escape':
@@ -69,7 +69,7 @@ export default function ClassEditable(WrappedComponent) {
           }}
           suppressContentEditableWarning="true"
           onBlur={this.save}
-          onKeyDown={this.handleKeyDown}
+          onKeyDown={this.handleKey}
           {...this.props}
         >
           { this.props.value }

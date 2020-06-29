@@ -1,6 +1,3 @@
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-cond-assign */
-/* eslint-disable no-restricted-globals */
 import { isColCompletelyDefined, getDatumValue, getAggregateDatumValue } from './datatools';
 
 export function getSimpleForestPlotData(graph) {
@@ -71,7 +68,8 @@ export function getSimpleForestPlotData(graph) {
         lines.push(line);
 
         // if any of the values is NaN or ±Infinity, disregard this experiment
-        if (isNaN(line.or * 0) || isNaN(line.lcl * 0) || isNaN(line.ucl * 0) || isNaN(line.wt * 0)
+        if (Number.isNaN(line.or * 0) || Number.isNaN(line.lcl * 0)
+              || Number.isNaN(line.ucl * 0) || Number.isNaN(line.wt * 0)
               || line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
           delete line.or;
           delete line.lcl;
@@ -105,7 +103,9 @@ export function getSimpleForestPlotData(graph) {
     ucl: getAggregateDatumValue(uclAggrFunc, graph.metaanalysis.papers),
   };
 
-  if (isNaN(aggregates.or * 0) || isNaN(aggregates.lcl * 0) || isNaN(aggregates.ucl * 0)) {
+  if (Number.isNaN(aggregates.or * 0)
+        || Number.isNaN(aggregates.lcl * 0)
+        || Number.isNaN(aggregates.ucl * 0)) {
     aggregates.lcl = 0;
     aggregates.ucl = 0;
   }
@@ -115,8 +115,8 @@ export function getSimpleForestPlotData(graph) {
   let minLcl = aggregates.lcl;
   let maxUcl = aggregates.ucl;
 
-  if (isNaN(minLcl)) minLcl = 0;
-  if (isNaN(maxUcl)) maxUcl = 0;
+  if (Number.isNaN(minLcl)) minLcl = 0;
+  if (Number.isNaN(maxUcl)) maxUcl = 0;
 
   for (const line of lines) {
     // eslint-disable-next-line no-continue
@@ -191,7 +191,7 @@ export function getSimpleForestPlotData(graph) {
     currY += lineHeight;
   }
 
-  if (!isNaN(aggregates.or * 0)) {
+  if (!Number.isNaN(aggregates.or * 0)) {
     let lclX = getX(aggregates.lcl);
     let uclX = getX(aggregates.ucl);
     const orX = getX(aggregates.or);
@@ -310,10 +310,10 @@ export function getGroupingForestPlotData(graph) {
 
         // if any of the values is NaN or ±Infinity, disregard this experiment
         if (
-          isNaN(line.or * 0)
-        || isNaN(line.lcl * 0)
-        || isNaN(line.ucl * 0)
-        || isNaN(line.wt * 0)
+          Number.isNaN(line.or * 0)
+        || Number.isNaN(line.lcl * 0)
+        || Number.isNaN(line.ucl * 0)
+        || Number.isNaN(line.wt * 0)
         || line.or == null
         || line.lcl == null
         || line.ucl == null
@@ -402,9 +402,9 @@ export function getGroupingForestPlotData(graph) {
     ucl: getAggregateDatumValue(uclAggrFunc, papers),
   };
 
-  if (isNaN(aggregates.or * 0)
-      || isNaN(aggregates.lcl * 0)
-      || isNaN(aggregates.ucl * 0)
+  if (Number.isNaN(aggregates.or * 0)
+      || Number.isNaN(aggregates.lcl * 0)
+      || Number.isNaN(aggregates.ucl * 0)
   ) {
     aggregates.lcl = 0;
     aggregates.ucl = 0;
@@ -421,8 +421,8 @@ export function getGroupingForestPlotData(graph) {
   let minLcl = aggregates.lcl;
   let maxUcl = aggregates.ucl;
 
-  if (isNaN(minLcl)) minLcl = 0;
-  if (isNaN(maxUcl)) maxUcl = 0;
+  if (Number.isNaN(minLcl)) minLcl = 0;
+  if (Number.isNaN(maxUcl)) maxUcl = 0;
   for (const line of lines) {
     if (line.or !== null) {
       sumOfWt += line.wt;
@@ -562,7 +562,7 @@ export function getGroupingForestPlotData(graph) {
 
   const yAxis = currY;
   // put summary into the plot
-  if (!isNaN(aggregates.or * 0) && !hasInvalid) {
+  if (!Number.isNaN(aggregates.or * 0) && !hasInvalid) {
     currY += 2 * lineHeight;
     let lclX = getX(aggregates.lcl);
     let uclX = getX(aggregates.ucl);
@@ -673,10 +673,10 @@ export function getGrapeChartData(graph) {
         if (line.group != null && line.group !== '' && groups.indexOf(line.group) === -1) {
           groups.push(line.group);
         }
-        if (isNaN(line.or * 0)
-            || isNaN(line.lcl * 0)
-            || isNaN(line.ucl * 0)
-            || isNaN(line.wt * 0)
+        if (Number.isNaN(line.or * 0)
+            || Number.isNaN(line.lcl * 0)
+            || Number.isNaN(line.ucl * 0)
+            || Number.isNaN(line.wt * 0)
             || line.or == null
             || line.lcl == null
             || line.ucl == null

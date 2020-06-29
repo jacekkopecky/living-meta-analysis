@@ -1,6 +1,3 @@
-/* linting rule ignored as modifications will happen in plots definitions
-   i.e: when all plots are unmounted. So we're safely using indexes as keys */
-/* eslint-disable react/no-array-index-key */
 import React from 'react';
 import SimpleForestPlots from './SimpleForestPlots';
 import GroupingForestPlots from './GroupingForestPlots';
@@ -11,36 +8,31 @@ import './Plots.css';
 function Plots(props) {
   const { graphs } = props;
 
-  return (
-    <>
-      { /* render the graphs */ }
-      { graphs.map((graph, index) => {
-        const { formulaName } = graph;
-        if (formulaName === 'grapeChartPercentGraph'
-            || formulaName === 'grapeChartNumberGraph'
-            || formulaName === 'grapeChartGraph') {
-          // Populate the graph with useful values
-          getGrapeChartData(graph);
-          return <GrapeChart key={index} graph={graph} />;
-        }
-        if (formulaName === 'forestPlotPercentGraph'
-            || formulaName === 'forestPlotNumberGraph'
-            || formulaName === 'forestPlotGraph') {
-          // Populate the graph with useful values
-          getSimpleForestPlotData(graph);
-          return <SimpleForestPlots key={index} forestPlots={graph} />;
-        }
-        if (formulaName === 'forestPlotGroupPercentGraph'
-            || formulaName === 'forestPlotGroupNumberGraph'
-            || formulaName === 'forestPlotGroupGraph') {
-          // Populate the graph with useful values
-          getGroupingForestPlotData(graph);
-          return <GroupingForestPlots key={index} forestPlots={graph} />;
-        }
-        return null;
-      }) }
-    </>
-  );
+  return graphs.map((graph) => {
+    const { formulaName, formula } = graph;
+    if (formulaName === 'grapeChartPercentGraph'
+        || formulaName === 'grapeChartNumberGraph'
+        || formulaName === 'grapeChartGraph') {
+      // Populate the graph with useful values
+      getGrapeChartData(graph);
+      return <GrapeChart key={formula} graph={graph} />;
+    }
+    if (formulaName === 'forestPlotPercentGraph'
+        || formulaName === 'forestPlotNumberGraph'
+        || formulaName === 'forestPlotGraph') {
+      // Populate the graph with useful values
+      getSimpleForestPlotData(graph);
+      return <SimpleForestPlots key={formula} forestPlots={graph} />;
+    }
+    if (formulaName === 'forestPlotGroupPercentGraph'
+        || formulaName === 'forestPlotGroupNumberGraph'
+        || formulaName === 'forestPlotGroupGraph') {
+      // Populate the graph with useful values
+      getGroupingForestPlotData(graph);
+      return <GroupingForestPlots key={formula} forestPlots={graph} />;
+    }
+    return null;
+  });
 }
 
 export default Plots;
