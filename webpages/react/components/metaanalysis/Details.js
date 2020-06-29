@@ -1,37 +1,43 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useEffect } from 'react';
 import './Details.css';
 
 function Details(props) {
   const { displayedCell, setDisplayedCell } = props;
-  function closeDetails() {
-    setDisplayedCell({ ids: null, text: null });
-  }
-  useEffect(() => {
-    const keyPressHandler = (e) => {
-      const { key } = e;
-      switch (key) {
-      case 'Escape':
-        closeDetails();
-        break;
-      default:
-        break;
-      }
-    };
 
-    document.addEventListener('keydown', keyPressHandler);
+  const closeHandler = (e) => {
+    if (e.type === 'click' || e.key === ' ' || e.key === 'Enter') {
+      setDisplayedCell(null);
+    }
+  };
+
+  const topLevelEscapeHandler = (e) => {
+    if (e.key === 'Escape') {
+      setDisplayedCell(null);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', topLevelEscapeHandler);
+
     return () => {
-      document.removeEventListener('keydown', keyPressHandler);
+      document.removeEventListener('keydown', topLevelEscapeHandler);
     };
   }, []);
 
-  if (displayedCell.text) {
+  if (displayedCell) {
     return (
       <aside className="details">
         <div className="header">
           <h3>Details:</h3>
-          <div className="close" onClick={closeDetails}>×</div>
+          <div
+            className="close"
+            role="button"
+            tabIndex="0"
+            onClick={closeHandler}
+            onKeyDown={closeHandler}
+          >
+            ×
+          </div>
         </div>
         <div className="content">
           { displayedCell.text }

@@ -31,8 +31,7 @@ export default function NewTag(props) {
     } else if (e.key === 'Escape' && adding) {
       setNewTag('');
       setAdding(false);
-      e.preventDefault();
-      e.stopPropagation();
+      e.nativeEvent.stopImmediatePropagation();
     }
   };
 
