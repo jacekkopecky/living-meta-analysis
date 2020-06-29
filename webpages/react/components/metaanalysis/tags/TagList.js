@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import EditContext from '../EditContext';
+
 import Tag from './Tag';
 import NewTag from './NewTag';
+
 import './TagList.css';
 
 export default function TagList(props) {
-  const { tags, setTags, edit } = props;
+  const { tags, setTags } = props;
 
   const handleDelete = (text) => {
     const newTags = [...tags];
@@ -22,10 +25,12 @@ export default function TagList(props) {
     }
   };
 
+  const edit = useContext(EditContext);
+
   return (
     <ul className="tags">
-      { tags.map((tag) => <Tag key={tag} edit={edit} text={tag} onDelete={handleDelete} />) }
-      { edit && (
+      { tags.map((tag) => <Tag key={tag} text={tag} onDelete={handleDelete} />) }
+      { edit.flag && (
         <NewTag
           empty={tags.length === 0}
           onAdd={handleAdd}

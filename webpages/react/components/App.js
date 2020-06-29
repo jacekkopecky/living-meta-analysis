@@ -3,6 +3,7 @@ import Header from './layout/Header';
 import Footer from './layout/Footer';
 import Metaanalysis from './metaanalysis/Metaanalysis';
 import useGoogleAuth from '../tools/google-auth';
+import EditContext from './metaanalysis/EditContext';
 import './App.css';
 
 function App() {
@@ -10,6 +11,8 @@ function App() {
   const [isLoaded, setLoaded] = useState(false);
   const [error, setError] = useState(null);
   const [currentUser] = useGoogleAuth(null);
+
+  const [editing, setEditing] = useState(false);
 
   // fetch request to the API
   // then everything is spread in children components
@@ -43,11 +46,18 @@ function App() {
     content = <div>Loading...</div>;
   }
 
+  const edit = {
+    flag: editing,
+    toggle: () => setEditing(!editing),
+  };
+
   return (
     <div className="app">
-      <Header currentUser={currentUser} />
-      { content }
-      <Footer />
+      <EditContext.Provider value={edit}>
+        <Header currentUser={currentUser} />
+        { content }
+        <Footer />
+      </EditContext.Provider>
     </div>
   );
 }
