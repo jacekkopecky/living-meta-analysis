@@ -3,8 +3,8 @@ import './PlotsDefinitions.css';
 
 const graphDetails = (graph) => (
   <>
-    <p>{graph.title || 'no title'}</p>
-    <p>{graph.fullLabel}</p>
+    <p>{ graph.title || 'no title' }</p>
+    <p>{ graph.fullLabel }</p>
   </>
 );
 
@@ -20,13 +20,13 @@ function PlotsDefinitions(props) {
           </tr>
         </thead>
         <tbody>
-          {graphs.map((graph) => (
+          { graphs.map((graph) => (
             <tr key={graph.fullLabel}>
               <td {...makeClickable(graph.fullLabel, graphDetails(graph))}>
-                {graph.title || graph.fullLabel}
+                { graph.title || graph.fullLabel }
               </td>
             </tr>
-          ))}
+          )) }
         </tbody>
       </table>
     </section>

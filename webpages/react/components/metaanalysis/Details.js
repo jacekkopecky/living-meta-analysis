@@ -34,7 +34,7 @@ function Details(props) {
           <div className="close" onClick={closeDetails}>×</div>
         </div>
         <div className="content">
-          {displayedCell.text}
+          { displayedCell.text }
         </div>
       </aside>
     );

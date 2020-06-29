@@ -19,7 +19,6 @@ function Editable(props) {
     setCurrentValue(e.target.value);
   };
 
-
   if (edit) {
     return (
       type === 'input'

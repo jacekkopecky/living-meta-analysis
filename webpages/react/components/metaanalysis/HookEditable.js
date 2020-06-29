@@ -17,7 +17,7 @@ export default function HookEditable(WrappedComponent) {
         onChange={handleChange}
         {...props}
       >
-        {value}
+        { value }
       </WrappedComponent>
     );
   };

@@ -27,23 +27,23 @@ function GrapeChart(props) {
       <g className="axes">
         <line className="yaxis" x1="0" x2="0" y2="500" />
 
-        {tickVals.map((tickVal) => (
+        { tickVals.map((tickVal) => (
           <g key={tickVal[0]} className="tick" transform={`translate(${0},${tickVal[2]})`}>
             <line x2="5" />
-            <text>{tickVal[0] < 0 ? tickVal[1].toPrecision(1) : Math.round(tickVal[1])}</text>
+            <text>{ tickVal[0] < 0 ? tickVal[1].toPrecision(1) : Math.round(tickVal[1]) }</text>
           </g>
-        ))}
+        )) }
         <text className="ylabel" transform="translate(-40,-260) rotate(-90)">odds ratio</text>
-        {/* <!-- <g class="legend">
+        { /* <!-- <g class="legend">
               <text x="530" y="-515">Legend:</text>
               <line class="guideline" x1="540" x2="575" y1="-490" y2="-490" />
               <text x="580" y="-490">weighted mean</text>
-              </g> --> */}
+              </g> --> */ }
         <text className="title" transform="translate(-40,-530)">Grape Chart</text>
       </g>
 
-      {/* Displaying circles and guidelines */}
-      {groups.map((group, index) => {
+      { /* Displaying circles and guidelines */ }
+      { groups.map((group, index) => {
         const dataGroup = dataGroups[index];
         const { withPosButton, withLegend, guidelineY } = dataGroup;
         return (
@@ -62,8 +62,8 @@ function GrapeChart(props) {
                   </g>
                 </g>
                 <line className="trunk" x1="0" x2="0" y2="500" />
-                <text className="label">{group}</text>
-                {dataGroup.data.map((exp) => {
+                <text className="label">{ group }</text>
+                { dataGroup.data.map((exp) => {
                   const { radius, grapeX, grapeY } = exp;
                   return (
                     <circle
@@ -73,16 +73,16 @@ function GrapeChart(props) {
                       transform={`translate(${grapeX},${grapeY})`}
                     />
                   );
-                })}
+                }) }
 
               </g>
             </g>
           </React.Fragment>
         );
-      })}
+      }) }
 
-      {/* Displaying tootltips after circles so that z-index > circles */}
-      {groups.map((group, index) => {
+      { /* Displaying tootltips after circles so that z-index > circles */ }
+      { groups.map((group, index) => {
         const dataGroup = dataGroups[index];
         return (
           <g
@@ -91,7 +91,7 @@ function GrapeChart(props) {
             transform={`translate(${+firstGroup + groupSpacing * index}, ${0})`}
           >
             <g>
-              {dataGroup.data.map((exp) => {
+              { dataGroup.data.map((exp) => {
                 const {
                   radius,
                   grapeX,
@@ -111,11 +111,11 @@ function GrapeChart(props) {
                       />
                       <g className={`tooltip ${isTopHalf ? 'tophalf' : ''}`}>
                         <rect height="103" width={exp.boxWidth + (+tooltipPadding)} />
-                        <text className="paper">{text.paper || 'n/a'}</text>
-                        <text className="exp  ">{text.exp || 'n/a'}</text>
-                        <text className="or   ">{text.or || 'invalid data'}</text>
-                        <text className="wt   ">{text.wt || 'n/a'}</text>
-                        <text className="ci   ">{text.ci || 'n/a'}</text>
+                        <text className="paper">{ text.paper || 'n/a' }</text>
+                        <text className="exp  ">{ text.exp || 'n/a' }</text>
+                        <text className="or   ">{ text.or || 'invalid data' }</text>
+                        <text className="wt   ">{ text.wt || 'n/a' }</text>
+                        <text className="ci   ">{ text.ci || 'n/a' }</text>
                         <text className="_or  ">OR:</text>
                         <text className="_wt  ">Weight:</text>
                         <text className="_ci  ">95% CI:</text>
@@ -123,11 +123,11 @@ function GrapeChart(props) {
                     </g>
                   </React.Fragment>
                 );
-              })}
+              }) }
             </g>
           </g>
         );
-      })}
+      }) }
     </svg>
   );
 }

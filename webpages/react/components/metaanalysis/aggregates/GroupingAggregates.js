@@ -3,22 +3,22 @@ import { getAggregateDatumValue, formatNumber } from '../../../tools/datatools';
 
 const aggregateDetails = (aggr) => (
   <>
-    <p>{aggr.title}</p>
-    <p>{aggr.fullLabel}</p>
+    <p>{ aggr.title }</p>
+    <p>{ aggr.fullLabel }</p>
   </>
 );
 
 const aggregateValDetails = (aggr, value, group) => (
   <>
-    <p>{value}</p>
+    <p>{ value }</p>
     <p>
       Calculated for the
-      {' '}
-      {group}
-      {' '}
+      { ' ' }
+      { group }
+      { ' ' }
       group as
-      {' '}
-      {aggr.fullLabel}
+      { ' ' }
+      { aggr.fullLabel }
     </p>
   </>
 );
@@ -31,25 +31,25 @@ function GroupingAggregates(props) {
     <>
       <h3>
         Grouping aggregates by
-        {' '}
-        {groupingColumn}
+        { ' ' }
+        { groupingColumn }
       </h3>
       <table>
         <thead>
           <tr>
             <th>Aggregates</th>
-            {groups.map((group) => (
-              <th key={group}>{group}</th>
-            ))}
+            { groups.map((group) => (
+              <th key={group}>{ group }</th>
+            )) }
           </tr>
         </thead>
         <tbody>
-          {groupingAggregates.map((aggr) => (
+          { groupingAggregates.map((aggr) => (
             <tr key={aggr.fullLabel}>
               <td {...makeClickable(aggr.fullLabel, aggregateDetails(aggr))}>
-                {aggr.title || aggr.fullLabel}
+                { aggr.title || aggr.fullLabel }
               </td>
-              {groups.map((group) => {
+              { groups.map((group) => {
                 const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers, group);
                 const padding = Math.trunc(value).toString().length;
                 return (
@@ -62,12 +62,12 @@ function GroupingAggregates(props) {
                       true,
                     )}
                   >
-                    {formatNumber(value)}
+                    { formatNumber(value) }
                   </td>
                 );
-              })}
+              }) }
             </tr>
-          ))}
+          )) }
         </tbody>
       </table>
     </>

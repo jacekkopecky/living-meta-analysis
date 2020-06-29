@@ -6,21 +6,21 @@ const dataCellDetails = ({ enteredBy, ctime }) => (
   <>
     <p>
       Entered by:
-      {enteredBy}
+      { enteredBy }
     </p>
     <p>
       Creation time:
-      {formatDateTime(ctime)}
+      { formatDateTime(ctime) }
     </p>
   </>
 );
 const computedCellDetails = ({ fullLabel }, value) => (
   <>
     <p>
-      {value}
+      { value }
     </p>
     <p>
-      Calculated as {fullLabel}
+      Calculated as { fullLabel }
     </p>
   </>
 );
@@ -36,7 +36,7 @@ export default function Cell(props) {
     col.id
       ? (
         <td {...makeClickable(cellId, dataCellDetails(exp))}>
-          <Editable cellId={cellId} type="input" onSave={editCell}>{value}</Editable>
+          <Editable cellId={cellId} type="input" onSave={editCell}>{ value }</Editable>
         </td>
       )
       : (
@@ -44,17 +44,17 @@ export default function Cell(props) {
           style={{ paddingRight: `${padding}ch` }}
           {...makeClickable(cellId, computedCellDetails(col, value), true)}
         >
-          { formatNumber(value)}
+          { formatNumber(value) }
         </td>
       )
   );
 }
 
-function shouldMemo(prev, next) {
-  return prev.cellId === next.cellId
-    && next.makeClickable(prev.cellId).className === prev.makeClickable(prev.cellId).className
-    && prev.edit === next.edit;
-}
+// function shouldMemo(prev, next) {
+//   return prev.cellId === next.cellId
+//     && next.makeClickable(prev.cellId).className === prev.makeClickable(prev.cellId).className
+//     && prev.edit === next.edit;
+// }
 
 // We'll re-render the Cell only when we detect a change (cell color)
 // export default React.memo(Cell, shouldMemo);

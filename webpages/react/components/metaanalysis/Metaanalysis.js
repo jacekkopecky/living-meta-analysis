@@ -62,10 +62,16 @@ function Metaanalysis(props) {
     <main className="metaanalysis">
       <div className="titlebar">
         <div className="title">
-          <p type="input">{title}</p>
+          <p type="input">{ title }</p>
         </div>
         <TagList edit={edit} tags={tags} setTags={setTags} />
-        <button className={edit ? 'btn-stop' : 'btn-start'} type="button" onClick={() => setEdit(!edit)}>{editButtonMessage}</button>
+        <button
+          className={edit ? 'btn-stop' : 'btn-start'}
+          type="button"
+          onClick={() => setEdit(!edit)}
+        >
+          { editButtonMessage }
+        </button>
       </div>
       <EditContext.Provider value={edit}>
         <Tabs displayedCell={displayedCell} setDisplayedCell={setDisplayedCell}>
@@ -92,7 +98,9 @@ function Metaanalysis(props) {
             tabName="Aggregates"
             aggregates={aggregates}
             groupingAggregates={groupingAggregates}
-            groupingColumn={metaanalysis.groupingColumnObj ? metaanalysis.groupingColumnObj.title : undefined}
+            groupingColumn={
+              metaanalysis.groupingColumnObj ? metaanalysis.groupingColumnObj.title : undefined
+            }
             groups={metaanalysis.groups}
             makeClickable={makeClickable}
           />

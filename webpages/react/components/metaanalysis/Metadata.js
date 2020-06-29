@@ -10,17 +10,17 @@ function Metadata({ metadata }) {
     <aside className="metadata">
       <p>
         Entered by
-        {' '}
-        <a href={path}>{enteredByUsername}</a>
-        {' '}
+        { ' ' }
+        <a href={path}>{ enteredByUsername }</a>
+        { ' ' }
         on
-        {' '}
-        {formatDateTime(ctime)}
+        { ' ' }
+        { formatDateTime(ctime) }
       </p>
       <p>
         Last modified:
-        {' '}
-        {formatDateTime(mtime)}
+        { ' ' }
+        { formatDateTime(mtime) }
       </p>
     </aside>
   );

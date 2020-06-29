@@ -19,7 +19,7 @@ function Aggregates(props) {
         clickable={clickable}
         makeClickable={makeClickable}
       />
-      {groupingColumn
+      { groupingColumn
         ? (
           <GroupingAggregates
             groupingAggregates={groupingAggregates}
@@ -29,7 +29,7 @@ function Aggregates(props) {
             makeClickable={makeClickable}
           />
         )
-        : null}
+        : null }
 
     </section>
   );
