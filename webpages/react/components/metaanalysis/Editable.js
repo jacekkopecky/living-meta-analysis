@@ -2,6 +2,16 @@ import React, { useState, useContext } from 'react';
 import EditContext from './EditContext';
 import './Editable.css';
 
+const textareaExtraSize = 10;
+
+function resizeTextArea(el) {
+  if (!el) return; // ref has changed
+
+  if (el.scrollHeight > el.clientHeight) {
+    el.style.height = `${el.scrollHeight + textareaExtraSize}px`;
+  }
+}
+
 function Editable(props) {
   const {
     children, onSave, type, cellId,
@@ -11,6 +21,8 @@ function Editable(props) {
   const [currentValue, setCurrentValue] = useState(value);
 
   const handleChange = (e) => {
+    if (type === 'textarea') resizeTextArea(e.target);
+
     if (cellId) {
       onSave(e.target.value, cellId);
     } else {
@@ -36,6 +48,7 @@ function Editable(props) {
             type="text"
             id="value"
             name="value"
+            ref={resizeTextArea}
             onChange={handleChange}
             value={currentValue || ''}
           />

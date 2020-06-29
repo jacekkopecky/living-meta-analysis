@@ -10,3 +10,7 @@
   max-width: 40em;
   margin-left: 1em;
 }
+
+.info textarea {
+  width: 40em;
+}
