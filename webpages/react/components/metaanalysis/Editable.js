@@ -31,7 +31,7 @@ function Editable(props) {
     setCurrentValue(e.target.value);
   };
 
-  if (edit) {
+  if (edit.flag) {
     return (
       type === 'input'
         ? (

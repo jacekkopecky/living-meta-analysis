@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import EditContext from '../EditContext';
 
 export default function Tag(props) {
-  const { edit, text, onDelete } = props;
+  const { text, onDelete } = props;
 
   const doDelete = (e) => {
     if (e.type === 'click' || e.key === ' ' || e.key === 'Enter') {
@@ -9,6 +10,8 @@ export default function Tag(props) {
       e.preventDefault();
     }
   };
+
+  const edit = useContext(EditContext);
 
   const deleteButton = (
     <span
@@ -25,7 +28,7 @@ export default function Tag(props) {
   return (
     <li>
       <span className="text">{ text }</span>
-      { edit && deleteButton }
+      { edit.flag && deleteButton }
     </li>
   );
 }

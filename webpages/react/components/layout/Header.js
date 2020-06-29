@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './Header.css';
+import EditContext from '../metaanalysis/EditContext';
 import { SignInButton, SignOutButton } from '../../tools/google-auth';
 
 function Header({ currentUser }) {
@@ -15,6 +16,8 @@ function Header({ currentUser }) {
 }
 
 function UserInfo({ currentUser }) {
+  const edit = useContext(EditContext);
+
   if (currentUser) {
     return (
       <div className="userinfo">
@@ -26,7 +29,15 @@ function UserInfo({ currentUser }) {
             { currentUser.username || currentUser.email }
           </div>
           <a href="/profile" className="profile">Profile</a>
-          <span id="toggle-editing">todo toggle editing, only if page about you</span>
+          <span
+            id="toggle-editing"
+            role="menuitem"
+            tabIndex="0"
+            onClick={edit.toggle}
+            onKeyPress={edit.toggle}
+          >
+            { edit.flag ? 'Stop editing' : 'Edit' }
+          </span>
           <SignOutButton />
         </div>
       </div>

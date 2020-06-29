@@ -1,5 +1,10 @@
 import React from 'react';
 
-const editContext = React.createContext(false);
+const DEFAULT = {
+  flag: false,
+  toggle: () => {},
+};
+
+const editContext = React.createContext(DEFAULT);
 
 export default editContext;

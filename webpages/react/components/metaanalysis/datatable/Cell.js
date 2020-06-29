@@ -29,7 +29,6 @@ export default function Cell(props) {
   const {
     col, exp, cellId, makeClickable, editCell,
   } = props;
-  // const edit = useContext(EditContext);
   const value = getDatumValue(col, exp);
   const padding = Math.trunc(value).toString().length;
   return (
@@ -49,12 +48,3 @@ export default function Cell(props) {
       )
   );
 }
-
-// function shouldMemo(prev, next) {
-//   return prev.cellId === next.cellId
-//     && next.makeClickable(prev.cellId).className === prev.makeClickable(prev.cellId).className
-//     && prev.edit === next.edit;
-// }
-
-// We'll re-render the Cell only when we detect a change (cell color)
-// export default React.memo(Cell, shouldMemo);
