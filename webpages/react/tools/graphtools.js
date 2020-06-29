@@ -449,7 +449,6 @@ export function getGroupingForestPlotData(graph) {
   else if (clSpread > 1.3) TICK_SPACING = [10];
   else TICK_SPACING = [2, 2.5, 2]; // ticks at 1, 2, 5, 10, 20, 50, 100...
 
-
   // adjust minimum and maximum around decimal non-logarithmic values
   let newBound = 1;
   let tickNo = 0;
@@ -490,7 +489,6 @@ export function getGroupingForestPlotData(graph) {
   let currY = startHeight;
   let currGY = groupStartHeight;
   let hasInvalid = false;
-
 
   let i = 0;
   for (const group of groups) {
@@ -597,7 +595,6 @@ export function getGroupingForestPlotData(graph) {
   graph.currY = currY;
   graph.extraLineLen = extraLineLen;
   graph.lineHeight = lineHeight;
-
 
   // todo set plot widths based on maximum text sizes
 }
@@ -725,7 +722,6 @@ export function getGrapeChartData(graph) {
     ), 0) / perGroup[group].wt;
   }
 
-
   let minWt = Infinity;
   let maxWt = -Infinity;
   let minOr = Infinity;
@@ -802,7 +798,6 @@ export function getGrapeChartData(graph) {
   maxWt = Math.sqrt(maxWt);
   minWt = Math.sqrt(minWt);
   const wtRatio = (1 / (maxWt - minWt)) * (maxGrapeSize - minGrapeSize);
-
 
   function getGrapeRadius(wt) {
     if (wt == null) return minGrapeSize;

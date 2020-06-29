@@ -22,8 +22,8 @@ function UserInfo({ currentUser }) {
         <div className="actions">
           <div className="name when-signed-on">
             Signed in as:
-            {' '}
-            {currentUser.username || currentUser.email}
+            { ' ' }
+            { currentUser.username || currentUser.email }
           </div>
           <a href="/profile" className="profile">Profile</a>
           <span id="toggle-editing">todo toggle editing, only if page about you</span>

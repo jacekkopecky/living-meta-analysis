@@ -28,11 +28,11 @@ function Footer() {
     content = (
       <span>
         Error:
-        {error.message}
+        { error.message }
       </span>
     );
   } else if (isLoaded) {
-    content = <span>{version}</span>;
+    content = <span>{ version }</span>;
   } else {
     content = <span>Loading...</span>;
   }
@@ -41,21 +41,21 @@ function Footer() {
     <footer>
       <p>
         LiMA (Living Meta-Analysis) at
-        {' '}
+        { ' ' }
         <a href="http://port.ac.uk/">University of Portsmouth</a>
         , © 20162020
       </p>
       <p>
         Feedback and questions are welcome at
-        {' '}
+        { ' ' }
         <a href="mailto:lima@port.ac.uk">lima@port.ac.uk</a>
         .
       </p>
       <p>
         version
-        {' '}
-        <span className="value">{content}</span>
-        {' '}
+        { ' ' }
+        <span className="value">{ content }</span>
+        { ' ' }
         (
         <a href="/version/log">full changelog</a>
         )

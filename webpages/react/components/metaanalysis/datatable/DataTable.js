@@ -18,16 +18,16 @@ const expColumnDetails = (
 
 const dataColDetails = (col) => (
   <>
-    <p><Editable type="input" cellId={col.id}>{col.title}</Editable></p>
-    <p><Editable type="input" cellId={col.id}>{col.description || 'no detailed description'}</Editable></p>
+    <p><Editable type="input" cellId={col.id}>{ col.title }</Editable></p>
+    <p><Editable type="input" cellId={col.id}>{ col.description || 'no detailed description' }</Editable></p>
   </>
 
 );
 
 const computedColDetails = (col) => (
   <>
-    <p>{col.title}</p>
-    <p>{col.fullLabel}</p>
+    <p>{ col.title }</p>
+    <p>{ col.fullLabel }</p>
   </>
 );
 
@@ -47,7 +47,7 @@ function DataTable(props) {
             <th {...makeClickable('Study/Experiment', expColumnDetails)}>
               Study/Experiment
             </th>
-            {columns.map((col) => (
+            { columns.map((col) => (
               <th
                 key={col.id || col.fullLabel}
                 {...makeClickable(
@@ -55,13 +55,13 @@ function DataTable(props) {
                   col.id ? dataColDetails(col) : computedColDetails(col),
                 )}
               >
-                {col.title || col.fullLabel}
+                { col.title || col.fullLabel }
               </th>
-            ))}
+            )) }
           </tr>
         </thead>
         <tbody>
-          {paperOrder.map((id) => (
+          { paperOrder.map((id) => (
             Object.values(papers).map((paper) => (
               paper.id === id
                 ? (
@@ -75,7 +75,7 @@ function DataTable(props) {
                 )
                 : null
             ))
-          ))}
+          )) }
         </tbody>
       </table>
     </section>

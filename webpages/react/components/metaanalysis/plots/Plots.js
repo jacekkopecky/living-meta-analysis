@@ -8,14 +8,13 @@ import GrapeChart from './GrapeChart';
 import { getSimpleForestPlotData, getGroupingForestPlotData, getGrapeChartData } from '../../../tools/graphtools';
 import './Plots.css';
 
-
 function Plots(props) {
   const { graphs } = props;
 
   return (
     <>
-      {/* render the graphs */}
-      {graphs.map((graph, index) => {
+      { /* render the graphs */ }
+      { graphs.map((graph, index) => {
         const { formulaName } = graph;
         if (formulaName === 'grapeChartPercentGraph'
             || formulaName === 'grapeChartNumberGraph'
@@ -39,7 +38,7 @@ function Plots(props) {
           return <GroupingForestPlots key={index} forestPlots={graph} />;
         }
         return null;
-      })}
+      }) }
     </>
   );
 }

@@ -72,7 +72,7 @@ export default function ClassEditable(WrappedComponent) {
           onKeyDown={this.handleKeyDown}
           {...this.props}
         >
-          {this.props.value}
+          { this.props.value }
         </WrappedComponent>
       );
     }

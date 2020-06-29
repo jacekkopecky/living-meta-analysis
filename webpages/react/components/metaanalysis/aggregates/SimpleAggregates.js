@@ -2,12 +2,11 @@ import React from 'react';
 import { getAggregateDatumValue, formatNumber } from '../../../tools/datatools';
 import './SimpleAggregates.css';
 
-
 const simpleAggregateDetails = (aggr, value) => (
   <>
-    <p>{value}</p>
-    <p>{aggr.title}</p>
-    <p>{aggr.fullLabel}</p>
+    <p>{ value }</p>
+    <p>{ aggr.title }</p>
+    <p>{ aggr.fullLabel }</p>
   </>
 );
 
@@ -25,8 +24,8 @@ const AggregateCell = React.memo((props) => {
   const padding = Math.trunc(value).toString().length;
   return (
     <tr {...makeClickable(aggr.fullLabel, simpleAggregateDetails(aggr, value))}>
-      <td>{aggr.title || aggr.fullLabel}:</td>
-      <td className="computed" style={{ paddingRight: `${padding}ch` }}>{formatNumber(value)}</td>
+      <td>{ aggr.title || aggr.fullLabel }:</td>
+      <td className="computed" style={{ paddingRight: `${padding}ch` }}>{ formatNumber(value) }</td>
     </tr>
   );
 }, shouldMemo);
@@ -42,9 +41,9 @@ function SimpleAggregates(props) {
           </tr>
         </thead>
         <tbody>
-          {aggregates.map((aggr) => (
+          { aggregates.map((aggr) => (
             <AggregateCell key={aggr.fullLabel} aggr={aggr} makeClickable={makeClickable} />
-          ))}
+          )) }
         </tbody>
       </table>
     </div>

@@ -12,12 +12,12 @@ function InfoText(props) {
   return (
     <div className={name}>
       <p className="header">
-        {name}
+        { name }
         :
-        {' '}
+        { ' ' }
       </p>
       <p className="text">
-        <Editable edit={edit} onSave={onSave} type="textarea">{value}</Editable>
+        <Editable edit={edit} onSave={onSave} type="textarea">{ value }</Editable>
       </p>
     </div>
   );

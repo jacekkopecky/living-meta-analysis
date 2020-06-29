@@ -9,13 +9,13 @@ const paperDetails = (paper) => {
   } = paper;
   return (
     <>
-      <p>Paper: {title}</p>
-      <p>Entered by {enteredBy} on {formatDateTime(ctime)}</p>
-      <p>Reference: {reference}</p>
-      <p>Description: {description}</p>
-      <p>Link: {link}</p>
-      <p>DOI: {doi}</p>
-      <p>Last Modified: {formatDateTime(mtime)}</p>
+      <p>Paper: { title }</p>
+      <p>Entered by { enteredBy } on { formatDateTime(ctime) }</p>
+      <p>Reference: { reference }</p>
+      <p>Description: { description }</p>
+      <p>Link: { link }</p>
+      <p>DOI: { doi }</p>
+      <p>Last Modified: { formatDateTime(mtime) }</p>
     </>
   );
 };
@@ -24,9 +24,9 @@ const expDetails = (exp) => {
   const { paper, title, description } = exp;
   return (
     <>
-      <p>{paper.title}</p>
-      <p>{title}</p>
-      <p>{description || 'no detailed description'}</p>
+      <p>{ paper.title }</p>
+      <p>{ title }</p>
+      <p>{ description || 'no detailed description' }</p>
     </>
   );
 };
@@ -46,7 +46,7 @@ function Paper(props) {
       if (key === 0) {
         newPaper = (
           <td key={title} {...makeClickable(title, paperDetails(paper))} rowSpan={nExp}>
-            {title}
+            { title }
           </td>
         );
         firstTr = 'paperstart';
@@ -56,12 +56,12 @@ function Paper(props) {
           key={exp.ctime + paper.id}
           className={firstTr}
         >
-          {newPaper}
+          { newPaper }
           <td {...makeClickable(exp.ctime + paper.id, expDetails(exp))} key={exp.title}>
-            {exp.title}
+            { exp.title }
           </td>
 
-          {columns.map((col) => (
+          { columns.map((col) => (
             <Cell
               cellId={`${exp.ctime + paper.id}+${col.formula || col.id}`}
               key={`${exp.ctime + paper.id}+${col.formula || col.id}`}
@@ -70,7 +70,7 @@ function Paper(props) {
               makeClickable={makeClickable}
               editCell={editCell}
             />
-          ))}
+          )) }
 
         </tr>
       );

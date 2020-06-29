@@ -34,7 +34,7 @@ function App() {
     content = (
       <div>
         Error:
-        {error.message}
+        { error.message }
       </div>
     );
   } else if (isLoaded === true) {
@@ -46,7 +46,7 @@ function App() {
   return (
     <div className="app">
       <Header currentUser={currentUser} />
-      {content}
+      { content }
       <Footer />
     </div>
   );
