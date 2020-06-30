@@ -30,7 +30,6 @@
     "eslint-config-portsoc": "^0.6.0",
     "eslint-plugin-json": "^2.1.1",
     "istanbul": "^0.4.5",
-    "jasmine": "^3.5.0",
     "nodemon": "^2.0.3",
     "qunit": "^2.10.0",
     "selenium-standalone": "^6.17.0"
