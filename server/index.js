@@ -46,6 +46,10 @@ app.use(cookieParser());
  *
  */
 
+// TODO: Logging middleware is currently not active.
+// A conditional statement needs to be made so that if running on App Engine
+// no files are attempted to be written to/changed, but rather logged to the console.
+
 // let loggingMiddleware;
 
 // if (config.logDirectory && !process.env.TESTING) {
@@ -265,19 +269,6 @@ process.on('unhandledRejection', (err) => {
     console.error(err.stack || err);
   }
 });
-
-/* start server
- *
- *
- *    ####  #####   ##   #####  #####     ####  ###### #####  #    # ###### #####
- *   #        #    #  #  #    #   #      #      #      #    # #    # #      #    #
- *    ####    #   #    # #    #   #       ####  #####  #    # #    # #####  #    #
- *        #   #   ###### #####    #           # #      #####  #    # #      #####
- *   #    #   #   #    # #   #    #      #    # #      #   #   #  #  #      #   #
- *    ####    #   #    # #    #   #       ####  ###### #    #   ##   ###### #    #
- *
- *
- */
 
 const port = process.env.PORT || config.port;
 let httpsPort = process.env.PORT || config.httpsPort;

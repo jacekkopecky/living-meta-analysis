@@ -48,7 +48,6 @@ async function saveMetaanalysis(req, res, next) {
   }
 }
 
-// todo filter by tag 'showcase' here rather than in index.html
 async function listTopMetaanalyses(req, res, next) {
   try {
     const mas = await storage.metaanalyses.listMetaanalyses();

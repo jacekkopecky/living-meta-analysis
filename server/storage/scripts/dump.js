@@ -1,5 +1,8 @@
 'use strict';
 
+// WARNING: storage tools no longer exist after the removal of caches.
+// This script will no longer function and will crash
+
 // send stdout to stderr, but in the end send the data to stdout
 const log = console.log;
 

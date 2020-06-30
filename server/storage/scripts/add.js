@@ -1,5 +1,8 @@
 'use strict';
 
+// WARNING: storage tools no longer exist after the removal of caches.
+// This script will no longer function and will crash
+
 // read JSON from stdin
 const inputData = new Promise((resolve, reject) => {
   const stdin = process.stdin;
