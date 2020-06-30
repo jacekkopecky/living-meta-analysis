@@ -96,24 +96,3 @@ module.exports.deleteCHECKvalues = function deleteCHECKvalues(obj) {
     }
   }
 };
-
-// resolves when the given promise is done, regardless of whether resolved or rejected
-module.exports.waitForPromise = function waitForPromise(p) {
-  return new Promise((resolve /* ignoring the reject function */) => {
-    Promise.resolve(p).then(() => resolve(), () => resolve());
-  });
-};
-
-// a promise that rejects (but Node doesn't report it as unhandled)
-module.exports.notInitialized = function () {
-  const retval = Promise.reject(new Error('not initialized'));
-  retval.catch(() => {}); // this tells node this promise was handled
-  return retval;
-};
-
-// this is a function that allows us to export methods only for testing, keeping them out of the usual interface
-module.exports.exportTestAPI = function (exports, f) {
-  if (!process.env.TESTING) return;
-  if (exports.tests == null) exports.tests = {};
-  exports.tests[f.name] = f;
-};
