@@ -270,6 +270,19 @@ process.on('unhandledRejection', (err) => {
   }
 });
 
+/* start server
+ *
+ *
+ *    ####  #####   ##   #####  #####     ####  ###### #####  #    # ###### #####
+ *   #        #    #  #  #    #   #      #      #      #    # #    # #      #    #
+ *    ####    #   #    # #    #   #       ####  #####  #    # #    # #####  #    #
+ *        #   #   ###### #####    #           # #      #####  #    # #      #####
+ *   #    #   #   #    # #   #    #      #    # #      #   #   #  #  #      #   #
+ *    ####    #   #    # #    #   #       ####  ###### #    #   ##   ###### #    #
+ *
+ *
+ */
+
 const port = process.env.PORT || config.port;
 let httpsPort = process.env.PORT || config.httpsPort;
 
