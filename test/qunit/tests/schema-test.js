@@ -3,7 +3,7 @@
 
 const requireDir = require('require-directory');
 const path = require('path');
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
 const helpers = require('../helpers');
 const config = require('../config');
 const Ajv = require('ajv');
@@ -56,27 +56,28 @@ QUnit.test('Check the strucutre of the metaanalysis for specific title', async a
   assert.ok(valid, 'Check the structure of the metaanalysis matches the schema');
 });
 
-QUnit.test('Creating a new blank metanalyses', async assert => {
-  const request = await fetch(`${config.LOCAL_API}/metaanalyses/test-account/test-metanalyses`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Fake test',
-    },
-    body: JSON.stringify({
-      title: 'test-metaanalyses',
-      enteredBy: 'test@fake.example.org',
-    }),
-  });
+// todo: implement this test when the ability to have unique names per user, and the ability to remove a metanalysis
+// QUnit.test('Creating a new blank metanalyses', async assert => {
+//   const request = await fetch(`${config.LOCAL_API}/metaanalyses/test-account/test-metanalyses`, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'Authorization': 'Fake test',
+//     },
+//     body: JSON.stringify({
+//       title: 'test-metaanalyses',
+//       enteredBy: 'test@fake.example.org',
+//     }),
+//   });
 
-  const response = await request.text();
+//   const response = await request.text();
 
-  try {
-    const obj = JSON.parse(response);
-    const validate = ajv.getSchema(`${config.SCHEMA_URI}/metaanalysis-base`);
-    const valid = validate(obj);
-    assert.ok(valid, 'Check the structure of the saved metaanalysis matches the schema');
-  } catch (error) {
-    assert.ok(false, response);
-  }
-});
+//   try {
+//     const obj = JSON.parse(response);
+//     const validate = ajv.getSchema(`${config.SCHEMA_URI}/metaanalysis-base`);
+//     const valid = validate(obj);
+//     assert.ok(valid, 'Check the structure of the saved metaanalysis matches the schema');
+//   } catch (error) {
+//     assert.ok(false, response);
+//   }
+// });
