@@ -42,11 +42,9 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "morgan": "^1.10.0",
     "node-fetch": "^2.6.0",
     "on-headers": "^1.0.2",
     "require-directory": "^2.1.1",
-    "rotating-file-stream": "^2.0.2",
     "simple-google-openid": "^0.3.0",
     "uid": "^1.0.0"
   }
