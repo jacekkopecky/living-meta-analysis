@@ -13,7 +13,6 @@ const cors = require('cors');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
-// const morgan = require('morgan'); TODO: Implement
 const cookieParser = require('cookie-parser');
 
 const config = require('./config');
@@ -32,50 +31,6 @@ app.set('strict routing', true);
 
 app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID || config.googleClientID));
 app.use(cookieParser());
-
-/* logging
- *
- *
- *   #       ####   ####   ####  # #    #  ####
- *   #      #    # #    # #    # # ##   # #    #
- *   #      #    # #      #      # # #  # #
- *   #      #    # #  ### #  ### # #  # # #  ###
- *   #      #    # #    # #    # # #   ## #    #
- *   ######  ####   ####   ####  # #    #  ####
- *
- *
- */
-
-// TODO: Logging middleware is currently not active.
-// A conditional statement needs to be made so that if running on App Engine
-// no files are attempted to be written to/changed, but rather logged to the console.
-
-// let loggingMiddleware;
-
-// if (config.logDirectory && !process.env.TESTING) {
-//   morgan.token('invite', (req) => {
-//     if (!req.cookies) return '-';
-//     let retval = req.cookies['lima-beta-code'] || '';
-//     if (!storage.betaCodes.hasOwnProperty(req.cookies['lima-beta-code'])) retval = '-' + retval;
-//     return retval;
-//   });
-// // ensure log directory exists
-// if (!fs.existsSync(config.logDirectory)) fs.mkdirSync(config.logDirectory);
-
-// // create a rotating write stream
-// const accessLogStream = rfs.createStream('access.log', {
-//   interval: '1d', // rotate daily
-//   compress: true,
-//   path: config.logDirectory,
-// });
-
-// setup the logger
-//   loggingMiddleware = morgan(config.logFormat || 'combined');
-//   app.use(loggingMiddleware);
-//   console.log(`logging HTTP accesses into ${config.logDirectory}`);
-// } else {
-//   console.log('not logging HTTP accesses');
-// }
 
 /* closed beta
  *
