@@ -17,5 +17,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run lint-server
+    - run: npm run test-server
 # for now tests never finish so disabling that:
 #    - run: npm run test-server

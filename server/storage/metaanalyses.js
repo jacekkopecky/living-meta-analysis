@@ -76,8 +76,7 @@ async function getMetaanalysisWithPapers(ma, time) {
 }
 
 async function listMetaanalyses() {
-  // Get metaanalyses with showcase tags
-  const query = datastore.createQuery('Metaanalysis').filter('tags', '=', 'showcase');
+  const query = datastore.createQuery('Metaanalysis');
   const [retval] = await datastore.runQuery(query);
   return retval;
 }

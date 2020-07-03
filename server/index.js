@@ -13,7 +13,6 @@ const cors = require('cors');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
-// const morgan = require('morgan'); TODO: Implement
 const cookieParser = require('cookie-parser');
 
 const config = require('./config');
@@ -32,46 +31,6 @@ app.set('strict routing', true);
 
 app.use(googleOpenID(process.env.GOOGLE_CLIENT_ID || config.googleClientID));
 app.use(cookieParser());
-
-/* logging
- *
- *
- *   #       ####   ####   ####  # #    #  ####
- *   #      #    # #    # #    # # ##   # #    #
- *   #      #    # #      #      # # #  # #
- *   #      #    # #  ### #  ### # #  # # #  ###
- *   #      #    # #    # #    # # #   ## #    #
- *   ######  ####   ####   ####  # #    #  ####
- *
- *
- */
-
-// let loggingMiddleware;
-
-// if (config.logDirectory && !process.env.TESTING) {
-//   morgan.token('invite', (req) => {
-//     if (!req.cookies) return '-';
-//     let retval = req.cookies['lima-beta-code'] || '';
-//     if (!storage.betaCodes.hasOwnProperty(req.cookies['lima-beta-code'])) retval = '-' + retval;
-//     return retval;
-//   });
-// // ensure log directory exists
-// if (!fs.existsSync(config.logDirectory)) fs.mkdirSync(config.logDirectory);
-
-// // create a rotating write stream
-// const accessLogStream = rfs.createStream('access.log', {
-//   interval: '1d', // rotate daily
-//   compress: true,
-//   path: config.logDirectory,
-// });
-
-// setup the logger
-//   loggingMiddleware = morgan(config.logFormat || 'combined');
-//   app.use(loggingMiddleware);
-//   console.log(`logging HTTP accesses into ${config.logDirectory}`);
-// } else {
-//   console.log('not logging HTTP accesses');
-// }
 
 /* closed beta
  *
@@ -286,6 +245,16 @@ const serverReady = startServer();
 
 function startServer() {
   return new Promise((resolve, reject) => {
+    const runningServers = [];
+    function serverStarted() {
+      // Returns a promise of a function, which when called will stop all running servers
+      resolve(() => {
+        for (const server of runningServers) {
+          server.close();
+        }
+      });
+    }
+
     if (process.env.TESTING) {
       console.info('**************************************************');
       console.info('');
@@ -307,25 +276,25 @@ function startServer() {
 
     if (!httpsPort) {
       // only HTTP
-      http.createServer(app)
+      runningServers.push(http.createServer(app)
         .listen(port, () => {
           console.log(`LiMA server listening on insecure port ${port}`);
-          resolve();
-        });
+          serverStarted();
+        }));
     } else {
       // HTTPS; with HTTP redirecting to that
       if (process.env.GAE_APPLICATION) {
-        http.createServer(app)
+        runningServers.push(http.createServer(app)
           .listen(port, () => {
             console.log(`LiMA server running on App Engine, Port: ${port}`);
-            resolve();
-          });
+            serverStarted();
+          }));
       } else {
         try {
           const credentials = {};
           credentials.key = fs.readFileSync(config.httpsKey, 'utf8');
           credentials.cert = fs.readFileSync(config.httpsCert, 'utf8');
-          https.createServer(credentials, app).listen(httpsPort, () => {
+          runningServers.push(https.createServer(credentials, app).listen(httpsPort, () => {
             console.log(`LiMA server listening on HTTPS port ${httpsPort}`);
 
             // HTTP app will just redirect to HTTPS
@@ -333,11 +302,11 @@ function startServer() {
             // if (loggingMiddleware) redirectApp.use(loggingMiddleware);
             redirectApp.get('*', (req, res) => res.redirect('https://' + req.hostname + req.url));
 
-            http.createServer(redirectApp).listen(port, () => {
+            runningServers.push(http.createServer(redirectApp).listen(port, () => {
               console.log(`LiMA redirect server listening on port ${port}`);
-              resolve();
-            });
-          });
+              serverStarted();
+            }));
+          }));
         } catch (error) {
           console.log(error);
           reject(error);
