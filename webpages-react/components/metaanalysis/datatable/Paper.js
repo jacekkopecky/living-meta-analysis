@@ -1,6 +1,6 @@
 import React from 'react';
 import Cell from './Cell';
-import { formatDateTime } from '../../../tools/datatools';
+import { formatDateTimeSplit } from '../../../tools/datatools';
 
 const paperDetails = (paper) => {
   const {
@@ -8,13 +8,85 @@ const paperDetails = (paper) => {
   } = paper;
   return (
     <>
-      <p>Paper: { title }</p>
-      <p>Entered by { enteredBy } on { formatDateTime(ctime) }</p>
-      <p>Reference: { reference }</p>
-      <p>Description: { description }</p>
-      <p>Link: { link }</p>
-      <p>DOI: { doi }</p>
-      <p>Last Modified: { formatDateTime(mtime) }</p>
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              Paper:
+              { ' ' }
+            </td>
+            <td>
+              { title }
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Reference:
+              { ' ' }
+            </td>
+            <td>
+              { reference || 'no reference available' }
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Description:
+              { ' ' }
+            </td>
+            <td>
+              { description || 'No description available' }
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Link:
+              { ' ' }
+            </td>
+            <td>
+              { link || 'No link available' }
+            </td>
+          </tr>
+          <tr>
+            <td>
+              DOI:
+              { ' ' }
+            </td>
+            <td>
+              { doi || 'No digital object identifier available' }
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Entered by:
+              { ' ' }
+            </td>
+            <td>
+              { enteredBy }
+              { ' ' }
+              at
+              { ' ' }
+              { formatDateTimeSplit(ctime).time }
+              { ' ' }
+              on
+              { ' ' }
+              { formatDateTimeSplit(ctime).date }
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Last modified:
+              { ' ' }
+            </td>
+            <td>
+              { formatDateTimeSplit(mtime).time }
+              { ' ' }
+              on
+              { ' ' }
+              { formatDateTimeSplit(mtime).date }
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </>
   );
 };
@@ -23,9 +95,67 @@ const expDetails = (exp) => {
   const { paper, title, description } = exp;
   return (
     <>
-      <p>{ paper.title }</p>
-      <p>{ title }</p>
-      <p>{ description || 'no detailed description' }</p>
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              Study or Experiment:
+              { ' ' }
+            </td>
+            <td>
+              { title }
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Paper:
+              { ' ' }
+            </td>
+            <td>
+              { paper.title }
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Description:
+              { ' ' }
+            </td>
+            <td>
+              { description || 'No description available' }
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Entered by:
+              { ' ' }
+            </td>
+            <td>
+              { paper.enteredBy }
+              { ' ' }
+              at
+              { ' ' }
+              { formatDateTimeSplit(paper.ctime).time }
+              { ' ' }
+              on
+              { ' ' }
+              { formatDateTimeSplit(paper.ctime).date }
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Last modified:
+              { ' ' }
+            </td>
+            <td>
+              { formatDateTimeSplit(paper.mtime).time }
+              { ' ' }
+              on
+              { ' ' }
+              { formatDateTimeSplit(paper.mtime).date }
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </>
   );
 };
