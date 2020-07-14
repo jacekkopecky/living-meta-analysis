@@ -43,3 +43,21 @@
 .details:empty {
   display: none;
 }
+
+.details table tbody {
+  border: 0.2em solid black;
+}
+
+.details table td {
+  border-top: 0.2em solid black !important;
+  border-bottom: 0.2em solid black !important;
+  border-left: none !important;
+}
+
+.details table td:hover {
+  background-color: inherit !important;
+}
+
+.details tr:nth-child(even) {
+  background-color: inherit !important;
+}
