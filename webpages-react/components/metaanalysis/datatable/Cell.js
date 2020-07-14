@@ -1,27 +1,100 @@
 import React from 'react';
-import { getDatumValue, formatNumber, formatDateTime } from '../../../tools/datatools';
+import { getDatumValue, formatNumber, formatDateTimeSplit } from '../../../tools/datatools';
 import Editable from '../Editable';
 
-const dataCellDetails = ({ enteredBy, ctime }) => (
+const dataCellDetails = ({ enteredBy, ctime, paper }, cval) => (
   <>
-    <p>
-      Entered by:
-      { enteredBy }
-    </p>
-    <p>
-      Creation time:
-      { formatDateTime(ctime) }
-    </p>
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            Cell value:
+            { ' ' }
+          </td>
+          <td>
+            { (parseInt(cval, 10) && cval.length > 10) ? parseInt(cval, 10).toFixed(10) : cval }
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Paper:
+            { ' ' }
+          </td>
+          <td>
+            { paper.title }
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Entered by:
+            { ' ' }
+          </td>
+          <td>
+            { enteredBy }
+            { ' ' }
+            at
+            { ' ' }
+            { formatDateTimeSplit(ctime).time }
+            { ' ' }
+            on
+            { ' ' }
+            { formatDateTimeSplit(ctime).date }
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </>
 );
-const computedCellDetails = ({ fullLabel }, value) => (
+const computedCellDetails = ({ fullLabel }, { enteredBy, ctime, paper }, cval) => (
   <>
-    <p>
-      { value }
-    </p>
-    <p>
-      Calculated as { fullLabel }
-    </p>
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            Cell value:
+            { ' ' }
+          </td>
+          <td>
+            { (parseInt(cval, 10) && cval.length > 10) ? parseInt(cval, 10).toFixed(10) : cval }
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Paper:
+            { ' ' }
+          </td>
+          <td>
+            { paper.title }
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Entered by:
+            { ' ' }
+          </td>
+          <td>
+            { enteredBy }
+            { ' ' }
+            at
+            { ' ' }
+            { formatDateTimeSplit(ctime).time }
+            { ' ' }
+            on
+            { ' ' }
+            { formatDateTimeSplit(ctime).date }
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Calculated as:
+            { ' ' }
+          </td>
+          <td>
+            { fullLabel }
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </>
 );
 
@@ -34,14 +107,14 @@ export default function Cell(props) {
   return (
     col.id
       ? (
-        <td {...makeClickable(cellId, dataCellDetails(exp))}>
+        <td {...makeClickable(cellId, dataCellDetails(exp, value))}>
           <Editable cellId={cellId} type="input" onSave={editCell}>{ value }</Editable>
         </td>
       )
       : (
         <td
           style={{ paddingRight: `${padding}ch` }}
-          {...makeClickable(cellId, computedCellDetails(col, value), true)}
+          {...makeClickable(cellId, computedCellDetails(col, exp, value), true)}
         >
           { formatNumber(value) }
         </td>
