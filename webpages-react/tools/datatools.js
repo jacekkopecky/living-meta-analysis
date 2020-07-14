@@ -315,3 +315,12 @@ export function formatDateTime(timestamp) {
   const datetime = `${date} ${time}`;
   return datetime;
 }
+
+// this function is used to split date and time separately
+export function formatDateTimeSplit(timestamp) {
+  const d = new Date(timestamp);
+
+  const date = `${d.getFullYear()}-${twoDigits((d.getMonth() + 1))}-${twoDigits(d.getDate())}`;
+  const time = `${twoDigits(d.getHours())}:${twoDigits(d.getMinutes())}`;
+  return { date: `${date}`, time: `${time}` };
+}
