@@ -9,6 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Note GIT SHA as version
+        id: version
+        run: |
+          echo "$GITHUB_SHA" > version.txt
+        shell: bash
       - name: Deploy
         id: deploy
         uses: GoogleCloudPlatform/github-actions/appengine-deploy@master
