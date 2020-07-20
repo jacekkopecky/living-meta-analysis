@@ -21,8 +21,6 @@ const api = require('./routes');
 const storage = require('./storage');
 const NotFoundError = require('./errors/NotFoundError');
 
-const exec = require('child_process').exec;
-
 storage.setup();
 
 const app = express({ caseSensitive: true });
@@ -169,20 +167,8 @@ function SLASH_URL(req, res, next) {
  *
  */
 
-let oneLineVersionString = 'version unknown';
-
 function oneLineVersion(req, res) {
-  res.set('Content-Type', 'text/plain');
-  res.send(oneLineVersionString);
-}
-
-if (!process.env.TESTING) {
-  exec('git log -1 --date=short --pretty=format:"%ad"',
-    (error, stdout, stderr) => {
-      if (error) oneLineVersionString = 'error getting version: ' + error + '\n' + stderr;
-      else oneLineVersionString = stdout;
-    },
-  );
+  res.sendFile('version.txt', { root: '.' });
 }
 
 /* error handling
