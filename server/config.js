@@ -33,7 +33,7 @@ module.exports = {
 
   // google-specific settings - commented out because appengine doesn't need that
   // gcloudProject: {
-  //   projectId: 'lima-cloud-functions-2020',
+  //   projectId: 'uop-soc-lima',
   //   keyFilename: 'lima-google-key.json',
   // },
 

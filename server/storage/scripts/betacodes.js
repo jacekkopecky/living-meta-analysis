@@ -9,24 +9,32 @@ const rl = readline.createInterface({
 });
 
 rl.question('Enter the number of codes you want: ', (numCodes) => {
-  rl.question('Enter a comment for the codes: ', (comment) => {
+  rl.question('Enter a comment for the codes: ', async (comment) => {
     let betaCodes = '';
     const codes = [];
     for (let i = 0; i < numCodes; i++) {
       const code = uid(12);
-      const dateGenerated = new Date().toUTCString();
+      const dateGenerated = new Date().toISOString();
       codes.push({
         code: code,
         timeGenerated: dateGenerated,
         comment: comment,
       });
-      betaCodes += `${code} | ${dateGenerated} | ${comment}\n`;
+      betaCodes += `${code} # ${dateGenerated} ${comment}\n`;
     }
-    saveCodes(codes);
+    console.log('Saving in datastore');
+    await saveCodes(codes);
     fs.appendFile('codes.txt', betaCodes, err => {
-      if (err) return console.log(err);
-      console.log('Successfully generated beta codes');
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('Successfully generated beta codes and saved in codes.txt');
+        console.log();
+        console.log(betaCodes);
+        console.log('to print, paste these in https://lima.soc.port.ac.uk/admin/print-invites');
+      }
     });
+    rl.close();
   });
 });
 
