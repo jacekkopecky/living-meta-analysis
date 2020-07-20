@@ -4,7 +4,7 @@
   var lima = window.lima;
   var _ = lima._;  // underscore symbol is used for brevity, defined in tools.js
 
-  var CLIENT_ID = "760012515336-d7mher4ga5qjql29n76ettedogdhbpqh.apps.googleusercontent.com";
+  var CLIENT_ID = "186190585645-38o2mpd18bd53km7rbpnp1rb9gg9d5sg.apps.googleusercontent.com";
 
   function onSignIn(googleUser) {
     if (!googleUser.isSignedIn()) {
