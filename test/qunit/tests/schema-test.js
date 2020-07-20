@@ -57,15 +57,15 @@ QUnit.test('Check the strucutre of the metaanalysis for specific title', async a
 });
 
 // todo: implement this test when the ability to have unique names per user, and the ability to remove a metanalysis
-// QUnit.test('Creating a new blank metanalyses', async assert => {
-//   const request = await fetch(`${config.LOCAL_API}/metaanalyses/test-account/test-metanalyses`, {
+// QUnit.test('Creating a new blank metanalysis', async assert => {
+//   const request = await fetch(`${config.LOCAL_API}/metaanalyses/test-account/test-metanalysis`, {
 //     method: 'POST',
 //     headers: {
 //       'Content-Type': 'application/json',
 //       'Authorization': 'Fake test',
 //     },
 //     body: JSON.stringify({
-//       title: 'test-metaanalyses',
+//       title: 'test-metaanalysis',
 //       enteredBy: 'test@fake.example.org',
 //     }),
 //   });
