@@ -12,10 +12,20 @@
   padding: 0 20px;
   margin-bottom: 0;
   margin-top: 10px;
+  overflow: hidden;
+  position: relative;
 }
 
 .metaanalysis .titlebar .title {
   font-size: 1.5em;
+}
+
+.metaanalysis .titlebar .titleBarButtons {
+  position: sticky;
+  display: flex;
+  align-items: center;
+  width: 10%;
+  height: 50%;
 }
 
 .metaanalysis .btn-start {
@@ -41,6 +51,9 @@
 
 .metaanalysis table tr:nth-child(even) { background-color: #ebebeb; }
 
+.metaanalysis table tr:nth-child(even) .computed.editMode.cell { background-color: #FFE4B5; }
+
+
 .metaanalysis table th {
   padding-top: 12px;
   padding-bottom: 12px;
@@ -50,11 +63,78 @@
 }
 
 .metaanalysis table .active {
-  background-color: lightgreen !important;
+  background-color: pink !important;
+  box-shadow: 0 0 0 0.1em black inset;
 }
 
 .metaanalysis table td:hover {
   background-color: lightpink;
+}
+
+.metaanalysis table .paper {
+  position: relative;
+}
+
+.metaanalysis .grabberButton {
+  background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.metaanalysis .grabberIcon {
+  width: 2em;
+  height: 2em;
+}
+
+#toggle-editing,
+#toggle-editing:focus {
+  border: 0.2em solid black;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background-color: #FFC0CB;
+  outline: none;
+  cursor: pointer;
+  /* Prevent text highlight */
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+#toggle-editing:hover {
+  background-color: #FF69B4;
+}
+
+#toggle-editing.editMode {
+  background-color: rgba(182, 234, 255);
+}
+
+#toggle-editing.editMode:hover {
+  background-color: rgb(47, 116, 148);
+}
+
+.metaanalysis .editMode.primary {
+  background-color: #FFC0CB !important;
+  color: #000000 !important;
+}
+
+.metaanalysis .editMode.secondary {
+  background-color: #808080 !important;
+}
+
+.metaanalysis .editMode li:hover {
+  background-color: #FFC0CB !important;
 }
 
 textarea {

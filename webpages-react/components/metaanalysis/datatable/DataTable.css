@@ -1,5 +1,6 @@
 .datatable {
   text-align: center;
+  border: 0.2em solid black;
 }
 
 .datatable .paperstart td {
@@ -9,4 +10,8 @@
 .datatable .computed {
   background-color: rgba(182, 234, 255, 0.5);
   text-align: right;
+}
+
+.datatable .computed.editMode.cell {
+  background-color: #FFEFD5;
 }

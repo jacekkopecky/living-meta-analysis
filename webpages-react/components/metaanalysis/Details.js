@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
+import EditContext from './EditContext';
 import './Details.css';
 
 function Details(props) {
   const { displayedCell, setDisplayedCell } = props;
+  const edit = useContext(EditContext);
 
   const closeHandler = (e) => {
     if (e.type === 'click' || e.key === ' ' || e.key === 'Enter') {
@@ -27,8 +29,8 @@ function Details(props) {
   if (displayedCell) {
     return (
       <aside className="details">
-        <div className="header">
-          <h3>Details:</h3>
+        <div className={`header ${edit.flag ? 'editMode primary' : ''}`}>
+          <h3>Cell details:</h3>
           <div
             className="close"
             role="button"
