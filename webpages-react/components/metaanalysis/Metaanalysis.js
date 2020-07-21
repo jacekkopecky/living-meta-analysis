@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Tabs from '../layout/Tabs';
 import TagList from './tags/TagList';
 import Info from './Info';
@@ -8,6 +8,7 @@ import Plots from './plots/Plots';
 import Metadata from './Metadata';
 import PlotsDefinitions from './PlotsDefinitions';
 import Details from './Details';
+import EditContext from './EditContext';
 
 import { populateCircularMa } from '../../tools/datatools';
 import replaceCell from '../../tools/editTools';
@@ -38,10 +39,15 @@ function Metaanalysis(props) {
     text: null,
   });
 
-  const makeClickable = (cellId, details, computed) => {
+  const makeClickable = (cellId, details, cellType) => {
+    const edit = useContext(EditContext);
     let className = '';
     if (displayedCell && cellId === displayedCell.cellId) className += 'active ';
-    if (computed) className += 'computed ';
+    if (cellType === 'computed') {
+      className += `computed ${edit.flag ? 'editMode cell' : ''}`;
+    } else if (cellType === 'paper') {
+      className += `paper ${edit.flag ? 'editMode cell' : ''}`;
+    }
 
     return {
       onClick: () => {
@@ -55,13 +61,27 @@ function Metaanalysis(props) {
     setPapers(replaceCell(papers, columns, value, cellId));
   };
 
+  const edit = useContext(EditContext);
+
   return (
     <main className="metaanalysis">
-      <div className="titlebar">
+      <div className={`titlebar ${edit.flag ? 'editMode primary' : ''}`}>
         <div className="title">
           <p type="input">{ title }</p>
         </div>
-        <TagList tags={tags} setTags={setTags} />
+        <div className="titleBarButtons">
+          { /*<TagList tags={tags} setTags={setTags} />*/ }
+          <span
+            id="toggle-editing"
+            role="menuitem"
+            tabIndex="0"
+            onMouseDown={edit.toggle}
+            onKeyPress={edit.toggle}
+            className={`${edit.flag ? 'editMode' : ''}`}
+          >
+            { edit.flag ? 'Stop editing' : 'Edit' }
+          </span>
+        </div>
       </div>
       <Tabs displayedCell={displayedCell} setDisplayedCell={setDisplayedCell}>
         <Info

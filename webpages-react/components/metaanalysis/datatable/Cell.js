@@ -104,17 +104,21 @@ export default function Cell(props) {
   } = props;
   const value = getDatumValue(col, exp);
   const padding = Math.trunc(value).toString().length;
+  /* Reminder: some parts of the Cell object are initialized in 'makeClickable' function,
+  found in Metaanalysis.js */
   return (
     col.id
+    // data cell
       ? (
         <td {...makeClickable(cellId, dataCellDetails(exp, value))}>
           <Editable cellId={cellId} type="input" onSave={editCell}>{ value }</Editable>
         </td>
       )
+      // computed cell
       : (
         <td
           style={{ paddingRight: `${padding}ch` }}
-          {...makeClickable(cellId, computedCellDetails(col, exp, value), true)}
+          {...makeClickable(cellId, computedCellDetails(col, exp, value), 'computed')}
         >
           { formatNumber(value) }
         </td>

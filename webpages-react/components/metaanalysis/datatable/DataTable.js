@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext, useRef } from 'react';
 import Paper from './Paper';
 import Editable from '../Editable';
+import EditContext from '../EditContext';
 
 import './DataTable.css';
 
@@ -34,16 +35,18 @@ function DataTable(props) {
   const {
     columns, papers, paperOrder, makeClickable, editCell,
   } = props;
+  const edit = useContext(EditContext);
+  const parentOfRows = useRef(null);
 
   return (
     <section>
       <table className="datatable">
         <thead>
           <tr>
-            <th {...makeClickable('Paper', paperColumnDetails)}>
+            <th {...makeClickable('Paper', paperColumnDetails)} className={`${edit.flag ? 'editMode primary' : ''}`}>
               Paper
             </th>
-            <th {...makeClickable('Study/Experiment', expColumnDetails)}>
+            <th {...makeClickable('Study/Experiment', expColumnDetails)} className={`${edit.flag ? 'editMode primary' : ''}`}>
               Study/Experiment
             </th>
             { columns.map((col) => (
@@ -53,13 +56,14 @@ function DataTable(props) {
                   col.id || col.fullLabel,
                   col.id ? dataColDetails(col) : computedColDetails(col),
                 )}
+                className={`${edit.flag ? 'editMode primary' : ''}`}
               >
                 { col.title || col.fullLabel }
               </th>
             )) }
           </tr>
         </thead>
-        <tbody>
+        <tbody ref={parentOfRows}>
           { paperOrder.map((id) => (
             Object.values(papers).map((paper) => (
               paper.id === id
@@ -70,6 +74,7 @@ function DataTable(props) {
                     columns={columns}
                     makeClickable={makeClickable}
                     editCell={editCell}
+                    parentOfRows={parentOfRows}
                   />
                 )
                 : null
