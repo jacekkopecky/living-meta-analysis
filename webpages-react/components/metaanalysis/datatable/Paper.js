@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
+import GrabIcon from 'url:../../../images/grab-icon.png';
 import Cell from './Cell';
 import { formatDateTimeSplit } from '../../../tools/datatools';
+import EditContext from '../EditContext';
+import RearrangeRow from '../TableRearranger';
 
 const paperDetails = (paper) => {
   const {
@@ -162,9 +165,12 @@ const expDetails = (exp) => {
 
 function Paper(props) {
   const {
-    paper, columns, makeClickable, editCell,
+    paper, columns, makeClickable, editCell, parentOfRows,
   } = props;
   const { title } = paper;
+
+  const edit = useContext(EditContext);
+  const [rowEvent, setRowEvent] = useState({ rows: [], topRowIndex: null });
 
   const nExp = Object.keys(paper.experiments).length;
 
@@ -174,7 +180,19 @@ function Paper(props) {
       let firstTr;
       if (key === 0) {
         newPaper = (
-          <td key={title} {...makeClickable(title, paperDetails(paper))} rowSpan={nExp}>
+          <td key={title} {...makeClickable(title, paperDetails(paper), 'paper')} rowSpan={nExp}>
+            { edit.flag
+              ? (
+                <button
+                  type="submit"
+                  className="grabberButton"
+                  onDragStart={(e) => RearrangeRow([rowEvent, setRowEvent], parentOfRows, e)}
+                  onDragEnd={(e) => RearrangeRow([rowEvent, setRowEvent], parentOfRows, e)}
+                >
+                  <img src={GrabIcon} alt="Grabber" className="grabberIcon" />
+                </button>
+              )
+              : '' }
             { title }
           </td>
         );
