@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/App';
+import MetaanalysisApp from './components/MetaanalysisApp';
 
 import math from '../lib/math.min';
 
@@ -10,5 +10,5 @@ window.math = math;
 
 // Render the react app on index.html div#root
 window.addEventListener('load', () => {
-  ReactDOM.render(<App />, document.querySelector('#root'));
+  ReactDOM.render(<MetaanalysisApp />, document.querySelector('#root'));
 });

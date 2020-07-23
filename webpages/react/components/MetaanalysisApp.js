@@ -4,9 +4,9 @@ import Footer from './layout/Footer';
 import Metaanalysis from './metaanalysis/Metaanalysis';
 import useGoogleAuth from '../tools/google-auth';
 import EditContext from './metaanalysis/EditContext';
-import './App.css';
+import './MetaanalysisApp.css';
 
-function App() {
+function MetaanalysisApp() {
   const [metaanalysis, updateMetaanalysis] = useState([]);
   const [isLoaded, setLoaded] = useState(false);
   const [error, setError] = useState(null);
@@ -62,4 +62,4 @@ function App() {
   );
 }
 
-export default App;
+export default MetaanalysisApp;
