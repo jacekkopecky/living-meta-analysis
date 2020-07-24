@@ -10,7 +10,7 @@ function Footer() {
 
   useEffect(() => {
     async function fetchVersion() {
-      const url = 'https://lima.soc.port.ac.uk/version/';
+      const url = '/version/';
       try {
         const response = await fetch(url);
         const data = await response.text();

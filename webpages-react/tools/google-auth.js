@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const CLIENT_ID = '358237292980-kbme56c9ih4rpmob16sq8bjig5dms6pl.apps.googleusercontent.com';
+const CLIENT_ID = '186190585645-38o2mpd18bd53km7rbpnp1rb9gg9d5sg.apps.googleusercontent.com';
 
 export function SignInButton() {
   const gapi = window.gapi;
@@ -45,7 +45,7 @@ export default function useGoogleAuth() {
 
     if (window.location.pathname !== '/register') {
       const idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
-      const res = await fetch('https://lima.soc.port.ac.uk/api/user', {
+      const res = await fetch('/api/user', {
         method: 'GET',
         headers: _.idTokenToFetchHeaders(idToken),
       });

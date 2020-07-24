@@ -73,12 +73,7 @@ $ npm install -g http-server
 
 In conclusion : the directory structure stays the same, and you can serve the `/webpages/` the same as before introducing React.
 
-### Inside the `/webpages/react` directory
-
--   None of the code should have the lima.soc.port.ac.uk URL built in (this can cause trouble with parcel)
-
-    - We chose to leave those URLs because it is less complicated that way than to use a proxy for development
-    - Pay attention to that when merging to production
+### Inside the `/webpages-react` directory
 
 -   You can install the `ncu` package via npm and run `ncu`  to see dependencies upgrades. Then you can follow the instructions to proceed to the upgrades.
 

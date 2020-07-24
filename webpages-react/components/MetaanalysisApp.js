@@ -18,7 +18,7 @@ function MetaanalysisApp() {
   // then everything is spread in children components
   useEffect(() => {
     async function fetchItems() {
-      const url = `https://lima.soc.port.ac.uk/api/metaanalyses${window.location.pathname}`;
+      const url = `/api/metaanalyses${window.location.pathname}`;
       try {
         const response = await fetch(url);
         const data = await response.json();
