@@ -17,9 +17,12 @@ const cookieParser = require('cookie-parser');
 
 const config = require('./config');
 
-const api = require('./routes');
+const apiRoutes = require('./routes');
+const redirectApi = require('./routes/redirected-api');
 const storage = require('./storage');
 const NotFoundError = require('./errors/NotFoundError');
+
+const api = process.env.REDIRECT_API ? redirectApi : apiRoutes;
 
 storage.setup();
 
