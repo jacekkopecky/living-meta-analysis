@@ -31,7 +31,9 @@ function Editable(props) {
     setCurrentValue(e.target.value);
   };
 
-  if (edit.flag) {
+  if (!edit.flag) {
+    return (value == null || value === '') ? 'no value' : value;
+  } else {
     return (
       type === 'input'
         ? (
@@ -55,7 +57,6 @@ function Editable(props) {
         )
     );
   }
-  return value;
 }
 
 export default Editable;
