@@ -11,7 +11,7 @@
     "beta-codes": "node server/storage/scripts/betacodes",
     "test-server": "TESTING=true qunit test/qunit/tests/*-test.js",
     "lint-server": "echo eslint && eslint server/** --ext .js,.json",
-    "lint": "echo eslint && eslint . --ext .js,.json && echo stylelint && stylelint webpages"
+    "lint": "echo eslint && eslint . --ext .js,.json && echo stylelint && stylelint webpages/**/*.css webpages/**/*.html"
   },
   "repository": {
     "type": "git",
@@ -24,13 +24,27 @@
   },
   "homepage": "https://github.com/jacekkopecky/living-meta-analysis#readme",
   "devDependencies": {
-    "eslint": "^6.8.0",
+    "@babel/core": "^7.10.5",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-react": "^7.9.4",
+    "babel-eslint": "^10.1.0",
+    "eslint-config-airbnb": "^18.1.0",
     "eslint-config-portsoc": "^0.6.0",
+    "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-json": "^2.1.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react-hooks": "^4.0.2",
+    "eslint-plugin-react": "^7.20.0",
+    "eslint": "^7.0.0",
     "istanbul": "^0.4.5",
     "nodemon": "^2.0.3",
     "qunit": "^2.10.0",
-    "selenium-standalone": "^6.17.0"
+    "parcel": "^2.0.0-beta.1",
+    "selenium-standalone": "^6.17.0",
+    "stylelint-config-standard": "^20.0.0",
+    "stylelint": "^13.4.0"
   },
   "dependencies": {
     "@google-cloud/datastore": "^5.1.0",

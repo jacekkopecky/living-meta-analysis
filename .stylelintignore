@@ -1,4 +1,3 @@
-coverage
-webpages/lib
 webpages/react/dist
 webpages/react/.parcel-cache
+webpages/react/node_modules

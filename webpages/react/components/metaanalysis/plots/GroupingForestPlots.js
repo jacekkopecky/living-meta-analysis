@@ -101,7 +101,8 @@ function GroupingForestPlots(props) {
                     }]`
                     || 'err [err, err]' }
                   </text>
-                  { /* <text className="wt">{`${dataGroup.groupAggregates.wt}%` || 'err'}</text> */ }
+                  { /* <text className="wt">
+                         {`${dataGroup.groupAggregates.wt}%` || 'err'}</text> */ }
                   <g className="sumgraph">
                     <polygon className="confidenceinterval" points={dataGroup.confidenceInterval} />
                   </g>

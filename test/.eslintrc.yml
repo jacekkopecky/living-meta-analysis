@@ -1,2 +1,4 @@
 extends: portsoc
 root: true
+plugins:
+  - json

@@ -1,52 +1,51 @@
 /* globals gemini */
 
 gemini.suite('basics', (suite) => {
-
   suite.setUrl('/')
     .setCaptureElements('body')
-    .capture('home')
-    //// use this instead of the line above to get past the invite-only barrier
-    // .capture('invite-page')
-    //
-    // .capture('home', function (actions, find) {
-    //   actions.sendKeys(find('#invitecode'), '1');
-    //   actions.sendKeys(gemini.RETURN);
-    // })
+    .capture('home');
+  /// / use this instead of the line above to get past the invite-only barrier
+  // .capture('invite-page')
+  //
+  // .capture('home', function (actions, find) {
+  //   actions.sendKeys(find('#invitecode'), '1');
+  //   actions.sendKeys(gemini.RETURN);
+  // })
 
   gemini.suite('tests', (suite) => {
     suite.setUrl('/tests/?testing')
       .setCaptureElements('body')
-      .capture('plain')
+      .capture('plain');
   });
 
   gemini.suite('401', (suite) => {
     suite.setUrl('/401')
       .setCaptureElements('body')
-      .capture('plain')
+      .capture('plain');
   });
 
   gemini.suite('404', (suite) => {
     suite.setUrl('/404')
       .setCaptureElements('body')
-      .capture('plain')
+      .capture('plain');
   });
 
   gemini.suite('apifail', (suite) => {
     suite.setUrl('/apifail')
       .setCaptureElements('body')
-      .capture('plain')
+      .capture('plain');
   });
 
   gemini.suite('profile (when not logged in)', (suite) => {
     suite.setUrl('/profile')
       .setCaptureElements('body')
-      .capture('plain')
+      .capture('plain');
   });
 
   gemini.suite('local user profile (when not logged in)', (suite) => {
     suite.setUrl('/local')
       .setCaptureElements('body')
-      .capture('plain')
+      .capture('plain');
   });
 
   // attempt to log in, put email and password in below
