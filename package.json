@@ -11,7 +11,8 @@
     "beta-codes": "node server/storage/scripts/betacodes",
     "test-server": "TESTING=true qunit test/qunit/tests/*-test.js",
     "lint-server": "echo eslint && eslint server/** --ext .js,.json",
-    "lint": "echo eslint && eslint . --ext .js,.json && echo stylelint && stylelint webpages/**/*.css webpages/**/*.html"
+    "lint": "echo eslint && eslint . --ext .js,.json && echo stylelint && stylelint webpages*/**/*.css webpages*/**/*.html",
+    "build": "parcel build --no-cache --public-url /react-dist/ --dist-dir webpages/react-dist/ webpages-react/metaanalysis.html"
   },
   "repository": {
     "type": "git",
