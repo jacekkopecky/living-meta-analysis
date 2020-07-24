@@ -124,15 +124,16 @@ app.get(`/:user(${config.USER_RE})/${config.NEW_PAPER_TITLE}/`,
   (req, res) => res.sendFile('profile/paper.html', { root: './webpages/' }));
 app.get(`/:user(${config.USER_RE})/${config.NEW_META_TITLE}/`,
   api.users.EXISTS_USER,
-  (req, res) => res.sendFile('profile/metaanalysis.html', { root: './webpages/' }));
+  (req, res) => res.sendFile('react-dist/metaanalysis.html', { root: './webpages/' }));
 app.get(`/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
   api.users.EXISTS_USER,
   async (req, res, next) => {
     try {
       const kind = req.query.type || await api.getKindForTitle(req.params.user, req.params.title);
-      if (kind === 'paper' || kind === 'metaanalysis') {
-        const file = `profile/${kind}.html`;
-        res.sendFile(file, { root: './webpages/' });
+      if (kind === 'paper') {
+        res.sendFile('profile/paper.html', { root: './webpages/' });
+      } else if (kind === 'metaanalysis') {
+        res.sendFile('react-dist/metaanalysis.html', { root: './webpages/' });
       } else {
         next(new NotFoundError());
       }
