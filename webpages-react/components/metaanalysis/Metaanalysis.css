@@ -93,6 +93,16 @@
   height: 2em;
 }
 
+.metaanalysis .beingRearranged {
+  background-color: #FFC0CB !important;
+  color: #000000 !important;
+  border-width: 1em;
+}
+
+.metaanalysis .tableRearrangeHover {
+  box-shadow: 0 0.4em 0.2em -0.2em #000000;
+}
+
 #toggle-editing,
 #toggle-editing:focus {
   border: 0.2em solid black;
@@ -135,6 +145,49 @@
 
 .metaanalysis .editMode li:hover {
   background-color: #FFC0CB !important;
+}
+
+.metaanalysis .popupBackground {
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.metaanalysis .popupContainer {
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 35%;
+  top: 35%;
+  width: 30%; /* Full width */
+  height: 30%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: #FFFFFF;
+  border: 5px solid black;
+}
+
+.metaanalysis .popupClose,
+.metaanalysis .popupClose:focus {
+  float: right;
+  background-color: red;
+  border-left: 5px solid black;
+  border-bottom: 5px solid black;
+  width: 10%;
+  height: 10%;
+  line-height: 60%;
+  cursor: pointer;
+  text-align: center;
+  font-size: 3em;
+  outline: none;
+}
+
+.metaanalysis .popupClose:hover {
+  background-color: #8B0000;
 }
 
 textarea {
