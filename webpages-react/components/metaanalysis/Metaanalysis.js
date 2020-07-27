@@ -96,7 +96,7 @@ function Metaanalysis(props) {
           path="/table"
           tabName="Table"
           columns={columns}
-          papers={papers}
+          papers={[papers, setPapers]}
           paperOrder={paperOrder}
           makeClickable={makeClickable}
           editCell={editCell}

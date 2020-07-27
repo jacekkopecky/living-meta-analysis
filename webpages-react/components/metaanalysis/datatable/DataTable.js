@@ -1,5 +1,6 @@
 import React, { useContext, useRef } from 'react';
 import Paper from './Paper';
+import AddPaper from '../AddPaper'
 import Editable from '../Editable';
 import EditContext from '../EditContext';
 
@@ -35,6 +36,8 @@ function DataTable(props) {
   const {
     columns, papers, paperOrder, makeClickable, editCell,
   } = props;
+  const [paperState, setPaperState] = papers;
+
   const edit = useContext(EditContext);
   const parentOfRows = useRef(null);
 
@@ -44,7 +47,7 @@ function DataTable(props) {
         <thead>
           <tr>
             <th {...makeClickable('Paper', paperColumnDetails)} className={`${edit.flag ? 'editMode primary' : ''}`}>
-              Paper
+              <AddPaper paperState={[paperState, setPaperState]} />
             </th>
             <th {...makeClickable('Study/Experiment', expColumnDetails)} className={`${edit.flag ? 'editMode primary' : ''}`}>
               Study/Experiment
@@ -65,7 +68,7 @@ function DataTable(props) {
         </thead>
         <tbody ref={parentOfRows}>
           { paperOrder.map((id) => (
-            Object.values(papers).map((paper) => (
+            Object.values(paperState).map((paper) => (
               paper.id === id
                 ? (
                   <Paper
