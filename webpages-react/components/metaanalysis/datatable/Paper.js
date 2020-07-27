@@ -186,8 +186,16 @@ function Paper(props) {
                 <button
                   type="submit"
                   className="grabberButton"
-                  onDragStart={(e) => RearrangeRow([rowEvent, setRowEvent], parentOfRows, e)}
-                  onDragEnd={(e) => RearrangeRow([rowEvent, setRowEvent], parentOfRows, e)}
+                  onDragStart={
+                    (e) => RearrangeRow(
+                      rowEvent, setRowEvent, parentOfRows, e,
+                    )
+                  }
+                  onDragEnd={
+                    (e) => RearrangeRow(
+                      rowEvent, setRowEvent, parentOfRows, e,
+                    )
+                  }
                 >
                   <img src={GrabIcon} alt="Grabber" className="grabberIcon" />
                 </button>
