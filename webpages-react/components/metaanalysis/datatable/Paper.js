@@ -4,6 +4,7 @@ import Cell from './Cell';
 import { formatDateTimeSplit } from '../../../tools/datatools';
 import EditContext from '../EditContext';
 import RearrangeRow from '../TableRearranger';
+import AddExperiment from '../AddExperiment';
 
 const paperDetails = (paper) => {
   const {
@@ -202,6 +203,7 @@ function Paper(props) {
               )
               : '' }
             { title }
+            <AddExperiment paper={paper} columns={columns} paperState={papers} />
           </td>
         );
         firstTr = 'paperstart';

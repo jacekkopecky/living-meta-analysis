@@ -172,15 +172,17 @@ function AddPaper(props) {
   if (edit.flag) {
     return (
       <>
-        <button type="submit" onClick={popupToggle}>
-          Add new paper
-        </button>
-        <AddPaperPopup
-          flag={[popupStatus, setPopupStatus]}
-          paperState={[papers, setPapers]}
-          paperOrderValue={[paperOrder, setPaperOrder]}
-          metaanalysis={metaanalysis}
-        />
+        <div id="addPaperButtonContainer">
+          <button type="submit" id="addPaperButton" onClick={popupToggle}>
+            Add new paper
+          </button>
+          <AddPaperPopup
+            flag={[popupStatus, setPopupStatus]}
+            paperState={[papers, setPapers]}
+            paperOrderValue={[paperOrder, setPaperOrder]}
+            metaanalysis={metaanalysis}
+          />
+        </div>
       </>
     );
   } else {
