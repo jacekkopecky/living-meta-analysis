@@ -190,6 +190,19 @@
   background-color: #8B0000;
 }
 
+.metaanalysis .addPaperForm label {
+  display: block;
+  width: 100%;
+}
+
+.metaanalysis .addPaperForm label input,
+.metaanalysis .addPaperForm label input:focus {
+  border: 0.1em solid black;
+  outline: none;
+  width: 70%;
+  text-align: left;
+}
+
 textarea {
   background: transparent;
   outline: none;

@@ -4,6 +4,7 @@ import Footer from './layout/Footer';
 import Metaanalysis from './metaanalysis/Metaanalysis';
 import useGoogleAuth from '../tools/google-auth';
 import EditContext from './metaanalysis/EditContext';
+import UserContext from './metaanalysis/UserContext';
 import './MetaanalysisApp.css';
 
 function MetaanalysisApp() {
@@ -54,9 +55,11 @@ function MetaanalysisApp() {
   return (
     <div className="app">
       <EditContext.Provider value={edit}>
-        <Header currentUser={currentUser} />
-        { content }
-        <Footer />
+        <UserContext.Provider value={currentUser}>
+          <Header currentUser={currentUser} />
+          { content }
+          <Footer />
+        </UserContext.Provider>
       </EditContext.Provider>
     </div>
   );

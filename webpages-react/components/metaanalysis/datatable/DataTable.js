@@ -1,6 +1,6 @@
 import React, { useContext, useRef } from 'react';
 import Paper from './Paper';
-import AddPaper from '../AddPaper'
+import AddPaper from '../AddPaper';
 import Editable from '../Editable';
 import EditContext from '../EditContext';
 
@@ -34,9 +34,10 @@ const computedColDetails = (col) => (
 
 function DataTable(props) {
   const {
-    columns, papers, paperOrder, makeClickable, editCell,
+    columns, papers, paperOrderValue, makeClickable, editCell, metaanalysis,
   } = props;
   const [paperState, setPaperState] = papers;
+  const [paperOrder, setPaperOrder] = paperOrderValue;
 
   const edit = useContext(EditContext);
   const parentOfRows = useRef(null);
@@ -47,7 +48,11 @@ function DataTable(props) {
         <thead>
           <tr>
             <th {...makeClickable('Paper', paperColumnDetails)} className={`${edit.flag ? 'editMode primary' : ''}`}>
-              <AddPaper paperState={[paperState, setPaperState]} />
+              <AddPaper
+                paperState={[paperState, setPaperState]}
+                paperOrderValue={[paperOrder, setPaperOrder]}
+                metaanalysis={metaanalysis}
+              />
             </th>
             <th {...makeClickable('Study/Experiment', expColumnDetails)} className={`${edit.flag ? 'editMode primary' : ''}`}>
               Study/Experiment
@@ -78,6 +83,8 @@ function DataTable(props) {
                     makeClickable={makeClickable}
                     editCell={editCell}
                     parentOfRows={parentOfRows}
+                    papers={[paperState, setPaperState]}
+                    paperOrderValue={[paperOrder, setPaperOrder]}
                   />
                 )
                 : null
