@@ -25,7 +25,7 @@ function Metaanalysis(props) {
   const [published, setPublished] = useState(metaanalysis.published);
   const [columns] = useState(metaanalysis.columns);
   const [papers, setPapers] = useState(metaanalysis.papers);
-  const [paperOrder] = useState(metaanalysis.paperOrder);
+  const [paperOrder, setPaperOrder] = useState(metaanalysis.paperOrder);
   const [aggregates] = useState(metaanalysis.aggregates);
   const [groupingAggregates] = useState(metaanalysis.groupingAggregates);
   const [graphs] = useState(metaanalysis.graphs);
@@ -97,9 +97,10 @@ function Metaanalysis(props) {
           tabName="Table"
           columns={columns}
           papers={[papers, setPapers]}
-          paperOrder={paperOrder}
+          paperOrderValue={[paperOrder, setPaperOrder]}
           makeClickable={makeClickable}
           editCell={editCell}
+          metaanalysis={metaanalysis}
         />
         <Aggregates
           path="/aggregates"

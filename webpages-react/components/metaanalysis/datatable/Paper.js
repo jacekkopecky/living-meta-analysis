@@ -165,7 +165,7 @@ const expDetails = (exp) => {
 
 function Paper(props) {
   const {
-    paper, columns, makeClickable, editCell, parentOfRows,
+    paper, columns, makeClickable, editCell, parentOfRows, papers, paperOrderValue,
   } = props;
   const { title } = paper;
 
@@ -188,12 +188,12 @@ function Paper(props) {
                   className="grabberButton"
                   onDragStart={
                     (e) => RearrangeRow(
-                      rowEvent, setRowEvent, parentOfRows, e,
+                      rowEvent, setRowEvent, parentOfRows, e, papers, paperOrderValue,
                     )
                   }
                   onDragEnd={
                     (e) => RearrangeRow(
-                      rowEvent, setRowEvent, parentOfRows, e,
+                      rowEvent, setRowEvent, parentOfRows, e, papers, paperOrderValue,
                     )
                   }
                 >
