@@ -1,6 +1,8 @@
 // Function fires when user drags/drops a grabber icon in edit mode
 
-function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e) {
+function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e, papers, paperOrderValue) {
+  const [paperState, setPaperState] = papers;
+  const [paperOrder, setPaperOrder] = paperOrderValue;
   /* Accepts the top row of all rows associated with a specific paper in the datatabble
   Returns all rows associated with the specific paper that the accepted row belongs to */
   function getRelatedRows(currentRow) {
@@ -33,9 +35,17 @@ function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e) {
     rowsToMove.forEach((element) => {
       element.classList.add('beingRearranged');
     });
-    const rowIndex = Array.prototype.indexOf.call(parentOfRows.current.children, relatedRow);
 
-    return { rows: rowsToMove, topRowIndex: rowIndex };
+    let k = 0;
+    let currentElement = parentOfRows.current.children[0];
+    while (currentElement !== relatedRow) {
+      if (currentElement.classList.contains('paperstart')) {
+        k += 1;
+      }
+      currentElement = currentElement.nextSibling;
+    }
+
+    return { rows: rowsToMove, topRowIndex: k };
   }
 
   function handleDragEnd(rowsToDrop) {
@@ -69,13 +79,26 @@ function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e) {
     }
 
     const topRow = getTopRow(parentOfRows.current.childNodes[i], i);
-    const rowsToSwap = getRelatedRows(topRow);
-    let insertHere = rowsToSwap[rowsToSwap.length - 1];
 
-    for (let j = 0; j < rowsToDrop.rows.length; j += 1) {
-      insertHere.parentNode.insertBefore(rowsToDrop.rows[j], insertHere.nextSibling);
-      insertHere = insertHere.nextSibling;
+    let k = 0;
+    let thisElement = parentOfRows.current.children[0];
+    while (topRow !== thisElement) {
+      if (thisElement.classList.contains('paperstart')) {
+        k += 1;
+      }
+      thisElement = thisElement.nextSibling;
     }
+
+    const tempPapers = [...paperState];
+    tempPapers.splice(rowsToDrop.topRowIndex, 1);
+    tempPapers.splice(k, 0, paperState[rowsToDrop.topRowIndex]);
+    setPaperState(tempPapers);
+
+    const tempPaperOrder = [...paperOrder];
+    tempPaperOrder.splice(rowsToDrop.topRowIndex, 1);
+    tempPaperOrder.splice(k, 0, paperOrder[rowsToDrop.topRowIndex]);
+    setPaperOrder(tempPaperOrder);
+
     rowsToDrop.rows.forEach((element) => {
       element.classList.remove('beingRearranged');
     });
