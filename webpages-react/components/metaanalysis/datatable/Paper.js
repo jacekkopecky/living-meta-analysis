@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import GrabIcon from 'url:../../../images/grab-icon.png';
 import Cell from './Cell';
 import { formatDateTimeSplit } from '../../../tools/datatools';
 import EditContext from '../EditContext';
@@ -198,7 +197,7 @@ function Paper(props) {
                     )
                   }
                 >
-                  <img src={GrabIcon} alt="Grabber" className="grabberIcon" />
+                  <img src="/img/grab-icon.png" alt="Grabber" className="grabberIcon" />
                 </button>
               )
               : '' }
