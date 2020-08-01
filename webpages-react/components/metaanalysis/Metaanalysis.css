@@ -42,6 +42,40 @@
   margin: 20px;
 }
 
+.metaanalysis .columnHeadings th{
+  border: 4px solid black;
+  color: black;
+  text-align: center;
+}
+
+.metaanalysis .paperColumn {
+  background-color: rgba(255,255,0,0.2);
+}
+.metaanalysis .columnHeadings .paperColumnHeader {
+  background-color: rgba(255,255,0,0.5);
+}
+
+.metaanalysis .moderatorColumn {
+  background-color: rgba(255,0,0, 0.2);
+}
+.metaanalysis .columnHeadings .moderatorColumnHeader {
+  background-color: rgba(255,0,0, 0.5);
+}
+
+.metaanalysis .calculatorColumn {
+  background-color: rgba(0,255,0, 0.2);
+}
+.metaanalysis .columnHeadings .calculatorColumnHeader {
+  background-color: rgba(0,255,0, 0.5);
+}
+
+.metaanalysis .dataColumn {
+  background-color: rgba(182, 234, 255, 0.5);
+}
+.metaanalysis .columnHeadings .dataColumnHeader {
+  background-color: #add8e6 !important;
+}
+
 .metaanalysis table td,
 .metaanalysis table th {
   border-left: 0.5px solid rgb(66, 66, 66);
@@ -49,9 +83,9 @@
   padding: 4px;
 }
 
-.metaanalysis table tr:nth-child(even) { background-color: #ebebeb; }
-
-.metaanalysis table tr:nth-child(even) .computed.editMode.cell { background-color: #FFE4B5; }
+.metaanalysis table tr:nth-child(even) {
+  background-color: #ebebeb;
+}
 
 
 .metaanalysis table th {

@@ -102,7 +102,7 @@ export default function Cell(props) {
   const {
     col, exp, cellId, makeClickable, editCell,
   } = props;
-  const value = getDatumValue(col, exp);
+  const value = (getDatumValue(col, exp) || null);
   const padding = Math.trunc(value).toString().length;
   /* Reminder: some parts of the Cell object are initialized in 'makeClickable' function,
   found in Metaanalysis.js */

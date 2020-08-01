@@ -39,12 +39,43 @@ function DataTable(props) {
   const [paperState, setPaperState] = papers;
   const [paperOrder, setPaperOrder] = paperOrderValue;
 
+  const getColNums = (cols) => {
+    let numMods = 0;
+    let numCalcs = 0;
+    let numData = 0;
+    cols.forEach((column) => {
+      if (column.subType === 'moderator') {
+        numMods += 1;
+      } else if (column.subType === 'calculator') {
+        numCalcs += 1;
+      } else if (column.subType === 'result') {
+        numData += 1;
+      }
+    });
+    return [numMods, numCalcs, numData];
+  };
+  const [moderatorNumber, calculatorNumber, dataNumber] = getColNums(columns);
+
   const edit = useContext(EditContext);
   const parentOfRows = useRef(null);
 
   return (
     <section>
       <table className="datatable">
+        <colgroup>
+          <col className="paperColumn" span="2" />
+          { (moderatorNumber > 0) ? <col className="moderatorColumn" span={moderatorNumber} /> : null }
+          { (calculatorNumber > 0) ? <col className="calculatorColumn" span={calculatorNumber} /> : null }
+          { (dataNumber > 0) ? <col className="dataColumn" span={dataNumber} /> : null }
+        </colgroup>
+        <thead>
+          <tr className="columnHeadings">
+            <th className="paperColumnHeader" colSpan="2">Paper specific columns</th>
+            { (moderatorNumber > 0) ? <th className="moderatorColumnHeader" colSpan={moderatorNumber}>Moderator columns</th> : null }
+            { (calculatorNumber > 0) ? <th className="calculatorColumnHeader" colSpan={calculatorNumber}>Calculator columns</th> : null }
+            { (dataNumber > 0) ? <th className="dataColumnHeader" colSpan={dataNumber}>Calculated result columns</th> : null }
+          </tr>
+        </thead>
         <thead>
           <tr>
             <th {...makeClickable('Paper', paperColumnDetails)} className={`${edit.flag ? 'editMode primary' : ''}`}>

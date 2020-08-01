@@ -18,6 +18,7 @@ import './Metaanalysis.css';
 function Metaanalysis(props) {
   const { metaanalysis } = props;
   populateCircularMa(metaanalysis);
+  window.currentMa = metaanalysis;
 
   const [title] = useState(metaanalysis.title);
   const [tags, setTags] = useState(metaanalysis.tags);
@@ -38,9 +39,41 @@ function Metaanalysis(props) {
     cellId: null,
     text: null,
   });
+  const edit = useContext(EditContext);
+
+  const assignSubType = (cols) => {
+    const columnsClone = [...cols];
+    columnsClone.forEach((column) => {
+      if (column.id === '1' || column.id === '2' || column.id === '7') {
+        column.subType = 'moderator';
+      } else if (column.type !== 'result') {
+        column.subType = 'calculator';
+      } else { column.subType = 'result'; }
+    });
+    return columnsClone;
+  };
+
+  const reorderColumnsBySubtype = (cols) => {
+    const columnsClone = [...cols];
+    const modCols = [];
+    const calcCols = [];
+    const dataCols = [];
+    columnsClone.forEach((column) => {
+      if (column.subType === 'moderator') {
+        modCols.push(column);
+      } else if (column.subType === 'calculator') {
+        calcCols.push(column);
+      } else if (column.subType === 'result') {
+        dataCols.push(column);
+      }
+    });
+    const orderedCols = modCols.concat(calcCols.concat(dataCols));
+    return orderedCols;
+  };
+
+  const columnsClone = reorderColumnsBySubtype(assignSubType(columns));
 
   const makeClickable = (cellId, details, cellType) => {
-    const edit = useContext(EditContext);
     let className = '';
     if (displayedCell && cellId === displayedCell.cellId) className += 'active ';
     if (cellType === 'computed') {
@@ -58,10 +91,9 @@ function Metaanalysis(props) {
   };
 
   const editCell = (value, cellId) => {
-    setPapers(replaceCell(papers, columns, value, cellId));
+    if (!value) { value = null; }
+    setPapers(replaceCell(papers, columnsClone, value, cellId));
   };
-
-  const edit = useContext(EditContext);
 
   return (
     <main className="metaanalysis">
@@ -95,7 +127,7 @@ function Metaanalysis(props) {
         <DataTable
           path="/table"
           tabName="Table"
-          columns={columns}
+          columns={columnsClone}
           papers={[papers, setPapers]}
           paperOrderValue={[paperOrder, setPaperOrder]}
           makeClickable={makeClickable}
