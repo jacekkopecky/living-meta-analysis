@@ -23,7 +23,7 @@ function AddPaperPopup(props) {
       enteredBy: currentUser.displayName,
       index: 0,
       paper: null,
-      title: '',
+      title: null,
     };
     return expObj;
   };

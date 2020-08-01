@@ -216,7 +216,6 @@ function Paper(props) {
           <td {...makeClickable(exp.ctime + paper.id, expDetails(exp))} key={exp.title}>
             { exp.title }
           </td>
-
           { columns.map((col) => (
             <Cell
               cellId={`${exp.ctime + paper.id}+${col.formula || col.id}`}

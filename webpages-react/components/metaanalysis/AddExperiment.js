@@ -18,15 +18,32 @@ function AddExperimentPopup(props) {
   const createNewExperiment = (experimentDetails) => {
     const newTime = new Date().getTime();
     const data = {};
-    for (let i = 0; i < experimentDetails.length; i += 1) {
-      data[i] = {
-        ctime: newTime,
-        enteredBy: currentUser.displayName,
-        value: experimentDetails[i],
-      };
+    // for (let i = 0; i < experimentDetails.length; i += 1) {
+    //   data[i] = {
+    //     ctime: newTime,
+    //     enteredBy: currentUser.displayName,
+    //     value: experimentDetails[i][0],
+    //   };
+    // }
+    for (let i = 0; i < paper.columns.length; i += 1) {
+      for (let j = 0; j < experimentDetails.length; j += 1) {
+        if (experimentDetails[j][1] === paper.columns[i].id) {
+          data[paper.columns[i].id] = {
+            ctime: newTime,
+            enteredBy: currentUser.displayName,
+            value: experimentDetails[j][0],
+          };
+        }
+      }
     }
+    for (let i = 0; i < paper.columns.length; i += 1) {
+      if (!data[paper.columns[i].id]) {
+        data[paper.columns[i].id] = null;
+      }
+    }
+    console.log(data);
     let index;
-    if (paper.experiments.length === 1) {
+    if (paper.experiments.length === 1 && paper.experiments[0].title === null) {
       index = 0;
     } else {
       index = paper.experiments.length;
@@ -37,7 +54,7 @@ function AddExperimentPopup(props) {
       enteredBy: currentUser.displayName,
       index,
       paper,
-      title: experimentDetails[0],
+      title: experimentDetails[0][0],
     };
     return expObj;
   };
@@ -47,10 +64,13 @@ function AddExperimentPopup(props) {
     const children = e.target.children;
     for (let i = 0; i < children.length; i += 1) {
       const inputElem = children[i].children[0];
-      if (inputElem && inputElem.value) {
-        experimentDetails[i] = inputElem.value;
-      } else {
-        experimentDetails[i] = 'n/a';
+      if (inputElem) {
+        const colID = inputElem.getAttribute('columnid');
+        if (inputElem.value) {
+          experimentDetails[i] = [inputElem.value, colID];
+        } else {
+          experimentDetails[i] = ['n/a', colID];
+        }
       }
     }
     const newExperiment = createNewExperiment(experimentDetails);
@@ -58,8 +78,6 @@ function AddExperimentPopup(props) {
     const paperIndex = tempPapers.indexOf(paper);
     tempPapers[paperIndex].experiments[newExperiment.index] = newExperiment;
     setPapers(tempPapers);
-    console.log(paper.experiments);
-    console.log(columns);
     closeHandler();
   };
 
@@ -69,20 +87,21 @@ function AddExperimentPopup(props) {
       <form className="addExperimentForm" onSubmit={handleSubmit}>
         <label key='experiment'>
           Experiment type:
-          <input type="text" id="ExperimentInput" />
+          <input type="text" id="ExperimentInput" columnid="experiment" />
         </label>
-        { columns.map((col) => (
+        { columns && columns.map((col) => (
           (col.type === 'characteristic')
             ? (
-              <label key={col.title.replace(/\s/g, '')} >
+              <label key={`labelFor${col.id}`} >
                 { col.title }:
                 <input
                   type="text"
                   id={`${col.title.replace(/\s/g, '')}Input`}
+                  columnid={col.sourceColumnMap[paper.id]}
                 />
               </label>
             )
-            : ''
+            : null
         )) }
         <input type="submit" value="Submit" />
       </form>
