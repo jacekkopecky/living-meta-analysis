@@ -10,6 +10,7 @@ function AddExperimentPopup(props) {
   const [popupStatus, setPopupStatus] = flag;
   const [papers, setPapers] = paperState;
   const currentUser = useContext(UserContext);
+  let correctInputTypes = true;
 
   const closeHandler = () => {
     setPopupStatus(!popupStatus);
@@ -66,19 +67,29 @@ function AddExperimentPopup(props) {
       const inputElem = children[i].children[0];
       if (inputElem) {
         const colID = inputElem.getAttribute('columnid');
+        const inputType = inputElem.getAttribute('inputtype');
         if (inputElem.value) {
           experimentDetails[i] = [inputElem.value, colID];
+          if (inputType === 'number') {
+            if (!parseInt(inputElem.value, 10)) {
+              correctInputTypes = false;
+            }
+          }
         } else {
-          experimentDetails[i] = ['n/a', colID];
+          experimentDetails[i] = [null, colID];
         }
       }
     }
-    const newExperiment = createNewExperiment(experimentDetails);
     const tempPapers = [...papers];
-    const paperIndex = tempPapers.indexOf(paper);
-    tempPapers[paperIndex].experiments[newExperiment.index] = newExperiment;
+    if (correctInputTypes) {
+      const newExperiment = createNewExperiment(experimentDetails);
+      const paperIndex = tempPapers.indexOf(paper);
+      tempPapers[paperIndex].experiments[newExperiment.index] = newExperiment;
+      closeHandler();
+    } else {
+      e.target.nextSibling.textContent = 'Ensure correct input types';
+    }
     setPapers(tempPapers);
-    closeHandler();
   };
 
   const content = (
@@ -86,18 +97,19 @@ function AddExperimentPopup(props) {
       <h1> Add an Experiment to { paper.title } </h1>
       <form className="addExperimentForm" onSubmit={handleSubmit}>
         <label key='experiment'>
-          Experiment type:
+          Experiment type (string):
           <input type="text" id="ExperimentInput" columnid="experiment" />
         </label>
         { columns && columns.map((col) => (
           (col.type === 'characteristic')
             ? (
               <label key={`labelFor${col.id}`} >
-                { col.title }:
+                { col.title } ({ col.inputType }):
                 <input
                   type="text"
                   id={`${col.title.replace(/\s/g, '')}Input`}
                   columnid={col.sourceColumnMap[paper.id]}
+                  inputtype={col.inputType}
                 />
               </label>
             )
@@ -105,6 +117,7 @@ function AddExperimentPopup(props) {
         )) }
         <input type="submit" value="Submit" />
       </form>
+      <p className="popupWarn" />
     </div>
   );
 
