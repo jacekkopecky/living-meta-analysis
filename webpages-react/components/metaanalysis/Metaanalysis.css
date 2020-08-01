@@ -196,13 +196,17 @@
 .metaanalysis .popupContainer {
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
-  left: 25%;
-  top: 35%;
-  width: 50%; /* Full width */
-  height: 30%; /* Full height */
+  left: 15%;
+  top: 15%;
+  width: 60%; /* Full width */
+  height: 60%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
   background-color: #FFFFFF;
   border: 5px solid black;
+}
+
+.metaanalysis .popupContentWrapper {
+  padding: 20px;
 }
 
 .metaanalysis .popupClose,
@@ -228,6 +232,7 @@
 .metaanalysis .addExperimentForm label {
   display: block;
   width: 100%;
+  margin: 10px;
 }
 
 .metaanalysis .addPaperForm label input,
@@ -239,7 +244,6 @@
   width: 60%;
   text-align: left;
   float: right;
-  margin-right: 10px;
 }
 
 .metaanalysis .addExperimentButton {

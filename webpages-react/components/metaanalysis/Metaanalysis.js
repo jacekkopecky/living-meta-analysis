@@ -46,8 +46,10 @@ function Metaanalysis(props) {
     columnsClone.forEach((column) => {
       if (column.id === '1' || column.id === '2' || column.id === '7') {
         column.subType = 'moderator';
+        column.inputType = 'string';
       } else if (column.type !== 'result') {
         column.subType = 'calculator';
+        column.inputType = 'number';
       } else { column.subType = 'result'; }
     });
     return columnsClone;

@@ -21,7 +21,9 @@ function Popup(props) {
         >
           ×
         </div>
-        { content }
+        <div className="popupContentWrapper">
+          { content }
+        </div>
       </div>
     </div>
   );
