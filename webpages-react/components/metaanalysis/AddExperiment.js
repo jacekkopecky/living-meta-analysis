@@ -19,13 +19,6 @@ function AddExperimentPopup(props) {
   const createNewExperiment = (experimentDetails) => {
     const newTime = new Date().getTime();
     const data = {};
-    // for (let i = 0; i < experimentDetails.length; i += 1) {
-    //   data[i] = {
-    //     ctime: newTime,
-    //     enteredBy: currentUser.displayName,
-    //     value: experimentDetails[i][0],
-    //   };
-    // }
     for (let i = 0; i < paper.columns.length; i += 1) {
       for (let j = 0; j < experimentDetails.length; j += 1) {
         if (experimentDetails[j][1] === paper.columns[i].id) {

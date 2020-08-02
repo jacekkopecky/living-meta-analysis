@@ -9,6 +9,7 @@ import Metadata from './Metadata';
 import PlotsDefinitions from './PlotsDefinitions';
 import Details from './Details';
 import EditContext from './EditContext';
+import UserContext from './UserContext';
 
 import { populateCircularMa } from '../../tools/datatools';
 import replaceCell from '../../tools/editTools';
@@ -40,6 +41,7 @@ function Metaanalysis(props) {
     text: null,
   });
   const edit = useContext(EditContext);
+  const currentUser = useContext(UserContext);
 
   const assignSubType = (cols) => {
     const columnsClone = [...cols];
@@ -93,8 +95,7 @@ function Metaanalysis(props) {
   };
 
   const editCell = (value, cellId) => {
-    if (!value) { value = null; }
-    setPapers(replaceCell(papers, columnsClone, value, cellId));
+    setPapers(replaceCell(papers, columnsClone, value, cellId, currentUser));
   };
 
   return (
