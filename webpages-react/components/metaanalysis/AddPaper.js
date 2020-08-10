@@ -104,7 +104,7 @@ function AddPaperPopup(props) {
     <div className="addPaperPopup">
       <h1> Add a new paper </h1>
       <form className="addPaperForm" onSubmit={handleSubmit}>
-        <label>
+        <label htmlFor="paperInput">
           Paper*:
           <input
             type="text"
@@ -112,7 +112,7 @@ function AddPaperPopup(props) {
             placeholder="Enter a shortname for the paper"
           />
         </label>
-        <label>
+        <label htmlFor="referenceInput">
           Reference*:
           <input
             type="text"
@@ -120,7 +120,7 @@ function AddPaperPopup(props) {
             placeholder="Author, year, title, journal etc"
           />
         </label>
-        <label>
+        <label htmlFor="descriptionInput">
           Description:
           <input
             type="textarea"
@@ -128,7 +128,7 @@ function AddPaperPopup(props) {
             placeholder="Enter a description of the paper"
           />
         </label>
-        <label>
+        <label htmlFor="linkInput">
           Link:
           <input
             type="text"
@@ -136,7 +136,7 @@ function AddPaperPopup(props) {
             placeholder="Enter a URL for the paper"
           />
         </label>
-        <label>
+        <label htmlFor="doiInput">
           DOI:
           <input
             type="text"

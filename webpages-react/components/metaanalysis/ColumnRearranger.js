@@ -26,20 +26,20 @@ function dragLeaveListener(event) {
 function RearrangeColumn(e, columns, setColumns, moveCols, setMoveCols) {
   xCoord = e.pageX;
 
-  function clearUp(nodeList) {
-    for (let i = 0; i < nodeList.length; i += 1) {
-      console.log(nodeList[i]);
-      nodeList[i].removeEventListener('dragleave', dragLeaveListener);
-      nodeList[i].removeEventListener('dragover', dragOverListener);
-      if (nodeList[i].classList.contains('colRearrangeLeft')) {
-        nodeList[i].classList.remove('colRearrangeLeft');
-      }
-      if (nodeList[i].classList.contains('colRearrangeRight')) {
-        nodeList[i].classList.remove('colRearrangeRight');
-      }
-    }
-    return nodeList;
-  }
+  // function clearUp(nodeList) {
+  //   for (let i = 0; i < nodeList.length; i += 1) {
+  //     console.log(nodeList[i]);
+  //     nodeList[i].removeEventListener('dragleave', dragLeaveListener);
+  //     nodeList[i].removeEventListener('dragover', dragOverListener);
+  //     if (nodeList[i].classList.contains('colRearrangeLeft')) {
+  //       nodeList[i].classList.remove('colRearrangeLeft');
+  //     }
+  //     if (nodeList[i].classList.contains('colRearrangeRight')) {
+  //       nodeList[i].classList.remove('colRearrangeRight');
+  //     }
+  //   }
+  //   return nodeList;
+  // }
 
   function handleDragStart() {
     let columnDomElem;
