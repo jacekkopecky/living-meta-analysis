@@ -200,7 +200,7 @@ function Paper(props) {
                   <img src="/img/grab-icon.png" alt="Grabber" className="grabberIcon" />
                 </button>
               )
-              : '' }
+              : null }
             { title }
             <AddExperiment paper={paper} columns={columns} paperState={papers} />
           </td>

@@ -25,7 +25,7 @@ function Metaanalysis(props) {
   const [tags, setTags] = useState(metaanalysis.tags);
   const [description, setDescription] = useState(metaanalysis.description);
   const [published, setPublished] = useState(metaanalysis.published);
-  const [columns] = useState(metaanalysis.columns);
+  const [columns, setColumns] = useState(metaanalysis.columns);
   const [papers, setPapers] = useState(metaanalysis.papers);
   const [paperOrder, setPaperOrder] = useState(metaanalysis.paperOrder);
   const [aggregates] = useState(metaanalysis.aggregates);
@@ -130,7 +130,7 @@ function Metaanalysis(props) {
         <DataTable
           path="/table"
           tabName="Table"
-          columns={columnsClone}
+          columnState={[columnsClone, setColumns]}
           papers={[papers, setPapers]}
           paperOrderValue={[paperOrder, setPaperOrder]}
           makeClickable={makeClickable}

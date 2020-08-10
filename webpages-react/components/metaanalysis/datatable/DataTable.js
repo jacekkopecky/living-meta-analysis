@@ -1,8 +1,9 @@
-import React, { useContext, useRef } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import Paper from './Paper';
 import AddPaper from '../AddPaper';
 import Editable from '../Editable';
 import EditContext from '../EditContext';
+import RearrangeColumn from '../ColumnRearranger';
 
 import './DataTable.css';
 
@@ -34,8 +35,9 @@ const computedColDetails = (col) => (
 
 function DataTable(props) {
   const {
-    columns, papers, paperOrderValue, makeClickable, editCell, metaanalysis,
+    columnState, papers, paperOrderValue, makeClickable, editCell, metaanalysis,
   } = props;
+  const [columns, setColumns] = columnState;
   const [paperState, setPaperState] = papers;
   const [paperOrder, setPaperOrder] = paperOrderValue;
 
@@ -55,6 +57,8 @@ function DataTable(props) {
     return [numMods, numCalcs, numData];
   };
   const [moderatorNumber, calculatorNumber, dataNumber] = getColNums(columns);
+
+  const [moveCols, setMoveCols] = useState({ col: null, colGroup: [] });
 
   const edit = useContext(EditContext);
   const parentOfRows = useRef(null);
@@ -95,9 +99,27 @@ function DataTable(props) {
                   col.id || col.fullLabel,
                   col.id ? dataColDetails(col) : computedColDetails(col),
                 )}
-                className={`${edit.flag ? 'editMode primary' : ''}`}
+                className={`column ${edit.flag ? 'editMode primary' : ''}`}
+                columntype={col.subType}
+                columnid={col.id || col.number}
               >
                 { col.title || col.fullLabel }
+                { edit.flag
+                  ? (
+                    <button
+                      type="submit"
+                      className="grabberButton"
+                      onDragStart={
+                        (e) => RearrangeColumn(e, columns, setColumns, moveCols, setMoveCols)
+                      }
+                      onDragEnd={
+                        (e) => RearrangeColumn(e, columns, setColumns, moveCols, setMoveCols)
+                      }
+                    >
+                      <img src="/img/grab-icon.png" alt="Grabber" className="grabberIcon" />
+                    </button>
+                  )
+                  : null }
               </th>
             )) }
           </tr>
