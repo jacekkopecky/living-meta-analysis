@@ -18,6 +18,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run lint
+      - name: Build React pages
+        run: npm run build
       - name: Note GIT SHA as version
         id: version
         run: |
