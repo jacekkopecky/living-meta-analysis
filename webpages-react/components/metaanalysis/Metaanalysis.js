@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import Tabs from '../layout/Tabs';
-import TagList from './tags/TagList';
+// import TagList from './tags/TagList';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Aggregates from './aggregates/Aggregates';
@@ -22,7 +22,7 @@ function Metaanalysis(props) {
   window.currentMa = metaanalysis;
 
   const [title] = useState(metaanalysis.title);
-  const [tags, setTags] = useState(metaanalysis.tags);
+  // const [tags, setTags] = useState(metaanalysis.tags);
   const [description, setDescription] = useState(metaanalysis.description);
   const [published, setPublished] = useState(metaanalysis.published);
   const [columns, setColumns] = useState(metaanalysis.columns);
@@ -105,7 +105,7 @@ function Metaanalysis(props) {
           <p type="input">{ title }</p>
         </div>
         <div className="titleBarButtons">
-          { /*<TagList tags={tags} setTags={setTags} />*/ }
+          { /* <TagList tags={tags} setTags={setTags} /> */ }
           <span
             id="toggle-editing"
             role="menuitem"

@@ -89,14 +89,14 @@ function AddExperimentPopup(props) {
     <div className="addExperimentPopup">
       <h1> Add an Experiment to { paper.title } </h1>
       <form className="addExperimentForm" onSubmit={handleSubmit}>
-        <label key='experiment'>
+        <label htmlFor="ExperimentInput" key="experiment">
           Experiment type (string):
           <input type="text" id="ExperimentInput" columnid="experiment" />
         </label>
         { columns && columns.map((col) => (
           (col.type === 'characteristic')
             ? (
-              <label key={`labelFor${col.id}`} >
+              <label htmlFor={`${col.title.replace(/\s/g, '')}Input`} key={`labelFor${col.id}`}>
                 { col.title } ({ col.inputType }):
                 <input
                   type="text"
