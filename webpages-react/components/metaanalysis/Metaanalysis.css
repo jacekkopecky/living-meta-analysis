@@ -109,6 +109,11 @@
   position: relative;
 }
 
+.metaanalysis table .column {
+  position: relative;
+  height: 70px;
+}
+
 .metaanalysis .grabberButton {
   background: none;
 	color: inherit;
@@ -274,6 +279,14 @@
 
 .metaanalysis #addPaperButton:hover {
   background-color: #ebebeb;
+}
+
+.colRearrangeRight {
+  box-shadow: -0.4em 0 0.2em -0.2em #000000 inset;
+}
+
+.colRearrangeLeft {
+  box-shadow: 0.4em 0 0.2em -0.2em #000000 inset;
 }
 
 textarea {
