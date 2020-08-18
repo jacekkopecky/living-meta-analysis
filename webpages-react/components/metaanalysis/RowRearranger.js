@@ -1,4 +1,41 @@
 // Function fires when user drags/drops a grabber icon in edit mode
+let yCoord;
+let originalRow;
+
+function dragOverListener(event) {
+  let topElem = event.target;
+  // console.log(topElem, originalRow);
+  let bottomElem = event.target;
+  while (topElem.nodeName !== 'TR') {
+    topElem = topElem.parentNode;
+  }
+  while (bottomElem.nodeName !== 'TR') {
+    bottomElem = bottomElem.parentNode;
+  }
+  while (!bottomElem.nextSibling.classList.contains('paperstart')) {
+    bottomElem = bottomElem.nextSibling;
+  }
+  if (yCoord > event.pageY && topElem !== originalRow) {
+    topElem.classList.add('rowRearrangeAbove');
+  } else if (yCoord < event.pageY && topElem !== originalRow) {
+    bottomElem.classList.add('rowRearrangeBelow');
+  }
+}
+function dragLeaveListener(event) {
+  let elem = event.target;
+  while (elem.nodeName !== 'TR') {
+    elem = elem.parentNode;
+  }
+  while (!elem.nextSibling.classList.contains('paperstart')) {
+    if (elem.classList.contains('rowRearrangeAbove')) {
+      elem.classList.remove('rowRearrangeAbove');
+    }
+    elem = elem.nextSibling;
+    if (elem.classList.contains('rowRearrangeBelow')) {
+      elem.classList.remove('rowRearrangeBelow');
+    }
+  }
+}
 
 function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e, papers, paperOrderValue) {
   const [paperState, setPaperState] = papers;
@@ -17,6 +54,7 @@ function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e, papers, paperOrder
   /* Fires on dragstart browser event
   Returns all rows associated with dragged row, index of top row */
   function handleDragStart() {
+    yCoord = e.pageY;
     for (let j = 0; j < parentOfRows.current.children.length; j += 1) {
       const elem = parentOfRows.current.children[j];
       elem.addEventListener('dragover', dragOverListener);
@@ -31,6 +69,7 @@ function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e, papers, paperOrder
     }
 
     const relatedRow = thisElement.parentNode.parentNode;
+    originalRow = relatedRow;
     const rowsToMove = getRelatedRows(relatedRow);
     rowsToMove.forEach((element) => {
       element.classList.add('beingRearranged');
@@ -49,7 +88,7 @@ function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e, papers, paperOrder
   }
 
   function handleDragEnd(rowsToDrop) {
-    const yCoord = e.pageY;
+    const yDropCoord = e.pageY;
 
     function calcOffset(y1, y2) {
       return y2 - y1;
@@ -70,7 +109,7 @@ function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e, papers, paperOrder
       parentOfRows.current.childNodes[i].getBoundingClientRect().top,
     );
 
-    while (offset < yCoord && i < 1000) {
+    while (offset < yDropCoord && i < 1000) {
       offset = calcOffset(
         bodyRect,
         parentOfRows.current.childNodes[i].getBoundingClientRect().top,
@@ -90,13 +129,22 @@ function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e, papers, paperOrder
     }
 
     const tempPapers = [...paperState];
-    tempPapers.splice(rowsToDrop.topRowIndex, 1);
-    tempPapers.splice(k, 0, paperState[rowsToDrop.topRowIndex]);
-    setPaperState(tempPapers);
-
     const tempPaperOrder = [...paperOrder];
-    tempPaperOrder.splice(rowsToDrop.topRowIndex, 1);
-    tempPaperOrder.splice(k, 0, paperOrder[rowsToDrop.topRowIndex]);
+
+    if (yCoord < yDropCoord) {
+      tempPapers.splice(rowsToDrop.topRowIndex, 1);
+      tempPapers.splice(k, 0, paperState[rowsToDrop.topRowIndex]);
+      tempPaperOrder.splice(rowsToDrop.topRowIndex, 1);
+      tempPaperOrder.splice(k, 0, paperOrder[rowsToDrop.topRowIndex]);
+    }
+    if (yCoord > yDropCoord) {
+      tempPapers.splice(rowsToDrop.topRowIndex, 1);
+      tempPapers.splice(k - 1, 0, paperState[rowsToDrop.topRowIndex]);
+      tempPaperOrder.splice(rowsToDrop.topRowIndex, 1);
+      tempPaperOrder.splice(k - 1, 0, paperOrder[rowsToDrop.topRowIndex]);
+    }
+
+    setPaperState(tempPapers);
     setPaperOrder(tempPaperOrder);
 
     rowsToDrop.rows.forEach((element) => {
@@ -111,27 +159,6 @@ function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e, papers, paperOrder
     if (finalHover[0]) {
       finalHover[0].classList.remove('tableRearrangeHover');
     }
-  }
-
-  function dragOverListener(event) {
-    let elem = event.target;
-    while (elem.nodeName !== 'TR') {
-      elem = elem.parentNode;
-    }
-    while (!elem.nextSibling.classList.contains('paperstart')) {
-      elem = elem.nextSibling;
-    }
-    elem.classList.add('tableRearrangeHover');
-  }
-  function dragLeaveListener(event) {
-    let elem = event.target;
-    while (elem.nodeName !== 'TR') {
-      elem = elem.parentNode;
-    }
-    while (!elem.nextSibling.classList.contains('paperstart')) {
-      elem = elem.nextSibling;
-    }
-    elem.classList.remove('tableRearrangeHover');
   }
 
   if (e.type === 'dragstart') { setRowEvent(handleDragStart()); }

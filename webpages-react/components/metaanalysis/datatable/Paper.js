@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import Cell from './Cell';
 import { formatDateTimeSplit } from '../../../tools/datatools';
 import EditContext from '../EditContext';
-import RearrangeRow from '../TableRearranger';
+import RearrangeRow from '../RowRearranger';
 import AddExperiment from '../AddExperiment';
 
 const paperDetails = (paper) => {

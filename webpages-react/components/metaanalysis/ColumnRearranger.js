@@ -1,16 +1,13 @@
 let xCoord;
+let originalColumn;
 
 function dragOverListener(event) {
   const hoveredColumn = event.currentTarget;
-  if (xCoord > event.pageX && !hoveredColumn.classList.contains('colRearrangeLeft')) {
+  if (xCoord > event.pageX && hoveredColumn !== originalColumn && !hoveredColumn.classList.contains('colRearrangeLeft')) {
     hoveredColumn.classList.add('colRearrangeLeft');
-    console.log(hoveredColumn.classList);
-    console.log(xCoord, event.pageX);
   }
-  if (xCoord < event.pageX && !hoveredColumn.classList.contains('colRearrangeRight')) {
+  if (xCoord < event.pageX && hoveredColumn !== originalColumn && !hoveredColumn.classList.contains('colRearrangeRight')) {
     hoveredColumn.classList.add('colRearrangeRight');
-    console.log(hoveredColumn.classList);
-    console.log(xCoord, event.pageX);
   }
 }
 
@@ -26,20 +23,18 @@ function dragLeaveListener(event) {
 function RearrangeColumn(e, columns, setColumns, moveCols, setMoveCols) {
   xCoord = e.pageX;
 
-  // function clearUp(nodeList) {
-  //   for (let i = 0; i < nodeList.length; i += 1) {
-  //     console.log(nodeList[i]);
-  //     nodeList[i].removeEventListener('dragleave', dragLeaveListener);
-  //     nodeList[i].removeEventListener('dragover', dragOverListener);
-  //     if (nodeList[i].classList.contains('colRearrangeLeft')) {
-  //       nodeList[i].classList.remove('colRearrangeLeft');
-  //     }
-  //     if (nodeList[i].classList.contains('colRearrangeRight')) {
-  //       nodeList[i].classList.remove('colRearrangeRight');
-  //     }
-  //   }
-  //   return nodeList;
-  // }
+  function clearUp(nodeList) {
+    for (let i = 0; i < nodeList.length; i += 1) {
+      nodeList[i].removeEventListener('dragleave', dragLeaveListener);
+      nodeList[i].removeEventListener('dragover', dragOverListener);
+      if (nodeList[i].classList.contains('colRearrangeLeft')) {
+        nodeList[i].classList.remove('colRearrangeLeft');
+      }
+      if (nodeList[i].classList.contains('colRearrangeRight')) {
+        nodeList[i].classList.remove('colRearrangeRight');
+      }
+    }
+  }
 
   function handleDragStart() {
     let columnDomElem;
@@ -48,6 +43,7 @@ function RearrangeColumn(e, columns, setColumns, moveCols, setMoveCols) {
     } else {
       columnDomElem = e.target.parentNode.parentNode;
     }
+    originalColumn = columnDomElem;
     const columnType = columnDomElem.getAttribute('columntype');
     const columnId = columnDomElem.getAttribute('columnid');
     const columnTypeGroup = columns.filter((col) => col.subType === columnType);
@@ -85,13 +81,9 @@ function RearrangeColumn(e, columns, setColumns, moveCols, setMoveCols) {
 
     const columnElems = moveCols.colGroup[1];
 
-    for (let i = 0; i < columnElems.length; i += 1) {
-      console.log(columnElems[i]);
-      columnElems[i].removeEventListener('dragleave', dragLeaveListener);
-      columnElems[i].removeEventListener('dragover', dragOverListener);
-    }
+    clearUp(columnElems);
 
-    if (moveCols.colGroup[1].includes(dropElem)) {
+    if (moveCols.colGroup[1].includes(dropElem) && dropElem !== moveCols.col[1]) {
       const dropIndex = moveCols.colGroup[1].indexOf(dropElem);
       const elemIndex = moveCols.colGroup[1].indexOf(moveCols.col[1]);
       const modGroup = columns.filter((col) => col.subType === 'moderator');
@@ -143,10 +135,6 @@ function RearrangeColumn(e, columns, setColumns, moveCols, setMoveCols) {
 
   if (e.type === 'dragstart') { setMoveCols(handleDragStart()); }
   if (e.type === 'dragend') {
-    // setMoveCols({
-    //   col: moveCols.col,
-    //   colGroup: [moveCols.colGroup[0], clearUp(moveCols.colGroup[1])],
-    // });
     setColumns(handleDragEnd());
   }
 }

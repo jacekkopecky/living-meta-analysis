@@ -138,8 +138,12 @@
   border-width: 1em;
 }
 
-.metaanalysis .tableRearrangeHover {
-  box-shadow: 0 0.4em 0.2em -0.2em #000000;
+.metaanalysis .rowRearrangeBelow {
+  box-shadow: 0 -0.4em 0.2em -0.2em #000000 inset;
+}
+
+.metaanalysis .rowRearrangeAbove {
+  box-shadow: 0 0.4em 0.2em -0.2em #000000 inset;
 }
 
 #toggle-editing,
