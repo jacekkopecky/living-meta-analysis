@@ -38,12 +38,22 @@
   background-color: red;
 }
 
+
 .details .content {
   margin-left: 0.5em;
+  width: 95%;
+}
+
+.details .detailsTableContainer {
+  width: 49%;
+  float: left;
 }
 
 .details:empty {
   display: none;
+}
+
+.details table {
 }
 
 .details table tbody {
@@ -54,6 +64,8 @@
   border-top: 0.2em solid black !important;
   border-bottom: 0.2em solid black !important;
   border-left: none !important;
+  height: 2em;
+  overflow: scroll;
 }
 
 .details table td:hover {
@@ -62,4 +74,107 @@
 
 .details tr:nth-child(even) {
   background-color: inherit !important;
+}
+
+.details .commentContainer {
+  width: 49%;
+  float: right;
+  height: 100%;
+}
+
+.details .commentContainer .commentHolderOuter {
+ height: 100%;
+}
+
+.details .commentContainer .commentHolderInner {
+  border: 3px solid black;
+  height: 80%;
+}
+
+.details .commentContainer .commentText {
+  height: 60%;
+  width: 100%;
+  text-align: center;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.details .commentContainer .commentText .activeCommentScroller,
+.details .commentContainer .commentText .activeCommentScroller:focus {
+  background-color: #33C1FF;
+  cursor:pointer;
+  outline: none;
+  height: 30px;
+  width: 30px;
+  vertical-align: middle;
+}
+
+.details .commentContainer .commentText .inactiveCommentScroller,
+.details .commentContainer .commentText .inactiveCommentScroller:focus {
+  background-color: #C0C0C0;
+  outline: none;
+  height: 30px;
+  width: 30px;
+  vertical-align: middle;
+}
+
+.details .commentContainer .commentText .commentContent {
+  width: 80%;
+  text-align: center;
+}
+
+.leftCommentScroller {
+  float: left;
+}
+
+.rightCommentScroller {
+  float: right;
+}
+
+.details .commentContainer .postComment {
+  border-top: 3px solid black;
+  background-color: #C0C0C0;
+  height: 20%;
+  text-align: center;
+}
+
+.details .commentContainer .postCommentActive,
+.details .commentContainer .postCommentActive:focus {
+  outline: none;
+  height: 100px
+}
+
+.details .commentContainer .postCommentInactive,
+.details .commentContainer .postCommentInactive:focus {
+  outline: none;
+  cursor: pointer;
+  height: 20px;
+}
+
+.details .postComment .postCommentClose {
+  float: right;
+  background-color: red;
+  border-left: 3px solid black;
+  border-bottom: 3px solid black;
+  width: 30px;
+  height: 30px;
+  line-height: 50%;
+  cursor: pointer;
+  text-align: center;
+  font-size: 3em;
+  outline: none;
+}
+
+.details .postComment .postCommentInput,
+.details .postComment .postCommentInput:focus {
+  width: 90%;
+  height: 60px;
+  text-align: left;
+  outline: none;
+}
+
+.details .postComment .postCommentSubmit,
+.details .postComment .postCommentSubmit:focus {
+  border: 3px solid black;
+  outline: none;
 }

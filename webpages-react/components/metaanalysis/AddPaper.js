@@ -91,9 +91,6 @@ function AddPaperPopup(props) {
     if (paperDetails.paperInput && paperDetails.referenceInput) {
       const newPaper = createNewPaper(paperDetails);
       newPaper.experiments[0].paper = newPaper;
-      // const tempPaper = { ...papers[0]};
-      // tempPaper.title = 'joka';
-      // console.log(papers);
       setPaperOrder([newPaper.id, ...paperOrder]);
       setPapers([newPaper, ...papers]);
       closeHandler();
