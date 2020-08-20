@@ -97,6 +97,7 @@
   text-align: center;
   display: inline-block;
   vertical-align: middle;
+  position: relative;
 }
 
 .details .commentContainer .commentText .activeCommentScroller,
@@ -119,16 +120,22 @@
 }
 
 .details .commentContainer .commentText .commentContent {
-  width: 80%;
+  width: 100%;
   text-align: center;
+  padding: 0 35px;
+  box-sizing: border-box;
 }
 
 .leftCommentScroller {
-  float: left;
+  position: absolute;
+  top:0;
+  left:0;
 }
 
 .rightCommentScroller {
-  float: right;
+  position: absolute;
+  top:0;
+  right:0;
 }
 
 .details .commentContainer .postComment {
@@ -163,6 +170,11 @@
   text-align: center;
   font-size: 3em;
   outline: none;
+}
+
+.details .postComment .postCommentSubmit {
+  cursor: pointer;
+  background-color: #32CD32;
 }
 
 .details .postComment .postCommentInput,
