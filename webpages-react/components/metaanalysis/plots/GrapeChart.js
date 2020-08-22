@@ -39,7 +39,7 @@ function GrapeChart(props) {
               <line class="guideline" x1="540" x2="575" y1="-490" y2="-490" />
               <text x="580" y="-490">weighted mean</text>
               </g> --> */ }
-        <text className="title" transform="translate(-40,-530)">Grape Chart</text>
+        <text className="title" transform="translate(-40,-530)">{ graph.title || graph.fullLabel }</text>
       </g>
 
       { /* Displaying circles and guidelines */ }

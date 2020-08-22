@@ -134,3 +134,69 @@ svg.forestplotgroup .summary .sumname.sumtotal {
   font-weight: bold;
   font-size: 125%;
 }
+
+.graphForm label {
+  display: block;
+  text-align: left;
+  padding-right: 10%;
+  box-sizing: border-box;
+}
+
+.graphForm label input,
+.graphForm label input:focus{
+  border: 0.1em solid black;
+  outline: none;
+  width: 20%;
+  text-align: left;
+}
+
+.hiddenSubmit {
+  display: none;
+}
+
+#plotContainer {
+  padding-top: 1em;
+}
+
+#graphSelectionContainer {
+  position: relative;
+}
+
+#plotSelect,
+#graphButtonContainer {
+  display: inline-block;
+  height: 2em;
+}
+
+#editGraphButtonContainer,
+#addGraphButtonContainer {
+  position: relative;
+  display: inline-block;
+  padding-left: 2em;
+}
+
+#editGraphButton,
+#editGraphButton:focus,
+#addGraphButton,
+#addGraphButton:focus {
+  border: 0.2em solid black;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background-color: #FFC0CB;
+  outline: none;
+  cursor: pointer;
+  /* Prevent text highlight */
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+#editGraphButton:hover,
+#addGraphButton:hover {
+  background-color: #FF69B4;
+}

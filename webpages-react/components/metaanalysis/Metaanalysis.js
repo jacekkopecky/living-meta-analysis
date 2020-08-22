@@ -5,6 +5,7 @@ import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Aggregates from './aggregates/Aggregates';
 import Plots from './plots/Plots';
+import PlotSelector from './plots/PlotSelector';
 import Metadata from './Metadata';
 import PlotsDefinitions from './PlotsDefinitions';
 import Details from './Details';
@@ -30,7 +31,7 @@ function Metaanalysis(props) {
   const [paperOrder, setPaperOrder] = useState(metaanalysis.paperOrder);
   const [aggregates] = useState(metaanalysis.aggregates);
   const [groupingAggregates] = useState(metaanalysis.groupingAggregates);
-  const [graphs] = useState(metaanalysis.graphs);
+  const [graphs, setGraphs] = useState(metaanalysis.graphs);
   const [metadata] = useState({
     enteredByUsername: metaanalysis.enteredByUsername,
     ctime: metaanalysis.ctime,
@@ -77,6 +78,13 @@ function Metaanalysis(props) {
 
   const columnsClone = reorderColumnsBySubtype(assignSubType(columns));
 
+  const assignGraphId = (graphs) => {
+    for (let i = 0; i < graphs.length; i += 1) {
+      graphs[i].id = i;
+    }
+  };
+  assignGraphId(graphs);
+
   const makeClickable = (cellId, details, cellType) => {
     let className = '';
     if (displayedCell && cellId === displayedCell.cellId) className += 'active ';
@@ -97,7 +105,6 @@ function Metaanalysis(props) {
   const editCell = (value, cellId) => {
     setPapers(replaceCell(papers, columnsClone, value, cellId, currentUser));
   };
-
   return (
     <main className="metaanalysis">
       <div className={`titlebar ${edit.flag ? 'editMode primary' : ''}`}>
@@ -148,10 +155,12 @@ function Metaanalysis(props) {
           groups={metaanalysis.groups}
           makeClickable={makeClickable}
         />
-        <Plots
+        <PlotSelector
           path="/plots"
           tabName="Plots"
-          graphs={graphs}
+          graphState={[graphs, setGraphs]}
+          columns={columnsClone}
+          metaanalysis={metaanalysis}
         />
         <PlotsDefinitions
           path="/plots_definitions"

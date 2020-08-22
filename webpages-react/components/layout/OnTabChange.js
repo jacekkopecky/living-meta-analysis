@@ -6,8 +6,8 @@ function OnTabChange({ history, displayedCell, setDisplayedCell }) {
     const unlisten = history.listen(() => {
       // this code will fire each time a Tab is clicked
       // we don't want to reload the Metaanalysis everytime but still want to close current Details
-      if (displayedCell.text !== null || displayedCell.cellId !== null) {
-        setDisplayedCell({ text: null, cellId: null });
+      if (displayedCell !== null) {
+        setDisplayedCell(null);
       }
       // scrolls to top on tab change
       window.scrollTo(0, 0);
