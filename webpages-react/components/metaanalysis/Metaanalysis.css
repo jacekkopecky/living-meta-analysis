@@ -237,6 +237,28 @@
   background-color: #8B0000;
 }
 
+.submitButton {
+  border: 0.2em solid black;
+  width: 10em;
+  height: 2em;
+  text-align: center;
+  background-color: #32CD32;
+  outline: none;
+  cursor: pointer;
+  /* Prevent text highlight */
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.submitButton:hover {
+  background-color: #228B22;
+}
+
 .metaanalysis .addPaperForm label,
 .metaanalysis .addExperimentForm label {
   display: block;

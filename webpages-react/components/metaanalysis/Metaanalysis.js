@@ -4,10 +4,8 @@ import Tabs from '../layout/Tabs';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Aggregates from './aggregates/Aggregates';
-import Plots from './plots/Plots';
 import PlotSelector from './plots/PlotSelector';
 import Metadata from './Metadata';
-import PlotsDefinitions from './PlotsDefinitions';
 import Details from './Details';
 import EditContext from './EditContext';
 import UserContext from './UserContext';
@@ -161,12 +159,6 @@ function Metaanalysis(props) {
           graphState={[graphs, setGraphs]}
           columns={columnsClone}
           metaanalysis={metaanalysis}
-        />
-        <PlotsDefinitions
-          path="/plots_definitions"
-          tabName="Plots Definitions"
-          graphs={graphs}
-          makeClickable={makeClickable}
         />
       </Tabs>
       <Details displayedCell={displayedCell} setDisplayedCell={setDisplayedCell} />

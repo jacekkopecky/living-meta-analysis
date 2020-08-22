@@ -86,82 +86,85 @@ function GrapeMenu(props) {
   }
 
   return (
-    <form className="graphForm" onSubmit={handleSubmit}>
-      <label htmlFor="grapeTitle">Title:
-        <input type="text" name="grapeTitle" placeholder={title} />
-      </label>
+    <>
+      <h1>Edit { graph.title }</h1>
+      <form className="graphForm" onSubmit={handleSubmit}>
+        <label htmlFor="grapeTitle">Title:
+          <input type="text" name="grapeTitle" placeholder={title} />
+        </label>
 
-      <label htmlFor="grapeG1">Group 1:
-        <select name="grapeG1">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`grapeG1${col.id}`}
-              value={col.id}
-              selected={params[0] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
+        <label htmlFor="grapeG1">Group 1:
+          <select name="grapeG1">
+            { calcCols && calcCols.map((col) => (
+              <option
+                key={`grapeG1${col.id}`}
+                value={col.id}
+                selected={params[0] === col ? 'selected' : null}
+              >
+                { col.title }
+              </option>
+            )) }
+          </select>
+        </label>
 
-      <label htmlFor="grapeG1N">Group 1 n:
-        <select name="grapeG1N">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`grapeG1N${col.id}`}
-              value={col.id}
-              selected={params[1] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
+        <label htmlFor="grapeG1N">Group 1 n:
+          <select name="grapeG1N">
+            { calcCols && calcCols.map((col) => (
+              <option
+                key={`grapeG1N${col.id}`}
+                value={col.id}
+                selected={params[1] === col ? 'selected' : null}
+              >
+                { col.title }
+              </option>
+            )) }
+          </select>
+        </label>
 
-      <label htmlFor="grapeG2">Group 2:
-        <select name="grapeG2">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`grapeG2${col.id}`}
-              value={col.id}
-              selected={params[2] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
+        <label htmlFor="grapeG2">Group 2:
+          <select name="grapeG2">
+            { calcCols && calcCols.map((col) => (
+              <option
+                key={`grapeG2${col.id}`}
+                value={col.id}
+                selected={params[2] === col ? 'selected' : null}
+              >
+                { col.title }
+              </option>
+            )) }
+          </select>
+        </label>
 
-      <label htmlFor="grapeG2N">Group 2 n:
-        <select name="grapeG2N">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`grapeG2N${col.id}`}
-              value={col.id}
-              selected={params[3] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
+        <label htmlFor="grapeG2N">Group 2 n:
+          <select name="grapeG2N">
+            { calcCols && calcCols.map((col) => (
+              <option
+                key={`grapeG2N${col.id}`}
+                value={col.id}
+                selected={params[3] === col ? 'selected' : null}
+              >
+                { col.title }
+              </option>
+            )) }
+          </select>
+        </label>
 
-      <label htmlFor="grapeMod">Moderator:
-        <select name="grapeMod">
-          { modCols && modCols.map((col) => (
-            <option
-              key={`grapeMod${col.id}`}
-              value={col.id}
-              selected={params[4] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
-      <input type="submit" />
-    </form>
+        <label htmlFor="grapeMod">Moderator:
+          <select name="grapeMod">
+            { modCols && modCols.map((col) => (
+              <option
+                key={`grapeMod${col.id}`}
+                value={col.id}
+                selected={params[4] === col ? 'selected' : null}
+              >
+                { col.title }
+              </option>
+            )) }
+          </select>
+        </label>
+        <input type="submit" className="graphSubmit" />
+      </form>
+    </>
   );
 }
 
@@ -304,7 +307,7 @@ function ForestMenu(props) {
           )) }
         </select>
       </label>
-      <input type="submit" />
+      <input type="submit" className="graphSubmit" />
     </form>
   );
 }
@@ -468,7 +471,7 @@ function ForestGroupMenu(props) {
           )) }
         </select>
       </label>
-      <input type="submit" />
+      <input type="submit" className="graphSubmit" />
     </form>
   );
 }

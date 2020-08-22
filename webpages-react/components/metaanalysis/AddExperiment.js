@@ -108,7 +108,7 @@ function AddExperimentPopup(props) {
             )
             : null
         )) }
-        <input type="submit" value="Submit" />
+        <input type="submit" value="Submit" className="submitButton" />
       </form>
       <p className="popupWarn" />
     </div>

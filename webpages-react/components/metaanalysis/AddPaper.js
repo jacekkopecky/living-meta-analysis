@@ -141,7 +141,7 @@ function AddPaperPopup(props) {
             placeholder="Enter a DOI for the paper"
           />
         </label>
-        <input type="submit" value="Submit" />
+        <input type="submit" value="Submit" className="submitButton" />
       </form>
     </div>
   );

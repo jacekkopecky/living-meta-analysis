@@ -259,89 +259,92 @@ function AddGraphPopup(props) {
   }
 
   const content = (
-    <form className="graphForm" onSubmit={handleSubmit}>
-      <label htmlFor="newGraphTitle">Title:
-        <input type="text" name="newGraphTitle" placeholder="Enter a title" />
-      </label>
+    <>
+      <h1> Add a new graph </h1>
+      <form className="graphForm" onSubmit={handleSubmit}>
+        <label htmlFor="newGraphTitle">Title:
+          <input type="text" name="newGraphTitle" placeholder="Enter a title" />
+        </label>
 
-      <label htmlFor="newGraphType">Graph type:
-        <select name="newGraphType" onChange={changeType}>
-          <option key="grape" value="grape" selected="selected">Grape chart</option>
-          <option key="forest" value="forest">Forest plot</option>
-          <option key="forestGroup" value="forestGroup">Forest plot with moderator group</option>
-        </select>
-      </label>
+        <label htmlFor="newGraphType">Graph type:
+          <select name="newGraphType" onChange={changeType}>
+            <option key="grape" value="grape" selected="selected">Grape chart</option>
+            <option key="forest" value="forest">Forest plot</option>
+            <option key="forestGroup" value="forestGroup">Forest plot with moderator group</option>
+          </select>
+        </label>
 
-      <label htmlFor="newGraphG1">Group 1:
-        <select name="newGraphG1">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`newGraphG1${col.id}`}
-              value={col.id}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
+        <label htmlFor="newGraphG1">Group 1:
+          <select name="newGraphG1">
+            { calcCols && calcCols.map((col) => (
+              <option
+                key={`newGraphG1${col.id}`}
+                value={col.id}
+              >
+                { col.title }
+              </option>
+            )) }
+          </select>
+        </label>
 
-      <label htmlFor="newGraphG1N">Group 1 n:
-        <select name="newGraphG1N">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`newGraphG1N${col.id}`}
-              value={col.id}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
+        <label htmlFor="newGraphG1N">Group 1 n:
+          <select name="newGraphG1N">
+            { calcCols && calcCols.map((col) => (
+              <option
+                key={`newGraphG1N${col.id}`}
+                value={col.id}
+              >
+                { col.title }
+              </option>
+            )) }
+          </select>
+        </label>
 
-      <label htmlFor="newGraphG2">Group 2:
-        <select name="newGraphG2">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`newGraphG2${col.id}`}
-              value={col.id}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
+        <label htmlFor="newGraphG2">Group 2:
+          <select name="newGraphG2">
+            { calcCols && calcCols.map((col) => (
+              <option
+                key={`newGraphG2${col.id}`}
+                value={col.id}
+              >
+                { col.title }
+              </option>
+            )) }
+          </select>
+        </label>
 
-      <label htmlFor="newGraphG2N">Group 2 n:
-        <select name="newGraphG2N">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`newGraphG2N${col.id}`}
-              value={col.id}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
+        <label htmlFor="newGraphG2N">Group 2 n:
+          <select name="newGraphG2N">
+            { calcCols && calcCols.map((col) => (
+              <option
+                key={`newGraphG2N${col.id}`}
+                value={col.id}
+              >
+                { col.title }
+              </option>
+            )) }
+          </select>
+        </label>
 
-      { (type !== 'forest')
-        ? (
-          <label htmlFor="newGraphMod">Moderator:
-            <select name="newGraphMod">
-              { modCols && modCols.map((col) => (
-                <option
-                  key={`newGraphMod${col.id}`}
-                  value={col.id}
-                >
-                  { col.title }
-                </option>
-              )) }
-            </select>
-          </label>
-        )
-        : null }
-      <input type="submit" />
-    </form>
+        { (type !== 'forest')
+          ? (
+            <label htmlFor="newGraphMod">Moderator:
+              <select name="newGraphMod">
+                { modCols && modCols.map((col) => (
+                  <option
+                    key={`newGraphMod${col.id}`}
+                    value={col.id}
+                  >
+                    { col.title }
+                  </option>
+                )) }
+              </select>
+            </label>
+          )
+          : null }
+        <input type="submit" className="graphSubmit" />
+      </form>
+    </>
   );
 
   if (popupStatus) {

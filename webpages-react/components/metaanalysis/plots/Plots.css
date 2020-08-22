@@ -135,23 +135,58 @@ svg.forestplotgroup .summary .sumname.sumtotal {
   font-size: 125%;
 }
 
+.graphForm {
+  text-align: center;
+}
+
 .graphForm label {
   display: block;
   text-align: left;
   padding-right: 10%;
   box-sizing: border-box;
+  height: 3em;
 }
 
 .graphForm label input,
 .graphForm label input:focus{
   border: 0.1em solid black;
   outline: none;
+  height: 2em;
   width: 20%;
+  right: 35%;
   text-align: left;
+  position: fixed;
 }
 
-.hiddenSubmit {
-  display: none;
+.graphForm label select,
+.graphForm label select:focus {
+  outline: none;
+  height: 2em;
+  width: 20%;
+  position: fixed;
+  right: 35%;
+}
+
+.graphSubmit {
+  border: 0.2em solid black;
+  width: 10em;
+  height: 2em;
+  text-align: center;
+  background-color: #32CD32;
+  outline: none;
+  cursor: pointer;
+  /* Prevent text highlight */
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.graphSubmit:hover {
+  background-color: #228B22;
 }
 
 #plotContainer {
