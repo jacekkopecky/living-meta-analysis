@@ -76,8 +76,8 @@ function Metaanalysis(props) {
 
   const columnsClone = reorderColumnsBySubtype(assignSubType(columns));
 
-  const assignGraphId = (graphs) => {
-    for (let i = 0; i < graphs.length; i += 1) {
+  const assignGraphId = (graphObjs) => {
+    for (let i = 0; i < graphObjs.length; i += 1) {
       graphs[i].id = i;
     }
   };
