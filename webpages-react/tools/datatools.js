@@ -220,7 +220,7 @@ export function getDatumValue(col, experiment) {
   return null;
 }
 
-export function getAggregateDatumValue(aggregate, papers, group) {
+export function getAggregateDatumValue(aggregate, papers, group, moderator) {
   const ma = papers[0].metaanalysis; // TODO: probably a bug here
   if (!aggregate.grouping) group = null;
 
@@ -244,7 +244,8 @@ export function getAggregateDatumValue(aggregate, papers, group) {
         currentInput = [];
         for (const paper of papers) {
           for (const exp of paper.experiments) {
-            if (!exp.excluded && !(group != null && getGroup(exp) !== group)) {
+            if (!exp.excluded && !(group != null && getGroup(exp, moderator) !== group)) {
+              // this is only being hit by warning group!
               currentInput.push(getDatumValue(param, exp));
             }
           }
@@ -272,10 +273,13 @@ export function getAggregateDatumValue(aggregate, papers, group) {
   return val;
 }
 
-function getGroup(experiment) {
+function getGroup(experiment, moderatorObj) {
   const { groupingColumnObj } = experiment.paper.metaanalysis;
-  if (groupingColumnObj) {
-    return getDatumValue(groupingColumnObj, experiment);
+  if (!moderatorObj) {
+    moderatorObj = groupingColumnObj;
+  }
+  if (moderatorObj) {
+    return getDatumValue(moderatorObj, experiment);
   } else {
     return null;
   }
