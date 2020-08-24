@@ -1,3 +1,32 @@
 .aggregates .computed {
   text-align: right;
 }
+
+.aggregates .analysisButton {
+  margin-left: 2em;
+  margin-top: 1em;
+  display: inline-block;
+  border: 0.2em solid black;
+  width: 10em;
+  text-align: center;
+  background-color: lightgrey;
+  outline: none;
+  cursor: pointer;
+  /* Prevent text highlight */
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.aggregates .analysisButton:hover {
+  background-color: #2f7494;
+}
+
+.aggregates .analysisButton.active {
+  background-color: rgba(182, 234, 255);
+  cursor: default;
+}

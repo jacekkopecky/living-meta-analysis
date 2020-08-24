@@ -10,7 +10,7 @@ import Details from './Details';
 import EditContext from './EditContext';
 import UserContext from './UserContext';
 
-import { populateCircularMa } from '../../tools/datatools';
+import { populateCircularMa, getDatumValue } from '../../tools/datatools';
 import replaceCell from '../../tools/editTools';
 
 import './Metaanalysis.css';
@@ -75,6 +75,26 @@ function Metaanalysis(props) {
   };
 
   const columnsClone = reorderColumnsBySubtype(assignSubType(columns));
+  const moderators = columns.filter((col) => col.subType === 'moderator');
+  const moderatorsWithGroups = [];
+  for (let i = 0; i < moderators.length; i += 1) {
+    const groups = [];
+    for (const paper of papers) {
+      for (const exp of paper.experiments) {
+        if (!exp.excluded) {
+          const group = getDatumValue(moderators[i], exp);
+          if (group != null && group !== '' && groups.indexOf(group) === -1) {
+            groups.push(group);
+          }
+        }
+      }
+    }
+    moderatorsWithGroups[i] = {
+      moderatorObj: moderators[i],
+      groups,
+      included: true,
+    };
+  }
 
   const assignGraphId = (graphObjs) => {
     for (let i = 0; i < graphObjs.length; i += 1) {
@@ -152,6 +172,7 @@ function Metaanalysis(props) {
           }
           groups={metaanalysis.groups}
           makeClickable={makeClickable}
+          moderatorsWithGroups={moderatorsWithGroups}
         />
         <PlotSelector
           path="/plots"

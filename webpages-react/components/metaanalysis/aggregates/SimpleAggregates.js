@@ -37,7 +37,8 @@ function SimpleAggregates(props) {
       <table>
         <thead>
           <tr>
-            <th colSpan="2">Aggregates</th>
+            <th>Simple analysis definition</th>
+            <th>Value</th>
           </tr>
         </thead>
         <tbody>

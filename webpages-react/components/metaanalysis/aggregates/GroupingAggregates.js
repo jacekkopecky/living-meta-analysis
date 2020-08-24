@@ -25,8 +25,17 @@ const aggregateValDetails = (aggr, value, group) => (
 
 function GroupingAggregates(props) {
   const {
-    groupingAggregates, groups, groupingColumn, makeClickable,
+    groupingAggregates, groups, groupingColumn, makeClickable, moderatorsWithGroups,
   } = props;
+  moderatorsWithGroups.sort((a, b) => {
+    if (a.groups.length < b.groups.length) {
+      return -1;
+    }
+    if (a.groups.length > b.groups.length) {
+      return 1;
+    }
+    return 0;
+  });
   return (
     <>
       <h3>
@@ -38,9 +47,28 @@ function GroupingAggregates(props) {
         <thead>
           <tr>
             <th>Aggregates</th>
-            { groups.map((group) => (
-              <th key={group}>{ group }</th>
-            )) }
+            { moderatorsWithGroups.map((moderator) => (moderator.included
+              ? (
+                <th
+                  key={moderator.moderatorObj.title}
+                  colSpan={moderator.groups.length}
+                >
+                  { moderator.moderatorObj.title }
+                </th>
+              )
+              : null)) }
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Aggregates</th>
+            { moderatorsWithGroups.map((moderator) => (moderator.included
+              ? moderator.groups.map((group) => (
+                <th key={group}>
+                  { group }
+                </th>
+              ))
+              : null)) }
           </tr>
         </thead>
         <tbody>
@@ -49,23 +77,26 @@ function GroupingAggregates(props) {
               <td {...makeClickable(aggr.fullLabel, aggregateDetails(aggr))}>
                 { aggr.title || aggr.fullLabel }
               </td>
-              { groups.map((group) => {
-                const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers, group);
-                const padding = Math.trunc(value).toString().length;
-                return (
-                  <td
-                    key={aggr.title + group}
-                    style={{ paddingRight: `${padding}ch` }}
-                    {...makeClickable(
-                      aggr.title + group,
-                      aggregateValDetails(aggr, value, group),
-                      true,
-                    )}
-                  >
-                    { formatNumber(value) }
-                  </td>
-                );
-              }) }
+              { moderatorsWithGroups.map((moderator) => (moderator.included
+                ? moderator.groups.map((group) => {
+                  const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers, group, moderator.moderatorObj);
+                  const padding = Math.trunc(value).toString().length;
+                  return (
+                    <td
+                      key={aggr.title + group}
+                      style={{ paddingRight: `${padding}ch` }}
+                      {...makeClickable(
+                        aggr.title + group,
+                        aggregateValDetails(aggr, value, group),
+                        true,
+                      )}
+                    >
+                      { formatNumber(value) }
+                    </td>
+                  );
+                })
+                : null
+              )) }
             </tr>
           )) }
         </tbody>

@@ -1,7 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SimpleAggregates from './SimpleAggregates';
 import GroupingAggregates from './GroupingAggregates';
 import './Aggregates.css';
+
+function SimpleDisplay(props) {
+  const { aggregates, clickable, makeClickable } = props;
+  return (
+    <SimpleAggregates
+      aggregates={aggregates}
+      clickable={clickable}
+      makeClickable={makeClickable}
+    />
+  );
+}
+
+function ModeratorDisplay(props) {
+  const {
+    groupingAggregates, groups, groupingColumn, clickable, makeClickable, moderatorsWithGroups,
+  } = props;
+
+  if (groupingColumn) {
+    return (
+      <GroupingAggregates
+        groupingAggregates={groupingAggregates}
+        groups={groups}
+        groupingColumn={groupingColumn}
+        clickable={clickable}
+        makeClickable={makeClickable}
+        moderatorsWithGroups={moderatorsWithGroups}
+      />
+    );
+  }
+}
 
 function Aggregates(props) {
   const {
@@ -11,27 +41,51 @@ function Aggregates(props) {
     groupingColumn,
     clickable,
     makeClickable,
+    moderatorsWithGroups,
   } = props;
-  return (
-    <section className="aggregates">
-      <SimpleAggregates
+  const [analysisType, setAnalysisType] = useState('moderator');
+  let content = null;
+
+  function setSimple() {
+    setAnalysisType('simple');
+  }
+
+  function setModerator() {
+    setAnalysisType('moderator');
+  }
+
+  if (analysisType === 'simple') {
+    content = (
+      <SimpleDisplay
         aggregates={aggregates}
         clickable={clickable}
         makeClickable={makeClickable}
       />
-      { groupingColumn
-        ? (
-          <GroupingAggregates
-            groupingAggregates={groupingAggregates}
-            groups={groups}
-            groupingColumn={groupingColumn}
-            clickable={clickable}
-            makeClickable={makeClickable}
-          />
-        )
-        : null }
-
-    </section>
+    );
+  } else if (analysisType === 'moderator') {
+    content = (
+      <ModeratorDisplay
+        groupingAggregates={groupingAggregates}
+        groups={groups}
+        groupingColumn={groupingColumn}
+        clickable={clickable}
+        makeClickable={makeClickable}
+        moderatorsWithGroups={moderatorsWithGroups}
+      />
+    );
+  }
+  return (
+    <>
+      <section className="aggregates">
+        <div role="button" tabIndex={0} className={(analysisType === 'simple') ? 'analysisButton active' : 'analysisButton'} onClick={setSimple} onKeyDown={setSimple}>
+          Simple analysis
+        </div>
+        <div role="button" tabIndex={0} className={(analysisType === 'moderator') ? 'analysisButton active' : 'analysisButton'} onClick={setModerator} onKeyDown={setModerator}>
+          Moderator analysis
+        </div>
+        { content }
+      </section>
+    </>
   );
 }
 
