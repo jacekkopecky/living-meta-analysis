@@ -38,69 +38,69 @@ function GroupingAggregates(props) {
   });
   return (
     <>
-      <h3>
-        Grouping aggregates by
-        { ' ' }
-        { groupingColumn }
-      </h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Aggregates</th>
-            { moderatorsWithGroups.map((moderator) => (moderator.included
-              ? (
-                <th
-                  key={moderator.moderatorObj.title}
-                  colSpan={moderator.groups.length}
-                >
-                  { moderator.moderatorObj.title }
-                </th>
-              )
-              : null)) }
-          </tr>
-        </thead>
-        <thead>
-          <tr>
-            <th>Aggregates</th>
-            { moderatorsWithGroups.map((moderator) => (moderator.included
-              ? moderator.groups.map((group) => (
-                <th key={group}>
-                  { group }
-                </th>
-              ))
-              : null)) }
-          </tr>
-        </thead>
-        <tbody>
-          { groupingAggregates.map((aggr) => (
-            <tr key={aggr.fullLabel}>
-              <td {...makeClickable(aggr.fullLabel, aggregateDetails(aggr))}>
-                { aggr.title || aggr.fullLabel }
-              </td>
+      <div id="modAnalysisTableContainer">
+        <table id="modAnalysisTable">
+          <thead>
+            <tr>
+              <th className="modAnalysisHead" />
               { moderatorsWithGroups.map((moderator) => (moderator.included
-                ? moderator.groups.map((group) => {
-                  const value = getAggregateDatumValue(aggr, aggr.metaanalysis.papers, group, moderator.moderatorObj);
-                  const padding = Math.trunc(value).toString().length;
-                  return (
-                    <td
-                      key={aggr.title + group}
-                      style={{ paddingRight: `${padding}ch` }}
-                      {...makeClickable(
-                        aggr.title + group,
-                        aggregateValDetails(aggr, value, group),
-                        true,
-                      )}
-                    >
-                      { formatNumber(value) }
-                    </td>
-                  );
-                })
-                : null
-              )) }
+                ? (
+                  <th
+                    key={moderator.moderatorObj.title}
+                    colSpan={moderator.groups.length}
+                    className="modAnalysisHead"
+                  >
+                    { moderator.moderatorObj.title }
+                  </th>
+                )
+                : null)) }
             </tr>
-          )) }
-        </tbody>
-      </table>
+          </thead>
+          <thead>
+            <tr>
+              <th className="modAnalysisHead" />
+              { moderatorsWithGroups.map((moderator) => (moderator.included
+                ? moderator.groups.map((group) => (
+                  <th key={group} className="modAnalysisHead">
+                    { group }
+                  </th>
+                ))
+                : null)) }
+            </tr>
+          </thead>
+          <tbody>
+            { groupingAggregates.map((aggr) => (
+              <tr key={aggr.fullLabel}>
+                <td {...makeClickable(aggr.fullLabel, aggregateDetails(aggr))}>
+                  { aggr.title || aggr.fullLabel }
+                </td>
+                { moderatorsWithGroups.map((moderator) => (moderator.included
+                  ? moderator.groups.map((group) => {
+                    const value = getAggregateDatumValue(
+                      aggr, aggr.metaanalysis.papers, group, moderator.moderatorObj,
+                    );
+                    const padding = Math.trunc(value).toString().length;
+                    return (
+                      <td
+                        key={aggr.title + group}
+                        style={{ paddingRight: `${padding}ch` }}
+                        {...makeClickable(
+                          aggr.title + group,
+                          aggregateValDetails(aggr, value, group),
+                          true,
+                        )}
+                      >
+                        { formatNumber(value) }
+                      </td>
+                    );
+                  })
+                  : null
+                )) }
+              </tr>
+            )) }
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

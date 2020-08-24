@@ -245,7 +245,6 @@ export function getAggregateDatumValue(aggregate, papers, group, moderator) {
         for (const paper of papers) {
           for (const exp of paper.experiments) {
             if (!exp.excluded && !(group != null && getGroup(exp, moderator) !== group)) {
-              // this is only being hit by warning group!
               currentInput.push(getDatumValue(param, exp));
             }
           }

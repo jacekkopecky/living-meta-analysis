@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import SimpleAggregates from './SimpleAggregates';
 import GroupingAggregates from './GroupingAggregates';
+import formulas from './Formulas';
 import './Aggregates.css';
 
 function SimpleDisplay(props) {
@@ -43,7 +44,11 @@ function Aggregates(props) {
     makeClickable,
     moderatorsWithGroups,
   } = props;
-  const [analysisType, setAnalysisType] = useState('moderator');
+  const [analysisType, setAnalysisType] = useState('simple');
+  const formulaFunctions = formulas();
+  const simpleFormulas = formulaFunctions.simpleFormulas;
+  const moderatorFormulas = formulaFunctions.moderatorFormulas;
+  console.log(simpleFormulas, moderatorFormulas);
   let content = null;
 
   function setSimple() {

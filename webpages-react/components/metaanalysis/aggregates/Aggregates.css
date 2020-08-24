@@ -30,3 +30,18 @@
   background-color: rgba(182, 234, 255);
   cursor: default;
 }
+
+.modAnalysisHead {
+  border: 0.2em solid black !important;
+}
+
+.infoColumn {
+  position: fixed;
+}
+
+#modAnalysisTableContainer {
+  border: 0.2em solid black;
+  width: auto;
+  margin: 2em;
+  overflow-x: scroll;
+}

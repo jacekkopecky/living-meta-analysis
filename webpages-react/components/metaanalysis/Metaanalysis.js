@@ -103,8 +103,8 @@ function Metaanalysis(props) {
   };
   assignGraphId(graphs);
 
-  const makeClickable = (cellId, details, cellType) => {
-    let className = '';
+  const makeClickable = (cellId, details, cellType, defaultClass) => {
+    let className = defaultClass || '';
     if (displayedCell && cellId === displayedCell.cellId) className += 'active ';
     if (cellType === 'computed') {
       className += `computed ${edit.flag ? 'editMode cell' : ''}`;
@@ -164,7 +164,7 @@ function Metaanalysis(props) {
         />
         <Aggregates
           path="/aggregates"
-          tabName="Aggregates"
+          tabName="Analyses"
           aggregates={aggregates}
           groupingAggregates={groupingAggregates}
           groupingColumn={
