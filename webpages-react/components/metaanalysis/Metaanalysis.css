@@ -260,6 +260,7 @@
 }
 
 .metaanalysis .addPaperForm label,
+.metaanalysis .addColumnForm label,
 .metaanalysis .addExperimentForm label {
   display: block;
   width: 100%;
@@ -269,7 +270,9 @@
 .metaanalysis .addPaperForm label input,
 .metaanalysis .addPaperForm label input:focus,
 .metaanalysis .addExperimentForm label input,
-.metaanalysis .addExperimentForm label input:focus {
+.metaanalysis .addExperimentForm label input:focus,
+.metaanalysis .addColumnForm label input,
+.metaanalysis .addColumnForm label input:focus {
   border: 0.1em solid black;
   outline: none;
   width: 60%;
@@ -290,20 +293,24 @@
   right: 0;
 }
 
-.metaanalysis #addPaperButtonContainer {
+.metaanalysis #addPaperButtonContainer,
+.metaanalysis #addColumnButtonContainer {
   text-align: center;
   vertical-align: middle;
 }
 
 .metaanalysis #addPaperButton,
-.metaanalysis #addPaperButton:focus {
+.metaanalysis #addPaperButton:focus,
+.metaanalysis #addColumnButton,
+.metaanalysis #addColumnButton:focus {
   border: 3px solid black;
   background-color: white;
   cursor: pointer;
   outline: none;
 }
 
-.metaanalysis #addPaperButton:hover {
+.metaanalysis #addPaperButton:hover,
+.metaanalysis #addColumnButton:hover {
   background-color: #ebebeb;
 }
 
@@ -318,4 +325,50 @@
 textarea {
   background: transparent;
   outline: none;
+}
+
+.removalPopup {
+  text-align: center;
+  position: relative;
+}
+
+.removalPopupCancel,
+.removalPopupYes {
+  border: 0.2em solid black;
+  width: 10em;
+  height: 2em;
+  text-align: center;
+  background-color: #32CD32;
+  margin-left: auto;
+  margin-right: auto;
+  vertical-align: middle;
+  outline: none;
+  cursor: pointer;
+  /* Prevent text highlight */
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.removalPopupCancel {
+  background-color: green;
+  width: 15em;
+  height: 3em;
+}
+
+.removalPopupCancel:hover {
+  background-color: darkgreen;
+}
+
+.removalPopupYes {
+  background-color: red;
+  margin-top: 1em;
+}
+
+.removalPopupYes:hover {
+  background-color: darkred;
 }

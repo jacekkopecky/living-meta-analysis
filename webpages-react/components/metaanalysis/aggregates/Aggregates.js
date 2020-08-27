@@ -1,55 +1,63 @@
 import React, { useState } from 'react';
 import SimpleAggregates from './SimpleAggregates';
 import GroupingAggregates from './GroupingAggregates';
+import AddSimpleAnalysis from './AddSimpleAnalysis';
+import AddModeratorAnalysis from './AddModeratorAnalysis';
+import FilterModerators from './FilterModerators';
 import formulas from './Formulas';
 import './Aggregates.css';
 
 function SimpleDisplay(props) {
-  const { aggregates, clickable, makeClickable } = props;
+  const {
+    aggregatesState, clickable, makeClickable, formulaFunctions, columns,
+  } = props;
   return (
     <SimpleAggregates
-      aggregates={aggregates}
+      aggregatesState={aggregatesState}
       clickable={clickable}
       makeClickable={makeClickable}
+      formulaFunctions={formulaFunctions}
+      columns={columns}
     />
   );
 }
 
 function ModeratorDisplay(props) {
   const {
-    groupingAggregates, groups, groupingColumn, clickable, makeClickable, moderatorsWithGroups,
+    groupingAggregates,
+    clickable,
+    makeClickable,
+    mwgState,
+    formulaFunctions,
   } = props;
 
-  if (groupingColumn) {
-    return (
-      <GroupingAggregates
-        groupingAggregates={groupingAggregates}
-        groups={groups}
-        groupingColumn={groupingColumn}
-        clickable={clickable}
-        makeClickable={makeClickable}
-        moderatorsWithGroups={moderatorsWithGroups}
-      />
-    );
-  }
+  return (
+    <GroupingAggregates
+      groupingAggregates={groupingAggregates}
+      clickable={clickable}
+      makeClickable={makeClickable}
+      mwgState={mwgState}
+      formulaFunctions={formulaFunctions}
+    />
+  );
 }
 
 function Aggregates(props) {
   const {
-    aggregates,
-    groupingAggregates,
-    groups,
-    groupingColumn,
+    aggregatesState,
+    groupingAggregatesState,
     clickable,
     makeClickable,
     moderatorsWithGroups,
+    columns,
+    metaanalysis,
   } = props;
-  const [analysisType, setAnalysisType] = useState('simple');
-  const formulaFunctions = formulas();
-  const simpleFormulas = formulaFunctions.simpleFormulas;
-  const moderatorFormulas = formulaFunctions.moderatorFormulas;
-  console.log(simpleFormulas, moderatorFormulas);
-  let content = null;
+  const [aggregates, setAggregates] = aggregatesState;
+  const [groupingAggregates, setGroupingAggregates] = groupingAggregatesState;
+  const [analysisType, setAnalysisType] = useState('moderator');
+  const mwgState = useState(moderatorsWithGroups);
+  const formulaFunctions = formulas().moderatorFormulas;
+  let content;
 
   function setSimple() {
     setAnalysisType('simple');
@@ -61,22 +69,40 @@ function Aggregates(props) {
 
   if (analysisType === 'simple') {
     content = (
-      <SimpleDisplay
-        aggregates={aggregates}
-        clickable={clickable}
-        makeClickable={makeClickable}
-      />
+      <>
+        <AddSimpleAnalysis
+          formulaFunctions={formulaFunctions}
+          columns={columns}
+          aggregatesState={[aggregates, setAggregates]}
+          metaanalysis={metaanalysis}
+        />
+        <SimpleDisplay
+          aggregatesState={[aggregates, setAggregates]}
+          clickable={clickable}
+          makeClickable={makeClickable}
+          formulaFunctions={formulaFunctions}
+          columns={columns}
+        />
+      </>
     );
   } else if (analysisType === 'moderator') {
     content = (
-      <ModeratorDisplay
-        groupingAggregates={groupingAggregates}
-        groups={groups}
-        groupingColumn={groupingColumn}
-        clickable={clickable}
-        makeClickable={makeClickable}
-        moderatorsWithGroups={moderatorsWithGroups}
-      />
+      <>
+        <AddModeratorAnalysis
+          formulaFunctions={formulaFunctions}
+          columns={columns}
+          aggregatesState={[groupingAggregates, setGroupingAggregates]}
+          metaanalysis={metaanalysis}
+        />
+        <FilterModerators mwgState={mwgState} />
+        <ModeratorDisplay
+          groupingAggregates={groupingAggregates}
+          clickable={clickable}
+          makeClickable={makeClickable}
+          mwgState={mwgState}
+          formulaFunctions={formulaFunctions}
+        />
+      </>
     );
   }
   return (

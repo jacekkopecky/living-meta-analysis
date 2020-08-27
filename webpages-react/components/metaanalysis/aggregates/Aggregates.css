@@ -2,7 +2,10 @@
   text-align: right;
 }
 
-.aggregates .analysisButton {
+.aggregates .analysisButton,
+.aggregates .addSimpleAnalysisButton,
+.aggregates .addModeratorAnalysisButton,
+.aggregates #filterModeratorsButton {
   margin-left: 2em;
   margin-top: 1em;
   display: inline-block;
@@ -31,6 +34,17 @@
   cursor: default;
 }
 
+.aggregates .addSimpleAnalysisButton,
+.aggregates .addModeratorAnalysisButton {
+  width: auto !important;
+}
+
+.aggregates .addSimpleAnalysisButton:hover,
+.aggregates .addModeratorAnalysisButton:hover,
+.aggregates #filterModeratorsButton:hover {
+  background-color: rgba(182, 234, 255);
+}
+
 .modAnalysisHead {
   border: 0.2em solid black !important;
 }
@@ -39,9 +53,126 @@
   position: fixed;
 }
 
+.aggregates .simpleTR {
+  height: 2.5em;
+}
+
 #modAnalysisTableContainer {
   border: 0.2em solid black;
   width: auto;
   margin: 2em;
   overflow-x: scroll;
+}
+
+#simpleInputForm label,
+#moderatorInputForm label {
+  display: block;
+}
+
+.removeAnalysisButton {
+  margin-left: 2em;
+  font-size: 15px;
+  display: inline-block;
+  border: 0.2em solid black;
+  text-align: center;
+  background-color: #ff5745;
+  outline: none;
+  cursor: pointer;
+  /* Prevent text highlight */
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.removeAnalysisButton:hover {
+  background-color: red;
+}
+
+#simpleInputForm,
+#moderatorInputForm {
+  display: block;
+  text-align: center;
+}
+#simpleInputForm label,
+#moderatorInputForm label,
+#modFilterForm div label {
+  display: block;
+  width: 100%;
+  margin: 10px;
+  text-align: left;
+}
+#simpleInputForm label input,
+#simpleInputForm label input:focus,
+#moderatorInputForm label input,
+#moderatorInputForm label input:focus {
+  border: 0.1em solid black;
+  outline: none;
+  width: 60%;
+  text-align: left;
+  float: right;
+}
+
+#modFilterForm div label input,
+#modFilterForm div label input:focus {
+  outline: none;
+  text-align: left;
+  float: right;
+  width: 10%;
+}
+
+#modFilterForm div label {
+  border-bottom: 0.2em solid black;
+  margin: 1em;
+  width: 50%;
+}
+
+#simpleInputForm label select,
+#moderatorInputForm label select {
+  width: 60%;
+  text-align: left;
+  float: right;
+}
+
+#modFilterForm {
+  display: block;
+  text-align: center;
+}
+
+#modFilterForm .groupToggleButton {
+  margin-left: 2em;
+  font-size: 15px;
+  display: inline-block;
+  border: 0.2em solid black;
+  text-align: center;
+  background-color: rgba(182, 234, 255);
+  outline: none;
+  cursor: pointer;
+  /* Prevent text highlight */
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+#modFilterForm .groupToggleButton:hover {
+  background-color: #2f7494;
+}
+
+#modFilterForm div {
+  display: block;
+  margin: 1em;
+  text-align: left;
+  border: 0.2em solid black;
+  position: relative;
+}
+
+#modFilterForm .indent {
+  margin-left: 3em;
 }

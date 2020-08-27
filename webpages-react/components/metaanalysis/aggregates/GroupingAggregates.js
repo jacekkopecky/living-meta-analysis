@@ -25,45 +25,52 @@ const aggregateValDetails = (aggr, value, group) => (
 
 function GroupingAggregates(props) {
   const {
-    groupingAggregates, groups, groupingColumn, makeClickable, moderatorsWithGroups,
+    groupingAggregates, makeClickable, mwgState,
   } = props;
-  moderatorsWithGroups.sort((a, b) => {
-    if (a.groups.length < b.groups.length) {
-      return -1;
-    }
-    if (a.groups.length > b.groups.length) {
-      return 1;
-    }
-    return 0;
-  });
+  console.log(groupingAggregates);
+  const [moderatorsWithGroups] = mwgState;
   return (
     <>
       <div id="modAnalysisTableContainer">
         <table id="modAnalysisTable">
           <thead>
             <tr>
-              <th className="modAnalysisHead" />
-              { moderatorsWithGroups.map((moderator) => (moderator.included
-                ? (
-                  <th
-                    key={moderator.moderatorObj.title}
-                    colSpan={moderator.groups.length}
-                    className="modAnalysisHead"
-                  >
-                    { moderator.moderatorObj.title }
-                  </th>
-                )
-                : null)) }
+              <th className="modAnalysisHead">Moderator:</th>
+              { moderatorsWithGroups.map((moderator) => {
+                if (moderator.included) {
+                  let count = 0;
+                  for (let i = 0; i < moderator.groups.length; i += 1) {
+                    if (moderator.groups[i].included) {
+                      count += 1;
+                    }
+                  }
+                  if (count !== 0) {
+                    return (
+                      <th
+                        key={moderator.moderatorObj.title}
+                        colSpan={count}
+                        className="modAnalysisHead"
+                      >
+                        { moderator.moderatorObj.title }
+                      </th>
+                    );
+                  }
+                }
+                return null;
+              }) }
             </tr>
           </thead>
           <thead>
             <tr>
-              <th className="modAnalysisHead" />
+              <th className="modAnalysisHead">Group:</th>
               { moderatorsWithGroups.map((moderator) => (moderator.included
-                ? moderator.groups.map((group) => (
-                  <th key={group} className="modAnalysisHead">
-                    { group }
-                  </th>
+                ? moderator.groups.map((group) => (group.included
+                  ? (
+                    <th key={group.group} className="modAnalysisHead">
+                      { group.group }
+                    </th>
+                  )
+                  : null
                 ))
                 : null)) }
             </tr>
@@ -76,23 +83,26 @@ function GroupingAggregates(props) {
                 </td>
                 { moderatorsWithGroups.map((moderator) => (moderator.included
                   ? moderator.groups.map((group) => {
-                    const value = getAggregateDatumValue(
-                      aggr, aggr.metaanalysis.papers, group, moderator.moderatorObj,
-                    );
-                    const padding = Math.trunc(value).toString().length;
-                    return (
-                      <td
-                        key={aggr.title + group}
-                        style={{ paddingRight: `${padding}ch` }}
-                        {...makeClickable(
-                          aggr.title + group,
-                          aggregateValDetails(aggr, value, group),
-                          true,
-                        )}
-                      >
-                        { formatNumber(value) }
-                      </td>
-                    );
+                    if (group.included) {
+                      const value = getAggregateDatumValue(
+                        aggr, aggr.metaanalysis.papers, group.group, moderator.moderatorObj,
+                      );
+                      const padding = Math.trunc(value).toString().length;
+                      return (
+                        <td
+                          key={aggr.title + group.group}
+                          style={{ paddingRight: `${padding}ch` }}
+                          {...makeClickable(
+                            aggr.title + group.group,
+                            aggregateValDetails(aggr, value, group.group),
+                            true,
+                          )}
+                        >
+                          { formatNumber(value) }
+                        </td>
+                      );
+                    }
+                    return null;
                   })
                   : null
                 )) }

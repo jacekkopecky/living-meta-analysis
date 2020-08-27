@@ -27,8 +27,8 @@ function Metaanalysis(props) {
   const [columns, setColumns] = useState(metaanalysis.columns);
   const [papers, setPapers] = useState(metaanalysis.papers);
   const [paperOrder, setPaperOrder] = useState(metaanalysis.paperOrder);
-  const [aggregates] = useState(metaanalysis.aggregates);
-  const [groupingAggregates] = useState(metaanalysis.groupingAggregates);
+  const [aggregates, setAggregates] = useState(metaanalysis.aggregates);
+  const [groupingAggregates, setGroupingAggregates] = useState(metaanalysis.groupingAggregates);
   const [graphs, setGraphs] = useState(metaanalysis.graphs);
   const [metadata] = useState({
     enteredByUsername: metaanalysis.enteredByUsername,
@@ -45,13 +45,15 @@ function Metaanalysis(props) {
   const assignSubType = (cols) => {
     const columnsClone = [...cols];
     columnsClone.forEach((column) => {
-      if (column.id === '1' || column.id === '2' || column.id === '7') {
-        column.subType = 'moderator';
-        column.inputType = 'string';
-      } else if (column.type !== 'result') {
-        column.subType = 'calculator';
-        column.inputType = 'number';
-      } else { column.subType = 'result'; }
+      if (!column.subType) {
+        if (column.id === '1' || column.id === '2' || column.id === '7') {
+          column.subType = 'moderator';
+          column.inputType = 'string';
+        } else if (column.type !== 'result') {
+          column.subType = 'calculator';
+          column.inputType = 'number';
+        } else { column.subType = 'result'; }
+      }
     });
     return columnsClone;
   };
@@ -89,12 +91,28 @@ function Metaanalysis(props) {
         }
       }
     }
+    const groupsWithIncluded = [];
+    for (let j = 0; j < groups.length; j += 1) {
+      groupsWithIncluded[j] = {
+        group: groups[j],
+        included: true,
+      };
+    }
     moderatorsWithGroups[i] = {
       moderatorObj: moderators[i],
-      groups,
+      groups: groupsWithIncluded,
       included: true,
     };
   }
+  moderatorsWithGroups.sort((a, b) => {
+    if (a.groups.length < b.groups.length) {
+      return -1;
+    }
+    if (a.groups.length > b.groups.length) {
+      return 1;
+    }
+    return 0;
+  });
 
   const assignGraphId = (graphObjs) => {
     for (let i = 0; i < graphObjs.length; i += 1) {
@@ -105,7 +123,7 @@ function Metaanalysis(props) {
 
   const makeClickable = (cellId, details, cellType, defaultClass) => {
     let className = defaultClass || '';
-    if (displayedCell && cellId === displayedCell.cellId) className += 'active ';
+    if (displayedCell && cellId === displayedCell.cellId) className += ' active ';
     if (cellType === 'computed') {
       className += `computed ${edit.flag ? 'editMode cell' : ''}`;
     } else if (cellType === 'paper') {
@@ -161,18 +179,21 @@ function Metaanalysis(props) {
           makeClickable={makeClickable}
           editCell={editCell}
           metaanalysis={metaanalysis}
+          aggregates={aggregates}
         />
         <Aggregates
           path="/aggregates"
           tabName="Analyses"
-          aggregates={aggregates}
-          groupingAggregates={groupingAggregates}
+          aggregatesState={[aggregates, setAggregates]}
+          groupingAggregatesState={[groupingAggregates, setGroupingAggregates]}
           groupingColumn={
             metaanalysis.groupingColumnObj ? metaanalysis.groupingColumnObj.title : undefined
           }
           groups={metaanalysis.groups}
           makeClickable={makeClickable}
           moderatorsWithGroups={moderatorsWithGroups}
+          columns={columnsClone}
+          metaanalysis={metaanalysis}
         />
         <PlotSelector
           path="/plots"
