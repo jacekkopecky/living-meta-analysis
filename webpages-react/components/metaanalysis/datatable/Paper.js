@@ -175,11 +175,17 @@ function Paper(props) {
   const edit = useContext(EditContext);
   const [rowEvent, setRowEvent] = useState({ rows: [], topRowIndex: null });
   const [popupStatus, setPopupStatus] = useState(false);
+  const [experimentPopupStatus, setExperimentPopupStatus] = useState(false);
+  const [selectedExperiment, setSelectedExperiment] = useState(null);
 
   const nExp = Object.keys(paper.experiments).length;
 
   function popupToggle() {
     setPopupStatus(!popupStatus);
+  }
+
+  function experimentPopupToggle() {
+    setExperimentPopupStatus(!experimentPopupStatus);
   }
 
   function removePaper() {
@@ -191,6 +197,22 @@ function Paper(props) {
 
     setPaperState(papersClone);
     setPaperOrder(paperOrderClone);
+  }
+
+  function removeExperiment() {
+    const papersClone = [...paperState];
+    if (paper.experiments.length === 1) {
+      removePaper();
+    } else {
+      papersClone[(papersClone.indexOf(paper))].experiments.splice(
+        paper.experiments.indexOf(paper.experiments[selectedExperiment]), 1,
+      );
+    }
+  }
+
+  function selectExperiment(e) {
+    const exper = e.currentTarget.getAttribute('experiment');
+    setSelectedExperiment(exper);
   }
 
   return (
@@ -223,7 +245,7 @@ function Paper(props) {
             { title }
             { edit.flag
               ? (
-                <div>
+                <div className="removePaperContainer">
                   <div className="removePaperButton" role="button" tabIndex={0} onClick={popupToggle} onKeyDown={popupToggle}>Remove</div>
                   { popupStatus
                     ? (
@@ -261,7 +283,22 @@ function Paper(props) {
               editCell={editCell}
             />
           )) }
-
+          { edit.flag
+            ? (
+              <td className="experimentRemovalContainer">
+                <div className="removeExperimentButton" role="button" tabIndex={0} experiment={exp.index} onClick={(e) => { experimentPopupToggle(); selectExperiment(e); }} onKeyDown={experimentPopupToggle}>Remove</div>
+                { experimentPopupStatus
+                  ? (
+                    <RemovalPopup
+                      closingFunc={experimentPopupToggle}
+                      removalFunc={removeExperiment}
+                      removalText={`experiment ${selectedExperiment} from paper: ${paper.title}`}
+                    />
+                  )
+                  : null }
+              </td>
+            )
+            : null }
         </tr>
       );
     })

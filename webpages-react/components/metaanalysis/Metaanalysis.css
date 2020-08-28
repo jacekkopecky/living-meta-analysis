@@ -289,6 +289,7 @@
 	cursor: pointer;
 	outline: inherit;
   position: absolute;
+  top: 0;
   right: 0;
 }
 
@@ -302,6 +303,7 @@
 .metaanalysis #addPaperButton:focus,
 .metaanalysis #addColumnButton,
 .metaanalysis #addColumnButton:focus {
+  margin: 0.1em;
   border: 3px solid black;
   background-color: white;
   cursor: pointer;
@@ -373,12 +375,13 @@ textarea {
 }
 
 .removeColumnButton,
-.removePaperButton {
+.removePaperButton,
+.removeExperimentButton {
   position: absolute;
   left: 0;
   bottom: 0;
   width: auto;
-  font-size: 15px;
+  font-size: 10px;
   display: inline-block;
   border: 0.2em solid black;
   text-align: center;
@@ -396,6 +399,12 @@ textarea {
 }
 
 .removeColumnButton:hover,
-.removePaperButton:hover {
+.removePaperButton:hover,
+.removeExperimentButton:hover {
   background-color: red;
+}
+
+.removeExperimentButton,
+.removePaperButton {
+  position: relative;
 }
