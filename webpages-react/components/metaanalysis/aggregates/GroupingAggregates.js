@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { getAggregateDatumValue, formatNumber } from '../../../tools/datatools';
 import { RemovalPopup } from '../Popup';
+import EditContext from '../EditContext';
 
 const aggregateDetails = (aggr) => (
   <>
@@ -32,6 +33,7 @@ function GroupingAggregates(props) {
   const [moderatorsWithGroups] = mwgState;
   const [popupStatus, setPopupStatus] = useState(false);
   const [selectedAnalysis, setSelectedAnalysis] = useState(null);
+  const edit = useContext(EditContext);
 
   function popupToggle() {
     setPopupStatus(!popupStatus);
@@ -104,14 +106,20 @@ function GroupingAggregates(props) {
                   <div>
                     { aggr.title || aggr.fullLabel }
                   </div>
-                  <div className="removeModAnalysisButton" analysisformula={aggr.formula} role="button" tabIndex={0} onClick={(e) => { popupToggle(); selectAnalysis(e); }} onKeyDown={popupToggle}>Remove</div>
-                  { popupStatus
+                  { edit.flag
                     ? (
-                      <RemovalPopup
-                        closingFunc={popupToggle}
-                        removalFunc={removeModAnalysis}
-                        removalText={`paper: ${selectedAnalysis.title}`}
-                      />
+                      <div>
+                        <div className="removeModAnalysisButton" analysisformula={aggr.formula} role="button" tabIndex={0} onClick={(e) => { popupToggle(); selectAnalysis(e); }} onKeyDown={popupToggle}>Remove</div>
+                        { popupStatus
+                          ? (
+                            <RemovalPopup
+                              closingFunc={popupToggle}
+                              removalFunc={removeModAnalysis}
+                              removalText={`paper: ${selectedAnalysis.title}`}
+                            />
+                          )
+                          : null }
+                      </div>
                     )
                     : null }
                 </td>

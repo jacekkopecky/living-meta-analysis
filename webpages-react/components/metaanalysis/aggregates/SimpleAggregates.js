@@ -146,7 +146,6 @@ function SimpleAggregates(props) {
     makeClickable,
   } = props;
   const [aggregates] = aggregatesState;
-  console.log(aggregates);
   const edit = useContext(EditContext);
   return (
     <div className="simpleaggregates">
