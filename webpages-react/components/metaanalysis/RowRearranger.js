@@ -4,13 +4,15 @@ let originalRow;
 
 function dragOverListener(event) {
   let topElem = event.target;
-  // console.log(topElem, originalRow);
   let bottomElem = event.target;
   while (topElem.nodeName !== 'TR') {
     topElem = topElem.parentNode;
   }
   while (bottomElem.nodeName !== 'TR') {
     bottomElem = bottomElem.parentNode;
+  }
+  while (!topElem.classList.contains('paperstart')) {
+    topElem = topElem.previousSibling;
   }
   while (!bottomElem.nextSibling.classList.contains('paperstart')) {
     bottomElem = bottomElem.nextSibling;
@@ -21,19 +23,14 @@ function dragOverListener(event) {
     bottomElem.classList.add('rowRearrangeBelow');
   }
 }
-function dragLeaveListener(event) {
-  let elem = event.target;
-  while (elem.nodeName !== 'TR') {
-    elem = elem.parentNode;
+function dragLeaveListener() {
+  const rowsWithClass1 = document.querySelectorAll('.rowRearrangeAbove');
+  const rowsWithClass2 = document.querySelectorAll('.rowRearrangeBelow');
+  for (let i = 0; i < rowsWithClass1.length; i += 1) {
+    rowsWithClass1[i].classList.remove('rowRearrangeAbove');
   }
-  while (!elem.nextSibling.classList.contains('paperstart')) {
-    if (elem.classList.contains('rowRearrangeAbove')) {
-      elem.classList.remove('rowRearrangeAbove');
-    }
-    elem = elem.nextSibling;
-    if (elem.classList.contains('rowRearrangeBelow')) {
-      elem.classList.remove('rowRearrangeBelow');
-    }
+  for (let i = 0; i < rowsWithClass2.length; i += 1) {
+    rowsWithClass2[i].classList.remove('rowRearrangeBelow');
   }
 }
 
