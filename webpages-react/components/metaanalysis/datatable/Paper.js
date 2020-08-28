@@ -4,6 +4,7 @@ import { formatDateTimeSplit } from '../../../tools/datatools';
 import EditContext from '../EditContext';
 import RearrangeRow from '../RowRearranger';
 import AddExperiment from '../AddExperiment';
+import { RemovalPopup } from '../Popup';
 
 const paperDetails = (paper) => {
   const {
@@ -168,11 +169,29 @@ function Paper(props) {
     paper, columns, makeClickable, editCell, parentOfRows, papers, paperOrderValue,
   } = props;
   const { title } = paper;
+  const [paperState, setPaperState] = papers;
+  const [paperOrder, setPaperOrder] = paperOrderValue;
 
   const edit = useContext(EditContext);
   const [rowEvent, setRowEvent] = useState({ rows: [], topRowIndex: null });
+  const [popupStatus, setPopupStatus] = useState(false);
 
   const nExp = Object.keys(paper.experiments).length;
+
+  function popupToggle() {
+    setPopupStatus(!popupStatus);
+  }
+
+  function removePaper() {
+    const paperOrderClone = [...paperOrder];
+    const papersClone = [...paperState];
+
+    paperOrderClone.splice(paperOrderClone.indexOf(paper.id), 1);
+    papersClone.splice(papersClone.indexOf(paper), 1);
+
+    setPaperState(papersClone);
+    setPaperOrder(paperOrderClone);
+  }
 
   return (
     paper.experiments.map((exp, key) => {
@@ -202,6 +221,22 @@ function Paper(props) {
               )
               : null }
             { title }
+            { edit.flag
+              ? (
+                <div>
+                  <div className="removePaperButton" role="button" tabIndex={0} onClick={popupToggle} onKeyDown={popupToggle}>Remove</div>
+                  { popupStatus
+                    ? (
+                      <RemovalPopup
+                        closingFunc={popupToggle}
+                        removalFunc={removePaper}
+                        removalText={`paper: ${paper.title}`}
+                      />
+                    )
+                    : null }
+                </div>
+              )
+              : null }
             <AddExperiment paper={paper} columns={columns} paperState={papers} />
           </td>
         );

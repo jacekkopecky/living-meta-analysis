@@ -198,7 +198,6 @@
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
@@ -371,4 +370,32 @@ textarea {
 
 .removalPopupYes:hover {
   background-color: darkred;
+}
+
+.removeColumnButton,
+.removePaperButton {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: auto;
+  font-size: 15px;
+  display: inline-block;
+  border: 0.2em solid black;
+  text-align: center;
+  background-color: #ff5745;
+  outline: none;
+  cursor: pointer;
+  /* Prevent text highlight */
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.removeColumnButton:hover,
+.removePaperButton:hover {
+  background-color: red;
 }

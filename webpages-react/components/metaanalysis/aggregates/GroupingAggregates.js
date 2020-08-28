@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { getAggregateDatumValue, formatNumber } from '../../../tools/datatools';
+import { RemovalPopup } from '../Popup';
 
 const aggregateDetails = (aggr) => (
   <>
@@ -25,10 +26,31 @@ const aggregateValDetails = (aggr, value, group) => (
 
 function GroupingAggregates(props) {
   const {
-    groupingAggregates, makeClickable, mwgState,
+    groupingAggregatesState, makeClickable, mwgState,
   } = props;
-  console.log(groupingAggregates);
+  const [groupingAggregates, setGroupingAggregates] = groupingAggregatesState;
   const [moderatorsWithGroups] = mwgState;
+  const [popupStatus, setPopupStatus] = useState(false);
+  const [selectedAnalysis, setSelectedAnalysis] = useState(null);
+
+  function popupToggle() {
+    setPopupStatus(!popupStatus);
+  }
+
+  function selectAnalysis(e) {
+    const analysisFormula = e.currentTarget.getAttribute('analysisformula');
+    const analysisToSelect = groupingAggregates.filter(
+      (aggr) => aggr.formula === analysisFormula,
+    )[0];
+    setSelectedAnalysis(analysisToSelect);
+  }
+
+  function removeModAnalysis() {
+    const analysisClone = [...groupingAggregates];
+    analysisClone.splice(analysisClone.indexOf(selectedAnalysis), 1);
+    setGroupingAggregates(analysisClone);
+  }
+
   return (
     <>
       <div id="modAnalysisTableContainer">
@@ -79,7 +101,19 @@ function GroupingAggregates(props) {
             { groupingAggregates.map((aggr) => (
               <tr key={aggr.fullLabel}>
                 <td {...makeClickable(aggr.fullLabel, aggregateDetails(aggr))}>
-                  { aggr.title || aggr.fullLabel }
+                  <div>
+                    { aggr.title || aggr.fullLabel }
+                  </div>
+                  <div className="removeModAnalysisButton" analysisformula={aggr.formula} role="button" tabIndex={0} onClick={(e) => { popupToggle(); selectAnalysis(e); }} onKeyDown={popupToggle}>Remove</div>
+                  { popupStatus
+                    ? (
+                      <RemovalPopup
+                        closingFunc={popupToggle}
+                        removalFunc={removeModAnalysis}
+                        removalText={`paper: ${selectedAnalysis.title}`}
+                      />
+                    )
+                    : null }
                 </td>
                 { moderatorsWithGroups.map((moderator) => (moderator.included
                   ? moderator.groups.map((group) => {

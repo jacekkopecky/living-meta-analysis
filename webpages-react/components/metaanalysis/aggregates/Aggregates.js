@@ -33,7 +33,7 @@ function ModeratorDisplay(props) {
 
   return (
     <GroupingAggregates
-      groupingAggregates={groupingAggregates}
+      groupingAggregatesState={groupingAggregates}
       clickable={clickable}
       makeClickable={makeClickable}
       mwgState={mwgState}
@@ -54,7 +54,7 @@ function Aggregates(props) {
   } = props;
   const [aggregates, setAggregates] = aggregatesState;
   const [groupingAggregates, setGroupingAggregates] = groupingAggregatesState;
-  const [analysisType, setAnalysisType] = useState('moderator');
+  const [analysisType, setAnalysisType] = useState('simple');
   const mwgState = useState(moderatorsWithGroups);
   const formulaFunctions = formulas().moderatorFormulas;
   let content;
@@ -96,7 +96,7 @@ function Aggregates(props) {
         />
         <FilterModerators mwgState={mwgState} />
         <ModeratorDisplay
-          groupingAggregates={groupingAggregates}
+          groupingAggregates={[groupingAggregates, setGroupingAggregates]}
           clickable={clickable}
           makeClickable={makeClickable}
           mwgState={mwgState}
@@ -108,11 +108,13 @@ function Aggregates(props) {
   return (
     <>
       <section className="aggregates">
-        <div role="button" tabIndex={0} className={(analysisType === 'simple') ? 'analysisButton active' : 'analysisButton'} onClick={setSimple} onKeyDown={setSimple}>
-          Simple analysis
-        </div>
-        <div role="button" tabIndex={0} className={(analysisType === 'moderator') ? 'analysisButton active' : 'analysisButton'} onClick={setModerator} onKeyDown={setModerator}>
-          Moderator analysis
+        <div>
+          <div role="button" tabIndex={0} className={(analysisType === 'simple') ? 'analysisButton active' : 'analysisButton'} onClick={setSimple} onKeyDown={setSimple}>
+            Simple analysis
+          </div>
+          <div role="button" tabIndex={0} className={(analysisType === 'moderator') ? 'analysisButton active' : 'analysisButton'} onClick={setModerator} onKeyDown={setModerator}>
+            Moderator analysis
+          </div>
         </div>
         { content }
       </section>
