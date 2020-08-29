@@ -125,7 +125,7 @@ function PostComment(props) {
       }
     }
     const tempComments = { ...comments };
-    tempComments[cellDetails.cellId] = handleComments();
+    if (inputValue.replace(/\s/g, '')) tempComments[cellDetails.cellId] = handleComments();
     setComments(tempComments);
   }
 

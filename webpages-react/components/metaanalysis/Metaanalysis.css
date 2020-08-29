@@ -114,6 +114,10 @@
   height: 70px;
 }
 
+.metaanalysis table .cornerstone {
+  border-top: 0.2em solid black;
+}
+
 .metaanalysis .grabberButton {
   background: none;
 	color: inherit;
@@ -147,7 +151,9 @@
 }
 
 #toggle-editing,
-#toggle-editing:focus {
+#toggle-editing:focus,
+#toggle-editing-inactive,
+#toggle-editing-inactive:focus {
   border: 0.2em solid black;
   width: 100%;
   height: 100%;
@@ -175,6 +181,11 @@
 
 #toggle-editing.editMode:hover {
   background-color: rgb(47, 116, 148);
+}
+
+#toggle-editing-inactive {
+  background-color: lightgrey;
+  cursor: default;
 }
 
 .metaanalysis .editMode.primary {

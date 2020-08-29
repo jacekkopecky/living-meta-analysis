@@ -114,10 +114,6 @@ function DataTable(props) {
                   paperOrderValue={[paperOrder, setPaperOrder]}
                   metaanalysis={metaanalysis}
                 />
-                <AddColumn
-                  columnState={columnState}
-                  aggregates={aggregates}
-                />
               </>
             </th>
             <th {...makeClickable('Study/Experiment', expColumnDetails)} className={`${edit.flag ? 'editMode primary' : ''}`}>
@@ -165,6 +161,16 @@ function DataTable(props) {
                   : null }
               </th>
             )) }
+            { edit.flag
+              ? (
+                <th className="column cornerstone editMode primary">
+                  <AddColumn
+                    columnState={columnState}
+                    aggregates={aggregates}
+                  />
+                </th>
+              )
+              : null }
           </tr>
         </thead>
         <tbody ref={parentOfRows}>

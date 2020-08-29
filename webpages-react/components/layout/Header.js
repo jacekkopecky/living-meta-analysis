@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './Header.css';
 import { SignInButton, SignOutButton } from '../../tools/google-auth';
+import EditContext from '../metaanalysis/EditContext';
 
 function Header({ currentUser }) {
   return (
@@ -15,6 +16,10 @@ function Header({ currentUser }) {
 }
 
 function UserInfo({ currentUser }) {
+  const edit = useContext(EditContext);
+  function disableEdit() {
+    edit.toggle();
+  }
   if (currentUser) {
     // User is signed in
     return (
@@ -27,7 +32,9 @@ function UserInfo({ currentUser }) {
             { currentUser.username || currentUser.email }
           </div>
           <a href="/profile" className="profile">Profile</a>
-          <SignOutButton />
+          <div role="button" tabIndex={0} onClick={edit.flag ? disableEdit : null} onKeyDown={edit.flag ? disableEdit : null}>
+            <SignOutButton />
+          </div>
         </div>
       </div>
     );

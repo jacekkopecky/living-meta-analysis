@@ -149,16 +149,28 @@ function Metaanalysis(props) {
         </div>
         <div className="titleBarButtons">
           { /* <TagList tags={tags} setTags={setTags} /> */ }
-          <span
-            id="toggle-editing"
-            role="menuitem"
-            tabIndex="0"
-            onMouseDown={edit.toggle}
-            onKeyPress={edit.toggle}
-            className={`${edit.flag ? 'editMode' : ''}`}
-          >
-            { edit.flag ? 'Stop editing' : 'Edit' }
-          </span>
+          { currentUser
+            ? (
+              <span
+                id="toggle-editing"
+                role="menuitem"
+                tabIndex="0"
+                onMouseDown={edit.toggle}
+                onKeyPress={edit.toggle}
+                className={`${edit.flag ? 'editMode' : ''}`}
+              >
+                { edit.flag ? 'Stop editing' : 'Edit' }
+              </span>
+            )
+            : (
+              <span
+                id="toggle-editing-inactive"
+                role="menuitem"
+                tabIndex="0"
+              >
+                Sign in to edit
+              </span>
+            ) }
         </div>
       </div>
       <Tabs displayedCell={displayedCell} setDisplayedCell={setDisplayedCell}>
