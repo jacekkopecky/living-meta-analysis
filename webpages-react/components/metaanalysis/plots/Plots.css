@@ -201,6 +201,7 @@ svg.forestplotgroup .summary .sumname.sumtotal {
 #graphButtonContainer {
   display: inline-block;
   height: 2em;
+  margin: 1em;
 }
 
 #editGraphButtonContainer,
@@ -258,4 +259,12 @@ svg.forestplotgroup .summary .sumname.sumtotal {
 
 .removeGraphButton:hover {
   background-color: red;
+}
+
+#graphSVGContainer {
+  width: 100vh;
+  height: 60vh;
+  border: 0.2em solid black;
+  overflow: scroll;
+  margin: 2em;
 }

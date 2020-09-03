@@ -41,7 +41,7 @@ function AddModeratorAnalysisPopup(props) {
         title = e.currentTarget.children[i].children[0].value;
       }
     }
-    if (!title) title = `Moderator analysis #${aggregates.length}`;
+    if (!title) title = `Moderator analysis #${aggregates.length + 1}`;
     let newAnalysis;
     if (params.length === 1) {
       newAnalysis = {

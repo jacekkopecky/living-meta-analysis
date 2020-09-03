@@ -209,3 +209,16 @@
 .removeModAnalysisButton:hover {
   background-color: red;
 }
+
+.simpleaggregates {
+  width: 70vh;
+  height: 60vh;
+  border: 0.2em solid black;
+  overflow: scroll;
+  margin: 2em;
+}
+
+.simpleaggregates table,
+.simpleaggregates thead {
+  border: 0.2em solid black;
+}

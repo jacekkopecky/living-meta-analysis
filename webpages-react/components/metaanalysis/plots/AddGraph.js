@@ -250,6 +250,10 @@ function AddGraphPopup(props) {
     default:
     }
 
+    if (graph && !graph.title.replace(/\s/g, '')) {
+      graph.title = `Graph #${graphs.length + 1}`;
+    }
+
     const graphsClone = [...graphs];
     graphsClone.push(graph);
     setGraphs(graphsClone);

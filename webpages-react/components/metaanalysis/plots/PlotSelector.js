@@ -83,7 +83,9 @@ function PlotSelector(props) {
         <div id="graphContainer">
           { selectedGraph && graphs !== {}
             ? (
-              <Plots selectedGraph={selectedGraph} />
+              <div id="graphSVGContainer">
+                <Plots selectedGraph={selectedGraph} />
+              </div>
             )
             : null }
         </div>

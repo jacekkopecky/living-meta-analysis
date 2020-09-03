@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { formatDateTime } from '../../tools/datatools';
+import EditContext from './EditContext';
 import './Metadata.css';
 
 function Metadata({ metadata }) {
   const { enteredByUsername, ctime, mtime } = metadata;
+  const edit = useContext(EditContext);
 
   const path = `/${enteredByUsername}/`;
   return (
-    <aside className="metadata">
+    <aside className={edit.flag ? 'metadata editMode secondary' : 'metadata'}>
       <p>
         Entered by
         { ' ' }

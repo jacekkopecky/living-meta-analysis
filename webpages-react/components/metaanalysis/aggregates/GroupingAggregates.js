@@ -59,7 +59,7 @@ function GroupingAggregates(props) {
         <table id="modAnalysisTable">
           <thead>
             <tr>
-              <th className="modAnalysisHead">Moderator:</th>
+              <th className={edit.flag ? 'modAnalysisHead editMode primary' : 'modAnalysisHead'}>Moderator:</th>
               { moderatorsWithGroups.map((moderator) => {
                 if (moderator.included) {
                   let count = 0;
@@ -73,7 +73,7 @@ function GroupingAggregates(props) {
                       <th
                         key={moderator.moderatorObj.title}
                         colSpan={count}
-                        className="modAnalysisHead"
+                        className={edit.flag ? 'modAnalysisHead editMode primary' : 'modAnalysisHead'}
                       >
                         { moderator.moderatorObj.title }
                       </th>
@@ -86,11 +86,11 @@ function GroupingAggregates(props) {
           </thead>
           <thead>
             <tr>
-              <th className="modAnalysisHead">Group:</th>
+              <th className={edit.flag ? 'modAnalysisHead editMode primary' : 'modAnalysisHead'}>Group:</th>
               { moderatorsWithGroups.map((moderator) => (moderator.included
                 ? moderator.groups.map((group) => (group.included
                   ? (
-                    <th key={group.group} className="modAnalysisHead">
+                    <th key={group.group} className={edit.flag ? 'modAnalysisHead editMode primary' : 'modAnalysisHead'}>
                       { group.group }
                     </th>
                   )

@@ -152,8 +152,8 @@ function SimpleAggregates(props) {
       <table>
         <thead>
           <tr>
-            <th>Simple analysis definition</th>
-            <th colSpan={edit.flag ? 2 : 1}>Value</th>
+            <th className={edit.flag ? 'editMode primary' : null}>Simple analysis definition</th>
+            <th className={edit.flag ? 'editMode primary' : null} colSpan={edit.flag ? 2 : 1}>Value</th>
           </tr>
         </thead>
         <tbody>

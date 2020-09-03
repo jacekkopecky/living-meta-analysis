@@ -35,7 +35,6 @@ function AddExperimentPopup(props) {
         data[paper.columns[i].id] = null;
       }
     }
-    console.log(data);
     let index;
     if (paper.experiments.length === 1 && paper.experiments[0].title === null) {
       index = 0;
@@ -76,9 +75,11 @@ function AddExperimentPopup(props) {
     const tempPapers = [...papers];
     if (correctInputTypes) {
       const newExperiment = createNewExperiment(experimentDetails);
-      const paperIndex = tempPapers.indexOf(paper);
-      tempPapers[paperIndex].experiments[newExperiment.index] = newExperiment;
-      closeHandler();
+      if (newExperiment.title) {
+        const paperIndex = tempPapers.indexOf(paper);
+        tempPapers[paperIndex].experiments[newExperiment.index] = newExperiment;
+        closeHandler();
+      }
     } else {
       e.target.nextSibling.textContent = 'Ensure correct input types';
     }
@@ -90,11 +91,11 @@ function AddExperimentPopup(props) {
       <h1> Add an Experiment to { paper.title } </h1>
       <form className="addExperimentForm" onSubmit={handleSubmit}>
         <label htmlFor="ExperimentInput" key="experiment">
-          Experiment type (string):
+          Experiment type (string) (required):
           <input type="text" id="ExperimentInput" columnid="experiment" />
         </label>
         { columns && columns.map((col) => (
-          (col.type === 'characteristic')
+          (col.type === 'characteristic' && col.sourceColumnMap[paper.id])
             ? (
               <label htmlFor={`${col.title.replace(/\s/g, '')}Input`} key={`labelFor${col.id}`}>
                 { col.title } ({ col.inputType }):

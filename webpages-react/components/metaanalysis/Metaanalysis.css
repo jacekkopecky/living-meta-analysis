@@ -188,7 +188,7 @@
   cursor: default;
 }
 
-.metaanalysis .editMode.primary {
+.editMode.primary {
   background-color: #FFC0CB !important;
   color: #000000 !important;
 }

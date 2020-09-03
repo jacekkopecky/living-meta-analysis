@@ -36,6 +36,11 @@
 
 .details .header .close:hover {
   background-color: red;
+  border-left: 0.1333em solid black;
+}
+
+.details .header .close:focus {
+  outline: none;
 }
 
 

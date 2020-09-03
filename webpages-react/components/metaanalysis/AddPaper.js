@@ -74,6 +74,7 @@ function AddPaperPopup(props) {
   };
 
   const handleSubmit = (e) => {
+    e.preventDefault();
     const paperDetails = {
       paperInput: null,
       referenceInput: null,
