@@ -66,7 +66,16 @@ function DataTable(props) {
     setColumns(columnsClone);
   }
 
+  function hideColumn(col) {
+    col.visibility = false;
+  }
+
+  function showColumn(col) {
+    col.visibility = true;
+  }
+
   const getColNums = (cols) => {
+    let numSpecs = 0;
     let numMods = 0;
     let numCalcs = 0;
     let numData = 0;
@@ -77,11 +86,13 @@ function DataTable(props) {
         numCalcs += 1;
       } else if (column.subType === 'result') {
         numData += 1;
+      } else if (column.subType === 'pspecific') {
+        numSpecs += 1;
       }
     });
-    return [numMods, numCalcs, numData];
+    return [numSpecs, numMods, numCalcs, numData];
   };
-  const [moderatorNumber, calculatorNumber, dataNumber] = getColNums(columns);
+  const [pspecificNumber, moderatorNumber, calculatorNumber, dataNumber] = getColNums(columns);
 
   const [moveCols, setMoveCols] = useState({ col: null, colGroup: [] });
 
@@ -92,17 +103,17 @@ function DataTable(props) {
     <section>
       <table className="datatable">
         <colgroup>
-          <col className="paperColumn" span="2" />
+          <col className="paperColumn" span={2 + pspecificNumber} />
           { (moderatorNumber > 0) ? <col className="moderatorColumn" span={moderatorNumber} /> : null }
           { (calculatorNumber > 0) ? <col className="calculatorColumn" span={calculatorNumber} /> : null }
           { (dataNumber > 0) ? <col className="dataColumn" span={dataNumber} /> : null }
         </colgroup>
         <thead>
           <tr className="columnHeadings">
-            <th className="paperColumnHeader" colSpan="2">Paper specific columns</th>
-            { (moderatorNumber > 0) ? <th className="moderatorColumnHeader" colSpan={moderatorNumber}>Moderator columns</th> : null }
-            { (calculatorNumber > 0) ? <th className="calculatorColumnHeader" colSpan={calculatorNumber}>Calculator columns</th> : null }
-            { (dataNumber > 0) ? <th className="dataColumnHeader" colSpan={dataNumber}>Calculated result columns</th> : null }
+            <th className="paperColumnHeader" colSpan={2 + pspecificNumber}>Studies, experiments, conditions</th>
+            { (moderatorNumber > 0) ? <th className="moderatorColumnHeader" colSpan={moderatorNumber}>Moderator variables</th> : null }
+            { (calculatorNumber > 0) ? <th className="calculatorColumnHeader" colSpan={calculatorNumber}>Outcomes and Ns</th> : null }
+            { (dataNumber > 0) ? <th className="dataColumnHeader" colSpan={dataNumber}>Effect sizes and weights</th> : null }
           </tr>
         </thead>
         <thead>
@@ -130,35 +141,54 @@ function DataTable(props) {
                 columntype={col.subType}
                 columnid={col.id || col.number}
               >
-                { col.title || col.fullLabel }
-                { edit.flag
+                { col.visibility === true
                   ? (
-                    <>
-                      <button
-                        type="submit"
-                        className="grabberButton"
-                        onDragStart={
-                          (e) => RearrangeColumn(e, columns, setColumns, moveCols, setMoveCols)
-                        }
-                        onDragEnd={
-                          (e) => RearrangeColumn(e, columns, setColumns, moveCols, setMoveCols)
-                        }
-                      >
-                        <img src="/img/grab-icon.png" alt="Grabber" className="grabberIcon" />
-                      </button>
-                      <div role="button" tabIndex={0} className="removeColumnButton" coltitle={col.title} colid={col.id || col.number} onClick={(e) => { popupToggle(); selectColumn(e); }} onKeyDown={popupToggle}>Remove</div>
-                      { popupStatus
+                    <div>
+                      { col.title || col.fullLabel }
+                      { edit.flag
                         ? (
-                          <RemovalPopup
-                            closingFunc={popupToggle}
-                            removalFunc={removeColumn}
-                            removalText={`column: ${selectedColumn.title}`}
-                          />
+                          <>
+                            <button
+                              type="submit"
+                              className="grabberButton"
+                              onDragStart={
+                                (e) => RearrangeColumn(
+                                  e, columns, setColumns, moveCols, setMoveCols,
+                                )
+                              }
+                              onDragEnd={
+                                (e) => RearrangeColumn(
+                                  e, columns, setColumns, moveCols, setMoveCols,
+                                )
+                              }
+                            >
+                              <img src="/img/grab-icon.png" alt="Grabber" className="grabberIcon" />
+                            </button>
+                            <button type="submit" onClick={() => hideColumn(col)}>Hide</button>
+                            <div role="button" tabIndex={0} className="removeColumnButton" coltitle={col.title} colid={col.id || col.number} onClick={(e) => { popupToggle(); selectColumn(e); }} onKeyDown={popupToggle}>Remove</div>
+                            { popupStatus
+                              ? (
+                                <RemovalPopup
+                                  closingFunc={popupToggle}
+                                  removalFunc={removeColumn}
+                                  removalText={`column: ${selectedColumn.title}`}
+                                />
+                              )
+                              : null }
+                          </>
                         )
                         : null }
-                    </>
+                    </div>
                   )
-                  : null }
+                  : (
+                    <div>
+                      { edit.flag
+                        ? (
+                          <button type="submit" onClick={() => showColumn(col)}>Show</button>
+                        )
+                        : null }
+                    </div>
+                  ) }
               </th>
             )) }
             { edit.flag

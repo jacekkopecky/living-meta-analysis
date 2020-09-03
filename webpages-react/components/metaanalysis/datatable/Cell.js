@@ -106,6 +106,13 @@ export default function Cell(props) {
   const padding = Math.trunc(value).toString().length;
   /* Reminder: some parts of the Cell object are initialized in 'makeClickable' function,
   found in Metaanalysis.js */
+
+  if (col.visibility === false) {
+    return (
+      <td />
+    );
+  }
+
   return (
     col.id
     // data cell

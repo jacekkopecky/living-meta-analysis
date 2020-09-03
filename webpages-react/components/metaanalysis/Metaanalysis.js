@@ -42,11 +42,15 @@ function Metaanalysis(props) {
   const edit = useContext(EditContext);
   const currentUser = useContext(UserContext);
 
+  // Temporary manual assignment of column subtypes
   const assignSubType = (cols) => {
     const columnsClone = [...cols];
     columnsClone.forEach((column) => {
       if (!column.subType) {
-        if (column.id === '1' || column.id === '2' || column.id === '7') {
+        if (column.id === '1') {
+          column.subType = 'pspecific';
+          column.inputType = 'string';
+        } else if (column.id === '2' || column.id === '7') {
           column.subType = 'moderator';
           column.inputType = 'string';
         } else if (column.type !== 'result') {
@@ -58,13 +62,26 @@ function Metaanalysis(props) {
     return columnsClone;
   };
 
+  const assignVisibility = (cols) => {
+    const columnsClone = [...cols];
+    columnsClone.forEach((col) => {
+      if (col.visibility === undefined) {
+        col.visibility = true;
+      }
+    });
+    return columnsClone;
+  };
+
   const reorderColumnsBySubtype = (cols) => {
     const columnsClone = [...cols];
+    const pspecCols = [];
     const modCols = [];
     const calcCols = [];
     const dataCols = [];
     columnsClone.forEach((column) => {
-      if (column.subType === 'moderator') {
+      if (column.subType === 'pspecific') {
+        pspecCols.push(column);
+      } else if (column.subType === 'moderator') {
         modCols.push(column);
       } else if (column.subType === 'calculator') {
         calcCols.push(column);
@@ -72,11 +89,12 @@ function Metaanalysis(props) {
         dataCols.push(column);
       }
     });
-    const orderedCols = modCols.concat(calcCols.concat(dataCols));
+    const orderedCols = pspecCols.concat(modCols.concat(calcCols.concat(dataCols)));
     return orderedCols;
   };
 
-  const columnsClone = reorderColumnsBySubtype(assignSubType(columns));
+  const columnsClone = assignVisibility(reorderColumnsBySubtype(assignSubType(columns)));
+  console.log(columnsClone);
   const moderators = columns.filter((col) => col.subType === 'moderator');
   const moderatorsWithGroups = [];
   for (let i = 0; i < moderators.length; i += 1) {
