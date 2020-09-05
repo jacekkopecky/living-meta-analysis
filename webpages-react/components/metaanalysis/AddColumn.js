@@ -10,7 +10,7 @@ function AddColumnPopup(props) {
   const [selectedType, setSelectedType] = useState('moderator');
   const simpleFormulas = formulas().simpleFormulas;
   const [selectedFormula, setSelectedFormula] = useState(simpleFormulas[0]);
-  const calculators = columns.filter((col) => col.subType === 'calculator');
+  const calculators = columns.filter((col) => col.subType === 'calculator' || col.subType === 'calculatorN');
 
   const closeHandler = () => {
     setPopupStatus(!popupStatus);
@@ -36,10 +36,9 @@ function AddColumnPopup(props) {
     let title;
     let type;
     let formulaTitle;
-    let params = [];
-    let columnsClone = [...columns];
+    const params = [];
 
-    const reorderColumnsBySubtype = (cols) => {
+    function reorderColumnsBySubtype(cols) {
       const colsClone = [...cols];
       const modCols = [];
       const calcCols = [];
@@ -47,7 +46,7 @@ function AddColumnPopup(props) {
       colsClone.forEach((column) => {
         if (column.subType === 'moderator') {
           modCols.push(column);
-        } else if (column.subType === 'calculator') {
+        } else if (column.subType === 'calculator' || column.subType === 'calculatorN') {
           calcCols.push(column);
         } else if (column.subType === 'result') {
           dataCols.push(column);
@@ -55,7 +54,112 @@ function AddColumnPopup(props) {
       });
       const orderedCols = modCols.concat(calcCols.concat(dataCols));
       return orderedCols;
-    };
+    }
+
+    function createModeratorObject() {
+      let columnsClone = [...columns];
+      const newId = String(columns.filter((col) => col.subType !== 'result').length + 1);
+      const newInputType = type === 'moderator' ? 'string' : 'number';
+      const newModeratorColumnObject = {
+        id: newId,
+        inputType: newInputType,
+        sourceColumnMap: {},
+        subType: 'moderator',
+        title,
+        type: 'characteristic',
+      };
+      if (newModeratorColumnObject !== {} && title !== '') {
+        columnsClone.push(newModeratorColumnObject);
+        columnsClone = reorderColumnsBySubtype(columnsClone);
+        closeHandler();
+      }
+      return columnsClone;
+    }
+
+    function createCalculatorObject() {
+      let columnsClone = [...columns];
+      const newId = columns.filter((col) => col.subType !== 'result').length + 1;
+      const newInputType = type === 'moderator' ? 'string' : 'number';
+      const newCalculatorColumnObject = {
+        id: String(newId),
+        inputType: newInputType,
+        sourceColumnMap: {},
+        subType: 'calculator',
+        title,
+        type: 'characteristic',
+        linkedN: String(newId + 1),
+      };
+      const newCalculatorNColumnObject = {
+        id: String(newId + 1),
+        inputType: newInputType,
+        sourceColumnMap: {},
+        subType: 'calculatorN',
+        title: `N (${title})`,
+        type: 'characteristic',
+      };
+      if (newCalculatorColumnObject !== {} && title !== '') {
+        columnsClone.push(newCalculatorColumnObject);
+        columnsClone.push(newCalculatorNColumnObject);
+        columnsClone = reorderColumnsBySubtype(columnsClone);
+        closeHandler();
+      }
+      return columnsClone;
+    }
+
+    function createResultObject() {
+      let columnsClone = [...columns];
+      const f = simpleFormulas.filter((formula) => formula.id === formulaTitle)[0];
+      const formulaClone = { ...f };
+      formulaClone.type = window.lima.FORMULA_TYPE;
+      const newNumber = String(columns.filter((col) => col.subType === 'result').length + 1);
+      let newFormula = '';
+      const newFormulaParams = [];
+      let newFullLabel = '';
+      console.log(f, params);
+      if (f.parameters.length !== 4) {
+        for (let i = 0; i < params.length; i += 1) {
+          newFormulaParams[i] = calculators.filter((col) => col.id === String(params[i]))[0];
+          newFullLabel = newFullLabel.concat(newFormulaParams[i].title);
+          newFormula = newFormula.concat(params[i]);
+          if (params[i + 1]) {
+            newFormula = newFormula.concat(',');
+            newFullLabel = newFullLabel.concat(', ');
+          }
+        }
+      } else {
+        for (let i = 0; i < f.parameters.length; i += 2) {
+          newFormulaParams[i] = calculators.filter((col) => col.id === String(params[i / 2]))[0];
+          newFormulaParams[i + 1] = calculators.filter(
+            (col) => col.id === newFormulaParams[i].linkedN,
+          )[0];
+          newFullLabel = `${newFullLabel}${newFormulaParams[i].title}, ${newFormulaParams[i + 1].title}`;
+          newFormula = `${newFormula}${newFormulaParams[i].id},${newFormulaParams[i + 1].id}`;
+          if (f.parameters[i + 2]) {
+            newFormula = newFormula.concat(',');
+            newFullLabel = newFullLabel.concat(', ');
+          }
+        }
+      }
+      console.log(newFormula, newFullLabel);
+      const newResultColumnObject = {
+        formula: `${formulaClone.id}(${newFormula})`,
+        formulaName: formulaClone.id,
+        formulaObj: formulaClone,
+        formulaParams: newFormulaParams,
+        fullLabel: `${formulaClone.label}(${newFullLabel})`,
+        metaanalysis: window.currentMa,
+        number: newNumber,
+        subType: 'result',
+        title,
+        type: 'result',
+      };
+      if (newResultColumnObject !== {} && title !== '') {
+        columnsClone.push(newResultColumnObject);
+        columnsClone = reorderColumnsBySubtype(columnsClone);
+        closeHandler();
+      }
+      return columnsClone;
+    }
 
     for (let i = 0; i < e.currentTarget.children.length; i += 1) {
       if (e.currentTarget.children[i].nodeName === 'LABEL' || e.currentTarget.children[i].nodeName === 'DIV') {
@@ -71,6 +175,7 @@ function AddColumnPopup(props) {
           formulaTitle = input.children[0].value;
           break;
         case 'formulaParamInput':
+          console.log(input);
           for (let j = 0; j < input.children.length; j += 1) {
             params.push(input.children[j].children[0].value);
           }
@@ -79,55 +184,21 @@ function AddColumnPopup(props) {
         }
       }
     }
-    const f = simpleFormulas.filter((formula) => formula.id === formulaTitle)[0];
-    const formulaClone = { ...f };
-    formulaClone.type = window.lima.FORMULA_TYPE;
 
-    let newColumnObject;
-    if (type !== 'result') {
-      const newId = String(columns.filter((col) => col.subType !== 'result').length + 1);
-      const newInputType = type === 'moderator' ? 'string' : 'number';
-      newColumnObject = {
-        id: newId,
-        inputType: newInputType,
-        sourceColumnMap: {},
-        subType: type,
-        title,
-        type: 'characteristic',
-      };
-    } else {
-      const newNumber = String(columns.filter((col) => col.subType === 'result').length + 1);
-      let newFormula = '';
-      const newFormulaParams = [];
-      let newFullLabel = '';
-      for (let i = 0; i < params.length; i += 1) {
-        newFormulaParams[i] = calculators.filter((col) => col.id === String(params[i]))[0];
-        newFullLabel = newFullLabel.concat(newFormulaParams[i].title);
-        newFormula = newFormula.concat(params[i]);
-        if (params[i + 1]) {
-          newFormula = newFormula.concat(',');
-          newFullLabel = newFullLabel.concat(', ');
-        }
-      }
-      newColumnObject = {
-        formula: `${formulaClone.id}(${newFormula})`,
-        formulaName: formulaClone.id,
-        formulaObj: formulaClone,
-        formulaParams: newFormulaParams,
-        fullLabel: `${formulaClone.label}(${newFullLabel})`,
-        metaanalysis: window.currentMa,
-        number: newNumber,
-        subType: type,
-        title,
-        type,
-      };
+    let columnsToSet;
+    switch (type) {
+    case 'moderator':
+      columnsToSet = createModeratorObject();
+      break;
+    case 'calculator':
+      columnsToSet = createCalculatorObject();
+      break;
+    case 'result':
+      columnsToSet = createResultObject();
+      break;
+    default:
     }
-    if (newColumnObject !== {} && title !== '') {
-      columnsClone.push(newColumnObject);
-      columnsClone = reorderColumnsBySubtype(columnsClone);
-      closeHandler();
-    }
-    setColumns(columnsClone);
+    setColumns(columnsToSet);
   }
 
   const content = (
@@ -162,19 +233,62 @@ function AddColumnPopup(props) {
                 </select>
               </label>
               <div id="formulaParamInput">
-                { selectedFormula.parameters.map((param) => (
-                  <label htmlFor={`param${param}`} key={`param${param}`} className="formulaParamInput">{ param }:
-                    <select name={`param${param}`}>
-                      { calculators.map((col) => (
-                        <option value={col.id} key={`param${param}${col.id}`}>
-                          { col.title }
-                        </option>
+                { selectedFormula.parameters.length === 2
+                  ? (
+                    <>
+                      { selectedFormula.parameters.map((param) => (
+                        <label htmlFor={`param${param}`} key={`param${param}`} className="formulaParamInput">{ param }:
+                          <select name={`param${param}`}>
+                            { calculators.map((col) => (
+                              <>
+                                { col.subType === 'calculator'
+                                  ? (
+                                    <option value={col.id} key={`param${param}${col.id}`}>
+                                      { col.title }
+                                    </option>
+                                  )
+                                  : null }
+                              </>
+                            )) }
+                          </select>
+                        </label>
                       )) }
-                    </select>
-                  </label>
-                )) }
+                    </>
+                  )
+                  : (
+                    <>
+                      { selectedFormula.parameters.map((param, i) => (
+                        <>
+                          { i === 0 || i === 2
+                            ? (
+                              <label htmlFor={`param${param}`} key={`param${param}`} className="formulaParamInput">{ param }:
+                                <select name={`param${param}`}>
+                                  { calculators.map((col) => (
+                                    <>
+                                      { col.subType === 'calculator'
+                                        ? (
+                                          <option value={col.id} key={`param${param}${col.id}`}>
+                                            { col.title }
+                                          </option>
+                                        )
+                                        : null }
+                                    </>
+                                  )) }
+                                </select>
+                              </label>
+                            )
+                            : null }
+                        </>
+                      )) }
+                    </>
+                  ) }
               </div>
             </>
+          )
+          : null }
+        { selectedType === 'calculator'
+          ? (
+            <p>This will also add the corresponding N column</p>
           )
           : null }
         <input type="submit" className="submitButton" />

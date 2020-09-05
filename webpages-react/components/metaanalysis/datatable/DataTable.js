@@ -63,6 +63,10 @@ function DataTable(props) {
   function removeColumn() {
     const columnsClone = [...columns];
     columnsClone.splice(columnsClone.indexOf(selectedColumn), 1);
+    if (selectedColumn.subType === 'calculator') {
+      const nCol = columns.filter((col) => col.id === selectedColumn.linkedN)[0];
+      columnsClone.splice(columnsClone.indexOf(nCol), 1);
+    }
     setColumns(columnsClone);
   }
 
@@ -82,7 +86,7 @@ function DataTable(props) {
     cols.forEach((column) => {
       if (column.subType === 'moderator') {
         numMods += 1;
-      } else if (column.subType === 'calculator') {
+      } else if (column.subType === 'calculator' || column.subType === 'calculatorN') {
         numCalcs += 1;
       } else if (column.subType === 'result') {
         numData += 1;
@@ -165,7 +169,11 @@ function DataTable(props) {
                               <img src="/img/grab-icon.png" alt="Grabber" className="grabberIcon" />
                             </button>
                             <button type="submit" onClick={() => hideColumn(col)}>Hide</button>
-                            <div role="button" tabIndex={0} className="removeColumnButton" coltitle={col.title} colid={col.id || col.number} onClick={(e) => { popupToggle(); selectColumn(e); }} onKeyDown={popupToggle}>Remove</div>
+                            { col.subType !== 'calculatorN'
+                              ? (
+                                <div role="button" tabIndex={0} className="removeColumnButton" coltitle={col.title} colid={col.id || col.number} onClick={(e) => { popupToggle(); selectColumn(e); }} onKeyDown={popupToggle}>Remove</div>
+                              )
+                              : null }
                             { popupStatus
                               ? (
                                 <RemovalPopup

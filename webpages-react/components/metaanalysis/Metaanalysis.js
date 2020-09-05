@@ -12,6 +12,7 @@ import UserContext from './UserContext';
 
 import { populateCircularMa, getDatumValue } from '../../tools/datatools';
 import replaceCell from '../../tools/editTools';
+import modifyColumns from '../../tools/modifyColumns';
 
 import './Metaanalysis.css';
 
@@ -42,59 +43,7 @@ function Metaanalysis(props) {
   const edit = useContext(EditContext);
   const currentUser = useContext(UserContext);
 
-  // Temporary manual assignment of column subtypes
-  const assignSubType = (cols) => {
-    const columnsClone = [...cols];
-    columnsClone.forEach((column) => {
-      if (!column.subType) {
-        if (column.id === '1') {
-          column.subType = 'pspecific';
-          column.inputType = 'string';
-        } else if (column.id === '2' || column.id === '7') {
-          column.subType = 'moderator';
-          column.inputType = 'string';
-        } else if (column.type !== 'result') {
-          column.subType = 'calculator';
-          column.inputType = 'number';
-        } else { column.subType = 'result'; }
-      }
-    });
-    return columnsClone;
-  };
-
-  const assignVisibility = (cols) => {
-    const columnsClone = [...cols];
-    columnsClone.forEach((col) => {
-      if (col.visibility === undefined) {
-        col.visibility = true;
-      }
-    });
-    return columnsClone;
-  };
-
-  const reorderColumnsBySubtype = (cols) => {
-    const columnsClone = [...cols];
-    const pspecCols = [];
-    const modCols = [];
-    const calcCols = [];
-    const dataCols = [];
-    columnsClone.forEach((column) => {
-      if (column.subType === 'pspecific') {
-        pspecCols.push(column);
-      } else if (column.subType === 'moderator') {
-        modCols.push(column);
-      } else if (column.subType === 'calculator') {
-        calcCols.push(column);
-      } else if (column.subType === 'result') {
-        dataCols.push(column);
-      }
-    });
-    const orderedCols = pspecCols.concat(modCols.concat(calcCols.concat(dataCols)));
-    return orderedCols;
-  };
-
-  const columnsClone = assignVisibility(reorderColumnsBySubtype(assignSubType(columns)));
-  console.log(columnsClone);
+  const columnsClone = modifyColumns(columns);
   const moderators = columns.filter((col) => col.subType === 'moderator');
   const moderatorsWithGroups = [];
   for (let i = 0; i < moderators.length; i += 1) {

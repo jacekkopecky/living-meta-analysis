@@ -8,7 +8,7 @@ function AddGraphPopup(props) {
   const [graphs, setGraphs] = graphState;
   const [popupStatus, setPopupStatus] = flag;
   const modCols = columns.filter((col) => col.subType === 'moderator');
-  const calcCols = columns.filter((col) => col.subType === 'calculator');
+  const calcCols = columns.filter((col) => col.subType === 'calculator' || col.subType === 'calculatorN');
   const [type, setType] = useState('grape');
 
   const closeHandler = () => {
@@ -44,18 +44,12 @@ function AddGraphPopup(props) {
         case 'newGraphG1':
           g1 = input.value;
           g1Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          break;
-        case 'newGraphG1N':
-          g1n = input.value;
-          g1nCol = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
+          g1nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
           break;
         case 'newGraphG2':
           g2 = input.value;
           g2Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          break;
-        case 'newGraphG2N':
-          g2n = input.value;
-          g2nCol = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
+          g2nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
           break;
         case 'newGraphMod':
           mod = input.value;
@@ -95,13 +89,9 @@ function AddGraphPopup(props) {
 
   function formForestObject(elem) {
     let title;
-    let g1;
     let g1Col;
-    let g1n;
     let g1nCol;
-    let g2;
     let g2Col;
-    let g2n;
     let g2nCol;
     const id = Object.keys(graphs).length;
 
@@ -113,20 +103,12 @@ function AddGraphPopup(props) {
           title = input.value;
           break;
         case 'newGraphG1':
-          g1 = input.value;
           g1Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          break;
-        case 'newGraphG1N':
-          g1n = input.value;
-          g1nCol = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
+          g1nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
           break;
         case 'newGraphG2':
-          g2 = input.value;
           g2Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          break;
-        case 'newGraphG2N':
-          g2n = input.value;
-          g2nCol = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
+          g2nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
           break;
         default:
         }
@@ -134,7 +116,7 @@ function AddGraphPopup(props) {
     }
 
     const graphObject = {
-      formula: `forestPlotPercentGraph(${g1},${g1n},${g2},${g2n})`,
+      formula: `forestPlotPercentGraph(${g1Col.id},${g1nCol.id},${g2Col.id},${g2nCol.id})`,
       formulaName: 'forestPlotPercentGraph',
       formulaObj: {
         id: 'forestPlotPercentGraph',
@@ -161,15 +143,10 @@ function AddGraphPopup(props) {
 
   function formForestGroupObject(elem) {
     let title;
-    let g1;
     let g1Col;
-    let g1n;
     let g1nCol;
-    let g2;
     let g2Col;
-    let g2n;
     let g2nCol;
-    let mod;
     let modCol;
     const id = Object.keys(graphs).length;
 
@@ -181,23 +158,14 @@ function AddGraphPopup(props) {
           title = input.value;
           break;
         case 'newGraphG1':
-          g1 = input.value;
           g1Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          break;
-        case 'newGraphG1N':
-          g1n = input.value;
-          g1nCol = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
+          g1nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
           break;
         case 'newGraphG2':
-          g2 = input.value;
           g2Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          break;
-        case 'newGraphG2N':
-          g2n = input.value;
-          g2nCol = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
+          g2nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
           break;
         case 'newGraphMod':
-          mod = input.value;
           modCol = columns.filter((col) => col.subType === 'moderator' && col.id === input.value)[0];
           break;
         default:
@@ -206,7 +174,7 @@ function AddGraphPopup(props) {
     }
 
     const graphObject = {
-      formula: `forestPlotGroupPercentGraph(${g1},${g1n},${g2},${g2n},${mod},)`,
+      formula: `forestPlotGroupPercentGraph(${g1Col.id},${g1nCol.id},${g2Col.id},${g2nCol.id},${modCol.id},)`,
       formulaName: 'forestPlotGroupPercentGraph',
       formulaObj: {
         id: 'forestPlotGroupPercentGraph',
@@ -281,25 +249,18 @@ function AddGraphPopup(props) {
         <label htmlFor="newGraphG1">Group 1:
           <select name="newGraphG1">
             { calcCols && calcCols.map((col) => (
-              <option
-                key={`newGraphG1${col.id}`}
-                value={col.id}
-              >
-                { col.title }
-              </option>
-            )) }
-          </select>
-        </label>
-
-        <label htmlFor="newGraphG1N">Group 1 n:
-          <select name="newGraphG1N">
-            { calcCols && calcCols.map((col) => (
-              <option
-                key={`newGraphG1N${col.id}`}
-                value={col.id}
-              >
-                { col.title }
-              </option>
+              <>
+                { col.subType !== 'calculatorN'
+                  ? (
+                    <option
+                      key={`newGraphG1${col.id}`}
+                      value={col.id}
+                    >
+                      { col.title }
+                    </option>
+                  )
+                  : null }
+              </>
             )) }
           </select>
         </label>
@@ -307,25 +268,18 @@ function AddGraphPopup(props) {
         <label htmlFor="newGraphG2">Group 2:
           <select name="newGraphG2">
             { calcCols && calcCols.map((col) => (
-              <option
-                key={`newGraphG2${col.id}`}
-                value={col.id}
-              >
-                { col.title }
-              </option>
-            )) }
-          </select>
-        </label>
-
-        <label htmlFor="newGraphG2N">Group 2 n:
-          <select name="newGraphG2N">
-            { calcCols && calcCols.map((col) => (
-              <option
-                key={`newGraphG2N${col.id}`}
-                value={col.id}
-              >
-                { col.title }
-              </option>
+              <>
+                { col.subType !== 'calculatorN'
+                  ? (
+                    <option
+                      key={`newGraphG2${col.id}`}
+                      value={col.id}
+                    >
+                      { col.title }
+                    </option>
+                  )
+                  : null }
+              </>
             )) }
           </select>
         </label>

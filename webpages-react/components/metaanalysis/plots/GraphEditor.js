@@ -11,7 +11,7 @@ function GrapeMenu(props) {
   const title = graph.title;
   const params = graph.formulaParams;
   const modCols = columns.filter((col) => col.subType === 'moderator');
-  const calcCols = columns.filter((col) => col.subType === 'calculator');
+  const calcCols = columns.filter((col) => col.subType === 'calculator' || col.subType === 'calculatorN');
   const newParams = [null, null, null, null, null];
   const paramIndex = [null, null, null, null, null];
   const newColumnParams = [null, null, null, null, null];
@@ -38,41 +38,29 @@ function GrapeMenu(props) {
           }
           break;
         case 'grapeG1':
-          if (params[0].id !== input.value) {
-            newParams[0] = input.value;
-          }
-          break;
-        case 'grapeG1N':
-          if (params[1].id !== input.value) {
-            newParams[1] = input.value;
-          }
+          newParams[0] = input.value;
           break;
         case 'grapeG2':
-          if (params[2].id !== input.value) {
-            newParams[2] = input.value;
-          }
-          break;
-        case 'grapeG2N':
-          if (params[3].id !== input.value) {
-            newParams[3] = input.value;
-          }
+          newParams[2] = input.value;
           break;
         case 'grapeMod':
-          if (params[4].id !== input.value) {
-            newParams[4] = input.value;
-          }
+          newParams[4] = input.value;
           break;
         default:
         }
       }
     }
-    for (let i = 0; i < newParams.length; i += 1) {
-      if (newParams[i]) {
-        const colParam = columns.filter((col) => col.id === newParams[i] && col.type !== 'result')[0];
-        graph.formulaParams[i] = colParam;
-        newColumnParams[i] = colParam.title;
-      }
+    for (let i = 0; i < newParams.length; i += 2) {
+      const colParam = columns.filter((col) => col.id === newParams[i] && col.type !== 'result')[0];
+      graph.formulaParams[i] = colParam;
+      newColumnParams[i] = colParam.title;
       paramIndex[i] = (newParams[i] || graph.formulaParams[i].id);
+      if (i !== 4) {
+        const nColParam = columns.filter((col) => col.id === colParam.linkedN)[0];
+        graph.formulaParams[i + 1] = nColParam;
+        newColumnParams[i + 1] = nColParam.title;
+        paramIndex[i + 1] = nColParam.id;
+      }
     }
     graph.formula = `grapeChartPercentGraph(${paramIndex[0]},${paramIndex[1]},${paramIndex[2]},${paramIndex[3]},${paramIndex[4]})`;
     graph.fullLabel = `Grape chart (percentages)( ${newColumnParams[0] || graph.formulaParams[0].title}, ${newColumnParams[1] || graph.formulaParams[1].title}, ${newColumnParams[2] || graph.formulaParams[2].title}, ${newColumnParams[3] || graph.formulaParams[3].title}, ${newColumnParams[4] || graph.formulaParams[4].title})`;
@@ -96,27 +84,19 @@ function GrapeMenu(props) {
         <label htmlFor="grapeG1">Group 1:
           <select name="grapeG1">
             { calcCols && calcCols.map((col) => (
-              <option
-                key={`grapeG1${col.id}`}
-                value={col.id}
-                selected={params[0] === col ? 'selected' : null}
-              >
-                { col.title }
-              </option>
-            )) }
-          </select>
-        </label>
-
-        <label htmlFor="grapeG1N">Group 1 n:
-          <select name="grapeG1N">
-            { calcCols && calcCols.map((col) => (
-              <option
-                key={`grapeG1N${col.id}`}
-                value={col.id}
-                selected={params[1] === col ? 'selected' : null}
-              >
-                { col.title }
-              </option>
+              <>
+                { col.subType !== 'calculatorN'
+                  ? (
+                    <option
+                      key={`grapeG1${col.id}`}
+                      value={col.id}
+                      selected={params[0] === col ? 'selected' : null}
+                    >
+                      { col.title }
+                    </option>
+                  )
+                  : null }
+              </>
             )) }
           </select>
         </label>
@@ -124,27 +104,19 @@ function GrapeMenu(props) {
         <label htmlFor="grapeG2">Group 2:
           <select name="grapeG2">
             { calcCols && calcCols.map((col) => (
-              <option
-                key={`grapeG2${col.id}`}
-                value={col.id}
-                selected={params[2] === col ? 'selected' : null}
-              >
-                { col.title }
-              </option>
-            )) }
-          </select>
-        </label>
-
-        <label htmlFor="grapeG2N">Group 2 n:
-          <select name="grapeG2N">
-            { calcCols && calcCols.map((col) => (
-              <option
-                key={`grapeG2N${col.id}`}
-                value={col.id}
-                selected={params[3] === col ? 'selected' : null}
-              >
-                { col.title }
-              </option>
+              <>
+                { col.subType !== 'calculatorN'
+                  ? (
+                    <option
+                      key={`grapeG2${col.id}`}
+                      value={col.id}
+                      selected={params[2] === col ? 'selected' : null}
+                    >
+                      { col.title }
+                    </option>
+                  )
+                  : null }
+              </>
             )) }
           </select>
         </label>
@@ -204,36 +176,24 @@ function ForestMenu(props) {
           }
           break;
         case 'forestG1':
-          if (params[0].id !== input.value) {
-            newParams[0] = input.value;
-          }
-          break;
-        case 'forestG1N':
-          if (params[1].id !== input.value) {
-            newParams[1] = input.value;
-          }
+          newParams[0] = input.value;
           break;
         case 'forestG2':
-          if (params[2].id !== input.value) {
-            newParams[2] = input.value;
-          }
-          break;
-        case 'forestG2N':
-          if (params[3].id !== input.value) {
-            newParams[3] = input.value;
-          }
+          newParams[2] = input.value;
           break;
         default:
         }
       }
     }
-    for (let i = 0; i < newParams.length; i += 1) {
-      if (newParams[i]) {
-        const colParam = columns.filter((col) => col.id === newParams[i] && col.type !== 'result')[0];
-        graph.formulaParams[i] = colParam;
-        newColumnParams[i] = colParam.title;
-      }
+    for (let i = 0; i < newParams.length; i += 2) {
+      const colParam = columns.filter((col) => col.id === newParams[i] && col.type !== 'result')[0];
+      graph.formulaParams[i] = colParam;
+      newColumnParams[i] = colParam.title;
       paramIndex[i] = (newParams[i] || graph.formulaParams[i].id);
+      const nColParam = columns.filter((col) => col.id === colParam.linkedN)[0];
+      graph.formulaParams[i + 1] = nColParam;
+      newColumnParams[i + 1] = nColParam.title;
+      paramIndex[i + 1] = nColParam.id;
     }
     graph.formula = `forestPlotPercentGraph(${paramIndex[0]},${paramIndex[1]},${paramIndex[2]},${paramIndex[3]})`;
     graph.fullLabel = `Forest plot (percentages)( ${newColumnParams[0] || graph.formulaParams[0].title}, ${newColumnParams[1] || graph.formulaParams[1].title}, ${newColumnParams[2] || graph.formulaParams[2].title}, ${newColumnParams[3] || graph.formulaParams[3].title})`;
@@ -255,27 +215,19 @@ function ForestMenu(props) {
       <label htmlFor="forestG1">Group 1:
         <select name="forestG1">
           { calcCols && calcCols.map((col) => (
-            <option
-              key={`forestG1${col.id}`}
-              value={col.id}
-              selected={params[0] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
-
-      <label htmlFor="forestG1N">Group 1 n:
-        <select name="forestG1N">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`forestG1N${col.id}`}
-              value={col.id}
-              selected={params[1] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
+            <>
+              { col.subType !== 'calculatorN'
+                ? (
+                  <option
+                    key={`forestG1${col.id}`}
+                    value={col.id}
+                    selected={params[0] === col ? 'selected' : null}
+                  >
+                    { col.title }
+                  </option>
+                )
+                : null }
+            </>
           )) }
         </select>
       </label>
@@ -283,30 +235,23 @@ function ForestMenu(props) {
       <label htmlFor="forestG2">Group 2:
         <select name="forestG2">
           { calcCols && calcCols.map((col) => (
-            <option
-              key={`forestG2${col.id}`}
-              value={col.id}
-              selected={params[2] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
+            <>
+              { col.subType !== 'calculatorN'
+                ? (
+                  <option
+                    key={`forestG2${col.id}`}
+                    value={col.id}
+                    selected={params[2] === col ? 'selected' : null}
+                  >
+                    { col.title }
+                  </option>
+                )
+                : null }
+            </>
           )) }
         </select>
       </label>
 
-      <label htmlFor="forestG2N">Group 2 n:
-        <select name="forestG2N">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`forestG2N${col.id}`}
-              value={col.id}
-              selected={params[3] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
       <input type="submit" className="graphSubmit" />
     </form>
   );
@@ -349,41 +294,29 @@ function ForestGroupMenu(props) {
           }
           break;
         case 'forestGroupG1':
-          if (params[0].id !== input.value) {
-            newParams[0] = input.value;
-          }
-          break;
-        case 'forestGroupG1N':
-          if (params[1].id !== input.value) {
-            newParams[1] = input.value;
-          }
+          newParams[0] = input.value;
           break;
         case 'forestGroupG2':
-          if (params[2].id !== input.value) {
-            newParams[2] = input.value;
-          }
-          break;
-        case 'forestGroupG2N':
-          if (params[3].id !== input.value) {
-            newParams[3] = input.value;
-          }
+          newParams[2] = input.value;
           break;
         case 'forestGroupMod':
-          if (params[4].id !== input.value) {
-            newParams[4] = input.value;
-          }
+          newParams[4] = input.value;
           break;
         default:
         }
       }
     }
-    for (let i = 0; i < newParams.length; i += 1) {
-      if (newParams[i]) {
-        const colParam = columns.filter((col) => col.id === newParams[i] && col.type !== 'result')[0];
-        graph.formulaParams[i] = colParam;
-        newColumnParams[i] = colParam.title;
-      }
+    for (let i = 0; i < newParams.length; i += 2) {
+      const colParam = columns.filter((col) => col.id === newParams[i] && col.type !== 'result')[0];
+      graph.formulaParams[i] = colParam;
+      newColumnParams[i] = colParam.title;
       paramIndex[i] = (newParams[i] || graph.formulaParams[i].id);
+      if (i !== 4) {
+        const nColParam = columns.filter((col) => col.id === colParam.linkedN)[0];
+        graph.formulaParams[i + 1] = nColParam;
+        newColumnParams[i + 1] = nColParam.title;
+        paramIndex[i + 1] = nColParam.id;
+      }
     }
     graph.formula = `forestPlotGroupPercentGraph(${paramIndex[0]},${paramIndex[1]},${paramIndex[2]},${paramIndex[3]},${paramIndex[4]})`;
     graph.fullLabel = `Forest Plot Group (percentages)( ${newColumnParams[0] || graph.formulaParams[0].title}, ${newColumnParams[1] || graph.formulaParams[1].title}, ${newColumnParams[2] || graph.formulaParams[2].title}, ${newColumnParams[3] || graph.formulaParams[3].title}, ${newColumnParams[4] || graph.formulaParams[4].title})`;
@@ -405,27 +338,19 @@ function ForestGroupMenu(props) {
       <label htmlFor="forestGroupG1">Group 1:
         <select name="forestGroupG1">
           { calcCols && calcCols.map((col) => (
-            <option
-              key={`forestGroupG1${col.id}`}
-              value={col.id}
-              selected={params[0] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
-
-      <label htmlFor="forestGroupG1N">Group 1 n:
-        <select name="forestGroupG1N">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`forestGroupG1N${col.id}`}
-              value={col.id}
-              selected={params[1] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
+            <>
+              { col.subType !== 'calculatorN'
+                ? (
+                  <option
+                    key={`forestGroupG1${col.id}`}
+                    value={col.id}
+                    selected={params[0] === col ? 'selected' : null}
+                  >
+                    { col.title }
+                  </option>
+                )
+                : null }
+            </>
           )) }
         </select>
       </label>
@@ -433,27 +358,19 @@ function ForestGroupMenu(props) {
       <label htmlFor="forestGroupG2">Group 2:
         <select name="forestGroupG2">
           { calcCols && calcCols.map((col) => (
-            <option
-              key={`forestGroupG2${col.id}`}
-              value={col.id}
-              selected={params[2] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
-          )) }
-        </select>
-      </label>
-
-      <label htmlFor="forestGroupG2N">Group 2 n:
-        <select name="forestGroupG2N">
-          { calcCols && calcCols.map((col) => (
-            <option
-              key={`forestGroupG2N${col.id}`}
-              value={col.id}
-              selected={params[3] === col ? 'selected' : null}
-            >
-              { col.title }
-            </option>
+            <>
+              { col.subType !== 'calculatorN'
+                ? (
+                  <option
+                    key={`forestGroupG2${col.id}`}
+                    value={col.id}
+                    selected={params[2] === col ? 'selected' : null}
+                  >
+                    { col.title }
+                  </option>
+                )
+                : null }
+            </>
           )) }
         </select>
       </label>
