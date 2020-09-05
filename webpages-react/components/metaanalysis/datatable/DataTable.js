@@ -147,8 +147,7 @@ function DataTable(props) {
               >
                 { col.visibility === true
                   ? (
-                    <div>
-                      { col.title || col.fullLabel }
+                    <>
                       { edit.flag
                         ? (
                           <>
@@ -168,31 +167,34 @@ function DataTable(props) {
                             >
                               <img src="/img/grab-icon.png" alt="Grabber" className="grabberIcon" />
                             </button>
-                            <button type="submit" onClick={() => hideColumn(col)}>Hide</button>
-                            { col.subType !== 'calculatorN'
-                              ? (
-                                <div role="button" tabIndex={0} className="removeColumnButton" coltitle={col.title} colid={col.id || col.number} onClick={(e) => { popupToggle(); selectColumn(e); }} onKeyDown={popupToggle}>Remove</div>
-                              )
-                              : null }
-                            { popupStatus
-                              ? (
-                                <RemovalPopup
-                                  closingFunc={popupToggle}
-                                  removalFunc={removeColumn}
-                                  removalText={`column: ${selectedColumn.title}`}
-                                />
-                              )
-                              : null }
+                            { col.title || col.fullLabel }
+                            <div className="columnButtonContainer">
+                              <button type="submit" className="hideShowButton" onClick={() => hideColumn(col)}>Hide</button>
+                              { col.subType !== 'calculatorN'
+                                ? (
+                                  <div role="button" tabIndex={0} className="removeColumnButton" coltitle={col.title} colid={col.id || col.number} onClick={(e) => { popupToggle(); selectColumn(e); }} onKeyDown={popupToggle}>Remove</div>
+                                )
+                                : null }
+                              { popupStatus
+                                ? (
+                                  <RemovalPopup
+                                    closingFunc={popupToggle}
+                                    removalFunc={removeColumn}
+                                    removalText={`column: ${selectedColumn.title}`}
+                                  />
+                                )
+                                : null }
+                            </div>
                           </>
                         )
-                        : null }
-                    </div>
+                        : <>{ col.title || col.fullLabel }</> }
+                    </>
                   )
                   : (
-                    <div>
+                    <div className="columnButtonContainer">
                       { edit.flag
                         ? (
-                          <button type="submit" onClick={() => showColumn(col)}>Show</button>
+                          <button type="submit" className="hideShowButton" onClick={() => showColumn(col)}>Show</button>
                         )
                         : null }
                     </div>

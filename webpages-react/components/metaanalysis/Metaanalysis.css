@@ -48,23 +48,14 @@
   text-align: center;
 }
 
-.metaanalysis .paperColumn {
-  background-color: rgba(255,255,0,0.2);
-}
 .metaanalysis .columnHeadings .paperColumnHeader {
   background-color: rgba(255,255,0,0.5);
 }
 
-.metaanalysis .moderatorColumn {
-  background-color: rgba(255,0,0, 0.2);
-}
 .metaanalysis .columnHeadings .moderatorColumnHeader {
   background-color: rgba(255,0,0, 0.5);
 }
 
-.metaanalysis .calculatorColumn {
-  background-color: rgba(0,255,0, 0.2);
-}
 .metaanalysis .columnHeadings .calculatorColumnHeader {
   background-color: rgba(0,255,0, 0.5);
 }
@@ -112,6 +103,7 @@
 .metaanalysis table .column {
   position: relative;
   height: 70px;
+  text-align: center;
 }
 
 .metaanalysis table .cornerstone {
@@ -126,14 +118,17 @@
 	font: inherit;
 	cursor: pointer;
 	outline: inherit;
-  position: absolute;
-  top: 0;
-  left: 0;
+  display: block;
+  width: 2em;
+  height: 2em;
 }
 
 .metaanalysis .grabberIcon {
   width: 2em;
   height: 2em;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .metaanalysis .beingRearranged {
@@ -387,13 +382,14 @@ textarea {
 
 .removeColumnButton,
 .removePaperButton,
-.removeExperimentButton {
+.removeExperimentButton,
+.hideShowButton {
   position: absolute;
   left: 0;
   bottom: 0;
-  width: auto;
+  width: 50px;
   font-size: 10px;
-  display: inline-block;
+  display: block;
   border: 0.2em solid black;
   text-align: center;
   background-color: #ff5745;
@@ -416,6 +412,22 @@ textarea {
 }
 
 .removeExperimentButton,
-.removePaperButton {
+.removePaperButton,
+.removeColumnButton,
+.hideShowButton {
   position: relative;
+  margin: 4px auto;
+}
+
+.hideShowButton {
+  display: block;
+  background-color: rgba(182, 234, 255, 0.5);
+}
+
+.hideShowButton:hover {
+  background-color: #FF69B4;
+}
+
+.columnButtonContainer {
+  text-align: center;
 }

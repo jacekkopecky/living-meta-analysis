@@ -81,7 +81,7 @@ function GrapeMenu(props) {
           <input type="text" name="grapeTitle" placeholder={title} />
         </label>
 
-        <label htmlFor="grapeG1">Group 1:
+        <label htmlFor="grapeG1">Dependent variable 1:
           <select name="grapeG1">
             { calcCols && calcCols.map((col) => (
               <>
@@ -101,7 +101,7 @@ function GrapeMenu(props) {
           </select>
         </label>
 
-        <label htmlFor="grapeG2">Group 2:
+        <label htmlFor="grapeG2">Dependent variable 2:
           <select name="grapeG2">
             { calcCols && calcCols.map((col) => (
               <>
@@ -212,7 +212,7 @@ function ForestMenu(props) {
         <input type="text" name="forestTitle" placeholder={title} />
       </label>
 
-      <label htmlFor="forestG1">Group 1:
+      <label htmlFor="forestG1">Dependent variable 1:
         <select name="forestG1">
           { calcCols && calcCols.map((col) => (
             <>
@@ -232,7 +232,7 @@ function ForestMenu(props) {
         </select>
       </label>
 
-      <label htmlFor="forestG2">Group 2:
+      <label htmlFor="forestG2">Dependent variable 2:
         <select name="forestG2">
           { calcCols && calcCols.map((col) => (
             <>
@@ -335,7 +335,7 @@ function ForestGroupMenu(props) {
         <input type="text" name="forestGroupTitle" placeholder={title} />
       </label>
 
-      <label htmlFor="forestGroupG1">Group 1:
+      <label htmlFor="forestGroupG1">Dependent variable 1:
         <select name="forestGroupG1">
           { calcCols && calcCols.map((col) => (
             <>
@@ -355,7 +355,7 @@ function ForestGroupMenu(props) {
         </select>
       </label>
 
-      <label htmlFor="forestGroupG2">Group 2:
+      <label htmlFor="forestGroupG2">Dependent variable 2:
         <select name="forestGroupG2">
           { calcCols && calcCols.map((col) => (
             <>
