@@ -1,0 +1,16 @@
+.info .header {
+  text-transform: capitalize;
+}
+
+.info .header,
+.info .text {
+  white-space: pre-line;
+  display: inline-block;
+  vertical-align: top;
+  max-width: 40em;
+  margin-left: 1em;
+}
+
+.info textarea {
+  width: 40em;
+}

@@ -1,0 +1,45 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": ["plugin:react/recommended", "airbnb"],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    "indent": ["error", 2],
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/destructuring-assignment": [
+      1,
+      "always",
+      { "ignoreClassFields": true }
+    ],
+    "react/prop-types": [0],
+    "react/static-property-placement": [1],
+    "no-param-reassign": [0],
+    "no-restricted-syntax": [0],
+    "react/jsx-props-no-spreading": [0],
+    "react/jsx-one-expression-per-line": [0],
+    "prefer-destructuring": [0],
+    "no-else-return": [0],
+    "no-console": [0],
+    "no-use-before-define": ["error", { "functions": false }],
+    "react/jsx-curly-spacing": ["error", { "when": "never", "children": { "when": "always" }}],
+    "jsx-a11y/no-autofocus": [0],
+    "no-cond-assign": ["error", "except-parens"],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
+  }
+}

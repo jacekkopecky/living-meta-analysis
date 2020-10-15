@@ -12,7 +12,7 @@ const datastoreConfig = {
   namespace: config.gcloudDatastoreNamespace,
 };
 
-if (!process.env.GAE_APPLICATION) {
+if (!process.env.GAE_APPLICATION && config.gcloudProject) {
   datastoreConfig.projectId = config.gcloudProject.projectId;
   datastoreConfig.keyFilename = config.gcloudProject.keyFilename;
 }

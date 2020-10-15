@@ -1,0 +1,136 @@
+svg.forestplotgroup {
+  stroke-width: 2px;
+  fill: white;
+  stroke: black;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  font-size: 14px;
+  font-family: "Arial", sans-serif;
+}
+
+svg.forestplotgroup text {
+  stroke-width: 0;
+  fill: black;
+  text-anchor: middle;
+}
+
+svg.forestplotgroup .headings text.or.lcl.ucl,
+svg.forestplotgroup .experiment text.or.lcl.ucl,
+svg.forestplotgroup .summary text.or.lcl.ucl {
+  transform: translate(610px, 20px);
+}
+
+svg.forestplotgroup .headings text.wt,
+svg.forestplotgroup .experiment text.wt,
+svg.forestplotgroup .summary text.wt {
+  transform: translate(760px, 20px);
+  text-anchor: end;
+}
+
+svg.forestplotgroup .headings text.wtg,
+svg.forestplotgroup .experiment text.wtg,
+svg.forestplotgroup .summary text.wtg {
+  transform: translate(780px, 20px);
+  text-anchor: start;
+}
+
+svg.forestplotgroup .experiment .expname {
+  text-anchor: start;
+  transform: translate(0, 20px);
+}
+
+svg.forestplotgroup .experiment.invalid text {
+  fill: #a44;
+}
+
+svg.forestplotgroup .experiment.invalid text.lcl,
+svg.forestplotgroup .experiment.invalid text.ucl,
+svg.forestplotgroup .experiment.invalid text.wt {
+  display: none;
+}
+
+svg.forestplotgroup .experiment .rowgraph {
+  transform: translate(280px, 0);
+}
+
+svg.forestplotgroup .experiment .rowgraph .confidenceinterval {
+  transform: translate(0, 15px);
+}
+
+svg.forestplotgroup .experiment .rowgraph .weightbox {
+  transform: translate(0, 15px);
+  fill: black;
+}
+
+svg.forestplotgroup .summary > g {
+  transform: translate(0, 20px);
+}
+
+svg.forestplotgroup .summary .sumname {
+  text-anchor: start;
+  transform: translate(0, 20px);
+}
+
+svg.forestplotgroup .summary .sumgraph {
+  transform: translate(280px, 0);
+}
+
+svg.forestplotgroup .summary .sumgraph .confidenceinterval {
+  transform: translate(0, 15px);
+}
+
+svg.forestplotgroup .summary .guideline {
+  stroke-width: 1px;
+  transform: translate(280px, 42.5px) scale(1, -1);
+  stroke-dasharray: 5px;
+  stroke-linecap: butt;
+}
+
+svg.forestplotgroup .axes > g {
+  transform: translate(280px, 32.5px);
+}
+
+svg.forestplotgroup .axes .tick text {
+  font-size: 11px;
+  transform: translate(0, 19px);
+}
+
+svg.forestplotgroup .axes .yaxis {
+  transform: translate(0, 5px) scale(1, -1);
+}
+
+svg.forestplotgroup .title {
+  font-size: 20px;
+  text-anchor: start;
+  transform: translate(0, -20px);
+}
+
+svg.forestplotgroup .summary > g.positioningbutton {
+  transform: translate(800px, 55px);
+  opacity: 0.2;
+}
+
+svg.forestplotgroup .positioningbutton line {
+  stroke-width: 1.5px;
+}
+
+svg.forestplotgroup .positioningbutton:not(:hover) line {
+  display: none;
+}
+
+svg.forestplotgroup .positioningbutton:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+svg.forestplotgroup .forest-group .group-heading text.label {
+  font-weight: bold;
+  font-size: 120%;
+  font-style: italic;
+  text-anchor: start;
+}
+
+svg.forestplotgroup .summary .sumname.sumtotal {
+  font-weight: bold;
+  font-size: 125%;
+}

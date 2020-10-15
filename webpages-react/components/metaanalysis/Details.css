@@ -1,0 +1,45 @@
+.details {
+  margin: auto 0 0;
+  padding: 0;
+  position: sticky;
+  bottom: 0;
+  height: 25%;
+  background: white;
+  overflow: auto;
+}
+
+.details .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2f7494;
+  color: white;
+  padding: 0;
+  margin: 0;
+}
+
+.details .close {
+  padding: 20px;
+}
+
+.details h3,
+.details p {
+  margin: 0.2em;
+}
+
+.details .header .close {
+  cursor: pointer;
+  font-size: 150%;
+}
+
+.details .header .close:hover {
+  background-color: red;
+}
+
+.details .content {
+  margin-left: 0.5em;
+}
+
+.details:empty {
+  display: none;
+}

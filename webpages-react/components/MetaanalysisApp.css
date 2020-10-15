@@ -1,0 +1,13 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 40em;
+}
+
+body {
+  margin: 0;
+  line-height: 125%;
+  font-family: Arial, sans-serif;
+}

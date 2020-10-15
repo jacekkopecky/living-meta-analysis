@@ -1,0 +1,189 @@
+svg.grapechart {
+  stroke-width: 2px;
+  fill: white;
+  stroke: black;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  font-size: 16px;
+  font-family: "Arial", sans-serif;
+}
+
+svg.grapechart text {
+  stroke-width: 0;
+  fill: black;
+  text-anchor: middle;
+}
+
+svg.grapechart line.guideline {
+  stroke-width: 1px;
+  stroke-dasharray: 5px;
+  stroke-linecap: butt;
+}
+
+svg.grapechart .axes {
+  transform: translate(60px, 560px);
+}
+
+svg.grapechart .positioningbutton line {
+  stroke-width: 1.5px;
+}
+
+svg.grapechart .axes .tick line {
+  font-size: 12px;
+  transform: translate(-5px, 0);
+}
+
+svg.grapechart .tooltip text {
+  text-anchor: start;
+  font-size: 12px;
+}
+
+svg.grapechart .legend text {
+  text-anchor: start;
+  font-size: 14px;
+  transform: translate(0, 4px);
+}
+
+svg.grapechart .axes .tick text {
+  font-size: 12px;
+  transform: translate(-10px, 4px);
+  text-anchor: end;
+}
+
+svg.grapechart .axes .title {
+  font-size: 20px;
+  text-anchor: start;
+}
+
+svg.grapechart .group > g {
+  transform: translate(0, 560px);
+}
+
+svg.grapechart .axes .yaxis,
+svg.grapechart .group .trunk {
+  transform: scale(1, -1);
+  stroke-linecap: round;
+}
+
+svg.grapechart .group .xaxis {
+  stroke-linecap: round;
+}
+
+svg.grapechart .group .trunk {
+  stroke-width: 0;
+}
+
+svg.grapechart .group text.label {
+  transform: translate(0, 20px);
+  text-anchor: middle;
+}
+
+svg.grapechart .grape {
+  fill: #8ddce5;
+}
+
+svg.grapechart .grape.c0 { fill: #ffa8a8; }
+svg.grapechart .grape.c1 { fill: #ffd3a8; }
+svg.grapechart .grape.c2 { fill: #fff9a8; }
+svg.grapechart .grape.c3 { fill: #bce597; }
+svg.grapechart .grape.c4 { fill: #7889ac; }
+svg.grapechart .grape.c5 { fill: #847fb3; }
+svg.grapechart .grape.c6 { fill: #9975ad; }
+
+svg.grapechart .grape.invalid {
+  fill: #a44;
+}
+
+svg.grapechart .tooltips .grape {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 3px;
+}
+
+svg.grapechart .tooltips .experiment .grape:hover {
+  fill: #f0f033;
+  stroke: black;
+}
+
+svg.grapechart .tooltip {
+  transform: translate(-60px, -120px);
+}
+
+svg.grapechart .tooltips .experiment .grape:not(:hover) + .tooltip {
+  display: none;
+}
+
+svg.grapechart .tooltip.tophalf {
+  transform: translate(-60px, 17px);
+}
+
+svg.grapechart .tooltip text.paper {
+  transform: translate(10px, 20px);
+}
+
+svg.grapechart .tooltip text.exp {
+  transform: translate(10px, 38px);
+}
+
+svg.grapechart .tooltip text._or {
+  transform: translate(10px, 56px);
+}
+
+svg.grapechart .tooltip text.or {
+  transform: translate(60px, 56px);
+}
+
+svg.grapechart .tooltip text._wt {
+  transform: translate(10px, 74px);
+}
+
+svg.grapechart .tooltip text.wt {
+  transform: translate(60px, 74px);
+}
+
+svg.grapechart .tooltip text._ci {
+  transform: translate(10px, 92px);
+}
+
+svg.grapechart .tooltip text.ci {
+  transform: translate(60px, 92px);
+}
+
+svg.grapechart .invalid .tooltip text.wt,
+svg.grapechart .invalid .tooltip text.ci {
+  display: none;
+}
+
+svg.grapechart .group:not(.with-legend) g.guideline .legend {
+  display: none;
+}
+
+svg.grapechart .group g.guideline .legend text {
+  font-size: 10px;
+}
+
+svg.grapechart .group g.guideline .legend text:nth-child(1) {
+  transform: translate(-137.5px, -5px) rotate(-90deg);
+}
+
+svg.grapechart .group g.guideline .legend text:nth-child(2) {
+  transform: translate(-127.5px, -5px) rotate(-90deg);
+}
+
+svg.grapechart .positioningbutton {
+  transform: translate(140px, 20px);
+  opacity: 0.2;
+}
+
+svg.grapechart .positioningbutton:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+svg.grapechart .group:not(.with-pos-button) .positioningbutton {
+  display: none;
+}
+
+svg.grapechart .positioningbutton:not(:hover) line {
+  display: none;
+}

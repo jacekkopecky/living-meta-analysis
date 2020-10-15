@@ -12,6 +12,18 @@
 # below:
 .git
 .gitignore
+.github
 
 # Node.js dependencies:
 node_modules/
+
+# parcel build cache
+.parcel-cache
+
+# other files
+test
+webpages-react
+.eslint*
+.stylelint*
+backup*
+jsconfig*

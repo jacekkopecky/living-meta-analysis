@@ -1,0 +1,88 @@
+.tags {
+  display: inline-block;
+  margin: 0 0 0 2em;
+  padding: 0;
+  vertical-align: bottom;
+  flex: 0 1 auto;
+  text-align: right;
+  font-size: .8em;
+}
+
+.tags li {
+  display: inline-block;
+  margin: .2em;
+  padding: 0;
+  line-height: 100%;
+  border: 1px solid #008;
+  border-radius: .4em;
+  background: #33c;
+  color: white;
+
+  transition: background .5s;
+  color: white;
+
+  vertical-align: bottom;
+  position: relative;
+}
+
+.tags li.flash {
+  background: #ff0;
+}
+
+.tags li .text {
+  display: inline-block;
+  height: 1em;
+  padding: .4em;
+}
+
+.tags li .removetag {
+  background-color: #226;
+  color: white;
+  display: inline-block;
+  margin: 0;
+  padding: .4em;
+  border: none;
+  border-radius: 0 .2em .2em 0;
+  height: 1em;
+}
+
+.tags li .removetag:hover {
+  background-color: rgba(255,255,255,1);
+  color: black;
+}
+
+.tags li .removetag:focus {
+  background-color: rgba(255,255,255,1);
+  color: black;
+  outline: thick solid #88f8;
+}
+
+.tags .addtag {
+  background: #3c3;
+  transition: background 0s;
+  color: white;
+}
+
+.tags .addtag:hover {
+  background-color: rgba(255,255,255,1);
+  color: black;
+}
+
+.tags [role=button] {
+  cursor: pointer;
+}
+
+.tags li.new {
+  background: white;
+  color: black;
+}
+
+.tags input {
+  font: inherit;
+  margin: 0;
+  padding: 0.4em;
+  border: none;
+  width: 6em;
+  text-align: left;
+  height: 1em;
+}

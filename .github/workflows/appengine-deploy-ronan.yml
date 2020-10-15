@@ -1,0 +1,36 @@
+name: Ronan's Version – App Engine Deploy
+on:
+  pull_request:
+    branches:
+      - local-development-2
+jobs:
+  deploy:
+    name: AppEngineDeploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run lint
+      - name: Build React pages
+        run: npm run build
+      - name: Note GIT SHA as version
+        id: version
+        run: |
+          echo "$GITHUB_SHA" > version.txt
+        shell: bash
+      - name: Deploy
+        id: deploy
+        uses: GoogleCloudPlatform/github-actions/appengine-deploy@master
+        with:
+          credentials: ${{ secrets.GCP_SA_KEY }}
+          deliverables: app-ronan.yaml
+      - name: Return URL
+        id: deploy-complete
+        run: echo "${{ steps.deploy.outputs.url }}"

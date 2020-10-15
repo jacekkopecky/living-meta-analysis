@@ -14,7 +14,8 @@
         stroke-linejoin: miter;
         font-size: 16px;
         font-family: "Arial", sans-serif;
-        <!-- border: 1px solid red; -->
+
+        /* border: 1px solid red; */
       }
 
       text {
@@ -26,42 +27,45 @@
       .headings text.or,
       .experiment text.or,
       .summary text.or {
-        transform: translate(410px,23px);
+        transform: translate(410px, 23px);
       }
+
       .headings text.lcl,
       .experiment text.lcl,
       .summary text.lcl {
         text-anchor: end;
-        transform: translate(490px,23px);
+        transform: translate(490px, 23px);
       }
+
       .headings text.ucl,
       .experiment text.ucl,
       .summary text.ucl {
         text-anchor: start;
-        transform: translate(495px,23px);
+        transform: translate(495px, 23px);
       }
+
       .headings text.wt,
       .experiment text.wt,
       .summary text.wt {
-        transform: translate(580px,23px);
+        transform: translate(580px, 23px);
         text-anchor: end;
       }
 
       .experiment .expname {
         text-anchor: start;
-        transform: translate(0,23px);
+        transform: translate(0, 23px);
       }
 
       .experiment .rowgraph {
-        transform: translate(180px,0);
+        transform: translate(180px, 0);
       }
 
       .experiment .rowgraph .confidenceinterval {
-        transform: translate(0,15px);
+        transform: translate(0, 15px);
       }
 
       .experiment .rowgraph .weightbox {
-        transform: translate(-50%,-50%) translate(0,15px);
+        transform: translate(-50%, -50%) translate(0, 15px);
         fill: black;
       }
 
@@ -72,9 +76,9 @@
       }
 
       .summary .guideline {
-        stroke-width: 0px;
+        stroke-width: 0;
         stroke-dasharray: 5px;
-        transform: translate(2.5px,0);
+        transform: translate(2.5px, 0);
       }
 
       .axes .tick line {
@@ -95,7 +99,7 @@
 
       .group .trunk {
         stroke-width: 1px;
-        stroke-width: 0px;
+        stroke-width: 0;
       }
 
       .group text.label {
@@ -119,29 +123,30 @@
         stroke: black;
       }
 
+      .tooltip {
+        transform: translate(-50px, -120px);
+      }
+
       .tooltips .experiment:not(.hili) .grape:not(:hover) + .tooltip,
       .tooltips .experiment.hili .grape:hover + .tooltip {
-        display: none
+        display: none;
       }
 
-      .tooltip {
-        transform: translate(-50px,-120px);
-      }
-
+      /* stylelint-disable-next-line no-descending-specificity */
       .tooltip text {
         text-anchor: start;
         font-size: 12px;
       }
 
       .experiment:not(.hili) .tooltip text {
-        transform: translate(10px,20px);
-
+        transform: translate(10px, 20px);
       }
 
+      /* stylelint-disable-next-line no-descending-specificity */
       .legend text {
         text-anchor: start;
         font-size: 14px;
-        transform: translate(0,4px);
+        transform: translate(0, 4px);
       }
 
     </style>

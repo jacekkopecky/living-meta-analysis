@@ -10,3 +10,11 @@ See `DEPLOYMENT.md`.
 ## Testing
 
 See `test/README.md`.
+
+## Development
+
+_todo this section is a stub_
+
+to develop client-side, start the server with `npm run start:redirected` then all API calls will go to the live server
+
+for development in REACT, use `npm run react-watch` for continuous building, and `npm run build` for the production build.
