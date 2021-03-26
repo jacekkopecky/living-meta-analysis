@@ -83,8 +83,8 @@ function AddPaperPopup(props) {
       doiInput: null,
     };
     const children = e.target.children;
-    for (let i = 0; i < children.length; i += 1) {
-      const inputElem = children[i].children[0];
+    for (const child of children) {
+      const inputElem = child.children[0];
       if (inputElem && inputElem.value) {
         paperDetails[inputElem.id] = inputElem.value;
       }

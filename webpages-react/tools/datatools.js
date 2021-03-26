@@ -84,11 +84,6 @@ export function populateCircularMa(ma) {
     ma.groups = getGroups(ma);
   }
 
-  // if (ma.groupingColumns != null) {
-  //   for (const groupingCol of ma.groupingColumns) {
-  //   }
-  // }
-
   renumberComputedObjects(ma.columns);
 
   // merges stock elements with the result of populateParsedFormula
@@ -132,7 +127,6 @@ export function formatNumber(x) {
   // this would drop the decimal point from large values (needs tweaks in padNumber below)
   if (xabs >= 100) return x.toFixed(1);
   if (xabs >= 10) return x.toFixed(2);
-  // if (xabs >= 1) return x.toFixed(2);
   return x.toFixed(3);
 }
 
@@ -146,8 +140,8 @@ export function isColCompletelyDefined(col) {
   if (col == null) return false;
   if (col.id) return true;
   if (!col.formulaObj) return false;
-  for (let i = 0; i < col.formulaParams.length; i += 1) {
-    if (!isColCompletelyDefined(col.formulaParams[i])) {
+  for (const formula of col.formulaParams) {
+    if (!isColCompletelyDefined(formula)) {
       return false;
     }
   }

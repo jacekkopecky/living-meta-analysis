@@ -4,78 +4,6 @@ import EditContext from '../EditContext';
 import { RemovalPopup } from '../Popup';
 import './SimpleAggregates.css';
 
-// function SimpleAnalysisMenu(props) {
-//   const {
-//     selectedAnalysis,
-//     aggregatesState,
-//     formulaFunctions,
-//     columns,
-//     formulaStateObj,
-//   } = props;
-//   const [aggregates, setAggregates] = aggregatesState;
-//   const [formulaState, setFormulaState] = formulaStateObj;
-//   const analysisClone = { ...selectedAnalysis };
-//   const numberColumns = columns.filter((col) => col.subtype !== 'moderator');
-//   console.log(selectedAnalysis);
-//
-//   function handleFormulaChange(e) {
-//     const formulaId = e.currentTarget.value;
-//     let currentFormula = { ...selectedAnalysis };
-//     for (let i = 0; i < formulaFunctions.length; i += 1) {
-//       if (formulaFunctions[i].id === formulaId) {
-//         currentFormula = formulaFunctions[i];
-//       }
-//     }
-//     setFormulaState(currentFormula);
-//   }
-//
-//   if (selectedAnalysis) {
-//     return (
-//       <>
-//         <p>{ selectedAnalysis.fullLabel }</p>
-//         <form>
-//           <label htmlFor="titleInput">Title:
-//             <input type="text" placeholder={selectedAnalysis.title} />
-//           </label>
-//           <label htmlFor="simpleInput">Select calculation formula:
-//             <select name="simpleInput" onChange={handleFormulaChange}>
-//               { formulaFunctions.map((formula) => (
-//                 <option
-//                   key={`simpleInput${formula.id}`}
-//                   value={formula.id}
-//                   selected={formula.id === analysisClone.formulaObj.id ? 'selected' : null}
-//                 >
-//                   { formula.label }
-//                 </option>
-//               )) }
-//             </select>
-//           </label>
-//           { formulaState.parameters.map((param) => (
-//             <label
-//               htmlFor={`simpleInput${formulaState.id}${param}`}
-//               key={`simpleInput${formulaState.id}${param}`}
-//               className="paramSelect"
-//             >
-//               { param }:
-//               <select name={`simpleInput${formulaState.id}${param}`}>
-//                 { numberColumns.map((option) => (
-//                   <option
-//                     key={`simpleInput${analysisClone.formulaObj.id}
-//                     ${param}${option.title || option.label}`}
-//                     value={option.title || option.label}
-//                   >
-//                     { option.title || option.label }
-//                   </option>
-//                 )) }
-//               </select>
-//             </label>
-//           )) }
-//         </form>
-//       </>
-//     );
-//   } else return null;
-// }
-
 const simpleAggregateDetails = (aggr, value) => (
   <>
     <p>{ value }</p>
@@ -83,16 +11,6 @@ const simpleAggregateDetails = (aggr, value) => (
     <p>{ aggr.fullLabel }</p>
   </>
 );
-
-// function shouldMemo(prev, next) {
-//   if ((next.makeClickable(prev.aggr.fullLabel).className === 'active'
-//   && prev.makeClickable(prev.aggr.fullLabel).className === '')
-//   || (next.makeClickable(prev.aggr.fullLabel).className === ''
-//   && prev.makeClickable(prev.aggr.fullLabel).className === 'active')) {
-//     return false;
-//   }
-//   return true;
-// }
 
 const AggregateCell = (props) => {
   const {

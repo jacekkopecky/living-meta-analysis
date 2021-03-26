@@ -29,7 +29,7 @@ async function getPaperByTitle(user, title, time) {
     return newPaper(email);
   }
   const validUser = await users.getUser(user);
-  if (!validUser) return;
+  if (!validUser) return false;
 
   const query = datastore.createQuery('Paper').filter('title', '=', title);
   const [[paper]] = await datastore.runQuery(query);

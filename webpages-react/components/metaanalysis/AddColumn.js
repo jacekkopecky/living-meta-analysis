@@ -23,9 +23,9 @@ function AddColumnPopup(props) {
 
   function handleFormulaChange(e) {
     let newFormula = simpleFormulas[0];
-    for (let i = 0; i < simpleFormulas.length; i += 1) {
-      if (simpleFormulas[i].id === e.currentTarget.value) {
-        newFormula = simpleFormulas[i];
+    for (const simpleFormula of simpleFormulas) {
+      if (simpleFormula.id === e.currentTarget.value) {
+        newFormula = simpleFormula;
       }
     }
     setSelectedFormula(newFormula);
@@ -161,9 +161,9 @@ function AddColumnPopup(props) {
       return columnsClone;
     }
 
-    for (let i = 0; i < e.currentTarget.children.length; i += 1) {
-      if (e.currentTarget.children[i].nodeName === 'LABEL' || e.currentTarget.children[i].nodeName === 'DIV') {
-        const input = e.currentTarget.children[i];
+    for (const current of e.currentTarget) {
+      if (current.children.nodeName === 'LABEL' || current.nodeName === 'DIV') {
+        const input = current.children;
         switch (input.id) {
         case 'columnTitleInput':
           title = input.children[0].value;
@@ -176,8 +176,8 @@ function AddColumnPopup(props) {
           break;
         case 'formulaParamInput':
           console.log(input);
-          for (let j = 0; j < input.children.length; j += 1) {
-            params.push(input.children[j].children[0].value);
+          for (const inp of input) {
+            params.push(inp.children.children[0].value);
           }
           break;
         default:
@@ -200,6 +200,15 @@ function AddColumnPopup(props) {
     }
     setColumns(columnsToSet);
   }
+
+  let maybe1;
+  let maybe2;
+  let value1;
+  let value2;
+
+  const foo = maybe1 > maybe2
+  ? "bar"
+  : value1 > value2 ? "baz" : null;
 
   const content = (
     <div className="AddColumnPopup">

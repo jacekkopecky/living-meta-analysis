@@ -63,8 +63,8 @@ function GroupingAggregates(props) {
               { moderatorsWithGroups.map((moderator) => {
                 if (moderator.included) {
                   let count = 0;
-                  for (let i = 0; i < moderator.groups.length; i += 1) {
-                    if (moderator.groups[i].included) {
+                  for (const group of moderator.groups) {
+                    if (group.included) {
                       count += 1;
                     }
                   }

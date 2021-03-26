@@ -27,9 +27,9 @@ function PlotSelector(props) {
 
   function handleGraphChange(e) {
     let graph = graphs[0];
-    for (let i = 0; i < graphs.length; i += 1) {
-      if (graphs[i].id === Number(e.currentTarget.value)) {
-        graph = graphs[i];
+    for (const g of graphs) {
+      if (g.id === Number(e.currentTarget.value)) {
+        graph = g;
       }
     }
     setSelectedGraph(graph);

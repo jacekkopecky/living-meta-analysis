@@ -2,15 +2,15 @@ import React, { useState, useContext } from 'react';
 import EditContext from '../EditContext';
 import Popup from '../Popup';
 
-function AddModeratorAnalysisPopup(props) {
+function AddAnalysisPopup(props) {
   const {
-    flag, formulaFunctions, columns, aggregatesState, metaanalysis,
+    flag, formulaFunctions, columns, aggregatesState, metaanalysis, type,
   } = props;
   const [popupStatus, setPopupStatus] = flag;
   const [aggregates, setAggregates] = aggregatesState;
   const aggregatesClone = [...aggregates];
   const [formulaState, setFormulaState] = useState(formulaFunctions[0]);
-  const numberColumns = columns.filter((col) => col.subType !== 'moderator');
+  const numberColumns = columns.filter((col) => col.subType !== type);
   const formulaOptions = numberColumns.concat(aggregates);
 
   const closeHandler = () => {
@@ -20,9 +20,9 @@ function AddModeratorAnalysisPopup(props) {
   const handleFormulaChange = (e) => {
     const formulaId = e.currentTarget.value;
     let currentFormula = { ...formulaState };
-    for (let i = 0; i < formulaFunctions.length; i += 1) {
-      if (formulaFunctions[i].id === formulaId) {
-        currentFormula = formulaFunctions[i];
+    for (const formula of formulaFunctions) {
+      if (formula.id === formulaId) {
+        currentFormula = formula;
       }
     }
     setFormulaState(currentFormula);
@@ -32,16 +32,16 @@ function AddModeratorAnalysisPopup(props) {
     e.preventDefault();
     const params = [];
     let title;
-    for (let i = 0; i < e.currentTarget.children.length; i += 1) {
-      if (e.currentTarget.children[i].classList.contains('paramSelect')) {
-        const param = e.currentTarget.children[i].children[0];
+    for (const target of e.currentTarget) {
+      if (target.children.classList.contains('paramSelect')) {
+        const param = target.children.children[0];
         params.push(formulaOptions.filter((col) => col.title === param.value)[0]);
       }
-      if (e.currentTarget.children[i].classList.contains('moderatorInputTitle')) {
-        title = e.currentTarget.children[i].children[0].value;
+      if (target.children.classList.contains('inputTitle')) {
+        title = target.children.children[0].value;
       }
     }
-    if (!title) title = `Moderator analysis #${aggregates.length + 1}`;
+    if (!title) title = `${type} analysis #${aggregates.length + 1}`;
     let newAnalysis;
     if (params.length === 1) {
       newAnalysis = {
@@ -71,25 +71,25 @@ function AddModeratorAnalysisPopup(props) {
 
   const content = (
     <>
-      <h1>Add new moderator analysis</h1>
-      <form id="moderatorInputForm" onSubmit={handleSubmit}>
-        <label htmlFor="moderatorInputTitle" className="moderatorInputTitle">Title:
+      <h1>Add new { type } analysis</h1>
+      <form id="inputForm" onSubmit={handleSubmit}>
+        <label htmlFor="inputTitle" className="inputTitle">Title:
           <input type="text" />
         </label>
-        <label htmlFor="moderatorInput">Select calculation formula:
-          <select name="moderatorInput" onChange={handleFormulaChange}>
+        <label htmlFor="input">Select calculation formula:
+          <select name="input" onChange={handleFormulaChange}>
             { formulaFunctions.map((formula) => (
-              <option key={`moderatorInput${formula.id}`} value={formula.id}>
+              <option key={`input${formula.id}`} value={formula.id}>
                 { formula.label }
               </option>
             )) }
           </select>
         </label>
         { formulaState.parameters.map((param) => (
-          <label htmlFor={`moderatorInput${formulaState.id}${param}`} key={`moderatorInput${formulaState.id}${param}`} className="paramSelect">{ param }:
-            <select name={`moderatorInput${formulaState.id}${param}`}>
+          <label htmlFor={`input${formulaState.id}${param}`} key={`input${formulaState.id}${param}`} className="paramSelect">{ param }:
+            <select name={`input${formulaState.id}${param}`}>
               { formulaOptions.map((col) => (
-                <option key={`moderatorInput${formulaState.id}${param}${col.title}`} value={col.title}>
+                <option key={`input${formulaState.id}${param}${col.title}`} value={col.title}>
                   { col.title }
                 </option>
               )) }
@@ -110,9 +110,9 @@ function AddModeratorAnalysisPopup(props) {
   }
 }
 
-function AddModeratorAnalysis(props) {
+function AddAnalysis(props) {
   const {
-    formulaFunctions, columns, aggregatesState, metaanalysis,
+    formulaFunctions, columns, aggregatesState, metaanalysis, type,
   } = props;
   const edit = useContext(EditContext);
   const [popupStatus, setPopupStatus] = useState(false);
@@ -124,13 +124,14 @@ function AddModeratorAnalysis(props) {
   if (edit.flag) {
     return (
       <>
-        <div role="button" type="submit" className="addModeratorAnalysisButton" onClick={popupToggle} onKeyDown={popupToggle} tabIndex={0}>Add new moderator analysis</div>
-        <AddModeratorAnalysisPopup
+        <div role="button" type="submit" className="addAnalysisButton" onClick={popupToggle} onKeyDown={popupToggle} tabIndex={0}>Add new { type } analysis</div>
+        <AddAnalysisPopup
           flag={[popupStatus, setPopupStatus]}
           formulaFunctions={formulaFunctions}
           columns={columns}
           aggregatesState={aggregatesState}
           metaanalysis={metaanalysis}
+          type={type}
         />
       </>
     );
@@ -139,4 +140,4 @@ function AddModeratorAnalysis(props) {
   }
 }
 
-export default AddModeratorAnalysis;
+export default AddAnalysis;

@@ -21,7 +21,7 @@
         headers: _.idTokenToFetchHeaders(idToken),
       })
       .then(function (res) {
-        if (res.status == 401) {
+        if (res.status === 401) {
           if (localStorage.limaUnfinishedRegistration) {
             // we've already been to the registration page and we left it, so sign out instead of redirecting
             gapi.auth2.getAuthInstance().signOut();

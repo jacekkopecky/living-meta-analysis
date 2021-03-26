@@ -19,20 +19,20 @@ function AddExperimentPopup(props) {
   const createNewExperiment = (experimentDetails) => {
     const newTime = new Date().getTime();
     const data = {};
-    for (let i = 0; i < paper.columns.length; i += 1) {
-      for (let j = 0; j < experimentDetails.length; j += 1) {
-        if (experimentDetails[j][1] === paper.columns[i].id) {
-          data[paper.columns[i].id] = {
+    for (const pap of paper) {
+      for (const experimentDetail of experimentDetails) {
+        if (experimentDetail[1] === pap.columns.id) {
+          data[pap.columns.id] = {
             ctime: newTime,
             enteredBy: currentUser.displayName,
-            value: experimentDetails[j][0],
+            value: experimentDetail[0],
           };
         }
       }
     }
-    for (let i = 0; i < paper.columns.length; i += 1) {
-      if (!data[paper.columns[i].id]) {
-        data[paper.columns[i].id] = null;
+    for (const pap of paper) {
+      if (!data[pap.columns.id]) {
+        data[paper.columns.id] = null;
       }
     }
     let index;

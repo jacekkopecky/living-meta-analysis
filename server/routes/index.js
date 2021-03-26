@@ -90,7 +90,6 @@ function listTitles(req, res) {
   res.send([]);
 }
 
-// module.exports = api;
 module.exports = {
   router: api,
   metaanalyses,

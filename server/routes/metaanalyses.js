@@ -2,7 +2,7 @@ const { NotFoundError, ValidationError, NotImplementedError, InternalError } = r
 const storage = require('../storage');
 const config = require('../config');
 const tools = require('../lib/tools');
-const { extractPaperForSending, extractReceivedComment } = require('./papers');
+const { extractPaperForSending, extractReceivedComment, extractReceivedColumnEntry } = require('./papers');
 
 /* -------------------------------------------------------------------------- */
 /*                               Route Handlers                               */
@@ -129,22 +129,6 @@ function extractReceivedMetaanalysis(receivedMetaanalysis) {
   };
 
   return retval;
-}
-
-function extractReceivedColumnEntry(recCol) {
-  if (typeof recCol === 'object') {
-    return {
-      id: tools.string(recCol.id),
-      title: tools.string(recCol.title),
-      description: tools.string(recCol.description),
-      type: tools.string(recCol.type),
-      formula: tools.string(recCol.formula),
-      comments: tools.array(recCol.comments, extractReceivedComment),
-      obsoleteIDForMigration: tools.string(recCol.obsoleteIDForMigration),
-    };
-  }
-
-  return undefined;
 }
 
 function extractReceivedMetaanalysisColumnEntry(recCol) {

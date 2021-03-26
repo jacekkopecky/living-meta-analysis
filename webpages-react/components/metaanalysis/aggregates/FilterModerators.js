@@ -8,8 +8,8 @@ function FilterModeratorsPopup(props) {
   const [popupStatus, setPopupStatus] = flag;
   const groupFilterFlag = {};
 
-  for (let i = 0; i < moderatorsWithGroups.length; i += 1) {
-    groupFilterFlag[moderatorsWithGroups[i].moderatorObj.title] = false;
+  for (const moderator of moderatorsWithGroups) {
+    groupFilterFlag[moderator.moderatorObj.title] = false;
   }
 
   const [groupFlagState, setGroupFlagState] = useState(groupFilterFlag);
@@ -32,9 +32,9 @@ function FilterModeratorsPopup(props) {
   function handleModToggle(e) {
     const modTitle = e.currentTarget.value;
     const mwgClone = [...moderatorsWithGroups];
-    for (let i = 0; i < mwgClone.length; i += 1) {
-      if (mwgClone[i].moderatorObj.title === modTitle) {
-        mwgClone[i].included = !mwgClone[i].included;
+    for (const clone of mwgClone) {
+      if (clone.moderatorObj.title === modTitle) {
+        clone.included = !clone.included;
       }
     }
     setModeratorsWithGroups(mwgClone);
@@ -43,11 +43,11 @@ function FilterModeratorsPopup(props) {
   function handleGroupToggle(e) {
     const [modTitle, groupTitle] = e.currentTarget.value.split('+');
     const mwgClone = [...moderatorsWithGroups];
-    for (let i = 0; i < mwgClone.length; i += 1) {
-      if (mwgClone[i].moderatorObj.title === modTitle) {
-        for (let j = 0; j < mwgClone[i].groups.length; j += 1) {
-          if (mwgClone[i].groups[j].group === groupTitle) {
-            mwgClone[i].groups[j].included = !mwgClone[i].groups[j].included;
+    for (const clone of mwgClone) {
+      if (clone.moderatorObj.title === modTitle) {
+        for (const cg of clone.groups) {
+          if (cg.group === groupTitle) {
+            cg.included = !cg.included;
           }
         }
       }

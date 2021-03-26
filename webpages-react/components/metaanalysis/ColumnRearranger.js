@@ -24,14 +24,14 @@ function RearrangeColumn(e, columns, setColumns, moveCols, setMoveCols) {
   xCoord = e.pageX;
 
   function clearUp(nodeList) {
-    for (let i = 0; i < nodeList.length; i += 1) {
-      nodeList[i].removeEventListener('dragleave', dragLeaveListener);
-      nodeList[i].removeEventListener('dragover', dragOverListener);
-      if (nodeList[i].classList.contains('colRearrangeLeft')) {
-        nodeList[i].classList.remove('colRearrangeLeft');
+    for (const node of nodeList) {
+      node.removeEventListener('dragleave', dragLeaveListener);
+      node.removeEventListener('dragover', dragOverListener);
+      if (node.classList.contains('colRearrangeLeft')) {
+        node.classList.remove('colRearrangeLeft');
       }
-      if (nodeList[i].classList.contains('colRearrangeRight')) {
-        nodeList[i].classList.remove('colRearrangeRight');
+      if (node.classList.contains('colRearrangeRight')) {
+        node.classList.remove('colRearrangeRight');
       }
     }
   }
@@ -56,16 +56,16 @@ function RearrangeColumn(e, columns, setColumns, moveCols, setMoveCols) {
 
     const allColumnDomElems = columnDomElem.parentNode.children;
     const columnDomElemTypeGroup = [];
-    for (let i = 0; i < allColumnDomElems.length; i += 1) {
-      const type = allColumnDomElems[i].getAttribute('columntype');
+    for (const column of allColumnDomElems) {
+      const type = column.getAttribute('columntype');
       if (type && type === columnType) {
-        columnDomElemTypeGroup.push(allColumnDomElems[i]);
+        columnDomElemTypeGroup.push(column);
       }
     }
 
-    for (let i = 0; i < columnDomElemTypeGroup.length; i += 1) {
-      columnDomElemTypeGroup[i].addEventListener('dragleave', dragLeaveListener);
-      columnDomElemTypeGroup[i].addEventListener('dragover', dragOverListener);
+    for (const column of columnDomElemTypeGroup) {
+      column.addEventListener('dragleave', dragLeaveListener);
+      column.addEventListener('dragover', dragOverListener);
     }
 
     return {

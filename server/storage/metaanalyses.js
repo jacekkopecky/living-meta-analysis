@@ -35,7 +35,6 @@ async function getMetaanalysisByTitle(user, title, time, includePapers) {
     return newMetaanalysis(email);
   }
 
-  // const metaanalyses = await getAllMetaanalyses();
   const query = datastore.createQuery('Metaanalysis').filter('title', '=', title);
 
   const [[metaanalyses]] = await datastore.runQuery(query);
@@ -90,8 +89,6 @@ function newMetaanalysis(email) {
   };
 }
 
-// const currentMetaanalysisSave = Promise.resolve();
-
 async function saveMetaanalysis(metaanalysis, email, origTitle, options) {
   options = options || {};
   // todo multiple users' views on one metaanalysis
@@ -107,7 +104,6 @@ async function saveMetaanalysis(metaanalysis, email, origTitle, options) {
   // the following serializes this save after the previous one, whether it fails or succeeds
   // this way we can't have two concurrent saves create metaanalyses with the same title
 
-  // await currentMetaanalysisSave;
 
   // prepare the metaanalysis for saving
   const ctime = tools.uniqueNow();

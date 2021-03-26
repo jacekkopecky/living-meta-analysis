@@ -279,7 +279,7 @@ function startServer() {
 
             // HTTP app will just redirect to HTTPS
             const redirectApp = express();
-            // if (loggingMiddleware) redirectApp.use(loggingMiddleware);
+            
             redirectApp.get('*', (req, res) => res.redirect('https://' + req.hostname + req.url));
 
             http.createServer(redirectApp).listen(port, () => {

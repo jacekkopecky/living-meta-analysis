@@ -11,6 +11,18 @@ function AddGraphPopup(props) {
   const calcCols = columns.filter((col) => col.subType === 'calculator' || col.subType === 'calculatorN');
   const [type, setType] = useState('grape');
 
+  let title;
+  let g1;
+  let g1Col;
+  let g1n;
+  let g1nCol;
+  let g2;
+  let g2Col;
+  let g2n;
+  let g2nCol;
+  let mod;
+  let modCol;
+
   const closeHandler = () => {
     setPopupStatus(!popupStatus);
   };
@@ -20,22 +32,9 @@ function AddGraphPopup(props) {
     setType(e.currentTarget.value);
   }
 
-  function formGrapeObject(elem) {
-    let title;
-    let g1;
-    let g1Col;
-    let g1n;
-    let g1nCol;
-    let g2;
-    let g2Col;
-    let g2n;
-    let g2nCol;
-    let mod;
-    let modCol;
-    const id = Object.keys(graphs).length;
-
-    for (let i = 0; i < elem.children.length; i += 1) {
-      const input = elem.children[i].children[0];
+  function getGraphObject(elem) {
+    for (const element of elem) {
+      const input = element.children.children[0];
       if (input) {
         switch (input.name) {
         case 'newGraphTitle':
@@ -59,6 +58,12 @@ function AddGraphPopup(props) {
         }
       }
     }
+  }
+
+  function formGrapeObject(elem) {
+    const id = Object.keys(graphs).length;
+
+    getGraphObject(elem);
 
     const graphObject = {
       formula: `grapeChartPercentGraph(${g1},${g1n},${g2},${g2n},${mod},)`,
@@ -88,32 +93,9 @@ function AddGraphPopup(props) {
   }
 
   function formForestObject(elem) {
-    let title;
-    let g1Col;
-    let g1nCol;
-    let g2Col;
-    let g2nCol;
     const id = Object.keys(graphs).length;
 
-    for (let i = 0; i < elem.children.length; i += 1) {
-      const input = elem.children[i].children[0];
-      if (input) {
-        switch (input.name) {
-        case 'newGraphTitle':
-          title = input.value;
-          break;
-        case 'newGraphG1':
-          g1Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          g1nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
-          break;
-        case 'newGraphG2':
-          g2Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          g2nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
-          break;
-        default:
-        }
-      }
-    }
+    getGraphObject(elem);
 
     const graphObject = {
       formula: `forestPlotPercentGraph(${g1Col.id},${g1nCol.id},${g2Col.id},${g2nCol.id})`,
@@ -142,36 +124,9 @@ function AddGraphPopup(props) {
   }
 
   function formForestGroupObject(elem) {
-    let title;
-    let g1Col;
-    let g1nCol;
-    let g2Col;
-    let g2nCol;
-    let modCol;
     const id = Object.keys(graphs).length;
 
-    for (let i = 0; i < elem.children.length; i += 1) {
-      const input = elem.children[i].children[0];
-      if (input) {
-        switch (input.name) {
-        case 'newGraphTitle':
-          title = input.value;
-          break;
-        case 'newGraphG1':
-          g1Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          g1nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
-          break;
-        case 'newGraphG2':
-          g2Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          g2nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
-          break;
-        case 'newGraphMod':
-          modCol = columns.filter((col) => col.subType === 'moderator' && col.id === input.value)[0];
-          break;
-        default:
-        }
-      }
-    }
+    getGraphObject(elem);
 
     const graphObject = {
       formula: `forestPlotGroupPercentGraph(${g1Col.id},${g1nCol.id},${g2Col.id},${g2nCol.id},${modCol.id},)`,

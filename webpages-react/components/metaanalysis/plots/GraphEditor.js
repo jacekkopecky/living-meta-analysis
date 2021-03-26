@@ -28,8 +28,8 @@ function GrapeMenu(props) {
     } else if (e.currentTarget.nodeName === 'SELECT' || e.currentTarget.nodeName === 'INPUT') {
       formElem = e.currentTarget.parentNode.parentNode;
     }
-    for (let i = 0; i < formElem.children.length; i += 1) {
-      const input = formElem.children[i].children[0];
+    for (const element of formElem) {
+      const input = element.children.children[0];
       if (input && (input.nodeName === 'INPUT' || input.nodeName === 'SELECT') && input.type !== 'submit') {
         switch (input.name) {
         case 'grapeTitle':
@@ -166,8 +166,8 @@ function ForestMenu(props) {
     } else if (e.currentTarget.nodeName === 'SELECT' || e.currentTarget.nodeName === 'INPUT') {
       formElem = e.currentTarget.parentNode.parentNode;
     }
-    for (let i = 0; i < formElem.children.length; i += 1) {
-      const input = formElem.children[i].children[0];
+    for (const element of formElem) {
+      const input = element.children.children[0];
       if (input && (input.nodeName === 'INPUT' || input.nodeName === 'SELECT') && input.type !== 'submit') {
         switch (input.name) {
         case 'forestTitle':
@@ -284,8 +284,8 @@ function ForestGroupMenu(props) {
     } else if (e.currentTarget.nodeName === 'SELECT' || e.currentTarget.nodeName === 'INPUT') {
       formElem = e.currentTarget.parentNode.parentNode;
     }
-    for (let i = 0; i < formElem.children.length; i += 1) {
-      const input = formElem.children[i].children[0];
+    for (const element of formElem) {
+      const input = element.children.children[0];
       if (input && (input.nodeName === 'INPUT' || input.nodeName === 'SELECT') && input.type !== 'submit') {
         switch (input.name) {
         case 'forestGroupTitle':

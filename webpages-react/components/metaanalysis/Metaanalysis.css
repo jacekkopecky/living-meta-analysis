@@ -42,29 +42,32 @@
   margin: 20px;
 }
 
-.metaanalysis .columnHeadings th{
-  border: 4px solid black;
-  color: black;
-  text-align: center;
-}
-
 .metaanalysis .columnHeadings .paperColumnHeader {
-  background-color: rgba(255,255,0,0.5);
+  background-color: rgba(255, 255, 0, 0.5);
 }
 
 .metaanalysis .columnHeadings .moderatorColumnHeader {
-  background-color: rgba(255,0,0, 0.5);
+  background-color: rgba(255, 0, 0, 0.5);
 }
 
 .metaanalysis .columnHeadings .calculatorColumnHeader {
-  background-color: rgba(0,255,0, 0.5);
+  background-color: rgba(0, 255, 0, 0.5);
 }
 
 .metaanalysis .dataColumn {
   background-color: rgba(182, 234, 255, 0.5);
 }
+
 .metaanalysis .columnHeadings .dataColumnHeader {
   background-color: #add8e6 !important;
+}
+
+.metaanalysis table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #2f7494;
+  color: white;
 }
 
 .metaanalysis table td,
@@ -74,17 +77,14 @@
   padding: 4px;
 }
 
-.metaanalysis table tr:nth-child(even) {
-  background-color: #ebebeb;
+.metaanalysis .columnHeadings th {
+  border: 4px solid black;
+  color: black;
+  text-align: center;
 }
 
-
-.metaanalysis table th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: #2f7494;
-  color: white;
+.metaanalysis table tr:nth-child(even) {
+  background-color: #ebebeb;
 }
 
 .metaanalysis table .active {
@@ -112,12 +112,12 @@
 
 .metaanalysis .grabberButton {
   background: none;
-	color: inherit;
-	border: none;
-	padding: 0;
-	font: inherit;
-	cursor: pointer;
-	outline: inherit;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
   display: block;
   width: 2em;
   height: 2em;
@@ -132,17 +132,17 @@
 }
 
 .metaanalysis .beingRearranged {
-  background-color: #FFC0CB !important;
-  color: #000000 !important;
+  background-color: #ffc0cb !important;
+  color: #000 !important;
   border-width: 1em;
 }
 
 .metaanalysis .rowRearrangeBelow {
-  box-shadow: 0 -0.4em 0.2em -0.2em #000000 inset;
+  box-shadow: 0 -0.4em 0.2em -0.2em #000 inset;
 }
 
 .metaanalysis .rowRearrangeAbove {
-  box-shadow: 0 0.4em 0.2em -0.2em #000000 inset;
+  box-shadow: 0 0.4em 0.2em -0.2em #000 inset;
 }
 
 #toggle-editing,
@@ -153,21 +153,21 @@
   width: 100%;
   height: 100%;
   text-align: center;
-  background-color: #FFC0CB;
+  background-color: #ffc0cb;
   outline: none;
   cursor: pointer;
+
   /* Prevent text highlight */
   -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
 #toggle-editing:hover {
-  background-color: #FF69B4;
+  background-color: #ff69b4;
 }
 
 #toggle-editing.editMode {
@@ -184,8 +184,8 @@
 }
 
 .editMode.primary {
-  background-color: #FFC0CB !important;
-  color: #000000 !important;
+  background-color: #ffc0cb !important;
+  color: #000 !important;
 }
 
 .metaanalysis .editMode.secondary {
@@ -193,7 +193,7 @@
 }
 
 .metaanalysis .editMode li:hover {
-  background-color: #FFC0CB !important;
+  background-color: #ffc0cb !important;
 }
 
 .metaanalysis .popupBackground {
@@ -204,7 +204,7 @@
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
 .metaanalysis .popupContainer {
@@ -215,7 +215,7 @@
   width: 60%; /* Full width */
   height: 60%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: #FFFFFF;
+  background-color: #fff;
   border: 5px solid black;
 }
 
@@ -239,7 +239,7 @@
 }
 
 .metaanalysis .popupClose:hover {
-  background-color: #8B0000;
+  background-color: #8b0000;
 }
 
 .submitButton {
@@ -247,21 +247,21 @@
   width: 10em;
   height: 2em;
   text-align: center;
-  background-color: #32CD32;
+  background-color: #32cd32;
   outline: none;
   cursor: pointer;
+
   /* Prevent text highlight */
   -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
 .submitButton:hover {
-  background-color: #228B22;
+  background-color: #228b22;
 }
 
 .metaanalysis .addPaperForm label,
@@ -273,10 +273,10 @@
 }
 
 .metaanalysis .addPaperForm label input,
-.metaanalysis .addPaperForm label input:focus,
 .metaanalysis .addExperimentForm label input,
-.metaanalysis .addExperimentForm label input:focus,
 .metaanalysis .addColumnForm label input,
+.metaanalysis .addPaperForm label input:focus,
+.metaanalysis .addExperimentForm label input:focus,
 .metaanalysis .addColumnForm label input:focus {
   border: 0.1em solid black;
   outline: none;
@@ -287,13 +287,13 @@
 
 .metaanalysis .addExperimentButton {
   background: none;
-	color: inherit;
-	border: none;
-	padding: 0;
-	font: inherit;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
   font-size: 30px;
-	cursor: pointer;
-	outline: inherit;
+  cursor: pointer;
+  outline: inherit;
   position: absolute;
   top: 0;
   right: 0;
@@ -322,11 +322,11 @@
 }
 
 .colRearrangeRight {
-  box-shadow: -0.4em 0 0.2em -0.2em #000000 inset;
+  box-shadow: -0.4em 0 0.2em -0.2em #000 inset;
 }
 
 .colRearrangeLeft {
-  box-shadow: 0.4em 0 0.2em -0.2em #000000 inset;
+  box-shadow: 0.4em 0 0.2em -0.2em #000 inset;
 }
 
 textarea {
@@ -345,20 +345,20 @@ textarea {
   width: 10em;
   height: 2em;
   text-align: center;
-  background-color: #32CD32;
+  background-color: #32cd32;
   margin-left: auto;
   margin-right: auto;
   vertical-align: middle;
   outline: none;
   cursor: pointer;
+
   /* Prevent text highlight */
   -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
 .removalPopupCancel {
@@ -384,7 +384,7 @@ textarea {
 .removePaperButton,
 .removeExperimentButton,
 .hideShowButton {
-  position: absolute;
+  position: relative;
   left: 0;
   bottom: 0;
   width: 50px;
@@ -395,14 +395,15 @@ textarea {
   background-color: #ff5745;
   outline: none;
   cursor: pointer;
+  margin: 4px auto;
+
   /* Prevent text highlight */
   -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
 .removeColumnButton:hover,
@@ -411,21 +412,13 @@ textarea {
   background-color: red;
 }
 
-.removeExperimentButton,
-.removePaperButton,
-.removeColumnButton,
-.hideShowButton {
-  position: relative;
-  margin: 4px auto;
-}
-
 .hideShowButton {
   display: block;
   background-color: rgba(182, 234, 255, 0.5);
 }
 
 .hideShowButton:hover {
-  background-color: #FF69B4;
+  background-color: #ff69b4;
 }
 
 .columnButtonContainer {

@@ -61,6 +61,7 @@
     "@google-cloud/datastore": "^5.1.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "eslint-plugin-sonar": "^0.4.0",
     "express": "^4.17.1",
     "simple-google-openid": "^0.3.0",
     "uid": "^1.0.0"
