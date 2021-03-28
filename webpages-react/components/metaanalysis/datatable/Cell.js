@@ -63,7 +63,7 @@ function addCellDetails(enteredBy, ctime, paper, cval, ...args) {
 }
 
 const dataCellDetails = ({ enteredBy, ctime, paper }, cval) => (
-  addCellDetails( enteredBy, ctime, paper, cval)
+  addCellDetails(enteredBy, ctime, paper, cval)
 );
 const computedCellDetails = ({ fullLabel }, { enteredBy, ctime, paper }, cval) => (
   addCellDetails(enteredBy, ctime, paper, cval, fullLabel)

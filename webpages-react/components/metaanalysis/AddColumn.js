@@ -201,15 +201,6 @@ function AddColumnPopup(props) {
     setColumns(columnsToSet);
   }
 
-  let maybe1;
-  let maybe2;
-  let value1;
-  let value2;
-
-  const foo = maybe1 > maybe2
-  ? "bar"
-  : value1 > value2 ? "baz" : null;
-
   const content = (
     <div className="AddColumnPopup">
       <h1>Add a new column</h1>
