@@ -1,5 +1,4 @@
-let currentInput = [];
-
+/* eslint-disable sonarjs/cognitive-complexity */
 function renumberComputedObjects(array, prefix) {
   prefix = prefix || '';
   let count = 0;

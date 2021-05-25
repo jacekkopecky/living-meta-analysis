@@ -59,7 +59,7 @@ function PlotSelector(props) {
           className="removeGraphButton"
           role="button"
           tabIndex={0}
-          onClick={popupToggle} 
+          onClick={popupToggle}
           onKeyDown={popupToggle}
         >
           Remove

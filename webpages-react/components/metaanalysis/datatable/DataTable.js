@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 import React, { useState, useContext, useRef } from 'react';
 import Paper from './Paper';
 import AddPaper from '../AddPaper';

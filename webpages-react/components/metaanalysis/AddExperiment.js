@@ -60,12 +60,10 @@ const handleSubmit = (e) => {
     if (inputElem) {
       const colID = inputElem.getAttribute('columnid');
       const inputType = inputElem.getAttribute('inputtype');
-      if (inputElem.value) {
+      if (inputElem.value && inputType === 'number') {
         experimentDetails[i] = [inputElem.value, colID];
-        if (inputType === 'number') {
-          if (!parseInt(inputElem.value, 10)) {
-            correctInputTypes = false;
-          }
+        if (!parseInt(inputElem.value, 10)) {
+          correctInputTypes = false;
         }
       } else {
         experimentDetails[i] = [null, colID];

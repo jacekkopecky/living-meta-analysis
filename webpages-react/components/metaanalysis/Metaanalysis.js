@@ -15,6 +15,7 @@ import modifyColumns from '../../tools/modifyColumns';
 
 import './Metaanalysis.css';
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function Metaanalysis(props) {
   const { metaanalysis } = props;
   populateCircularMa(metaanalysis);
