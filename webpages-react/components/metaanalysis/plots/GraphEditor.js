@@ -25,8 +25,77 @@ function handleSubmit(e, graph, graphState, columns, popup, mType) {
   } else if (e.currentTarget.nodeName === 'SELECT' || e.currentTarget.nodeName === 'INPUT') {
     formElem = e.currentTarget.parentNode.parentNode;
   }
-  for (const element of formElem) {
-    const input = element.children.children[0];
+
+  setGraphTitle(formElem, graph);
+
+  for (let i = 0; i < newParams.length; i += 2) {
+    const colParam = columns.filter((col) => col.id === newParams[i] && col.type !== 'result')[0];
+    graph.formulaParams[i] = colParam;
+    newColumnParams[i] = colParam.title;
+    paramIndex[i] = (newParams[i] || graph.formulaParams[i].id);
+    if (i !== 4 && type !== 'ForestMenu') {
+      const nColParam = columns.filter((col) => col.id === colParam.linkedN)[0];
+      graph.formulaParams[i + 1] = nColParam;
+      newColumnParams[i + 1] = nColParam.title;
+      paramIndex[i + 1] = nColParam.id;
+    }
+  }
+
+  setGraphFormula(graph, type);
+
+  for (let i = 0; i < graphs.length; i += 1) {
+    if (graphsClone[i].id === graph.id) {
+      graphsClone[i] = graph;
+    }
+  }
+  setGraphs(graphsClone);
+  popupToggle();
+}
+
+function setGraphFormula(graph, type) {
+  if (type === 'GrapeMenu') {
+    graph.formula = `grapeChartPercentGraph(
+      ${paramIndex[0]},
+      ${paramIndex[1]},
+      ${paramIndex[2]},
+      ${paramIndex[3]},
+      ${paramIndex[4]})`;
+    graph.fullLabel = `Grape chart (percentages)( 
+      ${newColumnParams[0] || graph.formulaParams[0].title}, 
+      ${newColumnParams[1] || graph.formulaParams[1].title}, 
+      ${newColumnParams[2] || graph.formulaParams[2].title}, 
+      ${newColumnParams[3] || graph.formulaParams[3].title}, 
+      ${newColumnParams[4] || graph.formulaParams[4].title})`;
+  } else if (type === 'ForestMenu') {
+    graph.formula = `forestPlotPercentGraph(
+      ${paramIndex[0]},
+      ${paramIndex[1]},
+      ${paramIndex[2]},
+      ${paramIndex[3]})`;
+    graph.fullLabel = `Forest plot (percentages)( 
+      ${newColumnParams[0] || graph.formulaParams[0].title}, 
+      ${newColumnParams[1] || graph.formulaParams[1].title}, 
+      ${newColumnParams[2] || graph.formulaParams[2].title}, 
+      ${newColumnParams[3] || graph.formulaParams[3].title})`;
+  } else if (type === 'ForestGroupMenu') {
+    graph.formula = `forestPlotGroupPercentGraph(
+      ${paramIndex[0]},
+      ${paramIndex[1]},
+      ${paramIndex[2]},
+      ${paramIndex[3]},
+      ${paramIndex[4]})`;
+    graph.fullLabel = `Forest Plot Group (percentages)( 
+      ${newColumnParams[0] || graph.formulaParams[0].title}, 
+      ${newColumnParams[1] || graph.formulaParams[1].title}, 
+      ${newColumnParams[2] || graph.formulaParams[2].title}, 
+      ${newColumnParams[3] || graph.formulaParams[3].title}, 
+      ${newColumnParams[4] || graph.formulaParams[4].title})`;
+  }
+}
+
+function setGraphTitle(formElem, graph) {
+  for (const element of formElem.children) {
+    const input = element.children[0];
     if (input && (input.nodeName === 'INPUT' || input.nodeName === 'SELECT') && input.type !== 'submit') {
       switch (input.name) {
       case 'grapeTitle':
@@ -54,37 +123,6 @@ function handleSubmit(e, graph, graphState, columns, popup, mType) {
       }
     }
   }
-  for (let i = 0; i < newParams.length; i += 2) {
-    const colParam = columns.filter((col) => col.id === newParams[i] && col.type !== 'result')[0];
-    graph.formulaParams[i] = colParam;
-    newColumnParams[i] = colParam.title;
-    paramIndex[i] = (newParams[i] || graph.formulaParams[i].id);
-    if (i !== 4 && type !== 'ForestMenu') {
-      const nColParam = columns.filter((col) => col.id === colParam.linkedN)[0];
-      graph.formulaParams[i + 1] = nColParam;
-      newColumnParams[i + 1] = nColParam.title;
-      paramIndex[i + 1] = nColParam.id;
-    }
-  }
-
-  if (type === 'GrapeMenu') {
-    graph.formula = `grapeChartPercentGraph(${paramIndex[0]},${paramIndex[1]},${paramIndex[2]},${paramIndex[3]},${paramIndex[4]})`;
-    graph.fullLabel = `Grape chart (percentages)( ${newColumnParams[0] || graph.formulaParams[0].title}, ${newColumnParams[1] || graph.formulaParams[1].title}, ${newColumnParams[2] || graph.formulaParams[2].title}, ${newColumnParams[3] || graph.formulaParams[3].title}, ${newColumnParams[4] || graph.formulaParams[4].title})`;
-  } else if (type === 'ForestMenu') {
-    graph.formula = `forestPlotPercentGraph(${paramIndex[0]},${paramIndex[1]},${paramIndex[2]},${paramIndex[3]})`;
-    graph.fullLabel = `Forest plot (percentages)( ${newColumnParams[0] || graph.formulaParams[0].title}, ${newColumnParams[1] || graph.formulaParams[1].title}, ${newColumnParams[2] || graph.formulaParams[2].title}, ${newColumnParams[3] || graph.formulaParams[3].title})`;
-  } else if (type === 'ForestGroupMenu') {
-    graph.formula = `forestPlotGroupPercentGraph(${paramIndex[0]},${paramIndex[1]},${paramIndex[2]},${paramIndex[3]},${paramIndex[4]})`;
-    graph.fullLabel = `Forest Plot Group (percentages)( ${newColumnParams[0] || graph.formulaParams[0].title}, ${newColumnParams[1] || graph.formulaParams[1].title}, ${newColumnParams[2] || graph.formulaParams[2].title}, ${newColumnParams[3] || graph.formulaParams[3].title}, ${newColumnParams[4] || graph.formulaParams[4].title})`;
-  }
-
-  for (let i = 0; i < graphs.length; i += 1) {
-    if (graphsClone[i].id === graph.id) {
-      graphsClone[i] = graph;
-    }
-  }
-  setGraphs(graphsClone);
-  popupToggle();
 }
 
 function GrapeMenu(props) {

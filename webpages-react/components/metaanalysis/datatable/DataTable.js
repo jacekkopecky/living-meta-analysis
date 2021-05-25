@@ -102,6 +102,7 @@ function DataTable(props) {
 
   const edit = useContext(EditContext);
   const parentOfRows = useRef(null);
+  const editModeClass = edit.flag ? 'editMode primary' : '';
 
   return (
     <section>
@@ -122,7 +123,7 @@ function DataTable(props) {
         </thead>
         <thead>
           <tr>
-            <th {...makeClickable('Paper', paperColumnDetails)} className={`${edit.flag ? 'editMode primary' : ''}`}>
+            <th {...makeClickable('Paper', paperColumnDetails)} className={`${editModeClass}`}>
               <>
                 <AddPaper
                   paperState={[paperState, setPaperState]}
@@ -131,7 +132,7 @@ function DataTable(props) {
                 />
               </>
             </th>
-            <th {...makeClickable('Study/Experiment', expColumnDetails)} className={`${edit.flag ? 'editMode primary' : ''}`}>
+            <th {...makeClickable('Study/Experiment', expColumnDetails)} className={`${editModeClass}`}>
               Study/Experiment
             </th>
             { columns.map((col) => (
@@ -141,7 +142,7 @@ function DataTable(props) {
                   col.id || col.fullLabel,
                   col.id ? dataColDetails(col) : computedColDetails(col),
                 )}
-                className={`column ${edit.flag ? 'editMode primary' : ''}`}
+                className={`column ${editModeClass}`}
                 columntype={col.subType}
                 columnid={col.id || col.number}
               >
@@ -172,7 +173,17 @@ function DataTable(props) {
                               <button type="submit" className="hideShowButton" onClick={() => hideColumn(col)}>Hide</button>
                               { col.subType !== 'calculatorN'
                                 ? (
-                                  <div role="button" tabIndex={0} className="removeColumnButton" coltitle={col.title} colid={col.id || col.number} onClick={(e) => { popupToggle(); selectColumn(e); }} onKeyDown={popupToggle}>Remove</div>
+                                  <div
+                                    role="button"
+                                    tabIndex={0}
+                                    className="removeColumnButton"
+                                    coltitle={col.title}
+                                    colid={col.id || col.number}
+                                    onClick={(e) => { popupToggle(); selectColumn(e); }}
+                                    onKeyDown={popupToggle}
+                                  >
+                                    Remove
+                                  </div>
                                 )
                                 : null }
                               { popupStatus

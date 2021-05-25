@@ -1,18 +1,11 @@
 'use strict';
 const { datastore } = require('../shared');
 
+let maPapers;
 /*
  * change metaanalysis from an old format to the new one on load from datastore, if need be
  */
-async function migrateMetaanalysis(metaanalysis) {
-  // 2017-02-23: move columnOrder to columns
-  //     when all is migrated: just remove this code
-  if (metaanalysis.columnOrder) {
-    metaanalysis.columns = metaanalysis.columnOrder;
-    delete metaanalysis.columnOrder;
-    metaanalysis.migrated = true;
-  }
-
+function migrateAggregates(metaanalysis) {
   // 2017-05-02: move graph aggregates to graphs
   //     when all is migrated: just remove this code
   // migrate aggregate graphs to graphs
@@ -34,7 +27,9 @@ async function migrateMetaanalysis(metaanalysis) {
       }
     }
   }
+}
 
+async function migrateColumns(metaanalysis) {
   // 2017-06-28: migrate global columns to private columns
   //     when all is migrated:
   //       remove this code,
@@ -42,7 +37,7 @@ async function migrateMetaanalysis(metaanalysis) {
   //       remove all remaining mentions of global columns
   //       remove columns from datastore
   // prepare the papers this metaanalysis depends on
-  const maPapers = await Promise.all(metaanalysis.paperOrder.map(async (paperId) => {
+  maPapers = await Promise.all(metaanalysis.paperOrder.map(async (paperId) => {
     // find the paper with the matching ID
     const query = datastore.createQuery('Paper').filter('id', '=', paperId);
     const [retval] = await datastore.runQuery(query);
@@ -51,7 +46,9 @@ async function migrateMetaanalysis(metaanalysis) {
     }
     return retval[0];
   }));
+}
 
+function migrateCheck(metaanalysis) {
   // convert columns from string to object
   if (!metaanalysis.columns) metaanalysis.columns = [];
   let maxId = 0;
@@ -103,6 +100,9 @@ async function migrateMetaanalysis(metaanalysis) {
       metaanalysis.migrated = true;
     }
   });
+}
+
+function removeMissingData(metaanalysis) {
   // check that every computed thing's formula doesn't contain '/id/col/',
   // remove offending ones because they don't have data in the metaanalysis anyway so no loss
   // also migrate customName to title and add type: result
@@ -130,6 +130,25 @@ async function migrateMetaanalysis(metaanalysis) {
       }
     }
   }
+}
+
+function migrateMetaanalysis(metaanalysis) {
+  // 2017-02-23: move columnOrder to columns
+  //     when all is migrated: just remove this code
+  if (metaanalysis.columnOrder) {
+    metaanalysis.columns = metaanalysis.columnOrder;
+    delete metaanalysis.columnOrder;
+    metaanalysis.migrated = true;
+  }
+
+  migrateAggregates(metaanalysis);
+
+  migrateColumns(metaanalysis);
+
+  migrateCheck(metaanalysis);
+
+  removeMissingData(metaanalysis);
+
   // if we have a hiddenColumn that's not migrated, drop it
   if (metaanalysis.hiddenCols) {
     let hiddenIndex = metaanalysis.hiddenCols.length - 1;
@@ -310,7 +329,7 @@ async function migrateAllUsers() {
 }
 
 async function migrateAllPapers() {
-  const columns = await getAllColumns();
+  const columns = getAllColumns();
   const kind = 'Paper';
   const [retval] = await datastore.createQuery(kind).run();
   const entities = [];
@@ -331,7 +350,7 @@ async function migrateAllMetaanalysis() {
   const entities = [];
   for (const element of retval) {
     try {
-      const val = await migrateMetaanalysis(element);
+      const val = migrateMetaanalysis(element);
       const metaanalysisKey = datastore.key([kind, val.id]);
       entities.push({
         key: metaanalysisKey,

@@ -3,7 +3,7 @@
     "browser": true,
     "es6": true
   },
-  "extends": ["plugin:react/recommended", "airbnb"],
+  "extends": ["plugin:react/recommended", "airbnb", "plugin:sonarjs/recommended"],
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
@@ -17,7 +17,8 @@
     "sourceType": "module"
   },
   "plugins": [
-    "react"
+    "react",
+    "sonarjs"
   ],
   "rules": {
     "indent": ["error", 2],
@@ -40,6 +41,17 @@
     "react/jsx-curly-spacing": ["error", { "when": "never", "children": { "when": "always" }}],
     "jsx-a11y/no-autofocus": [0],
     "no-cond-assign": ["error", "except-parens"],
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
+    "no-shadow":[0],
+    "no-nested-ternary":["error"],
+    "sonarjs/prefer-immediate-return":[0],
+    "sonarjs/prefer-object-literal":[0],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+    "prefer-template":[0],
+    "sonarjs/cognitive-complexity": ["error", 20],
+    "strict":[0],
+    "sonarjs/no-duplicate-string": ["error", 5],
+    "max-len": ["error", { "code": 200 }],
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 0 }]
   }
 }

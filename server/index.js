@@ -23,6 +23,8 @@ const storage = require('./storage');
 const NotFoundError = require('./errors/NotFoundError');
 
 const api = process.env.REDIRECT_API ? redirectApi : apiRoutes;
+const ROOT_PAGE = './webpages/';
+const CONSOLE_BORDER = '**************************************************';
 
 storage.setup();
 
@@ -60,7 +62,7 @@ if (!process.env.TESTING) {
     } else if (await isValidBetaCode(req.cookies['lima-beta-code'])) {
       next();
     } else if (req.url === '/') {
-      res.sendFile('coming-soon.html', { root: './webpages/' });
+      res.sendFile('coming-soon.html', { root: ROOT_PAGE });
     } else {
       res.redirect('/');
     }
@@ -107,7 +109,7 @@ app.get('/version/log',
   (req, res) => res.redirect('https://github.com/jacekkopecky/living-meta-analysis/commits/master'));
 
 app.get(['/profile', '/profile/*'],
-  (req, res) => res.sendFile('profileRedirect.html', { root: './webpages/' }));
+  (req, res) => res.sendFile('profileRedirect.html', { root: ROOT_PAGE }));
 
 app.use('/', express.static('webpages', { extensions: ['html'] }));
 
@@ -116,24 +118,24 @@ app.use('/', express.static('webpages', { extensions: ['html'] }));
 app.use(`/:user(${config.USER_RE})/`, SLASH_URL);
 app.get(`/:user(${config.USER_RE})/`,
   api.users.EXISTS_USER,
-  (req, res) => res.sendFile('profile/profile.html', { root: './webpages/' }));
+  (req, res) => res.sendFile('profile/profile.html', { root: ROOT_PAGE }));
 
 app.use(`/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`, SLASH_URL);
 app.get(`/:user(${config.USER_RE})/${config.NEW_PAPER_TITLE}/`,
   api.users.EXISTS_USER,
-  (req, res) => res.sendFile('profile/paper.html', { root: './webpages/' }));
+  (req, res) => res.sendFile('profile/paper.html', { root: ROOT_PAGE }));
 app.get(`/:user(${config.USER_RE})/${config.NEW_META_TITLE}/`,
   api.users.EXISTS_USER,
-  (req, res) => res.sendFile('react-dist/metaanalysis.html', { root: './webpages/' }));
+  (req, res) => res.sendFile('react-dist/metaanalysis.html', { root: ROOT_PAGE }));
 app.get(`/:user(${config.USER_RE})/:title(${config.URL_TITLE_RE})/`,
   api.users.EXISTS_USER,
   async (req, res, next) => {
     try {
       const kind = req.query.type || await api.getKindForTitle(req.params.user, req.params.title);
       if (kind === 'paper') {
-        res.sendFile('profile/paper.html', { root: './webpages/' });
+        res.sendFile('profile/paper.html', { root: ROOT_PAGE });
       } else if (kind === 'metaanalysis') {
-        res.sendFile('react-dist/metaanalysis.html', { root: './webpages/' });
+        res.sendFile('react-dist/metaanalysis.html', { root: ROOT_PAGE });
       } else {
         next(new NotFoundError());
       }
@@ -194,10 +196,10 @@ app.use(() => { throw new NotFoundError(); });
 app.use((err, req, res, next) => {
   // eslint-disable-line no-unused-vars
   if (err.status === 404) {
-    res.status(404).sendFile('404.html', { root: './webpages/' });
+    res.status(404).sendFile('404.html', { root: ROOT_PAGE });
   } else if (err.status === 401) {
     res.set('WWW-Authenticate', 'Bearer realm="accounts.google.com"');
-    res.status(401).sendFile('401.html', { root: './webpages/' });
+    res.status(401).sendFile('401.html', { root: ROOT_PAGE });
   } else if (err && err.status) {
     res.status(err.status).send(err.message);
   } else {
@@ -236,20 +238,20 @@ const serverReady = startServer();
 function startServer() {
   return new Promise((resolve, reject) => {
     if (process.env.TESTING) {
-      console.info('**************************************************');
+      console.info(CONSOLE_BORDER);
       console.info('');
       console.info('RUNNING IN TESTING MODE');
       console.info('');
-      console.info('**************************************************');
+      console.info(CONSOLE_BORDER);
     }
 
     if (process.env.DISABLE_HTTPS || process.env.TESTING) {
       if (!process.env.TESTING) {
-        console.warn('**************************************************');
+        console.warn(CONSOLE_BORDER);
         console.warn('');
         console.warn('WARNING: DISABLING HTTPS, THIS SERVER IS INSECURE');
         console.warn('');
-        console.warn('**************************************************');
+        console.warn(CONSOLE_BORDER);
       }
       httpsPort = null;
     }

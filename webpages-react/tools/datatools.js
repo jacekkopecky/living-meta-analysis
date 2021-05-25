@@ -1,3 +1,5 @@
+let currentInput = [];
+
 function renumberComputedObjects(array, prefix) {
   prefix = prefix || '';
   let count = 0;
@@ -15,7 +17,7 @@ function renumberComputedObjects(array, prefix) {
 function getColTitle(col, level) {
   if (col == null) {
     return 'none';
-  } if (typeof col !== 'object') {
+  } else if (typeof col !== 'object') {
     throw new Error(`we do not expect non-object param ${col}`);
   } else if (col.id) {
     return col.title;
@@ -182,8 +184,8 @@ function getExperimentsTableDatumValue(col, experiment) {
       val = formula.func.apply(null, inputs);
     }
     // if the result is NaN but some of the inputs were empty, change the result to empty.
-    if (typeof val === 'number' && Number.isNaN(val)) {
-      if (inputs.some((x) => x == null || x === '')) val = null;
+    if (typeof val === 'number' && Number.isNaN(val) && (inputs.some((x) => x == null || x === ''))) {
+      val = null;
     }
   }
 

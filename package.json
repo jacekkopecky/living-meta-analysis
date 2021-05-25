@@ -14,7 +14,8 @@
     "lint-server": "echo eslint && eslint server/** --ext .js,.json",
     "lint": "echo eslint && eslint . --ext .js,.json && echo stylelint && stylelint webpages*/**/*.css webpages*/**/*.html",
     "build": "parcel build --no-cache --public-url /react-dist/ --dist-dir webpages/react-dist/ webpages-react/metaanalysis.html",
-    "react-watch": "NODE_ENV=development parcel watch --no-cache --public-url /react-dist/ --dist-dir webpages/react-dist/ webpages-react/metaanalysis.html"
+    "react-watch": "NODE_ENV=development parcel watch --no-cache --public-url /react-dist/ --dist-dir webpages/react-dist/ webpages-react/metaanalysis.html",
+    "rule-test": "eslint --config .eslintrc.json --output-file ./rule-test/test-report.html --format html rule-test"
   },
   "repository": {
     "type": "git",

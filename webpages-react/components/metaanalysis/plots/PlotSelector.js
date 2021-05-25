@@ -35,6 +35,55 @@ function PlotSelector(props) {
     setSelectedGraph(graph);
   }
 
+  let showRemovalPopup = null;
+  if (popupStatus) {
+    showRemovalPopup = (
+      <RemovalPopup
+        closingFunc={popupToggle}
+        removalFunc={removeGraph}
+        removalText={selectedGraph.title}
+      />
+    );
+  }
+
+  let showSelectedGraph = null;
+  if (selectedGraph && graphs !== {}) {
+    showSelectedGraph = (
+      <>
+        <GraphEditor
+          graph={selectedGraph}
+          graphState={graphState}
+          columns={columns}
+        />
+        <div
+          className="removeGraphButton"
+          role="button"
+          tabIndex={0}
+          onClick={popupToggle} 
+          onKeyDown={popupToggle}
+        >
+          Remove
+        </div>
+        { showRemovalPopup }
+      </>
+    );
+  }
+
+  let addGraph = null;
+  if (edit.flag) {
+    addGraph = (
+      <div id="graphButtonContainer">
+        <AddGraph
+          graphState={graphState}
+          columns={columns}
+          metaanalysis={metaanalysis}
+          setSelectedGraph={setSelectedGraph}
+        />
+        { showSelectedGraph }
+      </div>
+    );
+  }
+
   return (
     <>
       <div id="plotContainer">
@@ -46,39 +95,7 @@ function PlotSelector(props) {
               )) }
             </select>
           </label>
-          { edit.flag
-            ? (
-              <div id="graphButtonContainer">
-                <AddGraph
-                  graphState={graphState}
-                  columns={columns}
-                  metaanalysis={metaanalysis}
-                  setSelectedGraph={setSelectedGraph}
-                />
-                { selectedGraph && graphs !== {}
-                  ? (
-                    <>
-                      <GraphEditor
-                        graph={selectedGraph}
-                        graphState={graphState}
-                        columns={columns}
-                      />
-                      <div className="removeGraphButton" role="button" tabIndex={0} onClick={popupToggle} onKeyDown={popupToggle}>Remove</div>
-                      { popupStatus
-                        ? (
-                          <RemovalPopup
-                            closingFunc={popupToggle}
-                            removalFunc={removeGraph}
-                            removalText={selectedGraph.title}
-                          />
-                        )
-                        : null }
-                    </>
-                  )
-                  : null }
-              </div>
-            )
-            : null }
+          { addGraph }
         </div>
         <div id="graphContainer">
           { selectedGraph && graphs !== {}

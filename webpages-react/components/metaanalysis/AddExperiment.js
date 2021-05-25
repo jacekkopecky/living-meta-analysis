@@ -3,88 +3,93 @@ import EditContext from './EditContext';
 import UserContext from './UserContext';
 import Popup from './Popup';
 
-function AddExperimentPopup(props) {
-  const {
-    flag, paper, columns, paperState,
-  } = props;
-  const [popupStatus, setPopupStatus] = flag;
-  const [papers, setPapers] = paperState;
-  const currentUser = useContext(UserContext);
-  let correctInputTypes = true;
+let [papers, setPapers] = useState(false);
+let [popupStatus, setPopupStatus] = useState(false);
+let flag;
+let paper;
+let columns;
+let paperState;
+let correctInputTypes = true;
+const currentUser = useContext(UserContext);
 
-  const closeHandler = () => {
-    setPopupStatus(!popupStatus);
-  };
+const closeHandler = () => {
+  setPopupStatus(!popupStatus);
+};
 
-  const createNewExperiment = (experimentDetails) => {
-    const newTime = new Date().getTime();
-    const data = {};
-    for (const pap of paper) {
-      for (const experimentDetail of experimentDetails) {
-        if (experimentDetail[1] === pap.columns.id) {
-          data[pap.columns.id] = {
-            ctime: newTime,
-            enteredBy: currentUser.displayName,
-            value: experimentDetail[0],
-          };
-        }
+const createNewExperiment = (experimentDetails) => {
+  const newTime = new Date().getTime();
+  const data = {};
+  for (const col of paper.columns) {
+    for (const exp of experimentDetails) {
+      if (exp[1] === col.id) {
+        data[col.id] = {
+          ctime: newTime,
+          enteredBy: currentUser.displayName,
+          value: exp[0],
+        };
       }
     }
-    for (const pap of paper) {
-      if (!data[pap.columns.id]) {
-        data[paper.columns.id] = null;
-      }
+  }
+  for (const col of paper.columns) {
+    if (!data[col.id]) {
+      data[col.id] = null;
     }
-    let index;
-    if (paper.experiments.length === 1 && paper.experiments[0].title === null) {
-      index = 0;
-    } else {
-      index = paper.experiments.length;
-    }
-    const expObj = {
-      ctime: newTime,
-      data,
-      enteredBy: currentUser.displayName,
-      index,
-      paper,
-      title: experimentDetails[0][0],
-    };
-    return expObj;
+  }
+  let index;
+  if (paper.experiments.length === 1 && paper.experiments[0].title === null) {
+    index = 0;
+  } else {
+    index = paper.experiments.length;
+  }
+  const expObj = {
+    ctime: newTime,
+    data,
+    enteredBy: currentUser.displayName,
+    index,
+    paper,
+    title: experimentDetails[0][0],
   };
+  return expObj;
+};
 
-  const handleSubmit = (e) => {
-    const experimentDetails = [];
-    const children = e.target.children;
-    for (let i = 0; i < children.length; i += 1) {
-      const inputElem = children[i].children[0];
-      if (inputElem) {
-        const colID = inputElem.getAttribute('columnid');
-        const inputType = inputElem.getAttribute('inputtype');
-        if (inputElem.value) {
-          experimentDetails[i] = [inputElem.value, colID];
-          if (inputType === 'number') {
-            if (!parseInt(inputElem.value, 10)) {
-              correctInputTypes = false;
-            }
+const handleSubmit = (e) => {
+  const experimentDetails = [];
+  const children = e.target.children;
+  for (let i = 0; i < children.length; i += 1) {
+    const inputElem = children[i].children[0];
+    if (inputElem) {
+      const colID = inputElem.getAttribute('columnid');
+      const inputType = inputElem.getAttribute('inputtype');
+      if (inputElem.value) {
+        experimentDetails[i] = [inputElem.value, colID];
+        if (inputType === 'number') {
+          if (!parseInt(inputElem.value, 10)) {
+            correctInputTypes = false;
           }
-        } else {
-          experimentDetails[i] = [null, colID];
         }
+      } else {
+        experimentDetails[i] = [null, colID];
       }
     }
-    const tempPapers = [...papers];
-    if (correctInputTypes) {
-      const newExperiment = createNewExperiment(experimentDetails);
-      if (newExperiment.title) {
-        const paperIndex = tempPapers.indexOf(paper);
-        tempPapers[paperIndex].experiments[newExperiment.index] = newExperiment;
-        closeHandler();
-      }
-    } else {
-      e.target.nextSibling.textContent = 'Ensure correct input types';
+  }
+  const tempPapers = [...papers];
+  if (correctInputTypes) {
+    const newExperiment = createNewExperiment(experimentDetails);
+    if (newExperiment.title) {
+      const paperIndex = tempPapers.indexOf(paper);
+      tempPapers[paperIndex].experiments[newExperiment.index] = newExperiment;
+      closeHandler();
     }
-    setPapers(tempPapers);
-  };
+  } else {
+    e.target.nextSibling.textContent = 'Ensure correct input types';
+  }
+  setPapers(tempPapers);
+};
+
+function AddExperimentPopup(props) {
+  [flag, paper, columns, paperState] = props;
+  [popupStatus, setPopupStatus] = flag;
+  [papers, setPapers] = paperState;
 
   const content = (
     <div className="addExperimentPopup">
@@ -125,9 +130,8 @@ function AddExperimentPopup(props) {
 }
 
 function AddExperiment(props) {
-  const { paper, columns, paperState } = props;
+  [paper, columns, paperState] = props;
   const edit = useContext(EditContext);
-  const [popupStatus, setPopupStatus] = useState(false);
 
   function popupToggle() {
     setPopupStatus(!popupStatus);

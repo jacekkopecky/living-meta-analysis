@@ -35,6 +35,8 @@ function GroupingAggregates(props) {
   const [selectedAnalysis, setSelectedAnalysis] = useState(null);
   const edit = useContext(EditContext);
 
+  const editModeClass = edit.flag ? 'modAnalysisHead editMode primary' : 'modAnalysisHead';
+
   function popupToggle() {
     setPopupStatus(!popupStatus);
   }
@@ -59,7 +61,7 @@ function GroupingAggregates(props) {
         <table id="modAnalysisTable">
           <thead>
             <tr>
-              <th className={edit.flag ? 'modAnalysisHead editMode primary' : 'modAnalysisHead'}>Moderator:</th>
+              <th className={editModeClass}>Moderator:</th>
               { moderatorsWithGroups.map((moderator) => {
                 if (moderator.included) {
                   let count = 0;
@@ -73,7 +75,7 @@ function GroupingAggregates(props) {
                       <th
                         key={moderator.moderatorObj.title}
                         colSpan={count}
-                        className={edit.flag ? 'modAnalysisHead editMode primary' : 'modAnalysisHead'}
+                        className={editModeClass}
                       >
                         { moderator.moderatorObj.title }
                       </th>
@@ -86,11 +88,11 @@ function GroupingAggregates(props) {
           </thead>
           <thead>
             <tr>
-              <th className={edit.flag ? 'modAnalysisHead editMode primary' : 'modAnalysisHead'}>Group:</th>
+              <th className={editModeClass}>Group:</th>
               { moderatorsWithGroups.map((moderator) => (moderator.included
                 ? moderator.groups.map((group) => (group.included
                   ? (
-                    <th key={group.group} className={edit.flag ? 'modAnalysisHead editMode primary' : 'modAnalysisHead'}>
+                    <th key={group.group} className={editModeClass}>
                       { group.group }
                     </th>
                   )
@@ -109,7 +111,16 @@ function GroupingAggregates(props) {
                   { edit.flag
                     ? (
                       <div>
-                        <div className="removeModAnalysisButton" analysisformula={aggr.formula} role="button" tabIndex={0} onClick={(e) => { popupToggle(); selectAnalysis(e); }} onKeyDown={popupToggle}>Remove</div>
+                        <div
+                          className="removeModAnalysisButton"
+                          analysisformula={aggr.formula}
+                          role="button"
+                          tabIndex={0}
+                          onClick={(e) => { popupToggle(); selectAnalysis(e); }}
+                          onKeyDown={popupToggle}
+                        >
+                          Remove
+                        </div>
                         { popupStatus
                           ? (
                             <RemovalPopup

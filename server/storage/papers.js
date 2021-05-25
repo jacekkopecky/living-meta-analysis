@@ -89,10 +89,10 @@ async function savePaper(paper, email, origTitle, options) {
     if (paperSearch) {
       original = paperSearch;
 
-      if (options.restoring) {
+      if (options.restoring && original) {
         // paper is a paper we're restoring from some other datastore
         // reject the save if we already have it
-        if (original) throw new Error(`paper ${paper.id} already exists`);
+        throw new Error(`paper ${paper.id} already exists`);
         // otherwise save unchanged
       } else {
         // paper overwrites an existing paper
@@ -127,7 +127,6 @@ async function savePaper(paper, email, origTitle, options) {
   // this is here until we add versioning on the papers themselves
   const logKey = datastore.key(['Paper', paper.id,
     'PaperLog', paper.id + '/' + paper.mtime]);
-  if (!options.restoring) console.log('savePaper saving (into Paper and PaperLog)');
   try {
     await datastore.save(
       [
