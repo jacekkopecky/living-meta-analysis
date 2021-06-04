@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import SimpleAggregates from './SimpleAggregates';
 import GroupingAggregates from './GroupingAggregates';
-import AddSimpleAnalysis from './AddSimpleAnalysis';
-import AddModeratorAnalysis from './AddModeratorAnalysis';
+import AddAnalysis from './AddAnalysis';
 import FilterModerators from './FilterModerators';
 import formulas from './Formulas';
 import './Aggregates.css';
@@ -70,11 +69,12 @@ function Aggregates(props) {
   if (analysisType === 'simple') {
     content = (
       <>
-        <AddSimpleAnalysis
+        <AddAnalysis
           formulaFunctions={formulaFunctions}
           columns={columns}
           aggregatesState={[aggregates, setAggregates]}
           metaanalysis={metaanalysis}
+          type={analysisType}
         />
         <SimpleDisplay
           aggregatesState={[aggregates, setAggregates]}
@@ -88,11 +88,12 @@ function Aggregates(props) {
   } else if (analysisType === 'moderator') {
     content = (
       <>
-        <AddModeratorAnalysis
+        <AddAnalysis
           formulaFunctions={formulaFunctions}
           columns={columns}
           aggregatesState={[groupingAggregates, setGroupingAggregates]}
           metaanalysis={metaanalysis}
+          type={analysisType}
         />
         <FilterModerators mwgState={mwgState} />
         <ModeratorDisplay

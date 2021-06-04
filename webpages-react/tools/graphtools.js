@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 import { isColCompletelyDefined, getDatumValue, getAggregateDatumValue } from './datatools';
 
 export function getSimpleForestPlotData(graph) {

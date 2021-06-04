@@ -1,0 +1,68 @@
+for (const paper of papers) {
+    for (const exp of paper.experiments) {
+      if (!exp.excluded) {
+        const line = {};
+        line.title = paper.title || 'new paper';
+        if (paper.experiments.length > 1) {
+          let expTitle = exp.title || 'new experiment';
+          if (expTitle.match(/^\d+$/)) expTitle = `Exp. ${expTitle}`;
+          line.title += ` (${expTitle})`;
+        }
+        line.or = getDatumValue(orFunc, exp);
+        line.wt = getDatumValue(wtFunc, exp);
+        line.lcl = getDatumValue(lclFunc, exp);
+        line.ucl = getDatumValue(uclFunc, exp);
+        line.group = getDatumValue(moderatorParam, exp);
+        if (line.group != null && line.group !== '' && groups.indexOf(line.group) === -1) {
+          groups.push(line.group);
+        }
+
+        // if any of the values is NaN or ±Infinity, disregard this experiment
+        if (
+          Number.isNaN(line.or * 0)
+        || Number.isNaN(line.lcl * 0)
+        || Number.isNaN(line.ucl * 0)
+        || Number.isNaN(line.wt * 0)
+        || line.or == null
+        || line.lcl == null
+        || line.ucl == null
+        || line.wt == null
+        ) {
+          delete line.or;
+          delete line.lcl;
+          delete line.ucl;
+          delete line.wt;
+        }
+
+        lines.push(line);
+      }
+    }
+  }
+  for (const paper of papers) {
+    for (const exp of paper.experiments) {
+      if (!exp.excluded) {
+        const line = {};
+        line.title = paper.title || 'new paper';
+        if (paper.experiments.length > 1) {
+          let expTitle = exp.title || 'new experiment';
+          if (expTitle.match(/^\d+$/)) expTitle = `Exp. ${expTitle}`;
+          line.title += ` (${expTitle})`;
+        }
+        line.or = getDatumValue(orFunc, exp);
+        line.wt = getDatumValue(wtFunc, exp);
+        line.lcl = getDatumValue(lclFunc, exp);
+        line.ucl = getDatumValue(uclFunc, exp);
+        lines.push(line);
+
+        // if any of the values is NaN or ±Infinity, disregard this experiment
+        if (Number.isNaN(line.or * 0) || Number.isNaN(line.lcl * 0)
+              || Number.isNaN(line.ucl * 0) || Number.isNaN(line.wt * 0)
+              || line.or == null || line.lcl == null || line.ucl == null || line.wt == null) {
+          delete line.or;
+          delete line.lcl;
+          delete line.ucl;
+          delete line.wt;
+        }
+      }
+    }
+  }

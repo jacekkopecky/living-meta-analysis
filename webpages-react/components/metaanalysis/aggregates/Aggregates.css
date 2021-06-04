@@ -3,6 +3,7 @@
 }
 
 .aggregates .analysisButton,
+.aggregates .addAnalysisButton,
 .aggregates .addSimpleAnalysisButton,
 .aggregates .addModeratorAnalysisButton,
 .aggregates #filterModeratorsButton {
@@ -15,14 +16,14 @@
   background-color: lightgrey;
   outline: none;
   cursor: pointer;
+
   /* Prevent text highlight */
   -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
 .aggregates .analysisButton:hover {
@@ -34,11 +35,13 @@
   cursor: default;
 }
 
+.aggregates .addAnalysisButton,
 .aggregates .addSimpleAnalysisButton,
 .aggregates .addModeratorAnalysisButton {
   width: auto !important;
 }
 
+.aggregates .addAnalysisButton:hover,
 .aggregates .addSimpleAnalysisButton:hover,
 .aggregates .addModeratorAnalysisButton:hover,
 .aggregates #filterModeratorsButton:hover {
@@ -64,6 +67,7 @@
   overflow-x: scroll;
 }
 
+#inputForm label,
 #simpleInputForm label,
 #moderatorInputForm label {
   display: block;
@@ -78,25 +82,28 @@
   background-color: #ff5745;
   outline: none;
   cursor: pointer;
+
   /* Prevent text highlight */
   -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
 .removeAnalysisButton:hover {
   background-color: red;
 }
 
+#inputForm,
 #simpleInputForm,
 #moderatorInputForm {
   display: block;
   text-align: center;
 }
+
+#inputForm label,
 #simpleInputForm label,
 #moderatorInputForm label,
 #modFilterForm div label {
@@ -105,10 +112,13 @@
   margin: 10px;
   text-align: left;
 }
-#simpleInputForm label input,
-#simpleInputForm label input:focus,
+
+#inputForm label input,
 #moderatorInputForm label input,
-#moderatorInputForm label input:focus {
+#simpleInputForm label input,
+#inputForm label input:focus,
+#moderatorInputForm label input:focus,
+#simpleInputForm label input:focus {
   border: 0.1em solid black;
   outline: none;
   width: 60%;
@@ -130,6 +140,7 @@
   width: 50%;
 }
 
+#inputForm label select,
 #simpleInputForm label select,
 #moderatorInputForm label select {
   width: 60%;
@@ -151,14 +162,14 @@
   background-color: rgba(182, 234, 255);
   outline: none;
   cursor: pointer;
+
   /* Prevent text highlight */
   -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
 #modFilterForm .groupToggleButton:hover {
@@ -196,14 +207,14 @@
   background-color: #ff5745;
   outline: none;
   cursor: pointer;
+
   /* Prevent text highlight */
   -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
 .removeModAnalysisButton:hover {

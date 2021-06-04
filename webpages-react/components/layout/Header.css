@@ -66,28 +66,28 @@ header {
   border-radius: 0.5rem;
   padding: 2px;
   display: block;
-  border: 1px solid rgba(0,0,0,0);
-  transition: .3s;
+  border: 1px solid rgba(0, 0, 0, 0);
+  transition: 0.3s;
 }
 
 .userinfo .actions {
   visibility: hidden;
-  padding: 0 .5em;
-  border: 1px solid rgba(0,0,0,.5);
+  padding: 0 0.5em;
+  border: 1px solid rgba(0, 0, 0, 0.5);
   border-radius: 0.5em;
   background: white;
   position: absolute;
-  right: .5em;
-  transition: .3s;
+  right: 0.5em;
+  transition: 0.3s;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .userinfo .actions > * {
-  margin: .5em 0;
+  margin: 0.5em 0;
   display: block;
-  box-shadow: 0 0 0 0 rgba(66,133,244,.3);
+  box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.3);
   text-align: center;
 }
 
@@ -107,7 +107,7 @@ header {
 
 .userinfo .actions > a:hover,
 .userinfo .actions > [role=menuitem]:hover {
-  box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
+  box-shadow: 0 0 3px 3px rgba(66, 133, 244, 0.3);
 }
 
 .userinfo:hover .actions {
@@ -115,5 +115,5 @@ header {
 }
 
 .userinfo:hover .userphoto {
-  border: 1px solid rgba(0,0,0,.5);
+  border: 1px solid rgba(0, 0, 0, 0.5);
 }

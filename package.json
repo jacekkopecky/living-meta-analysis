@@ -14,7 +14,8 @@
     "lint-server": "echo eslint && eslint server/** --ext .js,.json",
     "lint": "echo eslint && eslint . --ext .js,.json && echo stylelint && stylelint webpages*/**/*.css webpages*/**/*.html",
     "build": "parcel build --no-cache --public-url /react-dist/ --dist-dir webpages/react-dist/ webpages-react/metaanalysis.html",
-    "react-watch": "NODE_ENV=development parcel watch --no-cache --public-url /react-dist/ --dist-dir webpages/react-dist/ webpages-react/metaanalysis.html"
+    "react-watch": "NODE_ENV=development parcel watch --no-cache --public-url /react-dist/ --dist-dir webpages/react-dist/ webpages-react/metaanalysis.html",
+    "rule-test": "eslint --config .eslintrc.json --output-file ./rule-test/test-report.html --format html rule-test"
   },
   "repository": {
     "type": "git",
@@ -61,6 +62,7 @@
     "@google-cloud/datastore": "^5.1.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "eslint-plugin-sonar": "^0.4.0",
     "express": "^4.17.1",
     "simple-google-openid": "^0.3.0",
     "uid": "^1.0.0"

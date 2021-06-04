@@ -286,7 +286,16 @@ function Paper(props) {
           { edit.flag
             ? (
               <td className="experimentRemovalContainer">
-                <div className="removeExperimentButton" role="button" tabIndex={0} experiment={exp.index} onClick={(e) => { experimentPopupToggle(); selectExperiment(e); }} onKeyDown={experimentPopupToggle}>Remove</div>
+                <div
+                  className="removeExperimentButton"
+                  role="button"
+                  tabIndex={0}
+                  experiment={exp.index}
+                  onClick={(e) => { experimentPopupToggle(); selectExperiment(e); }}
+                  onKeyDown={experimentPopupToggle}
+                >
+                  Remove
+                </div>
                 { experimentPopupStatus
                   ? (
                     <RemovalPopup

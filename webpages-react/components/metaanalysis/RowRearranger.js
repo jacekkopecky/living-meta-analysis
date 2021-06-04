@@ -26,11 +26,11 @@ function dragOverListener(event) {
 function dragLeaveListener() {
   const rowsWithClass1 = document.querySelectorAll('.rowRearrangeAbove');
   const rowsWithClass2 = document.querySelectorAll('.rowRearrangeBelow');
-  for (let i = 0; i < rowsWithClass1.length; i += 1) {
-    rowsWithClass1[i].classList.remove('rowRearrangeAbove');
+  for (const row of rowsWithClass1) {
+    row.classList.remove('rowRearrangeAbove');
   }
-  for (let i = 0; i < rowsWithClass2.length; i += 1) {
-    rowsWithClass2[i].classList.remove('rowRearrangeBelow');
+  for (const row of rowsWithClass2) {
+    row.classList.remove('rowRearrangeBelow');
   }
 }
 
@@ -52,8 +52,8 @@ function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e, papers, paperOrder
   Returns all rows associated with dragged row, index of top row */
   function handleDragStart() {
     yCoord = e.pageY;
-    for (let j = 0; j < parentOfRows.current.children.length; j += 1) {
-      const elem = parentOfRows.current.children[j];
+    for (const row of parentOfRows) {
+      const elem = row.current.children;
       elem.addEventListener('dragover', dragOverListener);
       elem.addEventListener('dragleave', dragLeaveListener);
     }
@@ -147,8 +147,8 @@ function RearrangeRow(rowEvent, setRowEvent, parentOfRows, e, papers, paperOrder
     rowsToDrop.rows.forEach((element) => {
       element.classList.remove('beingRearranged');
     });
-    for (let j = 0; j < parentOfRows.current.children.length; j += 1) {
-      const elem = parentOfRows.current.children[j];
+    for (const row of parentOfRows) {
+      const elem = row.current.children;
       elem.removeEventListener('dragover', dragOverListener);
       elem.removeEventListener('dragleave', dragLeaveListener);
     }

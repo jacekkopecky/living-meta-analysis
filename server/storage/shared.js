@@ -8,6 +8,8 @@ const path = require('path');
 const TITLE_REXP = new RegExp(`^${config.TITLE_RE}$`);
 const USERNAME_REXP = new RegExp(`^${config.USERNAME_RE}$`);
 
+const knownColumnIDs = {};
+
 const datastoreConfig = {
   namespace: config.gcloudDatastoreNamespace,
 };
@@ -19,33 +21,41 @@ if (!process.env.GAE_APPLICATION && config.gcloudProject) {
 
 const datastore = new Datastore(datastoreConfig);
 
-// in papers, metaanalyses, and comments fill in enteredBy and ctime
 function fillByAndCtimes(current, original, email) {
   const orig = original || {};
   if (!current.enteredBy) current.enteredBy = orig.enteredBy || email;
   if (!current.ctime) current.ctime = orig.ctime || tools.uniqueNow();
-  fillByAndCtimeInComments(current.comments, orig.comments, email);
 
+  fillByAndCtimeInComments(current.comments, orig.comments, email);
+  fillExperiment(current, orig, email);
+  fillColumns(current, orig, email);
+  fillAggregate(current, orig, email);
+}
+
+function fillInfoCheck(exp, orig, email) {
+  if (!exp.enteredBy) exp.enteredBy = orig.enteredBy || email;
+  if (!exp.ctime) exp.ctime = orig.ctime || tools.uniqueNow();
+}
+
+function fillExperiment(current, orig, email) {
   if (current.experiments) {
     for (let expIndex = 0; expIndex < current.experiments.length; expIndex++) {
       const exp = current.experiments[expIndex];
       const origExp = (orig.experiments || [])[expIndex] || {};
-      // todo these values should allow us to construct better patches
-      // (e.g. removal of the first experiment)
-      if (!exp.enteredBy) exp.enteredBy = origExp.enteredBy || email;
-      if (!exp.ctime) exp.ctime = origExp.ctime || tools.uniqueNow();
+      fillInfoCheck(exp, origExp, email);
       fillByAndCtimeInComments(exp.comments, origExp.comments, email);
       for (const col of Object.keys(exp.data || {})) {
         const expCol = exp.data[col];
         const origCol = (origExp.data || {})[col] || {};
         const origColIfSameVal = expCol.value === origCol.value ? origCol : {};
-        if (!expCol.enteredBy) expCol.enteredBy = origColIfSameVal.enteredBy || email;
-        if (!expCol.ctime) expCol.ctime = origColIfSameVal.ctime || tools.uniqueNow();
+        fillInfoCheck(expCol, origColIfSameVal, email);
         fillByAndCtimeInComments(expCol.comments, origCol.comments, email);
       }
     }
   }
+}
 
+function fillColumns(current, orig, email) {
   if (current.columns) {
     for (let colIndex = 0; colIndex < current.columns.length; colIndex++) {
       if (typeof current.columns[colIndex] === 'object') {
@@ -55,7 +65,9 @@ function fillByAndCtimes(current, original, email) {
       }
     }
   }
+}
 
+function fillAggregate(current, orig, email) {
   if (current.aggregates) {
     for (let aggrIndex = 0; aggrIndex < current.aggregates.length; aggrIndex++) {
       const aggr = current.aggregates[aggrIndex];
@@ -77,26 +89,7 @@ function fillByAndCtimeInComments(comments, origComments, email) {
   }
 }
 
-async function checkForDisallowedChanges(current, original) {
-  // todo really, this should use a diff format and check that all diffs are allowed
-  //   this will be a diff from the user's last version to the incoming version,
-  //   not from the existing version to the incoming version,
-  //   so that collaborative concurrent updates are allowed
-  //   so for example adding a comment number 9 will become adding a comment
-  //   and if comments 9 and 10 were already added by other users, we will add comment 11
-  // but for now we don't have the diffs, so
-  //   do the checks we can think of for changes that wouldn't be allowed
-  // for example, we can't really allow removing values because we don't allow removing comments
-  // todo comment mtimes
-  // todo check that columns and groupingColumn and aggregates references existing columns
-  // todo check that paperOrder references existing papers
-  // this might end up being different for papers and for metaanalyses
-  // todo refuse to save if all the experiments of a paper are hidden in the metaanalysis
-  //    - the paper should be gone from this metaanalysis
-
-  original = original || {};
-
-  // check that title hasn't changed or if it has, that it is unique
+async function titleCheck(current, original) {
   if (current.title !== original.title) {
     if (!TITLE_REXP.test(current.title)) {
       throw new ValidationError('title cannot contain spaces or special characters');
@@ -122,11 +115,9 @@ async function checkForDisallowedChanges(current, original) {
     }
     // todo: do we need extra checks here? I.e. length of username? encodings? emojis?
   }
+}
 
-  // check that no two columns have the same ID
-  // check that computed columns don't have IDs and that the others do
-  // also prepare a hash of known column IDs for use later
-  const knownColumnIDs = {};
+function columnCheck(current) {
   if (current.columns) {
     current.columns.forEach((colObject) => {
       if (colObject.formula && colObject.id) throw new ValidationError('computed column must not have ID');
@@ -140,61 +131,85 @@ async function checkForDisallowedChanges(current, original) {
       }
     });
   }
+}
+
+function experimentCommentOwnerCheck(origComments, comments) {
+  const changedCommentByOwner = {};
+  for (let i = 0; i < origComments.length; i++) {
+    const comment = comments[i];
+    const origComment = origComments[i];
+    if (comment.CHECKby !== origComment.by) {
+      throw new ValidationError('cannot change comment owner');
+    }
+    if (comment.CHECKby in changedCommentByOwner) {
+      throw new ValidationError('cannot edit comment before the last by a given owner');
+    }
+    if (comment.text !== origComment.text) {
+      changedCommentByOwner[comment.CHECKby] = 1;
+    }
+  }
+}
+
+function experimentCommentCheck(origExp, exp) {
+  for (const origDataKey of Object.keys(origExp.data)) {
+    if (!(origDataKey in exp.data)) {
+      throw new ValidationError('cannot remove experiment data');
+    }
+
+    const { comments } = exp.data[origDataKey];
+    const origComments = origExp.data[origDataKey].comments;
+
+    if (origComments) {
+      if (!comments || comments.length < origComments.length) {
+        throw new ValidationError('cannot remove comments');
+      }
+
+      experimentCommentOwnerCheck(origComments, comments);
+    }
+  }
+}
+
+function experimentCheck(current, original) {
+  for (let expIndex = 0; expIndex < current.experiments.length; expIndex++) {
+    const exp = current.experiments[expIndex];
+    const origExp = (original.experiments || [])[expIndex] || {};
+
+    // check experiment titles are there (but need not be unique)
+    if (!TITLE_REXP.test(exp.title)) {
+      throw new ValidationError('experiment title cannot contain spaces or special characters');
+    }
+
+    if (origExp.data) {
+      if (!exp.data) throw new ValidationError('cannot remove experiment data array');
+      experimentCommentCheck(origExp, exp);
+    }
+    if (exp.data) {
+      for (const dataKey of Object.keys(exp.data)) {
+        if (!knownColumnIDs[dataKey]) {
+          throw new ValidationError('cannot include data with unknown column ID ' + dataKey);
+        }
+      }
+    }
+  }
+}
+
+
+async function checkForDisallowedChanges(current, original) {
+  original = original || {};
+
+  // check that title hasn't changed or if it has, that it is unique
+  await titleCheck(current, original);
+
+  // check that no two columns have the same ID
+  // check that computed columns don't have IDs and that the others do
+  // also prepare a hash of known column IDs for use later
+  columnCheck(current);
 
 
   // check that every experiment has at least the data values that were there originally
   // check that only last comment by a given user has changed, if any
   if (current.experiments) {
-    for (let expIndex = 0; expIndex < current.experiments.length; expIndex++) {
-      const exp = current.experiments[expIndex];
-      const origExp = (original.experiments || [])[expIndex] || {};
-
-      // check experiment titles are there (but need not be unique)
-      if (!TITLE_REXP.test(exp.title)) {
-        throw new ValidationError('experiment title cannot contain spaces or special characters');
-      }
-
-      if (origExp.data) {
-        if (!exp.data) throw new ValidationError('cannot remove experiment data array');
-
-        for (const origDataKey of Object.keys(origExp.data)) {
-          if (!(origDataKey in exp.data)) {
-            throw new ValidationError('cannot remove experiment data');
-          }
-
-          const { comments } = exp.data[origDataKey];
-          const origComments = origExp.data[origDataKey].comments;
-
-          if (origComments) {
-            if (!comments || comments.length < origComments.length) {
-              throw new ValidationError('cannot remove comments');
-            }
-
-            const changedCommentByOwner = {};
-            for (let i = 0; i < origComments.length; i++) {
-              const comment = comments[i];
-              const origComment = origComments[i];
-              if (comment.CHECKby !== origComment.by) {
-                throw new ValidationError('cannot change comment owner');
-              }
-              if (comment.CHECKby in changedCommentByOwner) {
-                throw new ValidationError('cannot edit comment before the last by a given owner');
-              }
-              if (comment.text !== origComment.text) {
-                changedCommentByOwner[comment.CHECKby] = 1;
-              }
-            }
-          }
-        }
-      }
-      if (exp.data) {
-        for (const dataKey of Object.keys(exp.data)) {
-          if (!knownColumnIDs[dataKey]) {
-            throw new ValidationError('cannot include data with unknown column ID ' + dataKey);
-          }
-        }
-      }
-    }
+    experimentCheck(current, original);
   }
 }
 

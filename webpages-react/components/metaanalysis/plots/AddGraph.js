@@ -21,47 +21,10 @@ function AddGraphPopup(props) {
   }
 
   function formGrapeObject(elem) {
-    let title;
-    let g1;
-    let g1Col;
-    let g1n;
-    let g1nCol;
-    let g2;
-    let g2Col;
-    let g2n;
-    let g2nCol;
-    let mod;
-    let modCol;
     const id = Object.keys(graphs).length;
-
-    for (let i = 0; i < elem.children.length; i += 1) {
-      const input = elem.children[i].children[0];
-      if (input) {
-        switch (input.name) {
-        case 'newGraphTitle':
-          title = input.value;
-          break;
-        case 'newGraphG1':
-          g1 = input.value;
-          g1Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          g1nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
-          break;
-        case 'newGraphG2':
-          g2 = input.value;
-          g2Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          g2nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
-          break;
-        case 'newGraphMod':
-          mod = input.value;
-          modCol = columns.filter((col) => col.subType === 'moderator' && col.id === input.value)[0];
-          break;
-        default:
-        }
-      }
-    }
-
+    const [title, g1Config, g2Config, modConfig] = getGraphObject(elem);
     const graphObject = {
-      formula: `grapeChartPercentGraph(${g1},${g1n},${g2},${g2n},${mod},)`,
+      formula: `grapeChartPercentGraph(${g1Config.g1},${g1Config.g1nCol},${g2Config.g2},${g2Config.g2nCol},${modConfig.mod},)`,
       formulaName: 'grapeChartPercentGraph',
       formulaObj: {
         id: 'grapeChartPercentGraph',
@@ -77,46 +40,66 @@ function AddGraphPopup(props) {
           type: 'graph',
         },
       },
-      formulaParams: [g1Col, g1nCol, g2Col, g2nCol, modCol],
-      fullLabel: `Grape Chart (percentages)( ${g1Col.title}, ${g1nCol.title}, ${g2Col.title}, ${g2nCol.title}, ${modCol.title} )`,
+      formulaParams: [g1Config.g1Col, g1Config.g1nCol, g2Config.g2Col, g2Config.g2nCol, modConfig.modCol],
+      fullLabel: `Grape Chart (percentages)( ${g1Config.g1Col.title}, ${g1Config.g1nCol.title}, ${g2Config.g2Col.title}, ${g2Config.g2nCol.title}, ${modConfig.modCol.title} )`,
       metaanalysis,
       title,
       id,
     };
-
     return graphObject;
   }
 
-  function formForestObject(elem) {
+  function getGraphObject(elem) {
     let title;
-    let g1Col;
-    let g1nCol;
-    let g2Col;
-    let g2nCol;
-    const id = Object.keys(graphs).length;
-
-    for (let i = 0; i < elem.children.length; i += 1) {
-      const input = elem.children[i].children[0];
+    const g1Config = {
+      g1: null,
+      g1Col: null,
+      g1nCol: null,
+    };
+    const g2Config = {
+      g2: null,
+      g2Col: null,
+      g2nCol: null,
+    };
+    const modConfig = {
+      mod: null,
+      modCol: null,
+    };
+    for (const element of elem.children) {
+      const input = element.children[0];
       if (input) {
         switch (input.name) {
         case 'newGraphTitle':
           title = input.value;
           break;
         case 'newGraphG1':
-          g1Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          g1nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
+          g1Config.g1 = input.value;
+          g1Config.g1Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
+          g1Config.g1nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
           break;
         case 'newGraphG2':
-          g2Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          g2nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
+          g2Config.g2 = input.value;
+          g2Config.g2Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
+          g2Config.g2nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
+          break;
+        case 'newGraphMod':
+          modConfig.mod = input.value;
+          modConfig.modCol = columns.filter((col) => col.subType === 'moderator' && col.id === input.value)[0];
           break;
         default:
         }
       }
     }
+    return [title, g1Config, g2Config, modConfig];
+  }
+
+  function formForestObject(elem) {
+    const id = Object.keys(graphs).length;
+
+    const [title, g1Config, g2Config] = getGraphObject(elem);
 
     const graphObject = {
-      formula: `forestPlotPercentGraph(${g1Col.id},${g1nCol.id},${g2Col.id},${g2nCol.id})`,
+      formula: `forestPlotPercentGraph(${g1Config.g1Col.id},${g1Config.g1nCol.id},${g2Config.g2Col.id},${g2Config.g2nCol.id})`,
       formulaName: 'forestPlotPercentGraph',
       formulaObj: {
         id: 'forestPlotPercentGraph',
@@ -131,8 +114,8 @@ function AddGraphPopup(props) {
           type: 'graph',
         },
       },
-      formulaParams: [g1Col, g1nCol, g2Col, g2nCol],
-      fullLabel: `Forest Plot (percentages)( ${g1Col.title}, ${g1nCol.title}, ${g2Col.title}, ${g2nCol.title} )`,
+      formulaParams: [g1Config.g1Col, g1Config.g1nCol, g2Config.g2Col, g2Config.g2nCol],
+      fullLabel: `Forest Plot (percentages)( ${g1Config.g1Col.title}, ${g1Config.g1nCol.title}, ${g2Config.g2Col.title}, ${g2Config.g2nCol.title} )`,
       metaanalysis,
       title,
       id,
@@ -142,39 +125,12 @@ function AddGraphPopup(props) {
   }
 
   function formForestGroupObject(elem) {
-    let title;
-    let g1Col;
-    let g1nCol;
-    let g2Col;
-    let g2nCol;
-    let modCol;
     const id = Object.keys(graphs).length;
 
-    for (let i = 0; i < elem.children.length; i += 1) {
-      const input = elem.children[i].children[0];
-      if (input) {
-        switch (input.name) {
-        case 'newGraphTitle':
-          title = input.value;
-          break;
-        case 'newGraphG1':
-          g1Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          g1nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
-          break;
-        case 'newGraphG2':
-          g2Col = columns.filter((col) => col.subType === 'calculator' && col.id === input.value)[0];
-          g2nCol = columns.filter((col) => col.subType === 'calculatorN' && col.id === columns.filter((column) => column.subType === 'calculator' && column.id === input.value)[0].linkedN)[0];
-          break;
-        case 'newGraphMod':
-          modCol = columns.filter((col) => col.subType === 'moderator' && col.id === input.value)[0];
-          break;
-        default:
-        }
-      }
-    }
+    const [title, g1Config, g2Config, modConfig] = getGraphObject(elem);
 
     const graphObject = {
-      formula: `forestPlotGroupPercentGraph(${g1Col.id},${g1nCol.id},${g2Col.id},${g2nCol.id},${modCol.id},)`,
+      formula: `forestPlotGroupPercentGraph(${g1Config.g1Col.id},${g1Config.g1nCol.id},${g2Config.g2Col.id},${g2Config.g2nCol.id},${modConfig.modCol.id},)`,
       formulaName: 'forestPlotGroupPercentGraph',
       formulaObj: {
         id: 'forestPlotGroupPercentGraph',
@@ -190,8 +146,8 @@ function AddGraphPopup(props) {
           type: 'graph',
         },
       },
-      formulaParams: [g1Col, g1nCol, g2Col, g2nCol, modCol],
-      fullLabel: `Forest Plot Group (percentages)( ${g1Col.title}, ${g1nCol.title}, ${g2Col.title}, ${g2nCol.title}, ${modCol.title} )`,
+      formulaParams: [g1Config.g1Col, g1Config.g1nCol, g2Config.g2Col, g2Config.g2nCol, modConfig.modCol],
+      fullLabel: `Forest Plot Group (percentages)( ${g1Config.g1Col.title}, ${g1Config.g1nCol.title}, ${g2Config.g2Col.title}, ${g2Config.g2nCol.title}, ${modConfig.modCol.title} )`,
       metaanalysis,
       title,
       id,

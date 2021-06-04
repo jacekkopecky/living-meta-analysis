@@ -391,7 +391,7 @@
           return xhr.getResponseHeader('X-Request-URL')
         }
 
-        return
+        return false 
       }
 
       xhr.onload = function() {

@@ -43,7 +43,6 @@
   outline: none;
 }
 
-
 .details .content {
   margin-left: 0.5em;
   width: 95%;
@@ -56,9 +55,6 @@
 
 .details:empty {
   display: none;
-}
-
-.details table {
 }
 
 .details table tbody {
@@ -88,7 +84,7 @@
 }
 
 .details .commentContainer .commentHolderOuter {
- height: 100%;
+  height: 100%;
 }
 
 .details .commentContainer .commentHolderInner {
@@ -107,8 +103,8 @@
 
 .details .commentContainer .commentText .activeCommentScroller,
 .details .commentContainer .commentText .activeCommentScroller:focus {
-  background-color: #33C1FF;
-  cursor:pointer;
+  background-color: #33c1ff;
+  cursor: pointer;
   outline: none;
   height: 30px;
   width: 30px;
@@ -117,7 +113,7 @@
 
 .details .commentContainer .commentText .inactiveCommentScroller,
 .details .commentContainer .commentText .inactiveCommentScroller:focus {
-  background-color: #C0C0C0;
+  background-color: #c0c0c0;
   outline: none;
   height: 30px;
   width: 30px;
@@ -133,19 +129,19 @@
 
 .leftCommentScroller {
   position: absolute;
-  top:0;
-  left:0;
+  top: 0;
+  left: 0;
 }
 
 .rightCommentScroller {
   position: absolute;
-  top:0;
-  right:0;
+  top: 0;
+  right: 0;
 }
 
 .details .commentContainer .postComment {
   border-top: 3px solid black;
-  background-color: #C0C0C0;
+  background-color: #c0c0c0;
   height: 20%;
   text-align: center;
 }
@@ -153,7 +149,7 @@
 .details .commentContainer .postCommentActive,
 .details .commentContainer .postCommentActive:focus {
   outline: none;
-  height: 100px
+  height: 100px;
 }
 
 .details .commentContainer .postCommentInactive,
@@ -179,7 +175,7 @@
 
 .details .postComment .postCommentSubmit {
   cursor: pointer;
-  background-color: #32CD32;
+  background-color: #32cd32;
 }
 
 .details .postComment .postCommentInput,

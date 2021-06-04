@@ -161,4 +161,6 @@ module.exports = {
   getPaperVersion,
   savePaper,
   extractPaperForSending,
+  extractReceivedColumnEntry,
+  extractReceivedComment,
 };

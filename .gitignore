@@ -8,6 +8,9 @@ test/gemini/screens
 coverage
 .DS_Store
 .vscode
+.scannerwork
+eslint-report.html
+eslint-report.json
 
 # parcel react build files
 webpages/react-dist

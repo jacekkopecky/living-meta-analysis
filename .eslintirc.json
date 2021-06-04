@@ -41,18 +41,12 @@
     "react/jsx-curly-spacing": ["error", { "when": "never", "children": { "when": "always" }}],
     "jsx-a11y/no-autofocus": [0],
     "no-cond-assign": ["error", "except-parens"],
-    "no-shadow":[0],
-    "no-nested-ternary":["error"],
-    "sonarjs/prefer-immediate-return":[0],
-    "sonarjs/prefer-object-literal":[0],
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+    "no-warning-comments": [0, { "terms": ["todo", "fixme"], "location": "anywhere" }],
+    "no-shadow":[0],
+    "no-nested-ternary":[0],
+    "sonarjs/prefer-immediate-return":[0],
     "prefer-template":[0],
-    "sonarjs/cognitive-complexity": ["error", 40],
-    "strict":[0],
-    "sonarjs/no-duplicate-string": ["error", 5],
-    "max-len": ["error", { "code": 200 }],
-    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
-    "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 0 }],
-    "sonarjs/no-identical-functions": [0]
+    "strict":[0]
   }
 }

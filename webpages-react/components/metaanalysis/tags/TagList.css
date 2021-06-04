@@ -5,22 +5,19 @@
   vertical-align: bottom;
   flex: 0 1 auto;
   text-align: right;
-  font-size: .8em;
+  font-size: 0.8em;
 }
 
 .tags li {
   display: inline-block;
-  margin: .2em;
+  margin: 0.2em;
   padding: 0;
   line-height: 100%;
   border: 1px solid #008;
-  border-radius: .4em;
+  border-radius: 0.4em;
   background: #33c;
   color: white;
-
-  transition: background .5s;
-  color: white;
-
+  transition: background 0.5s;
   vertical-align: bottom;
   position: relative;
 }
@@ -32,7 +29,7 @@
 .tags li .text {
   display: inline-block;
   height: 1em;
-  padding: .4em;
+  padding: 0.4em;
 }
 
 .tags li .removetag {
@@ -40,19 +37,19 @@
   color: white;
   display: inline-block;
   margin: 0;
-  padding: .4em;
+  padding: 0.4em;
   border: none;
-  border-radius: 0 .2em .2em 0;
+  border-radius: 0 0.2em 0.2em 0;
   height: 1em;
 }
 
 .tags li .removetag:hover {
-  background-color: rgba(255,255,255,1);
+  background-color: rgba(255, 255, 255, 1);
   color: black;
 }
 
 .tags li .removetag:focus {
-  background-color: rgba(255,255,255,1);
+  background-color: rgba(255, 255, 255, 1);
   color: black;
   outline: thick solid #88f8;
 }
@@ -64,7 +61,7 @@
 }
 
 .tags .addtag:hover {
-  background-color: rgba(255,255,255,1);
+  background-color: rgba(255, 255, 255, 1);
   color: black;
 }
 

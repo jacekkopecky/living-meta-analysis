@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import Tabs from '../layout/Tabs';
-// import TagList from './tags/TagList';
 import Info from './Info';
 import DataTable from './datatable/DataTable';
 import Aggregates from './aggregates/Aggregates';
@@ -16,13 +15,13 @@ import modifyColumns from '../../tools/modifyColumns';
 
 import './Metaanalysis.css';
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function Metaanalysis(props) {
   const { metaanalysis } = props;
   populateCircularMa(metaanalysis);
   window.currentMa = metaanalysis;
 
   const [title] = useState(metaanalysis.title);
-  // const [tags, setTags] = useState(metaanalysis.tags);
   const [description, setDescription] = useState(metaanalysis.description);
   const [published, setPublished] = useState(metaanalysis.published);
   const [columns, setColumns] = useState(metaanalysis.columns);

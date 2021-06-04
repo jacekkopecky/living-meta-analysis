@@ -1,20 +1,33 @@
-# living-meta-analysis
-A tool for supporting living and collaborative meta-analysis.
+# Living Meta-Analysis (LiMA) Maintenance
 
-Todo this README should be about 'how to use this tool', 'what the benefits are', 'getting started guides/examples'. Possibly a small note about 'Developing LiMA' which can contain - datastore emulation, db dumps/restores and more; or those might be described in the deployment readme.
+This repo represents the refactored code during the maintainace of LiMA.
 
-## Installation and Maintenance
+## Tool Used
 
-See `DEPLOYMENT.md`.
+Sonarcloud
 
-## Testing
+Eslint
 
-See `test/README.md`.
+SonarLint
 
-## Development
+## Changes Made
 
-_todo this section is a stub_
+Reduced Code Duplication
 
-to develop client-side, start the server with `npm run start:redirected` then all API calls will go to the live server
+Reduced Cognitive Complexity
 
-for development in REACT, use `npm run react-watch` for continuous building, and `npm run build` for the production build.
+Added Coding Standard Rules Using Eslint.
+
+## Important
+
+Test Scripts are written in rule-test folder and run using
+
+```bash
+npm run rule-test
+```
+
+## References
+
+[Getting started with GitHub](https://sonarcloud.io/documentation/getting-started/github/)
+
+[Installing SonarScanner](https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/)

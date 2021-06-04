@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 function renumberComputedObjects(array, prefix) {
   prefix = prefix || '';
   let count = 0;
@@ -15,7 +16,7 @@ function renumberComputedObjects(array, prefix) {
 function getColTitle(col, level) {
   if (col == null) {
     return 'none';
-  } if (typeof col !== 'object') {
+  } else if (typeof col !== 'object') {
     throw new Error(`we do not expect non-object param ${col}`);
   } else if (col.id) {
     return col.title;
@@ -84,11 +85,6 @@ export function populateCircularMa(ma) {
     ma.groups = getGroups(ma);
   }
 
-  // if (ma.groupingColumns != null) {
-  //   for (const groupingCol of ma.groupingColumns) {
-  //   }
-  // }
-
   renumberComputedObjects(ma.columns);
 
   // merges stock elements with the result of populateParsedFormula
@@ -132,7 +128,6 @@ export function formatNumber(x) {
   // this would drop the decimal point from large values (needs tweaks in padNumber below)
   if (xabs >= 100) return x.toFixed(1);
   if (xabs >= 10) return x.toFixed(2);
-  // if (xabs >= 1) return x.toFixed(2);
   return x.toFixed(3);
 }
 
@@ -146,8 +141,8 @@ export function isColCompletelyDefined(col) {
   if (col == null) return false;
   if (col.id) return true;
   if (!col.formulaObj) return false;
-  for (let i = 0; i < col.formulaParams.length; i += 1) {
-    if (!isColCompletelyDefined(col.formulaParams[i])) {
+  for (const formula of col.formulaParams) {
+    if (!isColCompletelyDefined(formula)) {
       return false;
     }
   }
@@ -188,8 +183,8 @@ function getExperimentsTableDatumValue(col, experiment) {
       val = formula.func.apply(null, inputs);
     }
     // if the result is NaN but some of the inputs were empty, change the result to empty.
-    if (typeof val === 'number' && Number.isNaN(val)) {
-      if (inputs.some((x) => x == null || x === '')) val = null;
+    if (typeof val === 'number' && Number.isNaN(val) && (inputs.some((x) => x == null || x === ''))) {
+      val = null;
     }
   }
 
