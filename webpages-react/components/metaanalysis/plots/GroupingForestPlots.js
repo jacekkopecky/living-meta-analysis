@@ -38,7 +38,7 @@ function GroupingForestPlots(props) {
       <g transform="translate(10,50)" className="headings">
         <text className="or lcl ucl">OR [LCL, UCL]</text>
         <text className="wtg">Weight</text>
-        <text className="title">Forest Plot by moderator level</text>
+        <text className="title">{ forestPlots.title || forestPlots.fullLabel }</text>
       </g>
 
       { /* Display a group with it's experiment lines */ }

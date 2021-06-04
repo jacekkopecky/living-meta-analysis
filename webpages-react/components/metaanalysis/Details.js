@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import EditContext from './EditContext';
+import Comments from './Comments';
 import './Details.css';
 
 function Details(props) {
   const { displayedCell, setDisplayedCell } = props;
+  const edit = useContext(EditContext);
+  const commentFlag = useState(false);
+  const commentState = useState({});
 
   const closeHandler = (e) => {
     if (e.type === 'click' || e.key === ' ' || e.key === 'Enter') {
@@ -24,11 +29,11 @@ function Details(props) {
     };
   }, []);
 
-  if (displayedCell) {
+  if (displayedCell && displayedCell.cellId !== null) {
     return (
       <aside className="details">
-        <div className="header">
-          <h3>Details:</h3>
+        <div className={`header ${edit.flag ? 'editMode primary' : ''}`}>
+          <h3>Cell details:</h3>
           <div
             className="close"
             role="button"
@@ -40,7 +45,14 @@ function Details(props) {
           </div>
         </div>
         <div className="content">
-          { displayedCell.text }
+          <div className="detailsTableContainer">
+            { displayedCell.text }
+          </div>
+          <Comments
+            cellDetails={displayedCell}
+            commentFlag={commentFlag}
+            commentState={commentState}
+          />
         </div>
       </aside>
     );

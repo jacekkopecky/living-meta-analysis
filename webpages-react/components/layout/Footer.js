@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import EditContext from '../metaanalysis/EditContext';
 import './Footer.css';
 
 function Footer() {
@@ -6,6 +7,7 @@ function Footer() {
   const [version, updateVersion] = useState('');
   const [isLoaded, setLoaded] = useState(false);
   const [error, setError] = useState(null);
+  const edit = useContext(EditContext);
   let content;
 
   useEffect(() => {
@@ -38,7 +40,7 @@ function Footer() {
   }
 
   return (
-    <footer>
+    <footer className={edit.flag ? 'editMode primary' : null}>
       <p>
         LiMA (Living Meta-Analysis) at
         { ' ' }

@@ -37,7 +37,7 @@ function SimpleForestPlots(props) {
       <g className="headings">
         <text className="or lcl ucl">OR [LCL, UCL]</text>
         <text className="wt">Weight</text>
-        <text className="title">Forest Plot</text>
+        <text className="title">{ forestPlots.title || forestPlots.fullLabel }</text>
       </g>
 
       { /* Display experiment lines */ }
