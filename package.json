@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@google-cloud/datastore": "^5.1.0",
-    "ajv": "^6.12.2",
+    "ajv": "^6.12.3",
     "ajv-errors": "^1.0.1",
     "ajv-merge-patch": "^4.1.0",
     "cookie-parser": "^1.4.5",
